@@ -14,6 +14,12 @@
 #include <cmath>
 
 /*
+ *	Updated on 23.09.2015
+ *	by Viktor Khristenko
+ */
+#include "DQM/HcalCommon/interface/HcalDQMConstants.h"
+
+/*
  * \file HcalSummaryClient.cc
  * 
  * \author J. Temple
@@ -1153,7 +1159,7 @@ double HcalSummaryClient::check_HFChannels(DQMStore::IBooker &ib,
 	else if ((hcaldqm::constants::STD_HF_NUMCHS - numChs)>=10)
 	{
 		triggered_DropChannels = true;
-		return 0.85
+		return 0.85;
 	}
 
 	return -1;
