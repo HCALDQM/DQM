@@ -116,7 +116,8 @@ process.GlobalTag.globaltag = 'GR_P_V56'
 if cmsnet:
 	process.GlobalTag.connect = 'frontier://(serverurl=http://frontier1.cms:8000/FrontierOnProd)(serverurl=http://frontier2.cms:8000/FrontierOnProd)(retrieve-ziplevel=0)/CMS_CONDITIONS'
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
-rawTag			= cms.InputTag("source")
+rawTagStr		= "source"
+rawTag			= cms.InputTag(rawTagStr)
 process.essourceSev = cms.ESSource(
 		"EmptyESSource",
 		recordName		= cms.string("HcalSeverityLevelComputerRcd"),
@@ -188,6 +189,41 @@ elif useMap==True and dbMap==False:
 	process.es_prefer = cms.ESPrefer('HcalTextCalibrations', 'es_ascii')
 
 #-------------------------------------
+#	Old DetDiag Modules Import and Settings straight as is from old cfg.
+#-------------------------------------
+process.load("DQM.HcalMonitorModule.HcalMonitorModule_cfi")
+process.load("DQM.HcalMonitorModule.HcalMonitorTasks_cfi")
+process.load("DQM.HcalMonitorModule.HcalMonitorClient_cfi")
+
+process.hcalClient.debug=0
+process.hcalClient.baseHtmlDir="outputHTML/"
+process.hcalClient.databaseDir=''
+process.hcalClient.minevents=1
+process.hcalDetDiagLaserMonitor.LaserReferenceData = "Reference/HcalDetDiagLaserData_run191238_1.root"
+process.hcalDetDiagPedestalMonitor.PedestalReferenceData = "Reference/HcalDetDiagPedestalData_run225529_1.root"
+process.hcalDetDiagLEDMonitor.LEDReferenceData = "Reference/HcalDetDiagLEDData_run225538_1.root"
+process.hcalDetDiagLaserMonitor.OutputFilePath = "outputDATA/"
+process.hcalDetDiagPedestalMonitor.OutputFilePath = "outputDATA/"
+process.hcalDetDiagLEDMonitor.OutputFilePath = "outputDATA/"
+process.hcalDetDiagLaserMonitor.XmlFilePath = "outputDATA/"
+process.hcalDetDiagPedestalMonitor.XmlFilePath = "outputDATA/"
+process.hcalDetDiagLEDMonitor.XmlFilePath = "outputDATA/"
+process.hcalDetDiagLaserMonitor.Overwrite=False
+process.hcalDetDiagPedestalMonitor.Overwrite=False
+process.hcalMonitor.FEDRawDataCollection = rawTagStr
+process.hcalDetDiagPedestalMonitor.rawDataLabel=rawTagStr
+process.hcalClient.enabledClients = cms.untracked.vstring(
+	"DetDiagPedestalMonitor",
+	"DetDiagLaserMonitor",
+	"DetDiagLEDMonitor"
+)
+
+process.hcalDetDiagPedestalMonitor.digiLabelHF = cms.untracked.InputTag(
+	"hcalDigis")
+process.hcalDetDiagLaserMonitor.digiLabelHF = cms.untracked.InputTag("hcalDigis")
+process.hcalDetDiagLEDMonitor.digiLabelHF = cms.untracked.InputTag("hcalDigis")
+
+#-------------------------------------
 #	To have vme Digis as a separate collection
 #-------------------------------------
 process.vmeDigis = process.hcalDigis.clone()
@@ -200,14 +236,20 @@ process.utcaDigis.FEDs = cms.untracked.vint32(1100, 1102, 1104, 1106,
 	1108, 1110, 1112, 1114, 1116)
 
 #-------------------------------------
-#	Hcal DQM Tasks Sequence Definition
+#	Sequences Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
 		process.hcalLEDTask
-		*process.hcalLaserTask
-		*process.hcalPedestalTask
-		*process.hcaluTCATask
-		*process.hcalRawTask
+		+process.hcalLaserTask
+		+process.hcalPedestalTask
+
+		+process.hcalDetDiagPedestalMonitor
+		+process.hcalDetDiagLaserMonitor
+		+process.hcalDetDiagLEDMonitor
+)
+
+process.clientsSequence = cms.Sequence(
+	process.hcalClient
 )
 
 #-------------------------------------
@@ -259,9 +301,8 @@ process.tbunpack.fedRawDataCollectionTag = rawTag
 process.p = cms.Path(
 					process.tbunpack
 					*process.hcalDigis
-					*process.vmeDigis
-					*process.utcaDigis
 					*process.tasksSequence
+					*process.clientsSequence
                     *process.dqmEnv
                     *process.dqmSaver
 )
