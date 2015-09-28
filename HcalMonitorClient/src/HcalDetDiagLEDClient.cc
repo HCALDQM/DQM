@@ -39,19 +39,14 @@ HcalDetDiagLEDClient::HcalDetDiagLEDClient(std::string myname, const edm::Parame
   badChannelStatusMask_   = ps.getUntrackedParameter<int>("DetDiagLED_BadChannelStatusMask",
                             ps.getUntrackedParameter<int>("BadChannelStatusMask",(1<<HcalChannelStatus::HcalCellDead)));
   needLogicalMap_=true;
-
-  doProblemCellSetup_ = true;
-
-  ProblemCellsByDepth = 0;
 }
 
-void HcalDetDiagLEDClient::analyze(DQMStore::IBooker &ib, DQMStore::IGetter &ig){
+void HcalDetDiagLEDClient::analyze(){
   if (debug_>2) std::cout <<"\tHcalDetDiagLEDClient::analyze()"<<std::endl;
-  if ( doProblemCellSetup_ ) setupProblemCells(ib,ig);
-  calculateProblems(ib,ig);
+  calculateProblems();
 }
 
-void HcalDetDiagLEDClient::calculateProblems(DQMStore::IBooker &ib, DQMStore::IGetter &ig){}
+void HcalDetDiagLEDClient::calculateProblems(){}
 void HcalDetDiagLEDClient::updateChannelStatus(std::map<HcalDetId, unsigned int>& myqual){
   // This gets called by HcalMonitorClient
   // trigger primitives don't yet contribute to channel status (though they could...)
@@ -59,37 +54,19 @@ void HcalDetDiagLEDClient::updateChannelStatus(std::map<HcalDetId, unsigned int>
 
 }
 
-
-void HcalDetDiagLEDClient::endJob(){}
-
-void HcalDetDiagLEDClient::setupProblemCells(DQMStore::IBooker &ib, DQMStore::IGetter &ig )
-{
-
-  ib.setCurrentFolder(subdir_);
-  problemnames_.clear();
-
-  // Put the appropriate name of your problem summary here
-  ProblemCells=ib.book2D(" ProblemDetDiagLED",
-				 " Problem DetDiagLED Rate for all HCAL;ieta;iphi",
-				 85,-42.5,42.5,
-				 72,0.5,72.5);
-  problemnames_.push_back(ProblemCells->getName());
-  if (debug_>1)
-    std::cout << "Tried to create ProblemCells Monitor Element in directory "<<subdir_<<"  \t  Failed?  "<<(ProblemCells==0)<<std::endl;
-  ib.setCurrentFolder(subdir_+"problem_DetDiagLED");
-  ProblemCellsByDepth = new EtaPhiHists();
-  ProblemCellsByDepth->setup(ib," Problem DetDiagLED Rate");
-  for (unsigned int i=0; i<ProblemCellsByDepth->depth.size();++i)
-    problemnames_.push_back(ProblemCellsByDepth->depth[i]->getName());
-
- doProblemCellSetup_ = false;
-
+void HcalDetDiagLEDClient::beginJob(){
+  dqmStore_ = edm::Service<DQMStore>().operator->();
+  if (debug_>0){
+    std::cout <<"<HcalDetDiagLEDClient::beginJob()>  Displaying dqmStore directory structure:"<<std::endl;
+    dqmStore_->showDirStructure();
+  }
 }
+void HcalDetDiagLEDClient::endJob(){}
 
 void HcalDetDiagLEDClient::beginRun(void){
   nevts_=0;
 }
-//void HcalDetDiagLEDClient::endRun(void){analyze();}
+void HcalDetDiagLEDClient::endRun(void){analyze();}
 void HcalDetDiagLEDClient::setup(void){}
 void HcalDetDiagLEDClient::cleanup(void){}
 
@@ -104,9 +81,9 @@ bool HcalDetDiagLEDClient::hasWarnings_Temp(void){
 bool HcalDetDiagLEDClient::hasOther_Temp(void){return false;}
 bool HcalDetDiagLEDClient::test_enabled(void){return true;}
 
-bool HcalDetDiagLEDClient::validHtmlOutput(DQMStore::IBooker &ib, DQMStore::IGetter &ig){
+bool HcalDetDiagLEDClient::validHtmlOutput(){
   std::string s=subdir_+"HcalDetDiagLEDMonitor Event Number";
-  MonitorElement *me = ig.get(s.c_str());
+  MonitorElement *me = dqmStore_->get(s.c_str());
   int n=0;
   if ( me ) {
     s = me->valueString();
@@ -214,7 +191,7 @@ double HcalDetDiagLEDClient::get_energy(std::string subdet,int eta,int phi,int d
    if(type==2) return ChannelsLEDEnergyRef[depth-1]->GetBinContent(ietabin,phi);
    return -1.0;
 }
-void HcalDetDiagLEDClient::htmlOutput(DQMStore::IBooker &ib, DQMStore::IGetter &ig, std::string htmlDir){
+void HcalDetDiagLEDClient::htmlOutput(std::string htmlDir){
 MonitorElement* me;
 int  MissingCnt=0;
 int  UnstableCnt=0;
@@ -230,6 +207,7 @@ int  HO[7] ={0,0,0,0,0,0,0},newHO[7] ={0,0,0,0,0,0,0};
 std::string subdet[4]={"HB","HE","HO","HF"};
 
    if (debug_>0) std::cout << "<HcalDetDiagLEDClient::htmlOutput> Preparing  html output ..." << std::endl;
+   if(!dqmStore_) return;
    HcalElectronicsMap emap=logicalMap_->generateHcalElectronicsMap();
    std::vector<std::string> name = HcalEtaPhiHistNames();
 
@@ -239,72 +217,72 @@ std::string subdet[4]={"HB","HE","HO","HF"};
       ChannelStatusTimeRMS[i]=0;
       std::string s;
       s=subdir_+"channel status/"+name[i]+" Missing Channels";
-      me=ig.get(s.c_str());
+      me=dqmStore_->get(s.c_str());
       if (me!=0) ChannelStatusMissingChannels[i]=HcalUtilsClient::getHisto<TH2F*>(me,cloneME_,ChannelStatusMissingChannels[i],debug_); else return;  
       s=subdir_+"channel status/"+name[i]+" Unstable Channels";
-      me=ig.get(s.c_str());
+      me=dqmStore_->get(s.c_str());
       if (me!=0) ChannelStatusUnstableChannels[i]=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, ChannelStatusUnstableChannels[i], debug_); else return;  
       s=subdir_+"channel status/"+name[i]+" Unstable LED";
-      me=ig.get(s.c_str());
+      me=dqmStore_->get(s.c_str());
       if (me!=0) ChannelStatusUnstableLEDsignal[i]=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, ChannelStatusUnstableLEDsignal[i], debug_); else return;  
       s=subdir_+"channel status/"+name[i]+" LED Mean";
-      me=ig.get(s.c_str());
+      me=dqmStore_->get(s.c_str());
       if (me!=0) ChannelStatusLEDMean[i]=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, ChannelStatusLEDMean[i], debug_); else return;  
       s=subdir_+"channel status/"+name[i]+" LED RMS";
-      me=ig.get(s.c_str());
+      me=dqmStore_->get(s.c_str());
       if (me!=0) ChannelStatusLEDRMS[i]=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, ChannelStatusLEDRMS[i], debug_); else return;  
       s=subdir_+"channel status/"+name[i]+" Time Mean";
-      me=ig.get(s.c_str());
+      me=dqmStore_->get(s.c_str());
       if (me!=0) ChannelStatusTimeMean[i]=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, ChannelStatusTimeMean[i], debug_); else return;  
       s=subdir_+"channel status/"+name[i]+" Time RMS";
-      me=ig.get(s.c_str());
+      me=dqmStore_->get(s.c_str());
       if (me!=0) ChannelStatusTimeRMS[i]=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, ChannelStatusTimeRMS[i], debug_); else return;  
       s=subdir_+"Summary Plots/"+name[i]+" Channel LED Energy";
-      me=ig.get(s.c_str());
+      me=dqmStore_->get(s.c_str());
       if (me!=0) ChannelsLEDEnergy[i]=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, ChannelsLEDEnergy[i], debug_); else return;  
       s=subdir_+"Summary Plots/"+name[i]+" Channel LED Energy Reference";
-      me=ig.get(s.c_str());
+      me=dqmStore_->get(s.c_str());
       if (me!=0) ChannelsLEDEnergyRef[i]=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, ChannelsLEDEnergyRef[i], debug_); else return;
   }
 
   // check how many problems we have:
-  for(int sd=0;sd<4;sd++){
-     int feta=0,teta=0,fdepth=0,tdepth=0; 
-     if(sd==0){ feta=-16; teta=16 ;fdepth=1; tdepth=2; } 
-     if(sd==1){ feta=-29; teta=29 ;fdepth=1; tdepth=3; } 
-     if(sd==2){ feta=-15; teta=15 ;fdepth=4; tdepth=4; } 
-     if(sd==3){ feta=-42; teta=42 ;fdepth=1; tdepth=2; } 
-     for(int phi=1;phi<=72;phi++) for(int depth=fdepth;depth<=tdepth;depth++) for(int eta=feta;eta<=teta;eta++){
-        if(sd==3 && eta>-29 && eta<29) continue;
-        double problem[7]={0,0,0,0,0,0,0}; 
-        for(int i=0;i<6;i++){
-	   problem[i] =get_channel_status(subdet[sd],eta,phi,depth,i+1);
-           if(problem[i]!=0){
-              HcalSubdetector SD=HcalEmpty;
-              if(sd==0)SD=HcalBarrel;
-	      else if(sd==1) SD=HcalEndcap;
-	      else if(sd==2) SD=HcalOuter;
-	      else if(sd==3) SD=HcalForward;
-	      HcalDetId hcalid(SD, eta, phi, depth);
-	      if(sd==0){  if(eta>0){ 
+  for(int d=0;d<4;++d){
+      int etabins=ChannelStatusMissingChannels[d]->GetNbinsX();
+      int phibins=ChannelStatusMissingChannels[d]->GetNbinsY();
+      for(int phi=0;phi<phibins;++phi)for(int eta=0;eta<etabins;++eta){
+	  int ieta=CalcIeta(eta,d+1);
+	  if(ieta==-9999) continue;
+          HcalSubdetector subdet=HcalEmpty;
+          std::string sd;
+          if(isHB(eta,d+1)){subdet=HcalBarrel; sd="HB";}
+	     else if (isHE(eta,d+1)){ subdet=HcalEndcap;  sd="HE";}
+	     else if (isHF(eta,d+1)){ subdet=HcalForward; sd="HF";}
+	     else if (isHO(eta,d+1)){ subdet=HcalOuter;   sd="HO";}
+	  HcalDetId hcalid(subdet, ieta, phi+1, (int)(d+1));
+
+          float problem; 
+          for(int i=0;i<6;i++){
+	    problem =get_channel_status(sd,ieta,phi+1,d+1,i+1);
+            if(problem!=0){
+	      if(subdet==HcalBarrel){  if(ieta>0){ 
                   HBP[i]++; 
                   if(badstatusmap.find(hcalid)==badstatusmap.end())newHBP[i]++;
               }else{ 
                   HBM[i]++; 
                   if(badstatusmap.find(hcalid)==badstatusmap.end())newHBM[i]++;
               }} 
-	      if(sd==1){  if(eta>0){ 
+	      if(subdet==HcalEndcap){  if(ieta>0){ 
                   HEP[i]++; 
                   if(badstatusmap.find(hcalid)==badstatusmap.end())newHEP[i]++;
               }else{ 
                   HEM[i]++; 
                   if(badstatusmap.find(hcalid)==badstatusmap.end())newHEM[i]++;
               }}
-	      if(sd==2){
-                  HO[i]++; 
+	      if(subdet==HcalOuter){
+                  HO[i]++;
                   if(badstatusmap.find(hcalid)==badstatusmap.end())newHO[i]++;
               }
-	      if(sd==3){  if(eta>0){ 
+	      if(subdet==HcalForward){  if(ieta>0){ 
                   HFP[i]++;
                   if(badstatusmap.find(hcalid)==badstatusmap.end())newHFP[i]++;
               }else{
@@ -315,6 +293,7 @@ std::string subdet[4]={"HB","HE","HO","HF"};
         }
      }
   }
+
   // missing channels list
   std::ofstream Missing;
   Missing.open((htmlDir + "Missing.html").c_str());
@@ -348,6 +327,7 @@ std::string subdet[4]={"HB","HE","HO","HF"};
          if(sd==3 && eta>-29 && eta<29) continue;
          double missing =get_channel_status(subdet[sd],eta,phi,depth,1);
          if(missing>0){
+	     try{
 	       HcalDetId *detid=0;
                if(sd==0) detid=new HcalDetId(HcalBarrel,eta,phi,depth);
                if(sd==1) detid=new HcalDetId(HcalEndcap,eta,phi,depth);
@@ -359,6 +339,7 @@ std::string subdet[4]={"HB","HE","HO","HF"};
                if(badstatusmap.find(*detid)!=badstatusmap.end()){ s="Known problem"; }	
 	       printTableLine(Missing,cnt++,*detid,lmap_entry,emap_entry,s); MissingCnt++;
 	       delete detid;
+	     }catch(...){continue;}
          }
       }	
   }
@@ -390,7 +371,7 @@ std::string subdet[4]={"HB","HE","HO","HF"};
 	       HcalElectronicsId emap_entry=emap.lookup(*detid);
 	       printTableLine(BadTiming,cnt++,*detid,lmap_entry,emap_entry,comment); BadTimingCnt++;
 	       delete detid;
-	    }catch(cms::Exception &){ continue;}
+	    }catch(...){ continue;}
          }
       }	
   }
@@ -422,7 +403,7 @@ std::string subdet[4]={"HB","HE","HO","HF"};
 	       HcalElectronicsId emap_entry=emap.lookup(*detid);
 	       printTableLine(Unstable,cnt++,*detid,lmap_entry,emap_entry,comment); UnstableCnt++;
 	       delete detid;
-	    }catch(cms::Exception &){ continue;}
+	    }catch(...){ continue;}
          }
       }	
   }
@@ -454,9 +435,9 @@ std::string subdet[4]={"HB","HE","HO","HF"};
 	       HcalElectronicsId emap_entry=emap.lookup(*detid);
                std::string s=" ";
                if(badstatusmap.find(*detid)!=badstatusmap.end()){ s="Known problem"; }	
-	       printTableLine(BadLED,cnt++,*detid,lmap_entry,emap_entry,s); UnstableLEDCnt++;
+	       printTableLine(BadLED,cnt++,*detid,lmap_entry,emap_entry,comment); UnstableLEDCnt++;
 	       delete detid;
-	    }catch(cms::Exception &){ continue;}
+	    }catch(...){ continue;}
          }
       }	
   }
@@ -472,19 +453,19 @@ std::string subdet[4]={"HB","HE","HO","HF"};
   int ievt_ = -1,runNo=-1;
   std::string ref_run;
   std::string s=subdir_+"HcalDetDiagLEDMonitor Event Number";
-  me = ig.get(s.c_str());
+  me = dqmStore_->get(s.c_str());
   if ( me ) {
     s = me->valueString();
     sscanf((s.substr(2,s.length()-2)).c_str(), "%d", &ievt_);
   }
   s=subdir_+"HcalDetDiagLEDMonitor Run Number";
-  me = ig.get(s.c_str());
+  me = dqmStore_->get(s.c_str());
   if ( me ) {
     s = me->valueString();
     sscanf((s.substr(2,s.length()-2)).c_str(), "%d", &runNo);
   } 
   s=subdir_+"HcalDetDiagLEDMonitor Reference Run";
-  me = ig.get(s.c_str());
+  me = dqmStore_->get(s.c_str());
   if(me) {
     std::string s=me->valueString();
     char str[200]; 
@@ -495,54 +476,54 @@ std::string subdet[4]={"HB","HE","HO","HF"};
   TH2F *Time2Dhbhehf=0,*Time2Dho=0,*Energy2Dhbhehf=0,*Energy2Dho=0;
   TH2F *HBPphi=0,*HBMphi=0,*HEPphi=0,*HEMphi=0,*HFPphi=0,*HFMphi=0,*HO0phi=0,*HO1Pphi=0,*HO2Pphi=0,*HO1Mphi=0,*HO2Mphi=0;
 
-  s=subdir_+"Summary Plots/HBHEHO LED Energy Distribution"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HBHEHO LED Energy Distribution"; me=dqmStore_->get(s.c_str());
   if(me!=0) Energy=HcalUtilsClient::getHisto<TH1F*>(me, cloneME_, Energy, debug_); else return;
-  s=subdir_+"Summary Plots/HBHEHO LED Timing Distribution"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HBHEHO LED Timing Distribution"; me=dqmStore_->get(s.c_str());
   if(me!=0) Timing=HcalUtilsClient::getHisto<TH1F*>(me, cloneME_, Timing, debug_); else return;
-  s=subdir_+"Summary Plots/HBHEHO LED Energy RMS_div_Energy Distribution"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HBHEHO LED Energy RMS_div_Energy Distribution"; me=dqmStore_->get(s.c_str());
   if(me!=0) EnergyRMS=HcalUtilsClient::getHisto<TH1F*>(me, cloneME_, EnergyRMS, debug_); else return;
-  s=subdir_+"Summary Plots/HBHEHO LED Timing RMS Distribution"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HBHEHO LED Timing RMS Distribution"; me=dqmStore_->get(s.c_str());
   if(me!=0) TimingRMS=HcalUtilsClient::getHisto<TH1F*>(me, cloneME_, TimingRMS, debug_); else return;
-  s=subdir_+"Summary Plots/HF LED Energy Distribution"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HF LED Energy Distribution"; me=dqmStore_->get(s.c_str());
   if(me!=0) EnergyHF=HcalUtilsClient::getHisto<TH1F*>(me, cloneME_, EnergyHF, debug_); else return;
-  s=subdir_+"Summary Plots/HF LED Timing Distribution"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HF LED Timing Distribution"; me=dqmStore_->get(s.c_str());
   if(me!=0) TimingHF=HcalUtilsClient::getHisto<TH1F*>(me, cloneME_, TimingHF, debug_); else return;
-  s=subdir_+"Summary Plots/HF LED Energy RMS_div_Energy Distribution"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HF LED Energy RMS_div_Energy Distribution"; me=dqmStore_->get(s.c_str());
   if(me!=0) EnergyRMSHF=HcalUtilsClient::getHisto<TH1F*>(me, cloneME_, EnergyRMSHF, debug_); else return;
-  s=subdir_+"Summary Plots/HF LED Timing RMS Distribution"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HF LED Timing RMS Distribution"; me=dqmStore_->get(s.c_str());
   if(me!=0) TimingRMSHF=HcalUtilsClient::getHisto<TH1F*>(me, cloneME_, TimingRMSHF, debug_); else return;
 
-  s=subdir_+"Summary Plots/LED Timing HBHEHF"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/LED Timing HBHEHF"; me=dqmStore_->get(s.c_str());
   if(me!=0) Time2Dhbhehf=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, Time2Dhbhehf, debug_); else return;
-  s=subdir_+"Summary Plots/LED Timing HO"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/LED Timing HO"; me=dqmStore_->get(s.c_str());
   if(me!=0) Time2Dho=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, Time2Dho, debug_); else return;
-  s=subdir_+"Summary Plots/LED Energy HBHEHF"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/LED Energy HBHEHF"; me=dqmStore_->get(s.c_str());
   if(me!=0) Energy2Dhbhehf=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, Energy2Dhbhehf, debug_); else return;
-  s=subdir_+"Summary Plots/LED Energy HO"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/LED Energy HO"; me=dqmStore_->get(s.c_str());
   if(me!=0) Energy2Dho=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, Energy2Dho, debug_); else return;
 
-  s=subdir_+"Summary Plots/HBP Average over HPD LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HBP Average over HPD LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HBPphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HBPphi, debug_); else return;
-  s=subdir_+"Summary Plots/HBM Average over HPD LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HBM Average over HPD LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HBMphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HBMphi, debug_); else return;
-  s=subdir_+"Summary Plots/HEP Average over HPD LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HEP Average over HPD LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HEPphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HEPphi, debug_); else return;
-  s=subdir_+"Summary Plots/HEM Average over HPD LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HEM Average over HPD LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HEMphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HEMphi, debug_); else return;
-  s=subdir_+"Summary Plots/HFP Average over RM LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HFP Average over RM LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HFPphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HFPphi, debug_); else return;
-  s=subdir_+"Summary Plots/HFM Average over RM LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HFM Average over RM LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HFMphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HFMphi, debug_); else return;
 
-  s=subdir_+"Summary Plots/HO0 Average over HPD LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HO0 Average over HPD LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HO0phi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HO0phi, debug_); else return;
-  s=subdir_+"Summary Plots/HO1P Average over HPD LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HO1P Average over HPD LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HO1Pphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HO1Pphi, debug_); else return;
-  s=subdir_+"Summary Plots/HO2P Average over HPD LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HO2P Average over HPD LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HO2Pphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HO2Pphi, debug_); else return;
-  s=subdir_+"Summary Plots/HO1M Average over HPD LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HO1M Average over HPD LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HO1Mphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HO1Mphi, debug_); else return;
-  s=subdir_+"Summary Plots/HO2M Average over HPD LED Ref"; me=ig.get(s.c_str());
+  s=subdir_+"Summary Plots/HO2M Average over HPD LED Ref"; me=dqmStore_->get(s.c_str());
   if(me!=0) HO2Mphi=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HO2Mphi, debug_); else return;
 
   gROOT->SetBatch(true);
@@ -870,10 +851,7 @@ std::string subdet[4]={"HB","HE","HO","HF"};
   htmlFile << "</html> " << std::endl;
   htmlFile.close();
   can->Close();
-  delete can;
 }
 
 HcalDetDiagLEDClient::~HcalDetDiagLEDClient()
-{
-  if ( ProblemCellsByDepth ) delete ProblemCellsByDepth;
-}
+{}

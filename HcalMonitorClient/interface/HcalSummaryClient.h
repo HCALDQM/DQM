@@ -18,16 +18,17 @@ class HcalSummaryClient : public HcalBaseDQClient {
   HcalSummaryClient(std::string myname);//{ name_=myname;};
   HcalSummaryClient(std::string myname, const edm::ParameterSet& ps);
 
-  void analyze(DQMStore::IBooker &, DQMStore::IGetter &, int LS=-1);
+  void analyze(int LS=-1);
   void updateChannelStatus(std::map<HcalDetId, unsigned int>& myqual);
+  void beginJob(void);
   void endJob(void);
   void beginRun(void);
-  //void endRun(void); 
-  void setup(DQMStore::IBooker &, DQMStore::IGetter &);  
+  void endRun(void); 
+  void setup(void);  
   void cleanup(void);
   
-  void fillReportSummary(DQMStore::IBooker &, DQMStore::IGetter &, int LS);
-  void fillReportSummaryLSbyLS(DQMStore::IBooker &, DQMStore::IGetter &, int LS);
+  void fillReportSummary(int LS);
+  void fillReportSummaryLSbyLS(int LS);
 
   bool hasErrors_Temp(void);  
   bool hasWarnings_Temp(void);
@@ -50,13 +51,6 @@ class HcalSummaryClient : public HcalBaseDQClient {
   MonitorElement* reportMap_;
   MonitorElement* certificationMap_;
 
-  // minEvents and TaskLists_ were added as private members during the
-  // MT migration.
-  // Originally this functionality was performed by the HcalLSbyLSMonitor
-  // under DQM/HcalMonitorTasks
-  int minEvents_;
-  std::vector<std::string> TaskList_;
-
   double status_global_, status_HB_, status_HE_, status_HO_, status_HF_;
   double status_HO0_, status_HO12_, status_HFlumi_;
   int NLumiBlocks_;
@@ -65,22 +59,6 @@ class HcalSummaryClient : public HcalBaseDQClient {
   std::vector<HcalBaseDQClient*> clients_;
   std::map<std::string, int> subdetCells_;
   int HBpresent_, HEpresent_, HOpresent_, HFpresent_;
-
-  bool doSetup_; // defaults to true in constructor
-
-	// 
-	//	Updated by Viktor Khristenko
-	//	23/09/2015
-	//
-	void check_HBHETiming_Digi(DQMStore::IBooker &ib, 
-		DQMStore::IGetter &ig, int LS);
-	void check_HBHETiming_RecHit(DQMStore::IBooker &ib, 
-		DQMStore::IGetter &ig, int LS);
-	double check_HFChannels(DQMStore::IBooker &ib,
-		DQMStore::IGetter &ig, int LS);
-	bool triggered_Shift_Digi;
-	bool triggered_Shift_RecHit;
-	bool triggered_DropChannels;
 };
 
 #endif

@@ -33,13 +33,14 @@ class HcalDeadCellMonitor: public HcalBaseDQMonitor {
 
   ~HcalDeadCellMonitor();
 
-  void setup(DQMStore::IBooker &);
-  void bookHistograms(DQMStore::IBooker &ib, const edm::Run& run, const edm::EventSetup& c);
+  void setup();
+  void beginRun(const edm::Run& run, const edm::EventSetup& c);
   void analyze(edm::Event const&e, edm::EventSetup const&s);
   void endLuminosityBlock(const edm::LuminosityBlock& lumiSeg,
 			  const edm::EventSetup& c);
   void endRun(const edm::Run& run, const edm::EventSetup& c);
   void endJob();
+  void cleanup(); // overrides base class function
   void reset();
 
   void processEvent(const HBHERecHitCollection& hbHits,

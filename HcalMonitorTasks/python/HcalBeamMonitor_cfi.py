@@ -26,5 +26,4 @@ hcalBeamMonitor=cms.EDAnalyzer("HcalBeamMonitor",
                                hotrate                = cms.untracked.double(0.25),
                                minBadCells            = cms.untracked.int32(10),
                                Overwrite              = cms.untracked.bool(False),
-                               FEDRawDataCollection=cms.untracked.InputTag("rawDataCollector")
                                )

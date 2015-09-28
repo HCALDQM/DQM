@@ -32,11 +32,12 @@ class HcalHotCellMonitor: public HcalBaseDQMonitor {
 
   ~HcalHotCellMonitor();
 
-  void setup(DQMStore::IBooker &);
-  void bookHistograms(DQMStore::IBooker &ib, const edm::Run& run, const edm::EventSetup& c);
+  void setup();
+  void beginRun(const edm::Run& run, const edm::EventSetup& c);
   void endRun(const edm::Run& run, const edm::EventSetup& c);
   
   void done();
+  void cleanup(void);
   void reset();
   void endJob();
 

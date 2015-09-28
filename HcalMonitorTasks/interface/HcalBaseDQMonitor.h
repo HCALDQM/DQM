@@ -6,24 +6,22 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "DQMServices/Core/interface/DQMEDAnalyzer.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/ESHandle.h" // needed to grab objects
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "DQM/HcalMonitorTasks/interface/HcalEtaPhiHists.h"
 
-#include "DataFormats/FEDRawData/interface/FEDRawDataCollection.h"
-
 class HcalLogicalMap;
-class HcalElectronicsMap;
 
-class HcalBaseDQMonitor : public DQMEDAnalyzer
+class HcalBaseDQMonitor : public edm::EDAnalyzer
 {
 
 public:
@@ -36,8 +34,6 @@ public:
   // Destructor
   virtual ~HcalBaseDQMonitor();
 
-  virtual void bookHistograms(DQMStore::IBooker &, edm::Run const &, edm::EventSetup const &);
-
 protected:
 
   // Analyze
@@ -45,8 +41,11 @@ protected:
 
   void getLogicalMap(const edm::EventSetup& c);
  
+ // BeginJob
+  virtual void beginJob();
+
   // BeginRun
-  virtual void dqmBeginRun(const edm::Run& run, const edm::EventSetup& c);
+  virtual void beginRun(const edm::Run& run, const edm::EventSetup& c);
 
   // Begin LumiBlock
   virtual void beginLuminosityBlock(const edm::LuminosityBlock& lumiSeg,
@@ -55,6 +54,9 @@ protected:
   // End LumiBlock
   virtual void endLuminosityBlock(const edm::LuminosityBlock& lumiSeg,
                           const edm::EventSetup& c);
+
+ // EndJob
+  virtual void endJob(void);
 
   // EndRun
   virtual void endRun(const edm::Run& run, const edm::EventSetup& c);
@@ -66,14 +68,14 @@ protected:
   virtual void cleanup(void);
 
   // setup
-  virtual void setup(DQMStore::IBooker &);
+  virtual void setup(void);
   
   // LumiOutOfOrder
   bool LumiInOrder(int lumisec);
 
-  void SetupEtaPhiHists(DQMStore::IBooker &ib, EtaPhiHists & hh, std::string Name, std::string Units)
+  void SetupEtaPhiHists(EtaPhiHists & hh, std::string Name, std::string Units)
   {
-    hh.setup(ib, Name, Units);
+    hh.setup(dbe_, Name, Units);
     return;
   }
 
@@ -90,6 +92,7 @@ protected:
   std::string subdir_;
 
   int currentLS;
+  DQMStore* dbe_;
   int ievt_;
   int levt_; // number of events in current lumi block
   int tevt_; // number of events overall
@@ -121,20 +124,8 @@ protected:
   bool needLogicalMap_;
 
   int badChannelStatusMask_;
-
-
   private:
   bool setupDone_;
-
-  // methods to check for sub-detector status
-  void CheckSubdetectorStatus(const edm::Handle<FEDRawDataCollection>&, HcalSubdetector, const HcalElectronicsMap &);
-  void CheckCalibType(const edm::Handle<FEDRawDataCollection>&); 
-
-  edm::InputTag FEDRawDataCollection_;
-  edm::EDGetTokenT<FEDRawDataCollection> tok_braw_;
-
-  const HcalElectronicsMap * eMap_;
-  
 };// class HcalBaseDQMonitor : public edm::EDAnalyzer
 
 

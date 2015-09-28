@@ -29,6 +29,5 @@ hcalNoiseMonitor=cms.EDAnalyzer("HcalNoiseMonitor",
                                 MaxHPDHitCount         = cms.untracked.int32(17),
                                 MaxHPDNoOtherHitCount  = cms.untracked.int32(10),
                                 MaxADCZeros            = cms.untracked.int32(10),
-                                TotalZeroMinEnergy     = cms.untracked.double(10),
-                                FEDRawDataCollection=cms.untracked.InputTag("rawDataCollector")
+                                TotalZeroMinEnergy     = cms.untracked.double(10)
                                 )

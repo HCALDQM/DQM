@@ -15,7 +15,7 @@ hcalTrigPrimMonitor=cms.EDAnalyzer("HcalTrigPrimMonitor",
 
    # TrigPrimMonitor
    dataLabel              = cms.InputTag('hcalDigis'),
-   emulLabel              = cms.InputTag('emulTPDigis'),
+   emulLabel              = cms.InputTag('valHcalTriggerPrimitiveDigis'),
    ZSBadTPThreshold       = cms.vint32( 0,
                                         2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                                         2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -31,6 +31,5 @@ hcalTrigPrimMonitor=cms.EDAnalyzer("HcalTrigPrimMonitor",
                                         10, 10, 10, 10, 40, 50, 10, 30, 30, 30,
                                         20, 15, 15, 15, 15, 15, 10, 10,
                                         5, 5, 5, 5
-                                      ),
-   FEDRawDataCollection=cms.untracked.InputTag("rawDataCollector")
+                                      )
 )

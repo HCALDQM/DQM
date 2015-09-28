@@ -53,28 +53,35 @@ HcalRawDataClient::HcalRawDataClient(std::string myname, const edm::ParameterSet
 
   ProblemCells=0;
   ProblemCellsByDepth=0;
+}
 
-  doProblemCellSetup_ = true;
+void HcalRawDataClient::endLuminosityBlock() {
+//  if (LBprocessed_==true) return;  // LB already processed
+//  UpdateMEs();
+//  LBprocessed_=true; 
+  if (debug_>2) std::cout <<"\tHcalRawDataClient::endLuminosityBlock()"<<std::endl;
+  calculateProblems();
+  return;
 }
 
 
-void HcalRawDataClient::analyze(DQMStore::IBooker &ib, DQMStore::IGetter &ig)
+void HcalRawDataClient::analyze()
 {
   if (debug_>2) std::cout <<"\tHcalRawDataClient::analyze()"<<std::endl;
-  if ( doProblemCellSetup_ ) setupProblemCells(ib,ig);
-  calculateProblems(ib,ig);
+  calculateProblems();
 }
 
-void HcalRawDataClient::calculateProblems(DQMStore::IBooker &ib, DQMStore::IGetter &ig)
+void HcalRawDataClient::calculateProblems()
 {
  if (debug_>2) std::cout <<"\t\tHcalRawDataClient::calculateProblems()"<<std::endl;
+  if(!dqmStore_) return;
   double totalevents=0;
   int etabins=0, phibins=0, zside=0;
   double problemvalue=0;
   
   //Get number of events to normalize by
   MonitorElement* me;
-  me = ig.get(subdir_+"Events_Processed_Task_Histogram");
+  me = dqmStore_->get(subdir_+"Events_Processed_Task_Histogram");
   if (me) totalevents=me->getBinContent(1);
 
   // Clear away old problems
@@ -104,7 +111,7 @@ void HcalRawDataClient::calculateProblems(DQMStore::IBooker &ib, DQMStore::IGett
 
   // Try to read excludeHOring2 status from file
   
-  MonitorElement* temp_exclude = ig.get(subdir_+"ExcludeHOring2");
+  MonitorElement* temp_exclude = dqmStore_->get(subdir_+"ExcludeHOring2");
 
   // If value can't be read from file, keep the excludeHOring2_backup status
   if (temp_exclude != 0)
@@ -119,7 +126,7 @@ void HcalRawDataClient::calculateProblems(DQMStore::IBooker &ib, DQMStore::IGett
 
   //Get the plots showing raw data errors,
   //fill problemcount[][][] 
-  fillProblemCountArray(ib,ig);
+  fillProblemCountArray();
 
   std::vector<std::string> name = HcalEtaPhiHistNames();
 
@@ -196,6 +203,15 @@ void HcalRawDataClient::calculateProblems(DQMStore::IBooker &ib, DQMStore::IGett
   return;
 }
 
+void HcalRawDataClient::beginJob()
+{
+  dqmStore_ = edm::Service<DQMStore>().operator->();
+  if (debug_>0) 
+    {
+      std::cout <<"<HcalRawDataClient::beginJob()>  Displaying dqmStore directory structure:"<<std::endl;
+      dqmStore_->showDirStructure();
+    }
+}
 void HcalRawDataClient::endJob(){}
 
 void HcalRawDataClient::stashHDI(int thehash, HcalDetId thehcaldetid) {
@@ -251,38 +267,36 @@ void HcalRawDataClient::beginRun(void)
   if (debug_>2) std::cout <<"\t<HcalRawDataClient::beginRun> Completed loop."<<std::endl;
 
   enoughevents_=false;
-  nevts_=0;
-}
+  if (!dqmStore_) 
+    {
+      if (debug_>0) std::cout <<"<HcalRawDataClient::beginRun> dqmStore does not exist!"<<std::endl;
+      return;
+    }
 
-void HcalRawDataClient::setupProblemCells(DQMStore::IBooker &ib, DQMStore::IGetter &ig )
-{
-
-
-  ib.setCurrentFolder(subdir_);
+  dqmStore_->setCurrentFolder(subdir_);
   problemnames_.clear();
   // Put the appropriate name of your problem summary here
-  ProblemCells=ib.book2D(" ProblemRawData",
+  ProblemCells=dqmStore_->book2D(" ProblemRawData",
 				 " Problem Raw Data Rate for all HCAL;ieta;iphi",
 				 85,-42.5,42.5,
 				 72,0.5,72.5);
   problemnames_.push_back(ProblemCells->getName());
   if (debug_>1)
     std::cout << "Tried to create ProblemCells Monitor Element in directory "<<subdir_<<"  \t  Failed?  "<<(ProblemCells==0)<<std::endl;
-  ib.setCurrentFolder(subdir_+"problem_rawdata");
+  dqmStore_->setCurrentFolder(subdir_+"problem_rawdata");
   ProblemCellsByDepth = new EtaPhiHists();
 
   ProblemCells->getTH2F()->SetMinimum(0);
   ProblemCells->getTH2F()->SetMaximum(1.05);
 
-  ProblemCellsByDepth->setup(ib," Problem Raw Data Rate");
+  ProblemCellsByDepth->setup(dqmStore_," Problem Raw Data Rate");
   for (unsigned int i=0; i<ProblemCellsByDepth->depth.size();++i)
     problemnames_.push_back(ProblemCellsByDepth->depth[i]->getName());
 
-  doProblemCellSetup_ = false;
-
+  nevts_=0;
 }
 
-//void HcalRawDataClient::endRun(void){analyze();}
+void HcalRawDataClient::endRun(void){analyze();}
 
 void HcalRawDataClient::setup(void){}
 void HcalRawDataClient::cleanup(void){}
@@ -332,47 +346,47 @@ void HcalRawDataClient::updateChannelStatus(std::map<HcalDetId, unsigned int>& m
 } //void HcalRawDataClient::updateChannelStatus
 
 
-void HcalRawDataClient::getHardwareSpaceHistos(DQMStore::IBooker &ib, DQMStore::IGetter &ig){
+void HcalRawDataClient::getHardwareSpaceHistos(void){
   MonitorElement* me;
   std::string s;
   if (debug_>1) std::cout<<"\t<HcalRawDataClient>: getHardwareSpaceHistos()"<<std::endl;
   s=subdir_+"Corruption/01 Common Data Format violations";
-  me=ig.get(s.c_str());  
+  me=dqmStore_->get(s.c_str());  
   meCDFErrorFound_=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, meCDFErrorFound_, debug_);
   if (!meCDFErrorFound_ & (debug_>0)) std::cout <<"<HcalRawDataClient::analyze> "<<s<<" histogram does not exist!"<<std::endl;
 
   s=subdir_+"Corruption/02 DCC Event Format violation";
-  me=ig.get(s.c_str());  
+  me=dqmStore_->get(s.c_str());  
   meDCCEventFormatError_=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, meDCCEventFormatError_, debug_);
   if (!meDCCEventFormatError_ & (debug_>0)) std::cout <<"<HcalRawDataClient::analyze> "<<s<<" histogram does not exist!"<<std::endl;
 
   s=subdir_+"Corruption/03 OrN Inconsistent - HTR vs DCC";
-  me=ig.get(s.c_str());  
+  me=dqmStore_->get(s.c_str());  
   meOrNSynch_=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, meOrNSynch_, debug_);
   if (!meOrNSynch_ & (debug_>0)) std::cout <<"<HcalRawDataClient::analyze> "<<s<<" histogram does not exist!"<<std::endl;
 
   s=subdir_+"Corruption/05 BCN Inconsistent - HTR vs DCC";
-  me=ig.get(s.c_str());  
+  me=dqmStore_->get(s.c_str());  
   meBCNSynch_=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, meBCNSynch_, debug_);
   if (!meBCNSynch_ & (debug_>0)) std::cout <<"<HcalRawDataClient::analyze> "<<s<<" histogram does not exist!"<<std::endl;
 
   s=subdir_+"Corruption/06 EvN Inconsistent - HTR vs DCC";
-  me=ig.get(s.c_str());  
+  me=dqmStore_->get(s.c_str());  
   meEvtNumberSynch_=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, meEvtNumberSynch_, debug_);
   if (!meEvtNumberSynch_ & (debug_>0)) std::cout <<"<HcalRawDataClient::analyze> "<<s<<" histogram does not exist!"<<std::endl;
 
   s=subdir_+"Corruption/07 LRB Data Corruption Indicators";
-  me=ig.get(s.c_str());  
+  me=dqmStore_->get(s.c_str());  
   LRBDataCorruptionIndicators_=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, LRBDataCorruptionIndicators_, debug_);
   if (!LRBDataCorruptionIndicators_ & (debug_>0)) std::cout <<"<HcalRawDataClient::analyze> "<<s<<" histogram does not exist!"<<std::endl;
 
   s=subdir_+"Corruption/08 Half-HTR Data Corruption Indicators";
-  me=ig.get(s.c_str());  
+  me=dqmStore_->get(s.c_str());  
   HalfHTRDataCorruptionIndicators_=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, HalfHTRDataCorruptionIndicators_, debug_);
   if (!HalfHTRDataCorruptionIndicators_ & (debug_>0)) std::cout <<"<HcalRawDataClient::analyze> "<<s<<" histogram does not exist!"<<std::endl;
 
   s=subdir_+"Corruption/09 Channel Integrity Summarized by Spigot";
-  me=ig.get(s.c_str());  
+  me=dqmStore_->get(s.c_str());  
   ChannSumm_DataIntegrityCheck_=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, ChannSumm_DataIntegrityCheck_, debug_);
   if (!ChannSumm_DataIntegrityCheck_ & (debug_>0)) std::cout <<"<HcalRawDataClient::analyze> "<<s<<" histogram does not exist!"<<std::endl;
   if (ChannSumm_DataIntegrityCheck_)
@@ -382,16 +396,16 @@ void HcalRawDataClient::getHardwareSpaceHistos(DQMStore::IBooker &ib, DQMStore::
   for (int i=0; i<NUMDCCS; i++) {
     sprintf(chararray,"Corruption/Channel Data Integrity/FED %03d Channel Integrity", i+700);
     s=subdir_+std::string(chararray);
-    me=ig.get(s.c_str());  
+    me=dqmStore_->get(s.c_str());  
     Chann_DataIntegrityCheck_[i]=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_, Chann_DataIntegrityCheck_[i], debug_);
     if (!Chann_DataIntegrityCheck_[i] & (debug_>0)) std::cout <<"<HcalRawDataClient::analyze> "<<s<<" histogram does not exist!"<<std::endl;
     if (Chann_DataIntegrityCheck_[i])
       Chann_DataIntegrityCheck_[i]->SetMinimum(0);
   }
 }
-void HcalRawDataClient::fillProblemCountArray(DQMStore::IBooker &ib, DQMStore::IGetter &ig){
+void HcalRawDataClient::fillProblemCountArray(void){
   if (debug_>1) std::cout <<"\t<HcalRawDataClient>::fillProblemCountArray(): getHardwareSpaceHistos()"<<std::endl;
-  getHardwareSpaceHistos(ib,ig);
+  getHardwareSpaceHistos();
   float n=0.0;
   int dcc_=-999;
 
@@ -704,6 +718,4 @@ void HcalRawDataClient::normalizeHardwareSpaceHistos(void){
 }
 
 HcalRawDataClient::~HcalRawDataClient()
-{
-  if ( ProblemCellsByDepth ) delete ProblemCellsByDepth;
-}
+{}

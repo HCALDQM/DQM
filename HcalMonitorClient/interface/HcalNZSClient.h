@@ -14,12 +14,13 @@ class HcalNZSClient : public HcalBaseDQClient {
   HcalNZSClient(std::string myname);//{ name_=myname;};
   HcalNZSClient(std::string myname, const edm::ParameterSet& ps);
 
-  void analyze(DQMStore::IBooker &, DQMStore::IGetter &);
-  void calculateProblems(DQMStore::IBooker &, DQMStore::IGetter &); // calculates problem histogram contents
+  void analyze(void);
+  void calculateProblems(void); // calculates problem histogram contents
   void updateChannelStatus(std::map<HcalDetId, unsigned int>& myqual);
+  void beginJob(void);
   void endJob(void);
   void beginRun(void);
-  //void endRun(void); 
+  void endRun(void); 
   void setup(void);  
   void cleanup(void);
 
@@ -33,14 +34,6 @@ class HcalNZSClient : public HcalBaseDQClient {
 
  private:
   int nevts_;
-
-
-  // - setup problem cell flags
-  bool doProblemCellSetup_;  // defaults to true in the constructor
-  // setup the problem cell monitor elements
-  // This method sets the doProblemCellSetup_ flag to false
-  void setupProblemCells(DQMStore::IBooker &, DQMStore::IGetter &);
-
 };
 
 #endif

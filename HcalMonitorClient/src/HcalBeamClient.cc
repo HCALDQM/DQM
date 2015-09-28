@@ -51,23 +51,19 @@ HcalBeamClient::HcalBeamClient(std::string myname, const edm::ParameterSet& ps)
 
   ProblemCells=0;
   ProblemCellsByDepth=0;
-
-  setupProblemCells_=true;
 }
 
-void HcalBeamClient::analyze(DQMStore::IBooker &ib, DQMStore::IGetter &ig)
+void HcalBeamClient::analyze()
 {
   if (debug_>2) std::cout <<"\tHcalBeamClient::analyze()"<<std::endl;
   enoughevents_=false;
-
-  if ( setupProblemCells_ ) doProblemCellSetup(ib,ig);
-
-  calculateProblems(ib,ig);
+  calculateProblems();
 }
 
-void HcalBeamClient::calculateProblems(DQMStore::IBooker &ib, DQMStore::IGetter &ig)
+void HcalBeamClient::calculateProblems()
 {
   if (debug_>2) std::cout <<"\t\tHcalBeamClient::calculateProblems()"<<std::endl;
+  if(!dqmStore_) return;
   double totalLumiBlocks=0;
   // reminder:: lumi histograms work a bit differently, counting total number of lumi blocks, not total number of events
   int etabins=0, phibins=0, zside=0;
@@ -97,11 +93,11 @@ void HcalBeamClient::calculateProblems(DQMStore::IBooker &ib, DQMStore::IGetter 
   TH2F* dead = 0;
   TH2F* hot  = 0;
   MonitorElement* me;
-  me=ig.get(subdir_+"Lumi/HFlumi_total_deadcells");
+  me=dqmStore_->get(subdir_+"Lumi/HFlumi_total_deadcells");
   if (me!=0)
     dead=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_,dead,debug_);
   else if (debug_>0) std::cout <<" <HcalBeamClient::calculateProblems> Unable to get dead cell plot 'HFlumi_total_deadcells"<<std::endl;
-  me=ig.get(subdir_+"Lumi/HFlumi_total_hotcells");
+  me=dqmStore_->get(subdir_+"Lumi/HFlumi_total_hotcells");
   if (me!=0)
     hot=HcalUtilsClient::getHisto<TH2F*>(me, cloneME_,dead,debug_);
   else if (debug_>0) std::cout <<" <HcalBeamClient::calculateProblems> Unable to get hot cell plot 'HFlumi_total_hotcells"<<std::endl;
@@ -184,42 +180,47 @@ void HcalBeamClient::calculateProblems(DQMStore::IBooker &ib, DQMStore::IGetter 
   return;
 }
 
+void HcalBeamClient::beginJob()
+{
+  dqmStore_ = edm::Service<DQMStore>().operator->();
+  if (debug_>0) 
+    {
+      std::cout <<"<HcalBeamClient::beginJob()>  Displaying dqmStore directory structure:"<<std::endl;
+      dqmStore_->showDirStructure();
+    }
+}
 void HcalBeamClient::endJob(){}
 
-void HcalBeamClient::doProblemCellSetup(DQMStore::IBooker &ib, DQMStore::IGetter &ig)
+void HcalBeamClient::beginRun(void)
 {
-
-  ib.setCurrentFolder(subdir_);
+  enoughevents_=false;
+  if (!dqmStore_) 
+    {
+      if (debug_>0) std::cout <<"<HcalBeamClient::beginRun> dqmStore does not exist!"<<std::endl;
+      return;
+    }
+  dqmStore_->setCurrentFolder(subdir_);
   problemnames_.clear();
 
   // Put the appropriate name of your problem summary here
   if (ProblemCells==0)
-    ProblemCells=ib.book2D(" Problem BeamMonitor",
+    ProblemCells=dqmStore_->book2D(" Problem BeamMonitor",
 				   " Problem Beam Monitor Rate for all HCAL;ieta;iphi",
 				   85,-42.5,42.5,
 				   72,0.5,72.5);
   problemnames_.push_back(ProblemCells->getName());
   if (debug_>1)
     std::cout << "Tried to create ProblemCells Monitor Element in directory "<<subdir_<<"  \t  Failed?  "<<(ProblemCells==0)<<std::endl;
-  ib.setCurrentFolder(subdir_+"problem_beammonitor");
+  dqmStore_->setCurrentFolder(subdir_+"problem_beammonitor");
   nevts_=0;
   if (ProblemCellsByDepth!=0) return; // histograms already set up
   ProblemCellsByDepth = new EtaPhiHists();
-  ProblemCellsByDepth->setup(ib," Problem BeamMonitor Rate");
+  ProblemCellsByDepth->setup(dqmStore_," Problem BeamMonitor Rate");
   for (unsigned int i=0; i<ProblemCellsByDepth->depth.size();++i)
     problemnames_.push_back(ProblemCellsByDepth->depth[i]->getName());
-
-  setupProblemCells_ = false;
-
 }
 
-//
-void HcalBeamClient::beginRun(void)
-{
-  enoughevents_=false;
-}
-
-//void HcalBeamClient::endRun(void){analyze();}
+void HcalBeamClient::endRun(void){analyze();}
 
 void HcalBeamClient::setup(void){}
 void HcalBeamClient::cleanup(void){}
@@ -271,6 +272,4 @@ void HcalBeamClient::updateChannelStatus(std::map<HcalDetId, unsigned int>& myqu
 } //void HcalBeamClient::updateChannelStatus
 
 HcalBeamClient::~HcalBeamClient()
-{
-  if ( ProblemCellsByDepth ) delete ProblemCellsByDepth;
-}
+{}
