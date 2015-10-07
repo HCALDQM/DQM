@@ -6,7 +6,7 @@
  *	Author:		Viktor Khristenko
  *
  *	Description:
- *		
+ *		Base Class for all Container Types		
  */
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
@@ -21,6 +21,12 @@ namespace hcaldqm
 		public:
 			HcalMEContainer() {}
 			virtual ~HcalMEContainer() {}
+
+			virtual void fill(double x);
+			virtual void fill(HcalDetId const&);
+			virtual void fill(HcalDetId const&, double);
+			virtual void fill(HcalDetId const&, double, double);
+			virtual void fill(HcalDetId const&, double, double, double);
 
 		protected:
 			std::vector<MonitorElement*>			_mes;

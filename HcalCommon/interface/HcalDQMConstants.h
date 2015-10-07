@@ -124,6 +124,7 @@ namespace hcaldqm
 			STD_HO_RECHIT_CUT_eg0;
 
 		//	TObject Bits
+		int const FREE_BIT_START					= 19;
 		int const STD_BIT_KLOGX						= 19;
 		int const STD_BIT_KLOGY						= 20;
 		int const STD_BIT_KLOGZ						= 21;
