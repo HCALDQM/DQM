@@ -114,6 +114,7 @@ void HcalRecHitTask::specialize(Hit const& hit, std::string const& nameRes,
 		else
 			name_tmp = "P";
 		_mes["HF" + name_tmp + "_OccupancyVSiphi"].Fill(iphi);
+		_mes["HF" + name_tmp + "_OccupancyiphiVSLS"].Fill(_mi.currentLS, iphi);
 	}
 
 	if (subdet==hcaldqm::constants::STD_SUBDET_HB || 

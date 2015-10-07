@@ -1154,7 +1154,7 @@ hcalDigiTask = cms.EDAnalyzer(
 			)
 		),
 		HFM_OccupancyiphiVSLS = cms.untracked.PSet(
-				path	= cms.untracked.string("%s" % moduleName),
+				path	= cms.untracked.string("%s/HF" % moduleName),
 				kind	= cms.untracked.string("TH2D"),
 				desc	= cms.untracked.string("HFM OccupancyMap iphi vs LS. " + 
 					ZSCutStr),
@@ -1174,7 +1174,7 @@ hcalDigiTask = cms.EDAnalyzer(
 				)
 		),
 		HFP_OccupancyiphiVSLS = cms.untracked.PSet(
-				path	= cms.untracked.string("%s" % moduleName),
+				path	= cms.untracked.string("%s/HF" % moduleName),
 				kind	= cms.untracked.string("TH2D"),
 				desc	= cms.untracked.string("HFP OccupancyMap iphi vs LS. " + 
 					ZSCutStr),

@@ -519,6 +519,7 @@ void HcalSummaryClient::analyze(DQMStore::IBooker &ib, DQMStore::IGetter &ig, in
 	double tmp_status_HF = 0;
 	check_HBHETiming_Digi(ib, ig, LS);
 	check_HBHETiming_RecHit(ib, ig, LS);
+	check_BaduHTROccupancy(ib, ig, LS);
 	tmp_status_HF = check_HFChannels(ib, ig, LS);
 	if (triggered_Shift_Digi || triggered_Shift_RecHit)
 	{
@@ -1165,8 +1166,43 @@ double HcalSummaryClient::check_HFChannels(DQMStore::IBooker &ib,
 	return -1;
 }
 
+//
+//	Check if there is a difference in the ratios of occupancies among uHTRs
+//
+void HcalSummaryClient::check_BaduHTROccupancy(DQMStore::IBooker &ib,
+	DQMStore::IGetter &ig, int LS)
+{
+	//	Do some defs
+	std::string dir_prefix = "Hcal/HcalRecHitTask/HF/";
+	std::string mename_hfp = "HFP_OccupancyVSiphi";
+	std::string mename_hfm = "HFM_OccupancyVSiphi";
+	std::string mename_ratios = "HF_iphiOccupancyRatios";
 
+	//	Get the MEs
+	TH1D *h_hfp = ig.get(dir_prefix+mename_hfp)->getTH1D();
+	TH1D *h_hfm = ig.get(dir_prefix+mename_hfm)->getTH1D;
+	TH1D *h_ratios = ig.get(dir_prefix+mename_ratios)->getTH1D();
 
+	//	Do HFM checks first
+	for (int i=0; i<72; i+=4)
+	{
+		int i1 = (71+i)%72;
+		int i2 = (71+i+2)%72;
+		int j1 = (71+i+4)%72;
+		int j2 = (71+i+6)%72;
+
+		double sum1_p = h_hfp[i1]+h_hfp[i2];
+		double sum2_p = h_hfp[j1]+h_hfp[j2];
+		double ratio_p = sum1_p/sum2_p;
+
+		double sum1_m = h_hfm[i1]+h_hfm[i2];
+		double sum2_m = h_hfm[j1]+h_hfm[j2];
+		double ratio_m = sum1_m/sum2_m;
+
+		h_ratios->Fill(ratio_p);
+		h_ratios->Fill(ratio_m);
+	}
+}
 
 
 
