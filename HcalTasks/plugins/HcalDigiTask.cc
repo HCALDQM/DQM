@@ -188,11 +188,11 @@ void HcalDigiTask::specialize(Hit const& hit, std::string const& nameRes,
 	}
 	if (subdet==hcaldqm::constants::STD_SUBDET_HF)
 	{
-		std:;string name_tmp;
+		std::string name_tmp;
 		if (ieta<0)
-			name_tmp = "M"
+			name_tmp = "M";
 		else
-			name_tmp = "P"
+			name_tmp = "P";
 
 		_mes["HF" + name_tmp + "_OccupancyVSiphi"].Fill(iphi);
 		_mes["HF" + name_tmp + "_OccupancyiphiVSLS"].Fill(_mi.currentLS, iphi);
