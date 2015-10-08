@@ -706,7 +706,7 @@ hcalRecHitTask = cms.EDAnalyzer(
 			),
 			yaxis = cms.untracked.PSet(
 				edges	= cms.untracked.bool(False),
-				nbins	= cms.untracked.int(72),
+				nbins	= cms.untracked.int32(72),
 				min		= cms.untracked.double(0.5),
 				max		= cms.untracked.double(72.5),
 				title	= cms.untracked.string("iphi")
@@ -726,7 +726,7 @@ hcalRecHitTask = cms.EDAnalyzer(
 			),
 			yaxis = cms.untracked.PSet(
 				edges	= cms.untracked.bool(False),
-				nbins	= cms.untracked.int(72),
+				nbins	= cms.untracked.int32(72),
 				min		= cms.untracked.double(0.5),
 				max		= cms.untracked.double(72.5),
 				title	= cms.untracked.string("iphi")
