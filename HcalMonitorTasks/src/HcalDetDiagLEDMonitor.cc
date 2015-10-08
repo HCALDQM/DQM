@@ -110,16 +110,15 @@ public:
   HcalDetDiagLEDMonitor(const edm::ParameterSet& ps); 
   ~HcalDetDiagLEDMonitor(); 
 
-  void beginRun(const edm::Run& run, const edm::EventSetup& c) override;
-  void setup() override;
+  void bookHistograms(DQMStore::IBooker &ib, const edm::Run& run, const edm::EventSetup& c) override;
+  void setup(DQMStore::IBooker &ib) override;
   void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) override;// const HcalDbService& cond)
   void endRun(const edm::Run& run, const edm::EventSetup& c) override;
   void reset() override;
-  void cleanup() override; 
   void fillHistos();
   int  GetStatistics(){ return ievt_; }
 private:
-  const HcalElectronicsMap*      emap;
+  HcalElectronicsMap*      emap;
   void SaveReference();
   void LoadReference();
   void CheckStatus();
@@ -192,16 +191,6 @@ private:
   MonitorElement *HO1Mphi;
   MonitorElement *HO2Mphi;
 
-  static const int NMAXCHANNELS=100;
-
-  MonitorElement *BadChannelsMissing;  
-  MonitorElement *BadChannelsLowenergy; 
-  MonitorElement *BadChannelsBadtime;
-  MonitorElement *ChannelsSummaryMissing; 
-  MonitorElement *ChannelsSummaryLowenergy;
-  MonitorElement *ChannelsSummaryBadtime;
-  bool presentSubDet[7]; //[HBP, HBM, HEP, HEM, HFP, HFM, HO]//
-
   HcalDetDiagLEDData hb_data[85][72][4];
   HcalDetDiagLEDData he_data[85][72][4];
   HcalDetDiagLEDData ho_data[85][72][4];
@@ -219,7 +208,6 @@ private:
   EtaPhiHists *ChannelStatusTimeRMS;
 
   edm::InputTag digiLabel_;
-  edm::InputTag digiLabelHF_;
 
   edm::EDGetTokenT<HcalTBTriggerData> tok_tb_;
   edm::EDGetTokenT<HBHEDigiCollection> tok_hbhe_;
@@ -232,10 +220,6 @@ private:
   void fill_channel_status(std::string subdet,int eta,int phi,int depth,int type,double status);
   void   fill_energy(std::string subdet,int eta,int phi,int depth,double e,int type);
   double get_energy(std::string subdet,int eta,int phi,int depth,int type);
-
-  void fillBadChannels(MonitorElement *m, int bin, HcalDetId hid, HcalElectronicsId mid, HcalFrontEndId lid, double missing, double lowsignal, double badtime);
-  void fillChannelSummary(int kSubdet, HcalDetId hid, HcalElectronicsId mid, HcalFrontEndId lid, std::string stdet, HcalDetDiagLEDData&, int &nMissing_, int &nLowenergy, int &nBadtime);
-
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,7 +238,9 @@ static const float adc2fC[128]={-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5, 10
 
 
 
-HcalDetDiagLEDMonitor::HcalDetDiagLEDMonitor(const edm::ParameterSet& ps) {
+HcalDetDiagLEDMonitor::HcalDetDiagLEDMonitor(const edm::ParameterSet& ps):
+ HcalBaseDQMonitor(ps)
+ {
 
 
   ievt_=0;
@@ -286,7 +272,6 @@ HcalDetDiagLEDMonitor::HcalDetDiagLEDMonitor(const edm::ParameterSet& ps) {
   XmlFilePath      = ps.getUntrackedParameter<std::string>("XmlFilePath", "");
 
   digiLabel_       = ps.getUntrackedParameter<edm::InputTag>("digiLabel", edm::InputTag("hcalDigis"));
-  digiLabelHF_       = ps.getUntrackedParameter<edm::InputTag>("digiLabelHF", edm::InputTag("utcaDigis"));
 
   emap=0;
   needLogicalMap_ = true;
@@ -295,38 +280,51 @@ HcalDetDiagLEDMonitor::HcalDetDiagLEDMonitor(const edm::ParameterSet& ps) {
   tok_tb_ = consumes<HcalTBTriggerData>(ps.getParameter<edm::InputTag>("hcalTBTriggerDataTag"));
   tok_hbhe_ = consumes<HBHEDigiCollection>(digiLabel_);
   tok_ho_ = consumes<HODigiCollection>(digiLabel_);
-  tok_hf_ = consumes<HFDigiCollection>(digiLabelHF_);
+  tok_hf_ = consumes<HFDigiCollection>(digiLabel_);
   tok_calib_ = consumes<HcalCalibDigiCollection>(ps.getUntrackedParameter<edm::InputTag>("calibDigiLabel",edm::InputTag("hcalDigis")));
   
+  ChannelsLEDEnergy=0;
+  ChannelsLEDEnergyRef=0;
+  ChannelStatusMissingChannels=0;
+  ChannelStatusUnstableChannels=0;
+  ChannelStatusUnstableLEDsignal=0;
+  ChannelStatusLEDMean=0;
+  ChannelStatusLEDRMS=0;
+  ChannelStatusTimeMean=0;
+  ChannelStatusTimeRMS=0;
 
 }
 
-HcalDetDiagLEDMonitor::~HcalDetDiagLEDMonitor(){}
+HcalDetDiagLEDMonitor::~HcalDetDiagLEDMonitor()
+{
 
-void HcalDetDiagLEDMonitor::cleanup(){
-  if(dbe_){
-    dbe_->setCurrentFolder(subdir_);
-    dbe_->removeContents();
-    dbe_ = 0;
-  }
-} 
+  if ( ChannelsLEDEnergy ) delete ChannelsLEDEnergy;
+  if ( ChannelsLEDEnergyRef ) delete ChannelsLEDEnergyRef;
+  if ( ChannelStatusMissingChannels ) delete ChannelStatusMissingChannels;
+  if ( ChannelStatusUnstableChannels ) delete ChannelStatusUnstableChannels;
+  if ( ChannelStatusUnstableLEDsignal ) delete ChannelStatusUnstableLEDsignal;
+  if ( ChannelStatusLEDMean ) delete ChannelStatusLEDMean;
+  if ( ChannelStatusLEDRMS ) delete ChannelStatusLEDRMS;
+  if ( ChannelStatusTimeMean ) delete ChannelStatusTimeMean;
+  if ( ChannelStatusTimeRMS ) delete ChannelStatusTimeRMS;
+
+  if ( emap ) delete emap;
+  
+}
+
 void HcalDetDiagLEDMonitor::reset(){}
 
-void HcalDetDiagLEDMonitor::beginRun(const edm::Run& run, const edm::EventSetup& c)
+void HcalDetDiagLEDMonitor::bookHistograms(DQMStore::IBooker &ib, const edm::Run& run, const edm::EventSetup& c)
 {
-  if (debug_>1) std::cout <<"HcalDetDiagLEDMonitor::beginRun"<<std::endl;
-  HcalBaseDQMonitor::beginRun(run,c);
+  if (debug_>1) std::cout <<"HcalDetDiagLEDMonitor::bookHistograms"<<std::endl;
+  HcalBaseDQMonitor::bookHistograms(ib,run,c);
 
-  edm::ESHandle<HcalDbService> conditions_;
-  c.get<HcalDbRecord>().get(conditions_);
-  emap=conditions_->getHcalMapping();
-
-  if (tevt_==0) this->setup(); // set up histograms if they have not been created before
+  if (tevt_==0) this->setup(ib); // set up histograms if they have not been created before
   if (mergeRuns_==false) this->reset();
 
   edm::ESHandle<HcalChannelQuality> p;
-  c.get<HcalChannelQualityRcd>().get(p);
-  HcalChannelQuality* chanquality= new HcalChannelQuality(*p.product());
+  c.get<HcalChannelQualityRcd>().get("withTopo",p);
+  const HcalChannelQuality* chanquality= p.product();
   std::vector<DetId> mydetids = chanquality->getAllChannels();
   KnownBadCells_.clear();
 
@@ -339,99 +337,71 @@ void HcalDetDiagLEDMonitor::beginRun(const edm::Run& run, const edm::EventSetup&
      }
   } 
 
-  for(int i=0; i<7; ++i) presentSubDet[i]=false;
-
   return;
-} // void HcalNDetDiagLEDMonitor::beginRun(...)
+} // void HcalNDetDiagLEDMonitor::bookHistograms(...)
 
-void HcalDetDiagLEDMonitor::setup(){
+void HcalDetDiagLEDMonitor::setup(DQMStore::IBooker &ib){
      // Call base class setup
-     HcalBaseDQMonitor::setup();
-     if (!dbe_) return;
+     HcalBaseDQMonitor::setup(ib);
 
      std::string name;
-     dbe_->setCurrentFolder(subdir_);   
-     meEVT_ = dbe_->bookInt("HcalDetDiagLEDMonitor Event Number");
-     meRUN_ = dbe_->bookInt("HcalDetDiagLEDMonitor Run Number");
+     ib.setCurrentFolder(subdir_);   
+     meEVT_ = ib.bookInt("HcalDetDiagLEDMonitor Event Number");
+     meRUN_ = ib.bookInt("HcalDetDiagLEDMonitor Run Number");
      ReferenceRun="UNKNOWN";
      LoadReference();
-     dbe_->setCurrentFolder(subdir_);
-     RefRun_= dbe_->bookString("HcalDetDiagLEDMonitor Reference Run",ReferenceRun);
-     dbe_->setCurrentFolder(subdir_+"Summary Plots");
+     ib.setCurrentFolder(subdir_);
+     RefRun_= ib.bookString("HcalDetDiagLEDMonitor Reference Run",ReferenceRun);
+     ib.setCurrentFolder(subdir_+"Summary Plots");
      
-     name="HBHEHO LED Energy Distribution";               Energy         = dbe_->book1D(name,name,200,0,3000);
-     name="HBHEHO LED Timing Distribution";               Time           = dbe_->book1D(name,name,200,0,10);
-     name="HBHEHO LED Energy RMS_div_Energy Distribution";EnergyRMS      = dbe_->book1D(name,name,200,0,0.2);
-     name="HBHEHO LED Timing RMS Distribution";           TimeRMS        = dbe_->book1D(name,name,200,0,0.4);
-     name="HF LED Energy Distribution";                   EnergyHF       = dbe_->book1D(name,name,200,0,3000);
-     name="HF LED Timing Distribution";                   TimeHF         = dbe_->book1D(name,name,200,0,10);
-     name="HF LED Energy RMS_div_Energy Distribution";    EnergyRMSHF    = dbe_->book1D(name,name,200,0,0.5);
-     name="HF LED Timing RMS Distribution";               TimeRMSHF      = dbe_->book1D(name,name,200,0,0.4);
-     name="LED Energy Corr(PinDiod) Distribution";        EnergyCorr     = dbe_->book1D(name,name,200,0,10);
-     name="LED Timing HBHEHF";                            Time2Dhbhehf   = dbe_->book2D(name,name,87,-43,43,74,0,73);
-     name="LED Timing HO";                                Time2Dho       = dbe_->book2D(name,name,33,-16,16,74,0,73);
-     name="LED Energy HBHEHF";                            Energy2Dhbhehf = dbe_->book2D(name,name,87,-43,43,74,0,73);
-     name="LED Energy HO";                                Energy2Dho     = dbe_->book2D(name,name,33,-16,16,74,0,73);
+     name="HBHEHO LED Energy Distribution";               Energy         = ib.book1D(name,name,200,0,3000);
+     name="HBHEHO LED Timing Distribution";               Time           = ib.book1D(name,name,200,0,10);
+     name="HBHEHO LED Energy RMS_div_Energy Distribution";EnergyRMS      = ib.book1D(name,name,200,0,0.2);
+     name="HBHEHO LED Timing RMS Distribution";           TimeRMS        = ib.book1D(name,name,200,0,0.4);
+     name="HF LED Energy Distribution";                   EnergyHF       = ib.book1D(name,name,200,0,3000);
+     name="HF LED Timing Distribution";                   TimeHF         = ib.book1D(name,name,200,0,10);
+     name="HF LED Energy RMS_div_Energy Distribution";    EnergyRMSHF    = ib.book1D(name,name,200,0,0.5);
+     name="HF LED Timing RMS Distribution";               TimeRMSHF      = ib.book1D(name,name,200,0,0.4);
+     name="LED Energy Corr(PinDiod) Distribution";        EnergyCorr     = ib.book1D(name,name,200,0,10);
+     name="LED Timing HBHEHF";                            Time2Dhbhehf   = ib.book2D(name,name,87,-43,43,74,0,73);
+     name="LED Timing HO";                                Time2Dho       = ib.book2D(name,name,33,-16,16,74,0,73);
+     name="LED Energy HBHEHF";                            Energy2Dhbhehf = ib.book2D(name,name,87,-43,43,74,0,73);
+     name="LED Energy HO";                                Energy2Dho     = ib.book2D(name,name,33,-16,16,74,0,73);
 
-     name="HBP Average over HPD LED Ref";          HBPphi = dbe_->book2D(name,name,180,1,73,400,0,2);
-     name="HBM Average over HPD LED Ref";          HBMphi = dbe_->book2D(name,name,180,1,73,400,0,2);
-     name="HEP Average over HPD LED Ref";          HEPphi = dbe_->book2D(name,name,180,1,73,400,0,2);
-     name="HEM Average over HPD LED Ref";          HEMphi = dbe_->book2D(name,name,180,1,73,400,0,2);
-     name="HFP Average over RM LED Ref";           HFPphi = dbe_->book2D(name,name,180,1,37,400,0,2);
-     name="HFM Average over RM LED Ref";           HFMphi = dbe_->book2D(name,name,180,1,37,400,0,2);
-     name="HO0 Average over HPD LED Ref";          HO0phi = dbe_->book2D(name,name,180,1,49,400,0,2);
-     name="HO1P Average over HPD LED Ref";         HO1Pphi= dbe_->book2D(name,name,180,1,49,400,0,2);
-     name="HO2P Average over HPD LED Ref";         HO2Pphi= dbe_->book2D(name,name,180,1,49,400,0,2);
-     name="HO1M Average over HPD LED Ref";         HO1Mphi= dbe_->book2D(name,name,180,1,49,400,0,2);
-     name="HO2M Average over HPD LED Ref";         HO2Mphi= dbe_->book2D(name,name,180,1,49,400,0,2);
+     name="HBP Average over HPD LED Ref";          HBPphi = ib.book2D(name,name,180,1,73,400,0,2);
+     name="HBM Average over HPD LED Ref";          HBMphi = ib.book2D(name,name,180,1,73,400,0,2);
+     name="HEP Average over HPD LED Ref";          HEPphi = ib.book2D(name,name,180,1,73,400,0,2);
+     name="HEM Average over HPD LED Ref";          HEMphi = ib.book2D(name,name,180,1,73,400,0,2);
+     name="HFP Average over RM LED Ref";           HFPphi = ib.book2D(name,name,180,1,37,400,0,2);
+     name="HFM Average over RM LED Ref";           HFMphi = ib.book2D(name,name,180,1,37,400,0,2);
+     name="HO0 Average over HPD LED Ref";          HO0phi = ib.book2D(name,name,180,1,49,400,0,2);
+     name="HO1P Average over HPD LED Ref";         HO1Pphi= ib.book2D(name,name,180,1,49,400,0,2);
+     name="HO2P Average over HPD LED Ref";         HO2Pphi= ib.book2D(name,name,180,1,49,400,0,2);
+     name="HO1M Average over HPD LED Ref";         HO1Mphi= ib.book2D(name,name,180,1,49,400,0,2);
+     name="HO2M Average over HPD LED Ref";         HO2Mphi= ib.book2D(name,name,180,1,49,400,0,2);
 
      ChannelsLEDEnergy = new EtaPhiHists();
-     ChannelsLEDEnergy->setup(dbe_," Channel LED Energy");
+     ChannelsLEDEnergy->setup(ib," Channel LED Energy");
      ChannelsLEDEnergyRef = new EtaPhiHists();
-     ChannelsLEDEnergyRef->setup(dbe_," Channel LED Energy Reference");
+     ChannelsLEDEnergyRef->setup(ib," Channel LED Energy Reference");
      
-     dbe_->setCurrentFolder(subdir_+"channel status");
+     ib.setCurrentFolder(subdir_+"channel status");
      ChannelStatusMissingChannels = new EtaPhiHists();
-     ChannelStatusMissingChannels->setup(dbe_," Missing Channels");
+     ChannelStatusMissingChannels->setup(ib," Missing Channels");
      ChannelStatusUnstableChannels = new EtaPhiHists();
-     ChannelStatusUnstableChannels->setup(dbe_," Unstable Channels");
+     ChannelStatusUnstableChannels->setup(ib," Unstable Channels");
      ChannelStatusUnstableLEDsignal = new EtaPhiHists();
-     ChannelStatusUnstableLEDsignal->setup(dbe_," Unstable LED");
+     ChannelStatusUnstableLEDsignal->setup(ib," Unstable LED");
      ChannelStatusLEDMean = new EtaPhiHists();
-     ChannelStatusLEDMean->setup(dbe_," LED Mean");
+     ChannelStatusLEDMean->setup(ib," LED Mean");
      ChannelStatusLEDRMS = new EtaPhiHists();
-     ChannelStatusLEDRMS->setup(dbe_," LED RMS");
+     ChannelStatusLEDRMS->setup(ib," LED RMS");
      ChannelStatusTimeMean = new EtaPhiHists();
-     ChannelStatusTimeMean->setup(dbe_," Time Mean");
+     ChannelStatusTimeMean->setup(ib," Time Mean");
      ChannelStatusTimeRMS = new EtaPhiHists();
-     ChannelStatusTimeRMS->setup(dbe_," Time RMS");
+     ChannelStatusTimeRMS->setup(ib," Time RMS");
 
      
-      //list of channels
-     const int NCHBINS=20;
-     name="Bad Channels Missing";     BadChannelsMissing   = dbe_->book2D(name,name,NCHBINS,0,NCHBINS, NMAXCHANNELS,0,NMAXCHANNELS); 
-     name="Bad Channels Low energy";  BadChannelsLowenergy = dbe_->book2D(name,name,NCHBINS,0,NCHBINS, NMAXCHANNELS,0,NMAXCHANNELS); 
-     name="Bad Channels Bad time";    BadChannelsBadtime   = dbe_->book2D(name,name,NCHBINS,0,NCHBINS, NMAXCHANNELS,0,NMAXCHANNELS); 
-
-     std::string binlabels[NCHBINS]={"DET", "ETA", "PHI", "DEPTH", 
-			   "RBX", "RM", "PIXEL", "RM_FIBER", "FIBER_CH", "QIE", "ADC", 
-			   "CRATE", "DCC", "SPIGOT", "HTR_FIBER", "HTR_SLOT", "HTR_FPGA", 
-			   "present" ,"low signal", "time - mean"};
-     for(int i=0; i<NCHBINS; ++i) {
-	 BadChannelsMissing->setBinLabel(i+1, binlabels[i]);
-	 BadChannelsLowenergy->setBinLabel(i+1, binlabels[i]);
-	 BadChannelsBadtime->setBinLabel(i+1, binlabels[i]);
-     }
-
-     name="Channels Summary Missing";    ChannelsSummaryMissing   = dbe_->book2D(name,	"missing/unstable", 1,0,1, 7,0,7);    ChannelsSummaryMissing->setBinLabel(1, "Missing");
-     name="Channels Summary Low energy"; ChannelsSummaryLowenergy = dbe_->book2D(name,  "low/no signal",    1,0,1, 7,0,7);    ChannelsSummaryLowenergy->setBinLabel(1, "Low/no signal");
-     name="Channels Summary Bad timing"; ChannelsSummaryBadtime   = dbe_->book2D(name,	"bad timing",	    1,0,1, 7,0,7);    ChannelsSummaryBadtime->setBinLabel(1, "Bad timing");
-     std::string binls[7]={"HO","HF-","HF+","HE-","HE+","HB-","HB+"};
-     for(int i=0; i<7; ++i) {
-	 ChannelsSummaryMissing   ->setBinLabel(i+1, binls[i], 2);
-	 ChannelsSummaryLowenergy ->setBinLabel(i+1, binls[i], 2);
-	 ChannelsSummaryBadtime   ->setBinLabel(i+1, binls[i], 2);
-     }
 } 
 
 void HcalDetDiagLEDMonitor::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
@@ -441,7 +411,6 @@ int  eta,phi,depth,nTS;
      emap=new HcalElectronicsMap(logicalMap_->generateHcalElectronicsMap());
    }
 
-   if(!dbe_) return; 
    bool LEDEvent=false;
    bool LocalRun=false;
    // for local runs 
@@ -468,14 +437,10 @@ int  eta,phi,depth,nTS;
      if(digi->id().subdet()==HcalBarrel){
        for(int i=0;i<nTS;i++) data[i]=adc2fC[digi->sample(i).adc()&0xff]-2.5;
        hb_data[eta+42][phi-1][depth-1].add_statistics(data,nTS);
-       if(eta>0)presentSubDet[0]=true;
-       else presentSubDet[1]=true;
      }	 
      if(digi->id().subdet()==HcalEndcap){
        for(int i=0;i<nTS;i++) data[i]=adc2fC[digi->sample(i).adc()&0xff]-2.5;
        he_data[eta+42][phi-1][depth-1].add_statistics(data,nTS);
-       if(eta>0)presentSubDet[2]=true;
-       else presentSubDet[3]=true;
      }
    }   
 
@@ -485,7 +450,6 @@ int  eta,phi,depth,nTS;
      eta=digi->id().ieta(); phi=digi->id().iphi(); depth=digi->id().depth(); nTS=digi->size();
      for(int i=0;i<nTS;i++) data[i]=adc2fC[digi->sample(i).adc()&0xff]-2.5;
      ho_data[eta+42][phi-1][depth-1].add_statistics(data,nTS);
-     presentSubDet[6]=true;
    }   
 
    edm::Handle<HFDigiCollection> hf;
@@ -494,8 +458,6 @@ int  eta,phi,depth,nTS;
      eta=digi->id().ieta(); phi=digi->id().iphi(); depth=digi->id().depth(); nTS=digi->size();
      for(int i=0;i<nTS;i++) data[i]=adc2fC[digi->sample(i).adc()&0xff]-2.5;
      hf_data[eta+42][phi-1][depth-1].add_statistics(data,nTS);
-     if(eta>0)presentSubDet[4]=true;
-     else presentSubDet[5]=true;
    }   
  
    edm::Handle<HcalCalibDigiCollection> calib;
@@ -559,11 +521,11 @@ void HcalDetDiagLEDMonitor::fillHistos(){
 	    Time->Fill(time);
 	    TimeRMS->Fill(time_rms);
 	    T+=time; nT++; E+=ave; nE++;
-	    fill_energy("HB",eta,phi,depth,ave,1);
 	    if(GetCalib("HB",eta,phi)->get_statistics()>100){
 	      double ave_calib=0;
 	      double rms_calib=0;
 	      GetCalib("HB",eta,phi)->get_average_led(&ave_calib,&rms_calib);
+	      fill_energy("HB",eta,phi,depth,ave/ave_calib,1);
 	      EnergyCorr->Fill(ave_calib/ave);
 	    }
          }
@@ -586,11 +548,11 @@ void HcalDetDiagLEDMonitor::fillHistos(){
 	    Time->Fill(time);
 	    T+=time; nT++; E+=ave; nE++;
 	    TimeRMS->Fill(time_rms);
-	    fill_energy("HE",eta,phi,depth,ave,1);
 	    if(GetCalib("HE",eta,phi)->get_statistics()>100){
 	      double ave_calib=0;
 	      double rms_calib=0;
 	      GetCalib("HE",eta,phi)->get_average_led(&ave_calib,&rms_calib);
+	      fill_energy("HE",eta,phi,depth,ave/ave_calib,1);
 	      EnergyCorr->Fill(ave_calib/ave);
 	    }
          }
@@ -599,7 +561,7 @@ void HcalDetDiagLEDMonitor::fillHistos(){
       if(nT>0 && abs(eta)>20 ){Time2Dhbhehf->Fill(eta,phi+1,T/nT); Energy2Dhbhehf->Fill(eta,phi+1,E/nE);}	 
    } 
    // HF histograms
-   for(int eta=-41;eta<=41;eta++) for(int phi=1;phi<=72;phi++){
+   for(int eta=-42;eta<=42;eta++) for(int phi=1;phi<=72;phi++){
       double T=0,nT=0,E=0,nE=0;
       for(int depth=1;depth<=2;depth++){
          if(hf_data[eta+42][phi-1][depth-1].get_statistics()>100){
@@ -614,11 +576,11 @@ void HcalDetDiagLEDMonitor::fillHistos(){
 	   TimeHF->Fill(time);
 	   T+=time; nT++; E+=ave; nE++;
 	   TimeRMSHF->Fill(time_rms);
-	   fill_energy("HF",eta,phi,depth,ave,1);
 	   if(GetCalib("HF",eta,phi)->get_statistics()>100){
 	     double ave_calib=0;
 	     double rms_calib=0;
 	     GetCalib("HF",eta,phi)->get_average_led(&ave_calib,&rms_calib);
+	     fill_energy("HF",eta,phi,depth,ave/ave_calib,1);
 	     EnergyCorr->Fill(ave_calib/ave);
 	   }
          }
@@ -627,8 +589,9 @@ void HcalDetDiagLEDMonitor::fillHistos(){
       if(nT>0 && abs(eta)>29 ){ Energy2Dhbhehf->Fill(eta,phi,E/nE); Energy2Dhbhehf->Fill(eta,phi+1,E/nE);}	 
    } 
    // HO histograms
-   for(int eta=-15;eta<=15;eta++) for(int phi=1;phi<=72;phi++){
+   for(int eta=-10;eta<=15;eta++) for(int phi=1;phi<=72;phi++){
       double T=0,nT=0,E=0,nE=0;
+      if(eta>10 && !isSiPM(eta,phi,4)) continue;
       for(int depth=4;depth<=4;depth++){
          if(ho_data[eta+42][phi-1][depth-1].get_statistics()>100){
 	    double ave=0;
@@ -642,11 +605,11 @@ void HcalDetDiagLEDMonitor::fillHistos(){
 	    Time->Fill(time);
 	    T+=time; nT++; E+=ave; nE++;
 	    TimeRMS->Fill(time_rms);
-	    fill_energy("HO",eta,phi,depth,ave,1);
 	    if(GetCalib("HO",eta,phi)->get_statistics()>100){
 	      double ave_calib=0;
 	      double rms_calib=0;
 	      GetCalib("HO",eta,phi)->get_average_led(&ave_calib,&rms_calib);
+	      fill_energy("HO",eta,phi,depth,ave/ave_calib,1);
 	      EnergyCorr->Fill(ave_calib/ave);
 	    }
          }
@@ -654,29 +617,30 @@ void HcalDetDiagLEDMonitor::fillHistos(){
       if(nT>0){ Time2Dho->Fill(eta,phi,T/nT); Energy2Dho->Fill(eta,phi+1,E/nE) ;}
    } 
 
-   double ave=0,rms=0;
+   double ave=0.,rms=0.,ave_calib=0.,rms_calib=0.;
    // HB Ref histograms
    for(int eta=-16;eta<=16;eta++) for(int phi=1;phi<=72;phi++) for(int depth=1;depth<=2;depth++){
-      if(hb_data[eta+42][phi-1][depth-1].get_reference(&ave,&rms)){
-	    fill_energy("HB",eta,phi,depth,ave,2);
+      if(hb_data[eta+42][phi-1][depth-1].get_reference(&ave,&rms) && GetCalib("HB",eta,phi)->get_reference(&ave_calib,&rms_calib)){
+	    fill_energy("HB",eta,phi,depth,ave/ave_calib,2);
       }
    } 
    // HE Ref histograms
    for(int eta=-29;eta<=29;eta++) for(int phi=1;phi<=72;phi++) for(int depth=1;depth<=3;depth++){
-      if(he_data[eta+42][phi-1][depth-1].get_reference(&ave,&rms)){
-	    fill_energy("HE",eta,phi,depth,ave,2);
+      if(he_data[eta+42][phi-1][depth-1].get_reference(&ave,&rms) && GetCalib("HE",eta,phi)->get_reference(&ave_calib,&rms_calib)){
+	    fill_energy("HE",eta,phi,depth,ave/ave_calib,2);
       }
    } 
    // HO Ref histograms
-   for(int eta=-15;eta<=15;eta++) for(int phi=1;phi<=72;phi++) for(int depth=4;depth<=4;depth++){
-      if(ho_data[eta+42][phi-1][depth-1].get_reference(&ave,&rms)){
-	    fill_energy("HO",eta,phi,depth,ave,2);
+   for(int eta=-10;eta<=15;eta++) for(int phi=1;phi<=72;phi++) for(int depth=4;depth<=4;depth++){
+      if(eta>10 && !isSiPM(eta,phi,4)) continue;
+      if(ho_data[eta+42][phi-1][depth-1].get_reference(&ave,&rms) && GetCalib("HO",eta,phi)->get_reference(&ave_calib,&rms_calib)){
+	    fill_energy("HO",eta,phi,depth,ave/ave_calib,2);
       }
    } 
    // HF Ref histograms
-   for(int eta=-41;eta<=41;eta++) for(int phi=1;phi<=72;phi++) for(int depth=1;depth<=2;depth++){
-      if(hf_data[eta+42][phi-1][depth-1].get_reference(&ave,&rms)){
-	    fill_energy("HF",eta,phi,depth,ave,2);
+   for(int eta=-42;eta<=42;eta++) for(int phi=1;phi<=72;phi++) for(int depth=1;depth<=2;depth++){
+      if(hf_data[eta+42][phi-1][depth-1].get_reference(&ave,&rms) && GetCalib("HF",eta,phi)->get_reference(&ave_calib,&rms_calib)){
+	    fill_energy("HF",eta,phi,depth,ave/ave_calib,2);
       }
    } 
 
@@ -710,6 +674,7 @@ void HcalDetDiagLEDMonitor::fillHistos(){
       else if(gid.genericSubdet()==HcalGenericDetId::HcalGenOuter)  sd=2;
       else if(gid.genericSubdet()==HcalGenericDetId::HcalGenForward)sd=3;
       HcalDetId hid(detid);
+      if(KnownBadCells_.find(hid.rawId())==KnownBadCells_.end()) continue;
     
       eta=hid.ieta();
       phi=hid.iphi();
@@ -867,7 +832,7 @@ char   Subdet[10],str[500];
        } 
        theFile->Write();
        theFile->Close();
-
+       theFile->Delete();
 
    if(XmlFilePath.size()>0){
       //create XML file
@@ -1110,6 +1075,7 @@ TFile *f;
      if(strcmp(subdet,"CALIB_HF")==0) calib_data[4][Eta+2][Phi-1].set_reference(led,rms);
    }
    f->Close();
+   f->Delete();
    IsReference=true;
 } 
 void HcalDetDiagLEDMonitor::CheckStatus(){
@@ -1123,20 +1089,9 @@ void HcalDetDiagLEDMonitor::CheckStatus(){
       ChannelStatusTimeRMS->depth[i]->Reset();
    }
   
-   int nMissing=0;
-   int nLowenergy=0;
-   int nBadtime=0;
-   ChannelsSummaryMissing->Reset();
-   ChannelsSummaryLowenergy->Reset();
-   ChannelsSummaryBadtime->Reset();
-
    std::vector <HcalElectronicsId> AllElIds = emap->allElectronicsIdPrecision();
    for (std::vector <HcalElectronicsId>::iterator eid = AllElIds.begin(); eid != AllElIds.end(); eid++) {
-//      if(!eid->isVMEid()) continue;
-      HcalElectronicsId mid=(*eid);
       DetId detid=emap->lookup(*eid);
-      HcalFrontEndId  lid=logicalMap_->getHcalFrontEndId(detid);
-
       if (detid.det()!=DetId::Hcal) continue;
       HcalGenericDetId gid(emap->lookup(*eid));
       if(!(!(gid.null()) && 
@@ -1144,18 +1099,120 @@ void HcalDetDiagLEDMonitor::CheckStatus(){
              gid.genericSubdet()==HcalGenericDetId::HcalGenEndcap  ||
              gid.genericSubdet()==HcalGenericDetId::HcalGenForward ||
              gid.genericSubdet()==HcalGenericDetId::HcalGenOuter))) continue;
+      int eta=0,phi=0,depth=0;
+      if(KnownBadCells_.find(gid.rawId())==KnownBadCells_.end()) continue;
 
       HcalDetId hid(detid);
-      int eta=hid.ieta();
-      int phi=hid.iphi();
-      int depth=hid.depth(); 
-      HcalSubdetector subdet= hid.subdet();
-      bool posEta=eta>0;
-
-      if(subdet==HcalBarrel)	   fillChannelSummary(posEta?0:1, hid, mid, lid, "HB", hb_data[eta+42][phi-1][depth-1], nMissing, nLowenergy, nBadtime);
-      else if (subdet==HcalEndcap) fillChannelSummary(posEta?2:3, hid, mid, lid, "HE", he_data[eta+42][phi-1][depth-1], nMissing, nLowenergy, nBadtime);
-      else if (subdet==HcalForward)fillChannelSummary(posEta?4:5, hid, mid, lid, "HF", hf_data[eta+42][phi-1][depth-1], nMissing, nLowenergy, nBadtime);
-      else if (subdet==HcalOuter)  fillChannelSummary(         6, hid, mid, lid, "HO", ho_data[eta+42][phi-1][depth-1], nMissing, nLowenergy, nBadtime);
+      eta=hid.ieta();
+      phi=hid.iphi();
+      depth=hid.depth(); 
+      
+      double AVE_TIME=Time->getMean();
+      if(detid.subdetId()==HcalBarrel){
+	 int stat=hb_data[eta+42][phi-1][depth-1].get_statistics()+
+	           hb_data[eta+42][phi-1][depth-1].get_overflow()+hb_data[eta+42][phi-1][depth-1].get_undeflow();
+	 if(stat==0){ 
+	     fill_channel_status("HB",eta,phi,depth,1,1); 
+	     hb_data[eta+42][phi-1][depth-1].change_status(1); 
+	 }
+         if(stat>0 && stat!=(ievt_)){ 
+             fill_channel_status("HB",eta,phi,depth,2,(double)stat/(double)(ievt_)); 
+	     hb_data[eta+42][phi-1][depth-1].change_status(2); 
+         }
+         if(hb_data[eta+42][phi-1][depth-1].get_statistics()>100){ 
+	     double ave=0;
+	     double rms=0;
+	     hb_data[eta+42][phi-1][depth-1].get_average_time(&ave,&rms);
+	     if((AVE_TIME-ave)>0.75 || (AVE_TIME-ave)<-0.75){
+                fill_channel_status("HB",eta,phi,depth,6,AVE_TIME-ave); 
+	        hb_data[eta+42][phi-1][depth-1].change_status(8); 
+	     }
+	 }  
+         stat=hb_data[eta+42][phi-1][depth-1].get_undeflow();	  
+         if(stat>0){ 
+             fill_channel_status("HB",eta,phi,depth,3,(double)stat/(double)(ievt_)); 
+	     hb_data[eta+42][phi-1][depth-1].change_status(4); 
+	 }    
+      } 
+      if(detid.subdetId()==HcalEndcap){
+	 int stat=he_data[eta+42][phi-1][depth-1].get_statistics()+
+	           he_data[eta+42][phi-1][depth-1].get_overflow()+he_data[eta+42][phi-1][depth-1].get_undeflow();
+	 if(stat==0){ 
+	     fill_channel_status("HE",eta,phi,depth,1,1); 
+	     he_data[eta+42][phi-1][depth-1].change_status(1); 
+	 }
+         if(stat>0 && stat!=(ievt_)){ 
+             fill_channel_status("HE",eta,phi,depth,2,(double)stat/(double)(ievt_)); 
+	     he_data[eta+42][phi-1][depth-1].change_status(2); 
+         }
+         if(he_data[eta+42][phi-1][depth-1].get_statistics()>100){ 
+	     double ave=0;
+	     double rms=0;
+	     he_data[eta+42][phi-1][depth-1].get_average_time(&ave,&rms);
+	     if((AVE_TIME-ave)>0.75 || (AVE_TIME-ave)<-0.75){ 
+                fill_channel_status("HE",eta,phi,depth,6,AVE_TIME-ave); 
+	        he_data[eta+42][phi-1][depth-1].change_status(8); 
+	     }	
+	 }  
+         stat=he_data[eta+42][phi-1][depth-1].get_undeflow();	  
+         if(stat>0){ 
+             fill_channel_status("HE",eta,phi,depth,3,(double)stat/(double)(ievt_)); 
+	     he_data[eta+42][phi-1][depth-1].change_status(4); 
+	 }  
+      } 
+      if(detid.subdetId()==HcalOuter){
+	 int stat=ho_data[eta+42][phi-1][depth-1].get_statistics()+
+	           ho_data[eta+42][phi-1][depth-1].get_overflow()+ho_data[eta+42][phi-1][depth-1].get_undeflow();
+	 if(stat==0){ 
+	     fill_channel_status("HO",eta,phi,depth,1,1); 
+	     ho_data[eta+42][phi-1][depth-1].change_status(1); 
+	 }
+         if(stat>0 && stat!=(ievt_)){ 
+             fill_channel_status("HO",eta,phi,depth,2,(double)stat/(double)(ievt_)); 
+	     ho_data[eta+42][phi-1][depth-1].change_status(2); 
+         }
+         if(ho_data[eta+42][phi-1][depth-1].get_statistics()>100){ 
+	     double ave=0;
+	     double rms=0;
+	     ho_data[eta+42][phi-1][depth-1].get_average_time(&ave,&rms);
+	     if((AVE_TIME-ave)>0.75 || (AVE_TIME-ave)<-0.75){
+                fill_channel_status("HO",eta,phi,depth,6,AVE_TIME-ave); 
+	        ho_data[eta+42][phi-1][depth-1].change_status(8);
+	     } 
+	 }  
+         stat=ho_data[eta+42][phi-1][depth-1].get_undeflow();	  
+         if(stat>0){ 
+             fill_channel_status("HO",eta,phi,depth,3,(double)stat/(double)(ievt_)); 
+	     ho_data[eta+42][phi-1][depth-1].change_status(4); 
+	 }  
+      } 
+      if(detid.subdetId()==HcalForward){
+	 AVE_TIME=TimeHF->getMean();
+	 int stat=hf_data[eta+42][phi-1][depth-1].get_statistics()+
+	           hf_data[eta+42][phi-1][depth-1].get_overflow()+hf_data[eta+42][phi-1][depth-1].get_undeflow();
+	 if(stat==0){ 
+	     fill_channel_status("HF",eta,phi,depth,1,1); 
+	     hf_data[eta+42][phi-1][depth-1].change_status(1); 
+	 }
+         if(stat>0 && stat!=(ievt_)){ 
+             fill_channel_status("HF",eta,phi,depth,2,(double)stat/(double)(ievt_)); 
+	     hf_data[eta+42][phi-1][depth-1].change_status(2); 
+         }
+         if(hf_data[eta+42][phi-1][depth-1].get_statistics()>100){ 
+	     double ave=0;
+	     double rms=0;
+	     hf_data[eta+42][phi-1][depth-1].get_average_time(&ave,&rms);
+	     if((AVE_TIME-ave)>0.75 || (AVE_TIME-ave)<-0.75){
+                fill_channel_status("HF",eta,phi,depth,6,AVE_TIME-ave); 
+	        hf_data[eta+42][phi-1][depth-1].change_status(8);
+	     } 
+	 }  
+         stat=hf_data[eta+42][phi-1][depth-1].get_undeflow();	  
+         if(stat>0){ 
+             fill_channel_status("HF",eta,phi,depth,3,(double)stat/(double)(ievt_)); 
+	     hf_data[eta+42][phi-1][depth-1].change_status(4); 
+	 }  
+      } 
    }
 }
 void HcalDetDiagLEDMonitor::fill_energy(std::string subdet,int eta,int phi,int depth,double e,int type){ 
@@ -1202,107 +1259,6 @@ void HcalDetDiagLEDMonitor::fill_channel_status(std::string subdet,int eta,int p
    if(type==6) ChannelStatusTimeMean->depth[depth-1]         ->setBinContent(ietabin,phi,status);
    if(type==7) ChannelStatusTimeRMS->depth[depth-1]          ->setBinContent(ietabin,phi,status);
 }
-
-
-
-void HcalDetDiagLEDMonitor::fillBadChannels(MonitorElement *m, int bin, HcalDetId hid, HcalElectronicsId mid, HcalFrontEndId lid, double missing, double lowsignal, double badtime){
-    //copied from HcalFrontEndId.cc 
-    std::string rbx=lid.rbx();
-    int num=-1;
-    if      (!rbx.compare(0,3,"HBM" ))  { num=0         + atoi(rbx.substr(3,2).c_str())-1; }
-    else if (!rbx.compare(0,3,"HBP" ))  { num=18        + atoi(rbx.substr(3,2).c_str())-1; }
-    else if (!rbx.compare(0,3,"HEM" ))  { num=18*2      + atoi(rbx.substr(3,2).c_str())-1; }
-    else if (!rbx.compare(0,3,"HEP" ))  { num=18*3      + atoi(rbx.substr(3,2).c_str())-1; }
-    else if (!rbx.compare(0,4,"HO2M"))  { num=18*4      + atoi(rbx.substr(4,2).c_str())-1; }
-    else if (!rbx.compare(0,4,"HO1M"))  { num=18*4+12   + atoi(rbx.substr(4,2).c_str())-1; }
-    else if (!rbx.compare(0,3,"HO0" ))  { num=18*4+12*2 + atoi(rbx.substr(3,2).c_str())-1; }
-    else if (!rbx.compare(0,4,"HO1P"))  { num=18*4+12*3 + atoi(rbx.substr(4,2).c_str())-1; }
-    else if (!rbx.compare(0,4,"HO2P"))  { num=18*4+12*4 + atoi(rbx.substr(4,2).c_str())-1; }
-    else if (!rbx.compare(0,3,"HFM" ))  { num=18*4+12*5 + atoi(rbx.substr(3,2).c_str())-1; }
-    else if (!rbx.compare(0,3,"HFP" ))  { num=18*4+12*6 + atoi(rbx.substr(3,2).c_str())-1; }
-    else return;
-
-    m->setBinContent( 1, bin, hid.subdet());
-    m->setBinContent( 2, bin, hid.ieta());
-    m->setBinContent( 3, bin, hid.iphi());
-    m->setBinContent( 4, bin, hid.depth());
-    m->setBinContent( 5, bin, num);
-    m->setBinContent( 6, bin, lid.rm());
-    m->setBinContent( 7, bin, lid.pixel());
-    m->setBinContent( 8, bin, lid.rmFiber());
-    m->setBinContent( 9, bin, lid.fiberChannel());
-    m->setBinContent(10, bin, lid.qieCard());
-    m->setBinContent(11, bin, lid.adc());
-    m->setBinContent(12, bin, mid.crateId());
-    m->setBinContent(13, bin, mid.dccid());
-    m->setBinContent(14, bin, mid.spigot());
-    m->setBinContent(15, bin, mid.fiberIndex());
-    m->setBinContent(16, bin, mid.htrSlot());
-    m->setBinContent(17, bin, mid.htrTopBottom());
-    m->setBinContent(18, bin, missing);
-    m->setBinContent(19, bin, lowsignal);
-    m->setBinContent(20, bin, badtime);
-}
-
-void HcalDetDiagLEDMonitor::fillChannelSummary(int kSubdet, HcalDetId hid, HcalElectronicsId mid, HcalFrontEndId lid, std::string stdet, 
-					       HcalDetDiagLEDData& leddata, int &nMissing_, int &nLowenergy_, int &nBadtime_){
-
-    int eta=hid.ieta();
-    int phi=hid.iphi();
-    int depth=hid.depth(); 
-    
-    double detSummaryBins[7]={6.5, 5.5, 4.5, 3.5, 2.5, 1.5, 0.5};
-
-    int  ybin	   = detSummaryBins[kSubdet];
-    bool fillSubDet= presentSubDet[kSubdet];
- 
-    double present   =1;
-    double timediff  =0;
-    double lowsignal =0;
-
-    double AVE_TIME= hid.subdet()==HcalForward ? TimeHF->getMean() : Time->getMean();
-    
-    int stat=leddata.get_statistics()+leddata.get_overflow()+leddata.get_undeflow();
-    if(stat==0){ 
-	fill_channel_status(stdet,eta,phi,depth,1,1); 
-	leddata.change_status(1); 
-	present=0;
-	ChannelsSummaryMissing->Fill(0, ybin); 
-    }
-    if(stat>0 && stat!=(ievt_)){ 
-	present=(double)stat/(double)(ievt_);
-	fill_channel_status(stdet,eta,phi,depth,2, present); 
-	leddata.change_status(2); 
-	ChannelsSummaryMissing->Fill(0, ybin); 
-     }
-    
-     if(leddata.get_statistics()>100){ 
-	double ave=0;
-	double rms=0;
-	leddata.get_average_time(&ave,&rms);
-	timediff=AVE_TIME-ave;
-	if(fabs(timediff)>0.75){
-	    fill_channel_status(stdet,eta,phi,depth,6, timediff); 
-	    leddata.change_status(8); 
-	    ChannelsSummaryBadtime->Fill(0, ybin); 
-	}
-     }  
-     int uflow=leddata.get_undeflow();	  
-     lowsignal=(double)uflow/(double)(ievt_);
-     if(uflow>0){ 
-	 fill_channel_status(stdet,eta,phi,depth,3,lowsignal); 
-	 hb_data[eta+42][phi-1][depth-1].change_status(4); 
-	 ChannelsSummaryLowenergy->Fill(0, ybin); 
-     }    
-     if(stat!=ievt_	    && nMissing_<NMAXCHANNELS   && fillSubDet) {++nMissing_;   fillBadChannels(BadChannelsMissing,   nMissing_,   hid, mid, lid, present, lowsignal, timediff);}
-     if(fabs(timediff)>0.75 && nBadtime_<NMAXCHANNELS   && fillSubDet) {++nBadtime_;   fillBadChannels(BadChannelsBadtime,   nBadtime_,   hid, mid, lid, present, lowsignal, timediff);}
-     if(uflow>0		    && nLowenergy_<NMAXCHANNELS && fillSubDet) {++nLowenergy_; fillBadChannels(BadChannelsLowenergy, nLowenergy_, hid, mid, lid, present, lowsignal, timediff);}
-}
-
-
-
-
-
 void HcalDetDiagLEDMonitor::endRun(const edm::Run& run, const edm::EventSetup& c){   
    if(ievt_>=100){
       fillHistos();

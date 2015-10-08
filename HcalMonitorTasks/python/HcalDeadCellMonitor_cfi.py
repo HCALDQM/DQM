@@ -22,13 +22,14 @@ hcalDeadCellMonitor=cms.EDAnalyzer("HcalDeadCellMonitor",
                                    hfRechitLabel          = cms.untracked.InputTag("hfreco"),
                                    digiLabel              = cms.untracked.InputTag("hcalDigis"),
                                    # minimum number of events necessary for lumi-block-based checking to commence
-                                   minDeadEventCount      = cms.untracked.int32(1000),
+                                   minDeadEventCount      = cms.untracked.int32(250),
 
                                    excludeHORing2         = cms.untracked.bool(False),
-                                   excludeHO1P02          = cms.untracked.bool(True),
+                                   excludeHO1P02          = cms.untracked.bool(False),
                                    #booleans for dead cell tests
                                    test_digis             = cms.untracked.bool(True), # test for recent missing digis
                                    test_rechits           = cms.untracked.bool(True), # test for missing rechits
-                                   MissingRechitEnergyThreshold = cms.untracked.double(-99.)
+                                   MissingRechitEnergyThreshold = cms.untracked.double(-99.),
+                             	   FEDRawDataCollection=cms.untracked.InputTag("rawDataCollector")
 
                                    )
