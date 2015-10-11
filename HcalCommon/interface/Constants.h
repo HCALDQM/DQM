@@ -43,8 +43,21 @@ namespace hcaldqm
 		int const SLOT_VME_MIN1 = 7;
 		int const SLOT_VME_MIN2 = 13;
 		int const SLOT_VME_MAX = 18;
-		int const SLOT_VME_NUM = SLOT_VME_MIN1-SLOT_VME_MIN + 1
-			+ SLOT_VME_MAX-SLOT_VME_MIN1 + 1;
+		int const SLOT_VME_NUM1 = SLOT_VME_MIN1-SLOT_VME_MIN+1;
+		int const SLOT_VME_NUM2 = SLOT_VME_MAX-SLOT_VME_MIN2+1;
+		int const SLOT_VME_NUM = SLOT_VME_NUM1+SLOT_VME_NUM2;
+
+		//	Fibers
+		int const FIBER_VME_MIN = 1;
+		int const FIBER_VME_MAX = 8;
+		int const FIBER_VME_NUM = FIBER_VME_MAX-FIBER_VME_MIN+1;
+		int const FIBER_uTCA_MIN = 2;
+		int const FIBER_uTCA_MAX = 21;
+		int const FIBER_uTCA_NUM = FIBER_uTCA_MAX-FIBER_uTCA_MIN+1;
+
+		int const FIBERCH_MIN = 0;
+		int const FIBERCH_MAX = 2;
+		int const FIBERCH_NUM = FIBERCH_MAX-FIBERCH_MIN+1;
 
 		/*
 		 *	Detector Constants
@@ -55,6 +68,8 @@ namespace hcaldqm
 		int const HE = 2;
 		int const HO = 3;
 		int const HF = 4;
+		int const SUBDET_NUM = 4;
+		std::string SUBDET_NAME[SUBDET_NUM]={"HB", "HE", "HO", "HF"};
 
 		//	iphis
 		int const IPHI_MIN = 1;
@@ -82,6 +97,16 @@ namespace hcaldqm
 		int const DEPTH_DELTA = 1;
 		int const DEPTH_MAX = 4;
 		int const DEPTH_NUM = 4;
+
+		/*
+		 *	Value Constants
+		 */
+		double const AXIS_ENERGY_MIN = -10.;
+		double const AXIS_ENERGY_MAX = 200;
+		int const AXIS_ENERGY_NBINS = 400;
+		double const AXIS_TIME_MIN = -50.;
+		double const AXIS_TIME_MAX = 50;
+		int const AXIS_TIME_NBINS = 200;
 	}
 }
 

@@ -3,46 +3,80 @@
 
 namespace hcaldqm
 {
-	Axis::Axis():
-		_type(fXaxis)_title("Undefined"), _log(false), 
-		_nbins(10), _min(0), _max(10)
-	{}
-
-	Axis::Axis(AxisType type):
-		_type(type)_title("Undefined"), _log(false), 
-		_nbins(10), _min(0), _max(10)
-	{}
-
-	Axis::Axis(AxisType type, std::string const& title):
-		_type(type), _title(title), _nbins(10), _min(0), _max(10), _log()
-	{}
-
-	Axis::Axis(AxisType type, std::string const& title, 
-		int nbins, double min, double max,
-		bool log):
-		_type(type), _title(title), _nbins(nbins), _max(max), _min(min), _log(log)
+	namespace axis
 	{
+		Axis::Axis():
+			_type(fXaxis), _qtype(fEnergy), _title(axisTitle[fEnergy]),
+			_nbins(axisNbins[fEnergy]), _min(axisMin[fEnergy]),
+			_max(axisMax[fEnergy]), _log(axisLogs[fEnergy])
+		{}
+	
+		Axis::Axis(AxisType type, AxisQType qtype):
+			_type(type), _qtype(qtype), _title(axisTitle[qtype]),
+			_nbins(axisNbins[qtype]), _min(axisMin[qtype]),
+			_max(axisMax[qtype]), _log(axisLogs[qtype])
+		{}
 
-	}
+		/* virtual */Axis::~Axis()
+		{}
+		
+		/* virtual */ int Axis::resolve(HcalDetId const& did)
+		{
+			int x;
+			switch(_qtype)
+			{
+				case fSubDet:
+					x = did.subdet();
+					break;
+				case fiphi:
+					x = did.iphi();
+					break;
+				case fieta:
+					x = did.ieta();
+					break;
+				case fdepth:
+					x = did.depth();
+					break;
+				default:
+					x = -100;
+					break;
+			}
+			return x;
+		}
 
-	/* virtual */Axis::~Axis()
-	{
+		/* virtual */ int Axis::resolve(HcalElectronicsId const& eid)
+		{
+			int x;
+			switch(_qtype)
+			{
+				case fCrate:
+					x = eid.crateId();
+					break;
+				case fSlot:
+					x = eid.slot();
+					break;
+				case fFiber:
+					x = eid.fiberIndex();
+					break;
+				case fFiberCh:
+					x = eid.fiberChanId();
+					break;
+			}
+			return x;
+		}
 
-	}
+		/* virtual */ AxisQ Axis::getAxisQ()
+		{
+			int t = _qtype;
+			if (t<=8)
+				return fCoordinate;
+			else if (t<=12)
+				return fQuantity;
+			else 
+				return fFlag;
 
-	void Axis::setAxisLog(TObject* o)
-	{
-		o->SetBit(BIT(constants::FREE_BIT_START+_type));
-	}
-
-	void Axis::setAxisTitle(TAxis* ax)
-	{
-		ax->SetTitle(_title.c_str());
-	}
-
-	void Axis::setAxisBins(TAxis* ax)
-	{
-		ax->Set(nbins, min, max);
+			return fCoordinate;
+		}
 	}
 }
 

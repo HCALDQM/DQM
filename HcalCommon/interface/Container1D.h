@@ -19,10 +19,18 @@
 
 namespace hcaldqm
 {
+
+	using namespace mapper,axis;
 	class Container1D : public Container
 	{
 		public:
 			Container1D() {}
+			Container1D(std::string const& folder, std::string const& nametitle,
+				MapperType mt, AxisQType xvt=fEnergy, 
+				AxisQType yvt=fEntries):
+				_folder(folder), _name(nametitle), _title(nametitle),
+				_mapper(mt), _xaxis(fXAxis, xvt), _yaxis(fYaxis, yvt)
+			{}
 			virtual ~Container1D() {}
 
 			//	just to have here
@@ -49,15 +57,18 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, double, double);
 
 			//	booking
-			virtual bool book(DQMStore::IBooker&);
 			virtual void book(DQMStore::IBooker&);
 
 		protected:
 			typedef	std::vector<MonitorElement*>	MEVector;
 			MEVector								_mes;
+			std::string								_folder;
+			std::string								_name;
+			std::string								_title;
 			Mapper									_mapper;
-			Axis									*_xaxis;
-			Axis									*_yaxis;
+			Axis									_xaxis;
+			Axis									_yaxis;
+
 	};
 }
 

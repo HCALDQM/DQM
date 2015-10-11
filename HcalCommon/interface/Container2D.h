@@ -17,10 +17,17 @@
 
 namespace hcaldqm
 {
+	using namespace mapper, axis;
 	class Container2D : public Container1D
 	{
 		public:
-			Container1D() {}
+			Container2D() {}
+			Container2D(std::string const& folder, std::string nametitle,
+				MapperType mt, AxisQType xvt=fEnergy, AxisQType yvt,
+				AxisQType zvt=fEntries):
+				Container1D(folder, nametitle, mt, xvt, yvt),
+				_zaxis(fZaxis, zvt)
+			{}
 			virtual ~Container1D() {}
 
 			//	redeclare what to override
@@ -41,7 +48,7 @@ namespace hcaldqm
 			virtual bool book(DQMStore::IBooker&);
 
 		protected:
-			Axis					*_zaxis;
+			Axis					_zaxis;
 	};
 }
 

@@ -17,13 +17,18 @@
 
 namespace hcaldqm
 {
+	using namespace mapper, axis;
 	class ContainerProf2D : public Container2D
 	{
 		public:
 			ContainerProf2D() {}
+			ContainerProf2D(std::string const& folder, std::string titlename,
+				MapperType mt, AxisQType, xvt=fiphi, AxisQType yvt=fieta,
+				AxisQType zvt=fEnergy):
+				Container2D(folder, nametitle, mt, xvt, yvt, zvt)
+			{}
 			virtual ~ContainerProf2D() {}
 
-			virtual bool book(DQMStore::IBooker&);
 			virtual void book(DQMStore::IBooker&);
 
 		protected:

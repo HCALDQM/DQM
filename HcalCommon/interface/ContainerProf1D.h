@@ -11,21 +11,26 @@
  *
  */
 
-#include "DQM/HcalCommon/interface/ContainerProf1D.h"
+#include "DQM/HcalCommon/interface/Container1D.h"
 
 #include <vector>
 #include <string>
 
 namespace hcaldqm
 {
+	using namespace mapper,axis;
 	class ContainerProf1D : public Container1D
 	{
 		public:
-			HcalMEContainerProf1D() {}
+			ContainerProf1D() {}
+			ContainerProf1D(std::string const& folder, 
+				std::string const& nametitle, MapperType mt, 
+				AxisQType xvt=fEnergy, AxisQType yvt):
+				Containter1D(folder, nametitle, mt, xvt, yvt)
+			{}
 			virtual ~HcalMEContainerProf1D() {}
 
 			//	booking
-			virtual bool book(DQMStore::IBooker&);
 			virtual void book(DQMStore::IBooker&);
 
 		protected:

@@ -14,6 +14,7 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace hcaldqm
 {
@@ -23,6 +24,7 @@ namespace hcaldqm
 		 *	Mapper Type enum:
 		 *		
 		 */
+		using namespace constants;
 		enum MapperType
 		{
 			//	By HCAL subdetector
@@ -79,11 +81,17 @@ namespace hcaldqm
 		class Mapper
 		{
 			public:
-				Mapper() {}
+				Mapper(): _type(fSubDet) {}
 				Mapper(MapperType type) : _type(type)
-				{}
+				{
+					this->setSize();
+				}
 				virtual ~Mapper() {}
 	
+				virtual void	configure(MapperType type)
+				{
+					_type = type;
+				}
 				virtual unsigned int index() {return 0;}
 				virtual unsigned int index(double) { return 0;}
 				virtual unsigned int index(int x) 
@@ -126,13 +134,188 @@ namespace hcaldqm
 					else if (_type==fCrate_Slot)
 					{
 						i.i1 = eid.crateId();
-						i.i2 = eid.
+						i.i2 = eid.slot();
 					}
 					return vindex[_type](x);
 				}
+
+				virtual std::string buildName(unsigned id)
+				{
+					std::string builtname;
+					switch(_type)
+					{
+						case fSubDet:
+							builtname = SUBDET_NAME[id];	
+							break;
+						case fiphi :
+						{
+							char name[10];
+							sprintf(name, "iphi%d", 
+								IPHI_MIN+id*IPHI_DELTA;)
+							builtname = name;
+							break;
+						}
+						case fieta :
+							char name[10];
+							int ieta = id<=(IETA_NUM/2) ? 
+								-(IETA_MIN+id*IETA_DELTA) : 
+								(id-IETA_NUM/2)*IETA_DELTA + IETA_MIN;
+							sprintf(name, "ieta%d", ieta);
+							builtname = name;
+							break;
+						case fdepth:
+							char name[10];
+							sprintf(name, "Depth%d", id+1);
+							builtname = name;
+							break;
+						case fSubDet_iphi:
+							char name[20];
+							if (_size>=IPHI_NUM*3) // HF
+								sprintf(name, "HFiphi%d",
+									(id-3*IPHI_NUM)*IPHI_DELTA_HF+IPHI_MIN);
+							else if (_size>=2*IPHI_NUM) // HO
+								sprintf(name, "HOiphi%d",
+									(id-2*IPHI_NUM)*IPHI_DELTA+IPHI_MIN);
+							else if (_size>=IPHI_NUM) // HE
+								sprintf(name, "HEiphi%d",
+									(id-IPHI_NUM)*IPHI_DELTA+IPHI_MIN);
+							else 
+								sprintf(name, "HBiphi%d",
+									id*IPHI_DELTA+IPHI_MIN);
+							
+							builtname = name;
+							break;
+						case fSubDet_ieta:
+							char name[20];
+							int totalHB = IETA_MAX_HB-IETA_MIN_HB+1;
+							int totalHE = IETA_MAX_HE-IETA_MIN_HE+1;
+							int totalHO = IETA_MAX_HO-IETA_MIN_HO+1;
+							int totalHF = IETA_MAX_HF-IETA_MIN_HF+1;
+							if (_size>=(2*(totalHB+totalHE+totalHO)+totalHF))
+								sprintf(name, "HFPieta%d", 
+									(id-2*totalHB-2*totalHE-2*totalHO-totalHF) + 
+									IETA_MIN_HF);
+							else if (_size>=(2*totalHB + 2*totalHE + 2*totalHO))
+								sprintf(name, "HFMieta%d",
+									-((id-2*totalHB-2*totalHE-2*totalHO) + 
+									IETA_MIN_HF));
+							else if (_size>=(2*totalHB+2*totalHE+totalHO))
+								sprintf(name, "HOPieta%d", 
+									(id-2*totalHB-2*totalHE-totalHO + 
+									 IETA_MIN_HO));
+							else if (_size>=(2*totalHB+2*totalHE))
+								sprintf(name, "HOMieta%d",
+									-(id-2*totalHB-2*totalHE + IEAT_MIN_HO));
+							else if (_size>=(2*totalHB+totalHE))
+								sprintf(name, "HEPieta%d", 
+									(id-2*totalHB-totalHE + IETA_MIN_HE));
+							else if (_size>=(2*totalHB))
+								sprintf(name, "HEMieta%d",
+									-(id-2*totalHB+IETA_MIN_HE));
+							else if (_size>=totalHB)
+								sprintf(name, "HBPieta%d",
+									id-totalHB+IETA_MIN_HB);
+							else 
+								sprintf(name, "HBMieta%d",
+									id+IETA_MIN_HB);
+
+							builtname = name;
+							break;
+						case fCrate:
+							char name[20];
+							if (id>=CRATE_VME_NUM)
+								sprintf(name, "CRATE%d",
+									(id-CRATE_VME_NUM)*CRATE_uTCA_DELTA + 
+									CRATE_uTCA_MIN);
+							else
+								sprintf(name, "CRATE%d",
+									id*CRATE_VME_DELTA+CRATE_uTCA_MIN);
+
+							builtname = name;
+							break;
+						case fFED:
+							char name[20];
+							if (id>=FED_VME_NUM)
+								sprintf(name, "FED%d", 
+									(id-FED_VME_NUM)*FED_uTCA_DELTA+FED_uTCA_MIN);
+							else
+								sprintf(name, "FED%d",
+									id*CRATE_VME_DELTA+CRATE_VME_MIN);	
+							builname = name;
+							break;
+						case fCrate_Slot:
+							char name[20];
+							if (id>=CRATE_VME_NUM*SLOT_VME_NUM)
+							{
+								id -= CRATE_VME_NUM*SLOT_VME_NUM;
+								int icrate = id/CRATE_uTCA_NUM;
+								int islot = id%SLOT_uTCA_NUM;
+								sprintf(name, "CRATE%dSLOT%d",
+									icrate+CRATE_uTCA_MIN, islot+SLOT_uTCA_MIN);
+							}
+							else 
+							{
+								int icrate = id/CRATE_VME_NUM;
+								int islot = id%SLOT_VME_NUM;
+								if (islot>=SLOT_VME_NUM1)
+									sprintf(name, "CRATE%dSLOT%d",
+										icrate+CRATE_VME_MIN,
+										islot+SLOT_VME_MIN2);
+								else 
+									sprintf(name, "CRATE%dSLOT%d",
+										icrate+CRATE_VME_MIN,
+										islot+SLOT_VME_MIN);
+							}
+							builtname = name;
+							break;
+						default:
+							return std::string("UNKNOWN");
+							break;
+					}
+					return buildname;
+				}
+
+				inline unsigned int getSize() {return _size;}
 	
 			protected:
 				MapperType			_type;
+				unsigned int		_size;
+				void setSize()
+				{
+					switch (_type)
+					{
+						case fSubDet : 
+							_size = SUBDET_NUM;
+							break;
+						case fiphi:
+							_size = IPHI_NUM;
+							break;
+						case fieta:
+							_size = IETA_NUM;
+							break;
+						case fdepth:
+							_size = DEPTH_NUM;
+							break;
+						case fSubDet_iphi:
+							_size = SUBDET_NUM*IPHI_NUM;
+							break;
+						case fSubDet_ieta:
+							_size = SUBDET_NUM*IETA_NUM;
+							break;
+						case fFED:
+							_size = FED_VME_NUM+FED_uTCA_NUM;
+							break;
+						case fCrate:
+							_size = CRATE_VME_NUM+CRATE_uTCA_NUM; 
+							break;
+						case fCrate_Slot:
+							_size = CRATE_VME_NUM*SLOT_VME_NUM + 
+								CRATE_uTCA_NUM*SLOT_uTCA_NUM;
+							break;
+						default:
+							_size = 0;
+					}
+				}
 		};
 	}
 }
