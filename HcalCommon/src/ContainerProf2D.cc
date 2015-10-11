@@ -20,7 +20,7 @@ namespace hcaldqm
 			_yaxis.setAxisLog(o);
 			_zaxis.setAxisLog(o);
 			me->SetAxisTitle(_xaxis._title, 1);
-			me->SetAxisTitle(_yaxis._title, 2);
+			me->SetAxisTitle(_axis._title, 2);
 			me->SetAxisTitle(_zaxis._title, 3);
 		}
 	}
