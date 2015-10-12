@@ -1,8 +1,9 @@
 
-#include "DQM/HcalCommon/src/Axis.h"
+#include "DQM/HcalCommon/interface/Axis.h"
 
 namespace hcaldqm
 {
+	using namespace constants;
 	namespace axis
 	{
 		Axis::Axis():
@@ -15,9 +16,6 @@ namespace hcaldqm
 			_type(type), _qtype(qtype), _title(axisTitle[qtype]),
 			_nbins(axisNbins[qtype]), _min(axisMin[qtype]),
 			_max(axisMax[qtype]), _log(axisLogs[qtype])
-		{}
-
-		/* virtual */Axis::~Axis()
 		{}
 		
 		/* virtual */ int Axis::resolve(HcalDetId const& did)
@@ -61,6 +59,9 @@ namespace hcaldqm
 				case fFiberCh:
 					x = eid.fiberChanId();
 					break;
+				default:
+					x=-100;
+					break;
 			}
 			return x;
 		}
@@ -71,11 +72,16 @@ namespace hcaldqm
 			if (t<=8)
 				return fCoordinate;
 			else if (t<=12)
-				return fQuantity;
+				return fValue;
 			else 
 				return fFlag;
 
 			return fCoordinate;
+		}
+
+		void Axis::setAxisLog(TObject* o)
+		{
+			o->SetBit(BIT(FIRST_BIT_TO_USE+_type));
 		}
 	}
 }

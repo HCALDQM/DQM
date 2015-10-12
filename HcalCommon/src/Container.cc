@@ -13,14 +13,13 @@ namespace hcaldqm
 		_me->Fill(x);
 	}
 
-	/* virtual */ void Container::fill(std::string const& x)
+	/* virtual */ /*void Container::fill(std::string const& x)
 	{
 		_me->Fill(x);
-	}
+	}*/
 
 	/* virtual */ void Container::book(DQMStore::IBooker& ib)
 	{
-
 	}
 }
 

@@ -17,18 +17,18 @@
 
 namespace hcaldqm
 {
-	using namespace mapper, axis;
 	class Container2D : public Container1D
 	{
 		public:
 			Container2D() {}
 			Container2D(std::string const& folder, std::string nametitle,
-				MapperType mt, AxisQType xvt=fEnergy, AxisQType yvt,
-				AxisQType zvt=fEntries):
+				mapper::MapperType mt, axis::AxisQType xvt=axis::fEnergy, 
+				axis::AxisQType yvt=axis::fTime,
+				axis::AxisQType zvt=axis::fEntries):
 				Container1D(folder, nametitle, mt, xvt, yvt),
 				_zaxis(fZaxis, zvt)
 			{}
-			virtual ~Container1D() {}
+			virtual ~Container2D() {}
 
 			//	redeclare what to override
 			virtual void fill(HcalDetId const&);
@@ -41,11 +41,10 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, int);
 			virtual void fill(HcalElectronicsId const&, double);
 			virtual void fill(HcalElectronicsId const&, int, double);
-			virtual void fill(HcalElectronicsId const&, double, double)
+			virtual void fill(HcalElectronicsId const&, double, double);
 
 			//	booking
 			virtual void book(DQMStore::IBooker&);
-			virtual bool book(DQMStore::IBooker&);
 
 		protected:
 			Axis					_zaxis;

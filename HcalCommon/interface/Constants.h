@@ -69,7 +69,7 @@ namespace hcaldqm
 		int const HO = 3;
 		int const HF = 4;
 		int const SUBDET_NUM = 4;
-		std::string SUBDET_NAME[SUBDET_NUM]={"HB", "HE", "HO", "HF"};
+		std::string const SUBDET_NAME[SUBDET_NUM]={"HB", "HE", "HO", "HF"};
 
 		//	iphis
 		int const IPHI_MIN = 1;
@@ -90,7 +90,7 @@ namespace hcaldqm
 		int const IETA_MIN_HO = 1;
 		int const IETA_MAX_HO = 15;
 		int const IETA_MIN_HF = 29;
-		int cosnt IETA_MAX_HF = 41;
+		int const IETA_MAX_HF = 41;
 
 		//	Depth
 		int const DEPTH_MIN = 1;
@@ -107,6 +107,11 @@ namespace hcaldqm
 		double const AXIS_TIME_MIN = -50.;
 		double const AXIS_TIME_MAX = 50;
 		int const AXIS_TIME_NBINS = 200;
+
+		/*
+		 *	TObject Related
+		 */	
+		int const FIRST_BIT_TO_USE = 19;
 	}
 }
 

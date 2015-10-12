@@ -81,7 +81,7 @@ namespace hcaldqm
 				if (ieta<0)
 					index = (abs(ieta)-IETA_MIN_HB);
 				else
-					index = totatHB + (ieta-IETA_MIN_HB);
+					index = totalHB + (ieta-IETA_MIN_HB);
 			else if (subdetector==HE)
 				if (ieta<0)
 					index = 2*totalHB + (abs(ieta)-IETA_MIN_HE);
@@ -107,7 +107,7 @@ namespace hcaldqm
 		unsigned int generate_fFED(Input const& i)
 		{
 			int fed = i.i1;
-			unsigned int index;
+			unsigned int index = 0;
 			if (fed<=FED_VME_MAX)
 				index = (fed-FED_VME_MIN)/FED_VME_DELTA;
 			else if (fed>=FED_uTCA_MIN)
@@ -116,15 +116,15 @@ namespace hcaldqm
 			return index;
 		}	
 
-		unsigned int generate_Crate(Input const& i)
+		unsigned int generate_fCrate(Input const& i)
 		{
 			int crate = i.i1;
-			unsigned int index;
+			unsigned int index = 0;
 
 			if (crate<=CRATE_VME_MAX)
 				index = (crate - CRATE_VME_MIN)/CRATE_VME_DELTA;
 			else if(crate>=CRATE_uTCA_MIN)
-				index = CRATE_VME_NUM + (crate - CRATE_utCA_MIN)/CRATE_uTCA_DELTA;
+				index = CRATE_VME_NUM + (crate - CRATE_uTCA_MIN)/CRATE_uTCA_DELTA;
 
 			return index;
 		}
@@ -141,7 +141,7 @@ namespace hcaldqm
 		{
 			int crate = i.i1;
 			int slot = i.i2;
-			unsigned int index;
+			unsigned int index = 0;
 		
 			if (crate<=CRATE_VME_MAX)
 			{
@@ -153,7 +153,7 @@ namespace hcaldqm
 			else 
 				index = CRATE_VME_NUM*SLOT_VME_NUM + 
 					(crate-CRATE_uTCA_MIN)*SLOT_uTCA_NUM + 
-					(slot-SLOT_uTCA_MIN)
+					(slot-SLOT_uTCA_MIN);
 
 			return index;
 		}

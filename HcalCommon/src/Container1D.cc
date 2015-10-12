@@ -3,8 +3,8 @@
 
 namespace hcaldqm
 {
-
-	using namespace constants,axis;
+	using namespace mapper;
+	using namespace axis;
 	/* virtual */ void Container1D::fill(int id, int x)
 	{
 		_mes[_mapper.index(id)]->Fill(x);
@@ -24,78 +24,79 @@ namespace hcaldqm
 
 	/* virtual */ void Container1D::fill(HcalDetId const& did)
 	{
-		_mes[_mapper.index(did)]->Fill(_xaxis->resolve(did));
+		_mes[_mapper.index(did)]->Fill(_xaxis.resolve(did));
 	}
 	/* virtual */ void Container1D::fill(HcalDetId const& did, int x)
 	{
-		AxisQ act = _xaxis->getAxisQ();
+		AxisQ act = _xaxis.getAxisQ();
 		if (act==fValue || act==fFlag)
 			_mes[_mapper.index(did)]->Fill(x);
 		else if (act==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->resolve(did), x);
+			_mes[_mapper.index(did)]->Fill(_xaxis.resolve(did), x);
 	}
 	/* virtual */ void Container1D::fill(HcalDetId const& did, double x)
 	{
-		AxisQ act = _xaxis->getAxisQ();
+		AxisQ act = _xaxis.getAxisQ();
 		if (act==fValue || act==fFlag)
 			_mes[_mapper.index(did)]->Fill(x);
 		else if (act==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->resolve(did), x);
+			_mes[_mapper.index(did)]->Fill(_xaxis.resolve(did), x);
 	}
 	/* virtual */ void Container1D::fill(HcalDetId const& did, int x, double y)
 	{
-		AxisQ act = _xaxis->getAxisQ();
+		AxisQ act = _xaxis.getAxisQ();
 		if (act==fValue || act==fFlag)
 			_mes[_mapper.index(did)]->Fill(x, y);
 		else if (act==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->resolve(did), x, y);
+			_mes[_mapper.index(did)]->Fill(_xaxis.resolve(did), x, y);
 	}
-	/* virtual */ void Container1D::fill(HcalDetId const&, double, double)
+	/* virtual */ void Container1D::fill(HcalDetId const& did, double x , 
+			double y)
 	{
-		AxisQ act = _xaxis->getAxisQ();
+		AxisQ act = _xaxis.getAxisQ();
 		if (act==fValue || act==fFlag)
 			_mes[_mapper.index(did)]->Fill(x, y );
 		else if (act==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->resolve(did), x, y);
+			_mes[_mapper.index(did)]->Fill(_xaxis.resolve(did), x, y);
 	}
 
 	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid)
 	{
-		_mes[_mapper.index(eid)]->Fill(_xaixs->resolve(eid));
+		_mes[_mapper.index(eid)]->Fill(_xaxis.resolve(eid));
 	}
 	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid, int x)
 	{
-		AxisQ act = _xaxis->getAxisQ();
+		AxisQ act = _xaxis.getAxisQ();
 		if (act==fValue || act==fFlag)
 			_mes[_mapper.index(eid)]->Fill(x);
 		else if (act==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->resolve(eid), x);
+			_mes[_mapper.index(eid)]->Fill(_xaxis.resolve(eid), x);
 	}
 	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid, double x)
 	{
-		AxisQ act = _xaxis->getAxisQ();
+		AxisQ act = _xaxis.getAxisQ();
 		if (act==fValue || act==fFlag)
 			_mes[_mapper.index(eid)]->Fill(x);
 		else if (act==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->resolve(eid), x);
+			_mes[_mapper.index(eid)]->Fill(_xaxis.resolve(eid), x);
 	}
 	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid, 
 		int x, double y)
 	{
-		AxisQ act = _xaxis->getAxisQ();
+		AxisQ act = _xaxis.getAxisQ();
 		if (act==fValue || act==fFlag)
 			_mes[_mapper.index(eid)]->Fill(x, y);
 		else if (act==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->resolve(eid), x, y);
+			_mes[_mapper.index(eid)]->Fill(_xaxis.resolve(eid), x, y);
 	}
 	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid, 
 		double x, double y)
 	{
-		AxisAxisQ act = _xaxis->getAxisQ();
+		AxisQ act = _xaxis.getAxisQ();
 		if (act==fValue || act==fFlag)
 			_mes[_mapper.index(eid)]->Fill(x, y);
 		else if (act==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->resolve(eid), x, y);
+			_mes[_mapper.index(eid)]->Fill(_xaxis.resolve(eid), x, y);
 	}
 
 	/* virtual */ void Container1D::book(DQMStore::IBooker& ib)

@@ -25,7 +25,6 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "DQM/HcalCommon/interface/HcalDQMConstants.h"
 #include "EventFilter/HcalRawToDigi/interface/HcalDCCHeader.h"
 #include "EventFilter/HcalRawToDigi/interface/HcalHTRData.h"
 #include "EventFilter/HcalRawToDigi/interface/HcalUHTRData.h"
@@ -43,6 +42,8 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
+#include "DQM/HcalCommon/interface/Constants.h"
 
 #include "boost/lexical_cast.hpp"
 #include <typeinfo>

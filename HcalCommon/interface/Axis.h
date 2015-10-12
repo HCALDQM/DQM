@@ -11,6 +11,7 @@
  */
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
+#include "DQM/HcalCommon/interface/Constants.h"
 
 #include <string>
 
@@ -18,21 +19,21 @@ namespace hcaldqm
 {
 	namespace axis
 	{
-		using namespace constants;
+		using namespace hcaldqm::constants;
 		enum AxisType
 		{
 			fXaxis = 0,
-			fYaxis = 1.
+			fYaxis = 1,
 			fZaxis = 2,
 			nAxisType = 3
 		};
 
 		enum AxisQ
 		{
-			fQuantity = 0,
+			fValue = 0,
 			fCoordinate = 1,
 			fFlag = 2,
-			nAxisQ = 3;
+			nAxisQ = 3
 		};
 	
 		enum AxisQType
@@ -58,26 +59,33 @@ namespace hcaldqm
 			
 			nAxisQType = 13
 		};
-		std::string axisTitle[nAxisQType] = {
+		std::string const axisTitle[nAxisQType] = {
 			"SubDetector", "iphi", "ieta", "depth", "FED",
 			"Crate", "Slot", "Fiber", "FiberChannel",
 			"Entries", "Events", "Energy (GeV)", "Time"};
-		double axisMin[nAxisQType] = {
-			HB, IPHI_MIN-0.5, -IETA_MAX-0.5, DEPTH_MIN-0.5, FED_VME_MIN,
-			CRATE_VME_MIN, SLOT_uTCA_MIN, FIBER_VME_MIN, FIBERCH_MIN,
-			0, 0, AXIS_ENERGY_MIN, AXIS_TIME_MIN
+		double const axisMin[nAxisQType] = {
+			constants::HB, constants::IPHI_MIN-0.5, -constants::IETA_MAX-0.5, 
+			constants::DEPTH_MIN-0.5, constants::FED_VME_MIN,
+			constants::CRATE_VME_MIN, constants::SLOT_uTCA_MIN, 
+			constants::FIBER_VME_MIN, constants::FIBERCH_MIN,
+			0, 0, constants::AXIS_ENERGY_MIN, constants::AXIS_TIME_MIN
 			};
-		double axisMax[nAxisQType] = {
-			HF+1, IPHI_MAX+0.5, IETA_MAX+0.5, DEPTH_MAX+0.5, FED_uTCA_MAX+1,
-			CRATE_uTCA_MAX+1, SLOT_VME_MAX+1, FIBER_uTCA_MAX, FIBERCH_MAX+1,,
-			3000, 0, AXIS_ENERGY_MAX, AXIS_TIME_MAX 
+		double const axisMax[nAxisQType] = {
+			constants::HF+1, IPHI_MAX+0.5, constants::IETA_MAX+0.5, 
+			constants::DEPTH_MAX+0.5, constants::FED_uTCA_MAX+1,
+			constants::CRATE_uTCA_MAX+1, constants::SLOT_VME_MAX+1, 
+			constants::FIBER_uTCA_MAX, constants::FIBERCH_MAX+1,
+			3000, 0, constants::AXIS_ENERGY_MAX, constants::AXIS_TIME_MAX 
 			};
-		int axisNbins[nAxisQType] = {
-			SUBDET_NUM, IPHI_NUM, 2*IETA_NUM+1, DEPTH_NUM, 
-			FED_VME_NUM+FED_uTCA_NUM, CRATE_VME_NUM+CRATE_uTCA_NUM,
-			FIBER_VME_NUM+FIBER_uTCA_NUM, FIBERCH_NUM, 500, 0
-			AXIS_ENERGY_NBINS, AXIS_TIME_NBINS};
-		bool axisLogs[nAxisQType] = {
+		int const axisNbins[nAxisQType] = {
+			constants::SUBDET_NUM, constants::IPHI_NUM, 
+			2*constants::IETA_NUM+1, constants::DEPTH_NUM, 
+			constants::FED_VME_NUM+constants::FED_uTCA_NUM, 
+			constants::CRATE_VME_NUM+constants::CRATE_uTCA_NUM,
+			constants::FIBER_VME_NUM+constants::FIBER_uTCA_NUM, 
+			constants::FIBERCH_NUM, 500, 0,
+			constants::AXIS_ENERGY_NBINS, constants::AXIS_TIME_NBINS};
+		bool const axisLogs[nAxisQType] = {
 			false, false, false, false, false, false, false, false,
 			false, false, false, false};
 	
@@ -96,8 +104,6 @@ namespace hcaldqm
 	
 				//	
 				void setAxisLog(TObject*);
-				void setAxisTitle(TAxis*);
-				void setAxisBins(TAxis*);
 	
 				AxisType			_type;
 				AxisQType			_qtype;

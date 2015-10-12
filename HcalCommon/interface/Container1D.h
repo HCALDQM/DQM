@@ -9,10 +9,9 @@
  *		1D Container
  */
 
-#include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
+#include "DQM/HcalCommon/interface/Container.h"
 #include "DQM/HcalCommon/interface/Axis.h"
 #include "DQM/HcalCommon/interface/Mapper.h"
-#include "Container.h"
 
 #include <vector>
 #include <string>
@@ -20,16 +19,17 @@
 namespace hcaldqm
 {
 
-	using namespace mapper,axis;
+	using namespace axis;
+	using namespace mapper;
 	class Container1D : public Container
 	{
 		public:
 			Container1D() {}
 			Container1D(std::string const& folder, std::string const& nametitle,
-				MapperType mt, AxisQType xvt=fEnergy, 
-				AxisQType yvt=fEntries):
-				_folder(folder), _name(nametitle), _title(nametitle),
-				_mapper(mt), _xaxis(fXAxis, xvt), _yaxis(fYaxis, yvt)
+				mapper::MapperType mt, axis::AxisQType xvt=axis::fEnergy, 
+				axis::AxisQType yvt=axis::fEntries):
+				Container(folder, nametitle), _title(nametitle),
+				_mapper(mt), _xaxis(fXaxis, xvt), _yaxis(fYaxis, yvt)
 			{}
 			virtual ~Container1D() {}
 
@@ -62,12 +62,10 @@ namespace hcaldqm
 		protected:
 			typedef	std::vector<MonitorElement*>	MEVector;
 			MEVector								_mes;
-			std::string								_folder;
-			std::string								_name;
 			std::string								_title;
-			Mapper									_mapper;
-			Axis									_xaxis;
-			Axis									_yaxis;
+			mapper::Mapper									_mapper;
+			axis::Axis									_xaxis;
+			axis::Axis									_yaxis;
 
 	};
 }

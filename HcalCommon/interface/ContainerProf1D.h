@@ -18,17 +18,17 @@
 
 namespace hcaldqm
 {
-	using namespace mapper,axis;
 	class ContainerProf1D : public Container1D
 	{
 		public:
 			ContainerProf1D() {}
 			ContainerProf1D(std::string const& folder, 
-				std::string const& nametitle, MapperType mt, 
-				AxisQType xvt=fEnergy, AxisQType yvt):
-				Containter1D(folder, nametitle, mt, xvt, yvt)
+				std::string const& nametitle, mapper::MapperType mt, 
+				axis::AxisQType xvt=axis::fEnergy, 
+				axis::AxisQType yvt=axis::fEnergy):
+				Container1D(folder, nametitle, mt, xvt, yvt)
 			{}
-			virtual ~HcalMEContainerProf1D() {}
+			virtual ~ContainerProf1D() {}
 
 			//	booking
 			virtual void book(DQMStore::IBooker&);

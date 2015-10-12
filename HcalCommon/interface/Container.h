@@ -22,18 +22,25 @@ namespace hcaldqm
 	class Container
 	{
 		public:
-			Container()
+			Container():
+				_folder("HcalInfo"), _name("SOME_MONITOR")
+			{}
+			Container(std::string const& folder, std::string const &name):
+				_folder(folder), _name(name)
 			{}
 			virtual ~Container() {}
 
 			virtual void fill(double);
 			virtual void fill(int);
-			virtual void fill(std::string const&);
+//			virtual void fill(std::string const&);
 
 			virtual void book(DQMStore::IBooker&);
 
 		private:
-			MonitorElement *_me;
+			MonitorElement				*_me;
+		protected:
+			std::string					_folder;
+			std::string					_name;
 	};
 }
 
