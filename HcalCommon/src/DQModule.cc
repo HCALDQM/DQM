@@ -7,8 +7,8 @@ namespace hcaldqm
 	{
 		_name = ps.getUntrackedParameter<std::string>("name", "Unknown_Module");
 		_debug = ps.getUntrackedParameter<int>("debug", 0);
-		_runkeyVal = ps.getUntrackedParameter<int>("runKeyVal", 0);
-		_runkeyName = ps.getUntrackedParameter<std::string>("runKeyName", 
+		_runkeyVal = ps.getUntrackedParameter<int>("runkeyVal", 0);
+		_runkeyName = ps.getUntrackedParameter<std::string>("runkeyName", 
 			"pp_run");
 
 		bool mtype = ps.getUntrackedParameter<bool>("mtype", true);
