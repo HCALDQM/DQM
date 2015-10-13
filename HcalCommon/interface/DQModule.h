@@ -33,12 +33,12 @@ namespace hcaldqm
 	class DQModule
 	{
 		public:
-			DQModule(edm::ParameterSet const&)
+			DQModule(edm::ParameterSet const&);
 			virtual ~DQModule() {}
 
 		protected:
 			//	protected Member functions
-			inline void _throw(std:;string const& msg) const
+			inline void _throw(std::string const& msg) const
 			{
 				throw cms::Exception("HCALDQM") << _name << "::"
 					<< msg;
@@ -53,7 +53,7 @@ namespace hcaldqm
 			{
 				edm::LogWarning("HCALDQM") << _name << "::" << msg;
 			}
-			inline void _warn(std:;string const& msg1, 
+			inline void _warn(std::string const& msg1, 
 				std::string const& msg2) const
 			{
 				edm::LogWarning("HCALDQM") << _name << "::" << msg1 << msg2;

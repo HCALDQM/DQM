@@ -7,8 +7,8 @@ namespace hcaldqm
 	{
 		_name = ps.getUntrackedParameter<std::string>("name", "Unknown_Module");
 		_debug = ps.getUntrackedParameter<int>("debug", 0);
-		_runKeyVal = ps.getUntrackedParameter<int>("runKeyVal", "0");
-		_runKeyName = ps.getUntrackedParameter<std::string>("runKeyName", 
+		_runkeyVal = ps.getUntrackedParameter<int>("runKeyVal", 0);
+		_runkeyName = ps.getUntrackedParameter<std::string>("runKeyName", 
 			"pp_run");
 
 		bool mtype = ps.getUntrackedParameter<bool>("mtype", true);
@@ -24,7 +24,7 @@ namespace hcaldqm
 		else
 			_ptype = fLocal;
 			
-		this->_debug("Calling Constructor");
+		this->_logdebug("Calling Constructor");
 	}
 }
 

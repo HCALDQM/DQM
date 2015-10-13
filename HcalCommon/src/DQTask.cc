@@ -6,7 +6,7 @@ namespace hcaldqm
 	DQTask::DQTask(edm::ParameterSet const& ps):
 		DQModule(ps),
 		_cEvsTotal(_name, "EvsTotal"),
-		_cEvsPerLS(_name, "EvsPerLS");
+		_cEvsPerLS(_name, "EvsPerLS")
 	{}
 
 	/*
@@ -19,7 +19,7 @@ namespace hcaldqm
 		try
 		{
 			this->_resetMonitors(0);
-			this->_debug(_name+" processing");
+			this->_logdebug(_name+" processing");
 			_evsTotal++; _cEvsTotal.fill(_evsTotal);
 			_evsPerLS++; _cEvsPerLS.fill(_evsPerLS);
 			_currentLS = e.luminosityBlock();
@@ -70,7 +70,7 @@ namespace hcaldqm
 
 	}
 
-	/* virtual */ void DQTask::resetMonitors(int pflag)
+	/* virtual */ void DQTask::_resetMonitors(int pflag)
 	{
 		//	reset per event
 		if (pflag==0)
