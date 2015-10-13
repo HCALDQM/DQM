@@ -1,15 +1,11 @@
 
 #include "DQM/HcalTasks/interface/RecHitTask.h"
 
-namespace hcaldqm
-{
-	using namespace constants;
-	using namespace mapper;
-	using namespace axis;
-
+	using namespace hcaldqm;
 	RecHitTask::RecHitTask(edm::ParameterSet const& ps) :
 		DQTask(ps),
-		_cEnergy("RecHitTask", "Energy", fSubDet, fEnergy, fEntries)
+		_cEnergy("Hcal/RecHitTask", "Energy", mapper::fSubDet, 
+			axis::fEnergy, axis::fEntries)
 	{
 		_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 			edm::InputTag("hbhereco"));
@@ -29,7 +25,7 @@ namespace hcaldqm
 		edm::EventSetup const& es)
 	{
 		edm::Handle<HBHERecHitCollection>	chbhe;
-		edm::Handle<HORecHitCollection>		chho;
+		edm::Handle<HORecHitCollection>		cho;
 		edm::Handle<HFRecHitCollection>		chf;
 
 		if (!(e.getByLabel(_tagHBHE, chbhe)))
@@ -71,11 +67,10 @@ namespace hcaldqm
 		DQTask::_resetMonitors(pflag);
 		if (pflag==0)
 		{
-			for (unsigned int i=0; i<SUBDET_NUM; i++)
+			for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
 				_numRecHits[i] = 0;
 		}
 	}
-}
 
 DEFINE_FWK_MODULE(RecHitTask);
 

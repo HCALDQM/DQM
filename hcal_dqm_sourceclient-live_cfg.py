@@ -103,21 +103,22 @@ process.hbhereco = process.hbheprereco.clone()
 #	Hcal DQM Tasks and Clients import
 #	New Style
 #-------------------------------------
-process.load("DQM.HcalTasks.HcalDigiTask")
-process.load("DQM.HcalTasks.HcalRawTask")
-process.load("DQM.HcalTasks.HcalRecHitTask")
-process.load("DQM.HcalTasks.HcalTPTask")
-process.load("DQM.HcalTasks.HcalTimingTask")
+#process.load("DQM.HcalTasks.HcalDigiTask")
+#process.load("DQM.HcalTasks.HcalRawTask")
+#process.load("DQM.HcalTasks.HcalRecHitTask")
+#process.load("DQM.HcalTasks.HcalTPTask")
+#process.load("DQM.HcalTasks.HcalTimingTask")
+process.load("DQM.HcalTasks.RecHitTask")
 
 #-------------------------------------
 #	Hcal DQM Tasks and Clients Imports
 #	Old Style.
 #-------------------------------------
-process.load("DQM.HcalMonitorModule.HcalMonitorModule_cfi")
-process.load("DQM.HcalMonitorTasks.HcalMonitorTasks_cfi")
-process.load("DQM.HcalMonitorTasks.HcalTasksOnline_cff")
-process.load("DQM.HcalMonitorClient.HcalMonitorClient_cfi")
-from DQM.HcalMonitorTasks.HcalMonitorTasks_cfi import SetTaskParams
+#process.load("DQM.HcalMonitorModule.HcalMonitorModule_cfi")
+#process.load("DQM.HcalMonitorTasks.HcalMonitorTasks_cfi")
+#process.load("DQM.HcalMonitorTasks.HcalTasksOnline_cff")
+#process.load("DQM.HcalMonitorClient.HcalMonitorClient_cfi")
+#from DQM.HcalMonitorTasks.HcalMonitorTasks_cfi import SetTaskParams
 
 #-------------------------------------
 #	To force using uTCA
@@ -152,54 +153,54 @@ if useMap:
 #	Some Settings before Finishing up
 #	New Style Modules
 #-------------------------------------
-process.hcalDigiTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-process.hcalRawTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-process.hcalRecHitTask.moduleParameters.subsystem = cms.untracked.string(
-		subsystem)
-process.hcalTPTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-process.hcalTimingTask.moduleParameters.subsystem = cms.untracked.string(
-		subsystem)
+#process.hcalDigiTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
+#process.hcalRawTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
+#process.hcalRecHitTask.moduleParameters.subsystem = cms.untracked.string(
+#		subsystem)
+#process.hcalTPTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
+#process.hcalTimingTask.moduleParameters.subsystem = cms.untracked.string(
+#		subsystem)
 
 #-------------------------------------
 #	Some Settings before Finishing up
 #	Old Style Modules
 #-------------------------------------
-process.hcalBeamMonitor.hotrate = 0.40
+#process.hcalBeamMonitor.hotrate = 0.40
 
 oldsubsystem = subsystem
-if not oldsubsystem.endswith("/"):
-	oldsubsystem+= "/"
-process.hcalMonitor.subSystemFolder = oldsubsystem
-SetTaskParams(process, "subSystemFolder", oldsubsystem)
-process.hcalClient.subSystemFolder = oldsubsystem
-process.hcalClient.baseHtmlDir = ''
-process.hcalClient.databaseDir = '/nfshome0/hcaldqm/DQM_OUTPUT/ChannelStatus/'
-process.hcalClient.databaseFirstUpdate = 10
-process.hcalClient.databaseUpdateTime = 60
-process.hcalClient.DeadCell_minerrorrate = 0.05
-process.hcalClient.HotCell_mierrorrate = cms.untracked.double(0.10)
-process.hcalClient.Beam_minerrorrate = cms.untracked.double(2.0)
-process.hcalDigiMonitor.maxDigiSizeHF = cms.untracked.int32(10)
+#if not oldsubsystem.endswith("/"):
+#	oldsubsystem+= "/"
+#process.hcalMonitor.subSystemFolder = oldsubsystem
+#SetTaskParams(process, "subSystemFolder", oldsubsystem)
+#process.hcalClient.subSystemFolder = oldsubsystem
+#process.hcalClient.baseHtmlDir = ''
+#process.hcalClient.databaseDir = '/nfshome0/hcaldqm/DQM_OUTPUT/ChannelStatus/'
+#process.hcalClient.databaseFirstUpdate = 10
+#process.hcalClient.databaseUpdateTime = 60
+#process.hcalClient.DeadCell_minerrorrate = 0.05
+#process.hcalClient.HotCell_mierrorrate = cms.untracked.double(0.10)
+#process.hcalClient.Beam_minerrorrate = cms.untracked.double(2.0)
+#process.hcalDigiMonitor.maxDigiSizeHF = cms.untracked.int32(10)
 
-process.hcalClient.enabledClients = [
-	"DeadCellMonitor", "HotCellMonitor", "RecHitMonitor", "DigiMonitor",
-	"RawDataMonitor", "TrigPrimMonitor", "NZSMonitor", "BeamMonitor",
-	"CoarsePedestalMonitor", "DetDiagTimingMonitor", "Summary"
-]
-process.hcalDigis.ExpectedOrbitMessageTime = cms.untracked.int32(3559)
-process.hcalDigiMonitor.ExpectedOrbitMessageTime = 3559
-process.hcalDigiMonitor.shutOffOrbitTest = False
-process.hcalDeadCellMonitor.excludeHORing2 = False
-process.hcalCoarsePedestalMonitor.ADCDiffThresh = 2
-process.hcalClient.CoarsePedestal_BadChannelStatusMask = cms.untracked.int32(
-	(1<<5) | (1<<6))
-process.hcalDataIntegrityMonitor.RawDataLabel = cms.untracked.InputTag("rawDataCollector")
-process.hcalDetDiagNoiseMonitor.RawDataLabel = cms.untracked.InputTag("rawDataCollector")
-process.hcalDetDiagTimingMonitor.FEDRawDataCollection = cms.untracked.InputTag("rawDataCollector")
-process.hcalMonitor.FEDRawDataCollection = cms.untracked.InputTag("rawDataCollector")
-process.hcalNZSMonitor.RawDataLabel = cms.untracked.InputTag("rawDataCollector")
-process.hcalNoiseMonitor.RawDataLabel = cms.untracked.InputTag("rawDataCollector")
-process.hcalRawDataMonitor.FEDRawDataCollection = cms.untracked.InputTag("rawDataCollector")
+#process.hcalClient.enabledClients = [
+#	"DeadCellMonitor", "HotCellMonitor", "RecHitMonitor", "DigiMonitor",
+#	"RawDataMonitor", "TrigPrimMonitor", "NZSMonitor", "BeamMonitor",
+#	"CoarsePedestalMonitor", "DetDiagTimingMonitor", "Summary"
+#]
+#process.hcalDigis.ExpectedOrbitMessageTime = cms.untracked.int32(3559)
+#process.hcalDigiMonitor.ExpectedOrbitMessageTime = 3559
+#process.hcalDigiMonitor.shutOffOrbitTest = False
+#process.hcalDeadCellMonitor.excludeHORing2 = False
+#process.hcalCoarsePedestalMonitor.ADCDiffThresh = 2
+#process.hcalClient.CoarsePedestal_BadChannelStatusMask = cms.untracked.int32(
+#	(1<<5) | (1<<6))
+#process.hcalDataIntegrityMonitor.RawDataLabel = cms.untracked.InputTag("rawDataCollector")
+#process.hcalDetDiagNoiseMonitor.RawDataLabel = cms.untracked.InputTag("rawDataCollector")
+#process.hcalDetDiagTimingMonitor.FEDRawDataCollection = cms.untracked.InputTag("rawDataCollector")
+#process.hcalMonitor.FEDRawDataCollection = cms.untracked.InputTag("rawDataCollector")
+#process.hcalNZSMonitor.RawDataLabel = cms.untracked.InputTag("rawDataCollector")
+#process.hcalNoiseMonitor.RawDataLabel = cms.untracked.InputTag("rawDataCollector")
+#process.hcalRawDataMonitor.FEDRawDataCollection = cms.untracked.InputTag("rawDataCollector")
 
 #-------------------------------------
 #	Some Settings before Finishing up
@@ -209,18 +210,19 @@ process.hcalRawDataMonitor.FEDRawDataCollection = cms.untracked.InputTag("rawDat
 #	Hcal DQM Tasks/Clients Sequences Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
-		process.hcalDigiTask
-		+process.hcalRawTask
-		+process.hcalRecHitTask
-		+process.hcalTPTask
-		+process.hcalTimingTask
-		+process.hcalMonitor
-		+process.hcalMonitorTasksOnlineSequence
+		process.recHitTask
+#		process.hcalDigiTask
+#		+process.hcalRawTask
+#		+process.hcalRecHitTask
+#		+process.hcalTPTask
+#		+process.hcalTimingTask
+#		+process.hcalMonitor
+#		+process.hcalMonitorTasksOnlineSequence
 )
 
-process.clientsSequence = cms.Sequence(
-	process.hcalClient
-)
+#process.clientsSequence = cms.Sequence(
+#	process.hcalClient
+#)
 
 #-------------------------------------
 #	Quality Tester
@@ -259,7 +261,7 @@ process.p = cms.Path(
 		process.preRecoSequence
 		*process.recoSequence
 		*process.tasksSequence
-		*process.clientsSequence
+#		*process.clientsSequence
 		*process.qTester
 		*process.dqmSequence
 )

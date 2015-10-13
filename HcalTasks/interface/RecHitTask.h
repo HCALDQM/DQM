@@ -10,9 +10,7 @@
 #include "DQM/HcalCommon/interface/DQTask.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
 
-namespace hcaldqm
-{
-	using namespace constants;
+	using namespace hcaldqm;
 	class RecHitTask : public DQTask
 	{
 		public:
@@ -29,14 +27,13 @@ namespace hcaldqm
 			virtual void _resetMonitors(int);
 
 			//	protected vars
-			int				_numRecHits[SUBDET_NUM];
+			int				_numRecHits[constants::SUBDET_NUM];
 			edm::InputTag	_tagHBHE;
 			edm::InputTag	_tagHO;
 			edm::InputTag	_tagHF;
 
 			Container1D		_cEnergy;
 	};
-}
 
 #endif
 
