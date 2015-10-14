@@ -12,11 +12,12 @@ namespace hcaldqm
 			_max(axisMax[fEnergy]), _log(axisLogs[fEnergy])
 		{}
 	
-		Axis::Axis(AxisType type, AxisQType qtype):
+		Axis::Axis(AxisType type, AxisQType qtype, bool useArray):
 			_type(type), _qtype(qtype), _title(axisTitle[qtype]),
 			_nbins(axisNbins[qtype]), _min(axisMin[qtype]),
 			_max(axisMax[qtype]), _log(axisLogs[qtype])
-		{}
+		{
+		}
 		
 		/* virtual */ int Axis::resolve(HcalDetId const& did)
 		{
@@ -81,7 +82,8 @@ namespace hcaldqm
 
 		void Axis::setAxisLog(TObject* o)
 		{
-			o->SetBit(BIT(FIRST_BIT_TO_USE+_type));
+			if (axisLogs[_qtype])
+				o->SetBit(BIT(FIRST_BIT_TO_USE+_type));
 		}
 	}
 }
