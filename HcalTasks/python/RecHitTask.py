@@ -5,7 +5,7 @@ recHitTask = cms.EDAnalyzer(
 	
 	#	standard parameters
 	name = cms.untracked.string("RecHitTask"),
-	debug = cms.untracked.int32(10),
+	debug = cms.untracked.int32(0),
 	runkeyVal = cms.untracked.int32(0),
 	runkeyName = cms.untracked.string("pp_run"),
 

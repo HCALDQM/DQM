@@ -70,6 +70,7 @@ namespace hcaldqm
 		int const HF = 4;
 		int const SUBDET_NUM = 4;
 		std::string const SUBDET_NAME[SUBDET_NUM]={"HB", "HE", "HO", "HF"};
+		std::string const SUBSYSTEM = "Hcal";
 
 		//	iphis
 		int const IPHI_MIN = 1;
@@ -82,7 +83,7 @@ namespace hcaldqm
 		int const IETA_MIN=1;
 		int const IETA_DELTA = 1;
 		int const IETA_MAX=41;
-		int const IETA_NUM=2*(IETA_MAX-IETA_MIN+1);
+		int const IETA_NUM=2*(IETA_MAX-IETA_MIN+1)+1;
 		int const IETA_MIN_HB = 1;
 		int const IETA_MAX_HB = 16;
 		int const IETA_MIN_HE = 16;

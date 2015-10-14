@@ -5,7 +5,7 @@ namespace hcaldqm
 {
 	using namespace hcaldqm::axis;
 	using namespace hcaldqm::mapper;
-
+	using namespace constants;
 	/* virtual */ void Container2D::fill(HcalDetId const& did)
 	{
 		_mes[_mapper.index(did)]->Fill(_xaxis.resolve(did),
@@ -131,7 +131,7 @@ namespace hcaldqm
 	/* virtual */ void Container2D::book(DQMStore::IBooker &ib)
 	{
 		unsigned int size = _mapper.getSize();
-		 ib.setCurrentFolder(_folder);
+		 ib.setCurrentFolder(SUBSYSTEM+"/"+_folder);
 		for (unsigned int i=0; i<size; i++)
 		{
 			std::string hname = _mapper.buildName(i);

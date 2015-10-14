@@ -147,7 +147,7 @@ namespace hcaldqm
 			{
 				int icrate = (crate-CRATE_VME_MIN)/CRATE_VME_DELTA;
 				int sslot = slot<=SLOT_VME_MIN1 ? (slot-SLOT_VME_MIN) : 
-					(slot-SLOT_VME_MIN2);
+					(slot-SLOT_VME_MIN2+SLOT_VME_NUM1);
 				index = icrate*SLOT_VME_NUM + sslot;
 			}
 			else 

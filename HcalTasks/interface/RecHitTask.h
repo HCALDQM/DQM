@@ -9,6 +9,9 @@
 
 #include "DQM/HcalCommon/interface/DQTask.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
+#include "DQM/HcalCommon/interface/ContainerProf1D.h"
+#include "DQM/HcalCommon/interface/ContainerProf2D.h"
+#include "DQM/HcalCommon/interface/Container2D.h"
 
 	using namespace hcaldqm;
 	class RecHitTask : public DQTask
@@ -32,7 +35,29 @@
 			edm::InputTag	_tagHO;
 			edm::InputTag	_tagHF;
 
+			//	HcalElectronicsMap
+			HcalElectronicsMap const *_emap;
+
 			Container1D		_cEnergy;
+			Container1D		_cEnergy_iphi;
+			Container1D		_cEnergy_ieta;
+			Container1D		_cEnergy_Crate;
+			Container1D		_cTime_SubDet;
+			Container1D		_cTime_SubDet_iphi;
+			Container1D		_cTime_SubDet_ieta;
+			Container1D		_cTime_Crate;
+			Container1D		_cTime_Crate_Slot;
+			Container1D		_cEnergy_SubDet_ieta;
+			Container1D		_cEnergy_SubDet_iphi;
+
+			ContainerProf1D _cEnergyieta_SubDet;
+			ContainerProf1D _cEnergyiphi_SubDet;
+
+			Container2D		_cOccupancy_depth;
+			Container2D		_cOccupancy_Crate;
+			Container2D		_cEnergyTime_SubDet;
+
+			ContainerProf2D	_cEnergy2D_depth;
 	};
 
 #endif

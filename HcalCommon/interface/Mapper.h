@@ -160,7 +160,7 @@ namespace hcaldqm
 						case fieta :
 						{
 							char name[10];
-							int ieta = id<=(constants::IETA_NUM/2) ? 
+							int ieta = id<(constants::IETA_NUM/2) ? 
 								-(constants::IETA_MIN+id*constants::IETA_DELTA) : 
 								(id-constants::IETA_NUM/2)*constants::IETA_DELTA 
 								+ constants::IETA_MIN;
@@ -178,15 +178,15 @@ namespace hcaldqm
 						case fSubDet_iphi:
 						{
 							char name[20];
-							if (_size>=IPHI_NUM*3) // HF
+							if (id>=IPHI_NUM*3) // HF
 								sprintf(name, "HFiphi%d",
 									(id-3*constants::IPHI_NUM)*
 									constants::IPHI_DELTA_HF+constants::IPHI_MIN);
-							else if (_size>=2*constants::IPHI_NUM) // HO
+							else if (id>=2*constants::IPHI_NUM) // HO
 								sprintf(name, "HOiphi%d",
 									(id-2*constants::IPHI_NUM)*
 									constants::IPHI_DELTA+constants::IPHI_MIN);
-							else if (_size>=constants::IPHI_NUM) // HE
+							else if (id>=constants::IPHI_NUM) // HE
 								sprintf(name, "HEiphi%d",
 									(id-constants::IPHI_NUM)*
 									constants::IPHI_DELTA+constants::IPHI_MIN);
@@ -204,33 +204,33 @@ namespace hcaldqm
 							unsigned int totalHE = IETA_MAX_HE-IETA_MIN_HE+1;
 							unsigned int totalHO = IETA_MAX_HO-IETA_MIN_HO+1;
 							unsigned int totalHF = IETA_MAX_HF-IETA_MIN_HF+1;
-							if (_size>=(2*(totalHB+totalHE+totalHO)+totalHF))
+							if (id>=(2*(totalHB+totalHE+totalHO)+totalHF))
 								sprintf(name, "HFPieta%d", 
 									(id-2*totalHB-2*totalHE-2*totalHO-totalHF) + 
 									IETA_MIN_HF);
-							else if (_size>=(2*totalHB + 2*totalHE + 2*totalHO))
+							else if (id>=(2*totalHB + 2*totalHE + 2*totalHO))
 								sprintf(name, "HFMieta%d",
 									-((id-2*totalHB-2*totalHE-2*totalHO) + 
 									IETA_MIN_HF));
-							else if (_size>=(2*totalHB+2*totalHE+totalHO))
+							else if (id>=(2*totalHB+2*totalHE+totalHO))
 								sprintf(name, "HOPieta%d", 
 									(id-2*totalHB-2*totalHE-totalHO + 
 									 IETA_MIN_HO));
-							else if (_size>=(2*totalHB+2*totalHE))
+							else if (id>=(2*totalHB+2*totalHE))
 								sprintf(name, "HOMieta%d",
 									-(id-2*totalHB-2*totalHE + IETA_MIN_HO));
-							else if (_size>=(2*totalHB+totalHE))
+							else if (id>=(2*totalHB+totalHE))
 								sprintf(name, "HEPieta%d", 
 									(id-2*totalHB-totalHE + IETA_MIN_HE));
-							else if (_size>=(2*totalHB))
+							else if (id>=(2*totalHB))
 								sprintf(name, "HEMieta%d",
 									-(id-2*totalHB+IETA_MIN_HE));
-							else if (_size>=totalHB)
+							else if (id>=totalHB)
 								sprintf(name, "HBPieta%d",
 									id-totalHB+IETA_MIN_HB);
 							else 
 								sprintf(name, "HBMieta%d",
-									id+IETA_MIN_HB);
+									-(id+IETA_MIN_HB));
 
 							builtname = name;
 							break;
@@ -244,7 +244,7 @@ namespace hcaldqm
 									CRATE_uTCA_MIN);
 							else
 								sprintf(name, "CRATE%d",
-									id*CRATE_VME_DELTA+CRATE_uTCA_MIN);
+									id*CRATE_VME_DELTA+CRATE_VME_MIN);
 
 							builtname = name;
 							break;
@@ -266,20 +266,20 @@ namespace hcaldqm
 							char name[20];
 							if (id>=CRATE_VME_NUM*SLOT_VME_NUM)
 							{
-								id -= CRATE_VME_NUM*SLOT_VME_NUM;
-								int icrate = id/CRATE_uTCA_NUM;
-								int islot = id%SLOT_uTCA_NUM;
+								int newid = id - CRATE_VME_NUM*SLOT_VME_NUM;
+								int icrate = newid/SLOT_uTCA_NUM;
+								int islot = newid%SLOT_uTCA_NUM;
 								sprintf(name, "CRATE%dSLOT%d",
 									icrate+CRATE_uTCA_MIN, islot+SLOT_uTCA_MIN);
 							}
 							else 
 							{
-								int icrate = id/CRATE_VME_NUM;
+								int icrate = id/SLOT_VME_NUM;
 								int islot = id%SLOT_VME_NUM;
 								if (islot>=SLOT_VME_NUM1)
 									sprintf(name, "CRATE%dSLOT%d",
 										icrate+CRATE_VME_MIN,
-										islot+SLOT_VME_MIN2);
+										islot-SLOT_VME_NUM1+SLOT_VME_MIN2);
 								else 
 									sprintf(name, "CRATE%dSLOT%d",
 										icrate+CRATE_VME_MIN,
@@ -319,10 +319,14 @@ namespace hcaldqm
 							_size = DEPTH_NUM;
 							break;
 						case fSubDet_iphi:
-							_size = SUBDET_NUM*IPHI_NUM;
+							_size = (SUBDET_NUM-1)*IPHI_NUM + 
+								IPHI_NUM/IPHI_DELTA_HF;
 							break;
 						case fSubDet_ieta:
-							_size = SUBDET_NUM*IETA_NUM;
+							_size = 2*(IETA_MAX_HB-IETA_MIN_HB+1) + 
+								2*(IETA_MAX_HE-IETA_MIN_HE+1) + 
+								2*(IETA_MAX_HO-IETA_MIN_HO+1)+
+								2*(IETA_MAX_HF-IETA_MIN_HF+1);
 							break;
 						case fFED:
 							_size = FED_VME_NUM+FED_uTCA_NUM;

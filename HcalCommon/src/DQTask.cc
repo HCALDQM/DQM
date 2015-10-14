@@ -5,8 +5,9 @@ namespace hcaldqm
 {
 	DQTask::DQTask(edm::ParameterSet const& ps):
 		DQModule(ps),
-		_cEvsTotal(_name, "EvsTotal"),
-		_cEvsPerLS(_name, "EvsPerLS")
+		_cEvsTotal(_name, "EventsTotal"),
+		_cEvsPerLS(_name, "EventssPerLS"),
+		_evsTotal(0), _evsPerLS(0)
 	{}
 
 	/*

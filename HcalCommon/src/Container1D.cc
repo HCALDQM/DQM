@@ -5,6 +5,7 @@ namespace hcaldqm
 {
 	using namespace mapper;
 	using namespace axis;
+	using namespace constants;
 	/* virtual */ void Container1D::fill(int id, int x)
 	{
 		_mes[_mapper.index(id)]->Fill(x);
@@ -76,7 +77,9 @@ namespace hcaldqm
 	{
 		AxisQ act = _xaxis.getAxisQ();
 		if (act==fValue || act==fFlag)
+		{
 			_mes[_mapper.index(eid)]->Fill(x);
+		}
 		else if (act==fCoordinate)
 			_mes[_mapper.index(eid)]->Fill(_xaxis.resolve(eid), x);
 	}
@@ -102,7 +105,7 @@ namespace hcaldqm
 	/* virtual */ void Container1D::book(DQMStore::IBooker& ib)
 	{
 		unsigned int size = _mapper.getSize();
-		ib.setCurrentFolder(_folder);
+		ib.setCurrentFolder(SUBSYSTEM+"/"+_folder);
 		for (unsigned int i=0; i<size; i++)
 		{
 			std::string hname = _mapper.buildName(i);

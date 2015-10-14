@@ -6,10 +6,11 @@ namespace hcaldqm
 {
 	using namespace mapper;
 	using namespace axis;
+	using namespace constants;
 	/* virtual */ void ContainerProf1D::book(DQMStore::IBooker &ib)
 	{
 		unsigned int size = _mapper.getSize();
-		 ib.setCurrentFolder(_folder);
+		 ib.setCurrentFolder(SUBSYSTEM+"/"+_folder);
 		for (unsigned int i=0; i<size; i++)
 		{
 			std::string hname = _mapper.buildName(i);

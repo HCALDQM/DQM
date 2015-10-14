@@ -79,9 +79,10 @@ namespace hcaldqm
 			};
 		int const axisNbins[nAxisQType] = {
 			constants::SUBDET_NUM, constants::IPHI_NUM, 
-			2*constants::IETA_NUM+1, constants::DEPTH_NUM, 
+			constants::IETA_NUM, constants::DEPTH_NUM, 
 			constants::FED_VME_NUM+constants::FED_uTCA_NUM, 
 			constants::CRATE_VME_NUM+constants::CRATE_uTCA_NUM,
+			constants::SLOT_VME_NUM+constants::SLOT_uTCA_NUM,
 			constants::FIBER_VME_NUM+constants::FIBER_uTCA_NUM, 
 			constants::FIBERCH_NUM, 500, 0,
 			constants::AXIS_ENERGY_NBINS, constants::AXIS_TIME_NBINS};

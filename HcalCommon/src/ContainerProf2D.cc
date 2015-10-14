@@ -5,11 +5,11 @@ namespace hcaldqm
 {
 	using namespace mapper;
 	using namespace axis;
-
+	using namespace constants;
 	/* virtual */ void ContainerProf2D::book(DQMStore::IBooker &ib)
 	{
 		unsigned int size = _mapper.getSize();
-		 ib.setCurrentFolder(_folder);
+		 ib.setCurrentFolder(SUBSYSTEM+"/"+_folder);
 		for (unsigned int i=0; i<size; i++)
 		{
 			std::string hname = _mapper.buildName(i);
@@ -24,6 +24,7 @@ namespace hcaldqm
 			me->setAxisTitle(_xaxis._title, 1);
 			me->setAxisTitle(_yaxis._title, 2);
 			me->setAxisTitle(_zaxis._title, 3);
+			_mes.push_back(me);
 		}
 	}
 }

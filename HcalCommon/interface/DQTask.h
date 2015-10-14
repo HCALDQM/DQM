@@ -8,7 +8,7 @@
  */
 
 #include "DQM/HcalCommon/interface/DQModule.h"
-#include "DQM/HcalCommon/interface/Container.h"
+#include "DQM/HcalCommon/interface/ContainerI.h"
 
 namespace hcaldqm
 {
@@ -34,8 +34,10 @@ namespace hcaldqm
 			virtual void _process(edm::Event const&, edm::EventSetup const&) = 0;
 
 			//	protected vars
-			Container _cEvsTotal;
-			Container _cEvsPerLS;
+			ContainerI _cEvsTotal;
+			ContainerI _cEvsPerLS;
+
+			int			_evsTotal, _evsPerLS;
 	};
 }
 
