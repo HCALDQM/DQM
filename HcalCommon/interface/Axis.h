@@ -71,45 +71,50 @@ namespace hcaldqm
 			"Crate", "Slot", "Fiber", "FiberChannel",
 			"Entries", "Events", "Energy (GeV)", "Time"};
 		double const axisMin[nAxisQType] = {
-			constants::HB, constants::IPHI_MIN-0.5, -constants::IETA_MAX-0.5, 
-			constants::DEPTH_MIN-0.5, 0,
-			0, 0, 0, constants::FIBERCH_MIN,
+			HB, IPHI_MIN-0.5, -IETA_MAX-0.5, DEPTH_MIN-0.5, 
+			0,
+			CRATE_VME_MIN, 
+			SLOT_uTCA_MIN, 
+			FIBER_VME_MIN, 
+			FIBERCH_MIN,
 			0, 0, constants::AXIS_ENERGY_MIN, constants::AXIS_TIME_MIN
 			};
 		double const axisMax[nAxisQType] = {
-			constants::HF+1, IPHI_MAX+0.5, constants::IETA_MAX+0.5, 
-			constants::DEPTH_MAX+0.5, FED_VME_NUM+FED_uTCA_NUM,
-			CRATE_VME_NUM+CRATE_uTCA_NUM, 
-			std::max(SLOT_uTCA_NUM, SLOT_VME_NUM), 
-			std::max(FIBER_uTCA_NUM, FIBER_VME_NUM), constants::FIBERCH_MAX+1,
+			HF+1, IPHI_MAX+0.5, IETA_MAX+0.5, DEPTH_MAX+0.5, 
+			FED_VME_NUM+FED_uTCA_NUM,
+			CRATE_uTCA_MAX+1, 
+			SLOT_VME_MAX+1, 
+			FIBER_uTCA_MAX+1, 
+			FIBERCH_MAX+1,
 			3000, 0, constants::AXIS_ENERGY_MAX, constants::AXIS_TIME_MAX 
 			};
 		int const axisNbins[nAxisQType] = {
-			constants::SUBDET_NUM, constants::IPHI_NUM, 
-			constants::IETA_NUM, constants::DEPTH_NUM, 
-			constants::FED_VME_NUM+constants::FED_uTCA_NUM, 
-			CRATE_VME_NUM+CRATE_uTCA_NUM,
-			std::max(SLOT_VME_NUM, SLOT_uTCA_NUM),
-			std::max(FIBER_VME_NUM+FIBER_uTCA_NUM), 
-			constants::FIBERCH_NUM, 500, 0,
-			constants::AXIS_ENERGY_NBINS, constants::AXIS_TIME_NBINS};
+			SUBDET_NUM, IPHI_NUM, IETA_NUM, DEPTH_NUM, 
+			FED_VME_NUM+FED_uTCA_NUM, 
+			CRATE_uTCA_MAX+1-CRATE_VME_MIN,
+			SLOT_VME_MAX+1-SLOT_uTCA_MIN,
+			FIBER_uTCA_MAX+1-FIBER_VME_MIN, 
+			FIBERCH_NUM, 
+			500, 0, AXIS_ENERGY_NBINS, AXIS_TIME_NBINS};
 		bool const axisLogs[nAxisQType] = {
 			false, false, false, false, false, false, false, false,
 			false, false, false, false};
 	
 		/*
-		 *	Base Class for Axis
+		 *	Base Class for Axis.
+		 *	we need only mapper type to adjust the axis based on the 
+		 *	Detector Component
 		 */
 		class Axis
 		{
 			public:
 				Axis();
-				Axis(AxisType, AxisQType, mapper::MapperType);
+				Axis(AxisType, AxisQType);
 				virtual ~Axis() {}
 
 				virtual int resolve(HcalDetId const&);
 				virtual int resolve(HcalElectronicsId const&);
-				virtual int resolve(int) { return 0;}
+				virtual int resolve(int);
 				virtual int resolve(double) { return 0;}
 				virtual AxisQ getAxisQ(); 
 	
@@ -122,11 +127,8 @@ namespace hcaldqm
 				int					_nbins;
 				double				_min;
 				double				_max;
-				double				*_bins;
 				bool				_log;
-
-				//	for customization purposes
-				mapper::MapperType	_mtype;
+				std::vector<std::string>	_labels;
 		};
 	}
 }
