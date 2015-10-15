@@ -22,6 +22,8 @@ namespace hcaldqm
 			_yaxis.setAxisLog(o);
 			me->setAxisTitle(_xaxis._title, 1);
 			me->setAxisTitle(_yaxis._title, 2);
+			for (int i=0; i<_xaxis._labels.size(); i++)
+				me->setBinLabel(i+1, _xaxis._labels[i]);
 			_mes.push_back(me);
 		}
 	}

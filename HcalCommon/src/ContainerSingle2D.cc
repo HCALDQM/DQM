@@ -18,6 +18,10 @@ namespace hcaldqm
 		_me->setAxisTitle(_xaxis._title, 1);
 		_me->setAxisTitle(_yaxis._title, 2);
 		_me->setAxisTitle(_zaxis._title, 3);
+		for (int i=0; i<_xaxis._labels.size(); i++)
+			_me->setBinLabel(i+1, _xaxis._labels[i]);
+		for (int i=0; i<_yaxis._labels.size(); i++)
+			_me->setBinLabel(i+1, _yaxis._labels[i]);
 	}
 
 	/* virtual */ void ContainerSingle2D:fill(int x, int y)

@@ -1,5 +1,6 @@
 
 #include "DQM/HcalCommon/interface/Axis.h"
+#include <sstream>
 
 namespace hcaldqm
 {
@@ -9,17 +10,39 @@ namespace hcaldqm
 		Axis::Axis():
 			_type(fXaxis), _qtype(fEnergy), _title(axisTitle[fEnergy]),
 			_nbins(axisNbins[fEnergy]), _min(axisMin[fEnergy]),
-			_max(axisMax[fEnergy]), _log(axisLogs[fEnergy]),
-			_mtype(mapper::fSubDet)
+			_max(axisMax[fEnergy]), _log(axisLogs[fEnergy])
 		{}
 	
 		Axis::Axis(AxisType type, AxisQType qtype, mapper::MapperType mtype):
 			_type(type), _qtype(qtype), _title(axisTitle[qtype]),
 			_nbins(axisNbins[qtype]), _min(axisMin[qtype]),
-			_max(axisMax[qtype]), _log(axisLogs[qtype]), _mtype(mtype)
+			_max(axisMax[qtype]), _log(axisLogs[qtype])
 		{
+			char name[20];
+			switch(_qtype)
+			{
+				case fFED:
+					
+					for (i=FED_VME_MIN;i<=FED_VME_MAX; i++)
+					{
+						sprintf(name, "FED%d", i);
+						_labels.push_back(std::string(name));
+					}
+					for (i=FED_uTCA_MIN; i<=FED_uTCA_MAX; i+=2)
+					{
+						sprintf(name, "FED%d", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fSubDet:
+					for (i=HB; i<=HF; i++)
+						_labels.push_back(SUBDET_NAME[i-1]);
+					break;
+				default:
+					break;
+			}
 		}
-		
+
 		/* virtual */ int Axis::resolve(HcalDetId const& did)
 		{
 			int x;
@@ -51,27 +74,12 @@ namespace hcaldqm
 			{
 				case fCrate:
 					x = eid.crateId();
-					if (x<=CRATE_VME_MAX)
-						x-= CRATE_VME_MIN;
-					else 
-						x = x-CRATE_uTCA_MIN+CRATE_VME_NUM;
 					break;
 				case fSlot:
-					int crate = eid.crateId();
-					int slot = eid.slot();
-					if (crate<=CRATE_VME_MAX)
-						x = slot<=SLOT_VME_MIN1? slot-SLOT_VME_MIN :
-							SLOT_VME_NUM1+slot-SOT_VME_MIN2;
-					else 
-						x = SLOT_uTCA_MIN;
+					x = eid.slot();
 					break;
 				case fFiber:
-					int fiber = eid.fiberIndex();
-					int crate = eid.crateId();
-					if (crate<=CRATE_VME_MAX)
-						x = fiber-FIBER_VME_MIN;
-					else 
-						x = fiber-FIBER_uTCA_MIN;
+					x = eid.fiberIndex();
 					break;
 				case fFiberCh:
 					x = eid.fiberChanId();
@@ -81,6 +89,22 @@ namespace hcaldqm
 					break;
 			}
 			return x;
+		}
+
+		/* virtual */ int Axis::resolve(int i)
+		{
+			int x;
+			switch(_qtype)
+			{
+				case fFED:
+					if (i<=FED_VME_MAX)
+						x = i -FED_VME_MIN;
+					else
+						x = i-FED_uTCA_MIN+FED_VME_NUM;
+					break;
+				default:
+					break;
+			}
 		}
 
 		/* virtual */ AxisQ Axis::getAxisQ()
