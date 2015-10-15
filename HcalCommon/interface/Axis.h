@@ -20,6 +20,13 @@ namespace hcaldqm
 	namespace axis
 	{
 		using namespace hcaldqm::constants;
+
+		/*
+		 *	Helper Custom Types
+		 *	1) AxisType - xyz
+		 *	2) AxisQ - generic Type: Value/Coordinate/Flag
+		 *	3) Specific things...
+		 */
 		enum AxisType
 		{
 			fXaxis = 0,
@@ -65,36 +72,39 @@ namespace hcaldqm
 			"Entries", "Events", "Energy (GeV)", "Time"};
 		double const axisMin[nAxisQType] = {
 			constants::HB, constants::IPHI_MIN-0.5, -constants::IETA_MAX-0.5, 
-			constants::DEPTH_MIN-0.5, constants::FED_VME_MIN,
-			constants::CRATE_VME_MIN, constants::SLOT_uTCA_MIN, 
-			constants::FIBER_VME_MIN, constants::FIBERCH_MIN,
+			constants::DEPTH_MIN-0.5, 0,
+			0, 0, 0, constants::FIBERCH_MIN,
 			0, 0, constants::AXIS_ENERGY_MIN, constants::AXIS_TIME_MIN
 			};
 		double const axisMax[nAxisQType] = {
 			constants::HF+1, IPHI_MAX+0.5, constants::IETA_MAX+0.5, 
-			constants::DEPTH_MAX+0.5, constants::FED_uTCA_MAX+1,
-			constants::CRATE_uTCA_MAX+1, constants::SLOT_VME_MAX+1, 
-			constants::FIBER_uTCA_MAX, constants::FIBERCH_MAX+1,
+			constants::DEPTH_MAX+0.5, FED_VME_NUM+FED_uTCA_NUM,
+			CRATE_VME_NUM+CRATE_uTCA_NUM, 
+			std::max(SLOT_uTCA_NUM, SLOT_VME_NUM), 
+			std::max(FIBER_uTCA_NUM, FIBER_VME_NUM), constants::FIBERCH_MAX+1,
 			3000, 0, constants::AXIS_ENERGY_MAX, constants::AXIS_TIME_MAX 
 			};
 		int const axisNbins[nAxisQType] = {
 			constants::SUBDET_NUM, constants::IPHI_NUM, 
 			constants::IETA_NUM, constants::DEPTH_NUM, 
 			constants::FED_VME_NUM+constants::FED_uTCA_NUM, 
-			constants::CRATE_VME_NUM+constants::CRATE_uTCA_NUM,
-			constants::SLOT_VME_NUM+constants::SLOT_uTCA_NUM,
-			constants::FIBER_VME_NUM+constants::FIBER_uTCA_NUM, 
+			CRATE_VME_NUM+CRATE_uTCA_NUM,
+			std::max(SLOT_VME_NUM, SLOT_uTCA_NUM),
+			std::max(FIBER_VME_NUM+FIBER_uTCA_NUM), 
 			constants::FIBERCH_NUM, 500, 0,
 			constants::AXIS_ENERGY_NBINS, constants::AXIS_TIME_NBINS};
 		bool const axisLogs[nAxisQType] = {
 			false, false, false, false, false, false, false, false,
 			false, false, false, false};
 	
+		/*
+		 *	Base Class for Axis
+		 */
 		class Axis
 		{
 			public:
 				Axis();
-				Axis(AxisType, AxisQType);
+				Axis(AxisType, AxisQType, mapper::MapperType);
 				virtual ~Axis() {}
 
 				virtual int resolve(HcalDetId const&);
@@ -114,6 +124,9 @@ namespace hcaldqm
 				double				_max;
 				double				*_bins;
 				bool				_log;
+
+				//	for customization purposes
+				mapper::MapperType	_mtype;
 		};
 	}
 }
