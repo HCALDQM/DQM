@@ -32,12 +32,16 @@ namespace hcaldqm
 			// protected funcs
 			virtual void _resetMonitors(int);
 			virtual void _process(edm::Event const&, edm::EventSetup const&) = 0;
+			virtual void _isApplicable(edm::Event const&) {return true;}
+			virtual int _getCalibType(edm::Event const&);
 
 			//	protected vars
 			ContainerI _cEvsTotal;
 			ContainerI _cEvsPerLS;
 
 			int			_evsTotal, _evsPerLS;
+
+			edm::InputTag		_tagRaw;
 	};
 }
 

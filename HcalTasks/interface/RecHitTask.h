@@ -12,6 +12,7 @@
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
+#include "DQM/HcalCommon/interface/ContainerSingle2D.h"
 
 	using namespace hcaldqm;
 	class RecHitTask : public DQTask
@@ -58,6 +59,9 @@
 			Container2D		_cEnergyTime_SubDet;
 
 			ContainerProf2D	_cEnergy2D_depth;
+			
+			ContainerSingle2D _cOccupancy_SubDet_Crate;
+			ContainerSingle2D _cOccupancy_Crate_Slot;
 	};
 
 #endif

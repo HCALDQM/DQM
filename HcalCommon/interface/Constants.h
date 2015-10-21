@@ -99,6 +99,9 @@ namespace hcaldqm
 		int const DEPTH_MAX = 4;
 		int const DEPTH_NUM = 4;
 
+		//	Caps
+		int const CAPS_NUM = 4;
+
 		/*
 		 *	Value Constants
 		 */
@@ -108,6 +111,8 @@ namespace hcaldqm
 		double const AXIS_TIME_MIN = -50.;
 		double const AXIS_TIME_MAX = 50;
 		int const AXIS_TIME_NBINS = 200;
+
+		int const CALIBEVENTS_MIN = 100;
 
 		/*
 		 *	TObject Related

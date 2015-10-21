@@ -13,7 +13,7 @@ namespace hcaldqm
 			_max(axisMax[fEnergy]), _log(axisLogs[fEnergy])
 		{}
 	
-		Axis::Axis(AxisType type, AxisQType qtype, mapper::MapperType mtype):
+		Axis::Axis(AxisType type, AxisQType qtype):
 			_type(type), _qtype(qtype), _title(axisTitle[qtype]),
 			_nbins(axisNbins[qtype]), _min(axisMin[qtype]),
 			_max(axisMax[qtype]), _log(axisLogs[qtype])
@@ -23,19 +23,19 @@ namespace hcaldqm
 			{
 				case fFED:
 					
-					for (i=FED_VME_MIN;i<=FED_VME_MAX; i++)
+					for (int i=FED_VME_MIN;i<=FED_VME_MAX; i++)
 					{
 						sprintf(name, "FED%d", i);
 						_labels.push_back(std::string(name));
 					}
-					for (i=FED_uTCA_MIN; i<=FED_uTCA_MAX; i+=2)
+					for (int i=FED_uTCA_MIN; i<=FED_uTCA_MAX; i+=2)
 					{
 						sprintf(name, "FED%d", i);
 						_labels.push_back(std::string(name));
 					}
 					break;
 				case fSubDet:
-					for (i=HB; i<=HF; i++)
+					for (int i=HB; i<=HF; i++)
 						_labels.push_back(SUBDET_NAME[i-1]);
 					break;
 				default:
@@ -93,7 +93,7 @@ namespace hcaldqm
 
 		/* virtual */ int Axis::resolve(int i)
 		{
-			int x;
+			int x=0;
 			switch(_qtype)
 			{
 				case fFED:
@@ -105,6 +105,8 @@ namespace hcaldqm
 				default:
 					break;
 			}
+
+			return x;
 		}
 
 		/* virtual */ AxisQ Axis::getAxisQ()

@@ -8,7 +8,10 @@ namespace hcaldqm
 		_cEvsTotal(_name, "EventsTotal"),
 		_cEvsPerLS(_name, "EventssPerLS"),
 		_evsTotal(0), _evsPerLS(0)
-	{}
+	{
+		_tagRaw = ps.getUntrackedParameter<edm::InputTag>("tagRaw",
+			edm::InputTag("rawDataCollector"));
+	}
 
 	/*
 	 *	By design, all the sources will ahve this function inherited and will
@@ -21,6 +24,9 @@ namespace hcaldqm
 		{
 			this->_resetMonitors(0);
 			this->_logdebug(_name+" processing");
+			if (!this->_isApplicable(e))
+				return;
+
 			_evsTotal++; _cEvsTotal.fill(_evsTotal);
 			_evsPerLS++; _cEvsPerLS.fill(_evsPerLS);
 			_currentLS = e.luminosityBlock();
@@ -85,6 +91,61 @@ namespace hcaldqm
 		}
 	}
 
+	/* virtual */ int DQTask::_getCalibType(edmm::Event const&e)
+	{
+		int calibType = 0;
+
+		edm::Handle<FEDRawDataCollection> craw;
+		if (!e.getByLabel(_tagRaw, craw))
+			this->_throw("Collection FEDRawDataCollection isn't available",
+				" " + _tagRaw.label() + " " + _tagRaw.instance());
+
+		int badFEDs=0;
+		unsigned int types[8];
+		for (int i=FED_VME_MIN; i<=FED_VME_MAX; i++)
+		{
+			FEDRawData const& fd = craw->FEDData(i);
+			if (fd.size()<24)
+			{
+				badFEDs++;
+				continue;
+			}
+			int cval = (int)((HcalDCCHeader const*)(fd.data()))->getCalibType();
+			if (cval>7)
+				this->_warn("Unexpected Calib Type in FED " + 
+					boost::lexical_cast<std::string>(i));
+			types[cval]++;
+		}
+		for (int i=FED_uTCAMIN; i<=FED_uTCA_MAX; i++)
+		{
+			FEDRawData const& fd = craw->FEDData(i);
+			if (fd.size()<24)
+			{
+				badFEDs++;
+				continue;
+			}
+			int cval = (int)((HcalDCCHeader const*)(fd.data()))->getCalibType();
+			if (cval>7)
+				this->_warn("Unexpected Calib Type in FED " + 
+					boost::lexical_cast<std::string>(i));
+			types[cval]++;
+		}
+
+		unsigned int max = 0;
+		for (unsigned int ic=0; ic<8; ic++)
+		{
+			if (types[ic]>max)
+			{
+				max = types[ic];
+				calibType = ic;
+			}
+		}
+		if (max!=(FED_VME_NUM+(FED_uTCA_MAX-FED_uTCA_MIN+1)-badFEDs))
+			this->_warn("Conflicting Calibration Types found. Assigning " +
+				boost::lexical_cast<std::string>(calibType));
+
+		return calibType;
+	}
 }
 
 

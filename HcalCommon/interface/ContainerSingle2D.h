@@ -24,12 +24,12 @@ namespace hcaldqm
 				Container()
 			{}
 			ContainerSingle2D(std::string const& folder, 
-				std::string cosnt& nametitle, axis::AxisQType xvt,
+				std::string const& nametitle, axis::AxisQType xvt,
 				axis::AxisQType yvt, axis::AxisQType zvt=axis::fEntries):
 				Container(folder, nametitle),
-				_xaxis(xvt), _yaxis(yvt), _zaxis(zvt)
+				_xaxis(fXaxis, xvt), _yaxis(fYaxis, yvt), _zaxis(fZaxis,zvt)
 			{}
-			~ContainerSignle2D() {}
+			virtual ~ContainerSingle2D() {}
 
 			//	booking
 			virtual void book(DQMStore::IBooker&);

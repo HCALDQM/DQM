@@ -20,10 +20,10 @@
 			mapper::fSubDet_iphi, axis::fTime, axis::fEntries),
 		_cTime_SubDet_ieta(_name+"/Time_SubDet_ieta", "Time", 
 			mapper::fSubDet_ieta, axis::fTime, axis::fEntries),
-		_cTime_Crate(_name+"/Time_Crate", "Time", mapper::fCrate,
-			axis::fTime, axis::fEntries),
-		_cTime_Crate_Slot(_name+"/Time_Crate_Slot", "Time", mapper::fCrate_Slot,
-			axis::fTime, axis::fEntries),
+//		_cTime_Crate(_name+"/Time_Crate", "Time", mapper::fCrate,
+//			axis::fTime, axis::fEntries),
+//		_cTime_Crate_Slot(_name+"/Time_Crate_Slot", "Time", mapper::fCrate_Slot,
+//			axis::fTime, axis::fEntries),
 		_cEnergy_SubDet_ieta(_name+"/Energy_SubDet_ieta", "Energy",
 			mapper::fSubDet_ieta, axis::fEnergy, axis::fEntries),
 		_cEnergy_SubDet_iphi(_name+"/Energy", "Energy", mapper::fSubDet_iphi,
@@ -40,6 +40,10 @@
 			mapper::fSubDet, axis::fTime, axis::fEnergy),
 		_cEnergy2D_depth(_name+"/Energy2D_depth", "Energy",
 			mapper::fdepth, axis::fieta, axis::fiphi)
+//		_cOccupancy_SubDet_Crate(_name, "Occupancy_SubDet_Crate", 
+//			axis::fSubDet, axis::fCrate),
+//		_cOccupancy_Crate_Slot(_name, "Occupancy_Crate_Slot", 
+//			axis::fCrate, axis::fSlot)
 
 	{
 		_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
@@ -66,8 +70,8 @@
 		_cEnergy_Crate.book(ib);
 		_cTime_SubDet_iphi.book(ib);
 		_cTime_SubDet_ieta.book(ib);
-		_cTime_Crate.book(ib);
-		_cTime_Crate_Slot.book(ib);
+//		_cTime_Crate.book(ib);
+//		_cTime_Crate_Slot.book(ib);
 		_cTime_SubDet.book(ib);
 		_cEnergy_SubDet_ieta.book(ib);
 		_cEnergyieta_SubDet.book(ib);
@@ -76,6 +80,8 @@
 		_cOccupancy_Crate.book(ib);
 		_cEnergyTime_SubDet.book(ib);
 		_cEnergy2D_depth.book(ib);
+//		_cOccupancy_SubDet_Crate.book(ib);
+//		_cOccupancy_Crate_Slot.book(ib);
 	}
 
 	/* virtual */ void RecHitTask::_process(edm::Event const& e,
@@ -107,18 +113,20 @@
 			_cEnergy_SubDet_iphi.fill(rh.id(), energy);
 			_cEnergy_iphi.fill(rh.id(), energy);
 			_cEnergy_ieta.fill(rh.id(), energy);
-			_cEnergy_Crate.fill(_emap->lookup(rh.id()), energy);
-			_cTime_Crate.fill(_emap->lookup(rh.id()), time);
-			_cTime_Crate_Slot.fill(_emap->lookup(rh.id()), time);
+//			_cEnergy_Crate.fill(_emap->lookup(rh.id()), energy);
+//			_cTime_Crate.fill(_emap->lookup(rh.id()), time);
+//			_cTime_Crate_Slot.fill(_emap->lookup(rh.id()), time);
 			_cEnergy_SubDet_ieta.fill(rh.id(), energy);
 			_cTime_SubDet_iphi.fill(rh.id(), time);
 			_cTime_SubDet_ieta.fill(rh.id(), time);
 			_cTime_SubDet.fill(rh.id(), time);
 			_cEnergyieta_SubDet.fill(rh.id(), energy);
 			_cEnergyiphi_SubDet.fill(rh.id(), energy);
-			_cOccupancy_Crate.fill(_emap->lookup(rh.id()));
+//			_cOccupancy_Crate.fill(_emap->lookup(rh.id()));
 			_cEnergyTime_SubDet.fill(rh.id(), time, energy);
 			_cEnergy2D_depth.fill(rh.id(), energy);
+//			_cOccupancy_SubDet_Crate.fill(rh.id(), _emap->lookup(rh.id()));
+//			_cOccupancy_Crate_Slot.fill(_emap->lookup(rh.id()));
 		}
 		for (HORecHitCollection::const_iterator it=cho->begin();
 			it!=cho->end(); ++it)
@@ -131,18 +139,20 @@
 			_cEnergy_SubDet_iphi.fill(rh.id(), energy);
 			_cEnergy_iphi.fill(rh.id(), energy);
 			_cEnergy_ieta.fill(rh.id(), energy);
-			_cEnergy_Crate.fill(_emap->lookup(rh.id()), energy);
-			_cTime_Crate.fill(_emap->lookup(rh.id()), time);
-			_cTime_Crate_Slot.fill(_emap->lookup(rh.id()), time);
+//			_cEnergy_Crate.fill(_emap->lookup(rh.id()), energy);
+//			_cTime_Crate.fill(_emap->lookup(rh.id()), time);
+//			_cTime_Crate_Slot.fill(_emap->lookup(rh.id()), time);
 			_cEnergy_SubDet_ieta.fill(rh.id(), energy);
 			_cTime_SubDet_iphi.fill(rh.id(), time);
 			_cTime_SubDet_ieta.fill(rh.id(), time);
 			_cTime_SubDet.fill(rh.id(), time);
 			_cEnergyieta_SubDet.fill(rh.id(), energy);
 			_cEnergyiphi_SubDet.fill(rh.id(), energy);
-			_cOccupancy_Crate.fill(_emap->lookup(rh.id()));
+//			_cOccupancy_Crate.fill(_emap->lookup(rh.id()));
 			_cEnergyTime_SubDet.fill(rh.id(), time, energy);
 			_cEnergy2D_depth.fill(rh.id(), energy);
+//			_cOccupancy_SubDet_Crate.fill(rh.id(), _emap->lookup(rh.id()));
+//			_cOccupancy_Crate_Slot.fill(_emap->lookup(rh.id()));
 		}
 		for (HFRecHitCollection::const_iterator it=chf->begin();
 			it!=chf->end(); ++it)
@@ -155,18 +165,20 @@
 			_cEnergy_SubDet_iphi.fill(rh.id(), energy);
 			_cEnergy_iphi.fill(rh.id(), energy);
 			_cEnergy_ieta.fill(rh.id(), energy);
-			_cEnergy_Crate.fill(_emap->lookup(rh.id()), energy);
-			_cTime_Crate.fill(_emap->lookup(rh.id()), time);
-			_cTime_Crate_Slot.fill(_emap->lookup(rh.id()), time);
+//			_cEnergy_Crate.fill(_emap->lookup(rh.id()), energy);
+//			_cTime_Crate.fill(_emap->lookup(rh.id()), time);
+//			_cTime_Crate_Slot.fill(_emap->lookup(rh.id()), time);
 			_cEnergy_SubDet_ieta.fill(rh.id(), energy);
 			_cTime_SubDet_iphi.fill(rh.id(), time);
 			_cTime_SubDet_ieta.fill(rh.id(), time);
 			_cTime_SubDet.fill(rh.id(), time);
 			_cEnergyieta_SubDet.fill(rh.id(), energy);
 			_cEnergyiphi_SubDet.fill(rh.id(), energy);
-			_cOccupancy_Crate.fill(_emap->lookup(rh.id()));
+//			_cOccupancy_Crate.fill(_emap->lookup(rh.id()));
 			_cEnergyTime_SubDet.fill(rh.id(), time, energy);
 			_cEnergy2D_depth.fill(rh.id(), energy);
+//			_cOccupancy_SubDet_Crate.fill(rh.id(), _emap->lookup(rh.id()));
+//			_cOccupancy_Crate_Slot.fill(_emap->lookup(rh.id()));
 		}
 	}
 
