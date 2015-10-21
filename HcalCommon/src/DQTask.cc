@@ -2,7 +2,8 @@
 #include "DQM/HcalCommon/interface/DQTask.h"
 
 namespace hcaldqm
-{
+{	
+	using namespace constants;
 	DQTask::DQTask(edm::ParameterSet const& ps):
 		DQModule(ps),
 		_cEvsTotal(_name, "EventsTotal"),
@@ -52,8 +53,8 @@ namespace hcaldqm
 		edm::Run const& r,
 		edm::EventSetup const& es)
 	{
-		_cEvsTotal.book(ib);
-		_cEvsPerLS.book(ib);
+		_cEvsTotal.book(ib, _subsystem);
+		_cEvsPerLS.book(ib, _subsystem);
 	}
 
 	/* virtual */ void DQTask::dqmBeginRun(edm::Run const& r,
@@ -91,7 +92,7 @@ namespace hcaldqm
 		}
 	}
 
-	/* virtual */ int DQTask::_getCalibType(edmm::Event const&e)
+	/* virtual */ int DQTask::_getCalibType(edm::Event const&e)
 	{
 		int calibType = 0;
 
@@ -101,7 +102,7 @@ namespace hcaldqm
 				" " + _tagRaw.label() + " " + _tagRaw.instance());
 
 		int badFEDs=0;
-		unsigned int types[8];
+		int types[8];
 		for (int i=FED_VME_MIN; i<=FED_VME_MAX; i++)
 		{
 			FEDRawData const& fd = craw->FEDData(i);
@@ -116,7 +117,7 @@ namespace hcaldqm
 					boost::lexical_cast<std::string>(i));
 			types[cval]++;
 		}
-		for (int i=FED_uTCAMIN; i<=FED_uTCA_MAX; i++)
+		for (int i=FED_uTCA_MIN; i<=FED_uTCA_MAX; i++)
 		{
 			FEDRawData const& fd = craw->FEDData(i);
 			if (fd.size()<24)
@@ -131,7 +132,7 @@ namespace hcaldqm
 			types[cval]++;
 		}
 
-		unsigned int max = 0;
+		int max = 0;
 		for (unsigned int ic=0; ic<8; ic++)
 		{
 			if (types[ic]>max)

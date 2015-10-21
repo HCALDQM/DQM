@@ -102,10 +102,11 @@ namespace hcaldqm
 			_mes[_mapper.index(eid)]->Fill(_xaxis.resolve(eid), x, y);
 	}
 
-	/* virtual */ void Container1D::book(DQMStore::IBooker& ib)
+	/* virtual */ void Container1D::book(DQMStore::IBooker& ib, 
+		std::string subsystem)
 	{
 		unsigned int size = _mapper.getSize();
-		ib.setCurrentFolder(SUBSYSTEM+"/"+_folder);
+		ib.setCurrentFolder(subsystem+"/"+_folder);
 		for (unsigned int i=0; i<size; i++)
 		{
 			std::string hname = _mapper.buildName(i);

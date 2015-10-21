@@ -22,9 +22,9 @@ namespace hcaldqm
 				_me->Fill(x);
 			}
 			
-			virtual void book(DQMStore::IBooker &ib)
+			virtual void book(DQMStore::IBooker &ib, std::string subsystem="Hcal")
 			{
-				ib.setCurrentFolder(SUBSYSTEM+"/"+_folder);
+				ib.setCurrentFolder(subsystem+"/"+_folder);
 				_me = ib.bookFloat(_name);
 			}
 

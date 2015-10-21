@@ -64,7 +64,7 @@ namespace hcaldqm
 			fADC_PED = 13,
 			fADC_FULL = 14,
 			fNomFC_3000 = 15,
-			fNomFC_Full = 16
+			fNomFC_Full = 16,
 			fTimeTS = 17,
 
 			//	Flag Types

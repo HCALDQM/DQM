@@ -10,6 +10,7 @@ namespace hcaldqm
 		_runkeyVal = ps.getUntrackedParameter<int>("runkeyVal", 0);
 		_runkeyName = ps.getUntrackedParameter<std::string>("runkeyName", 
 			"pp_run");
+		_subsystem = ps.getUntrackedParameter<std::string>("subsystem", "Hcal");
 
 		bool mtype = ps.getUntrackedParameter<bool>("mtype", true);
 		int ptype = ps.getUntrackedParameter<int>("ptype", 0);

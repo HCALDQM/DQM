@@ -33,21 +33,21 @@ namespace hcaldqm
 		}
 
 		template<typename DIGI>
-		double aveTS(DIGI digi, double ped=0, int i=0, int j=digi.size()-1)
+		double aveTS(DIGI digi, double ped=0, int i=0, int j=3)
 		{
 			double sumQ = 0;
 			double sumQT = 0;
 			for (int ii=i; ii<=j; ii++)
 			{
-				sumQ+=digi.sample(ii).nominal_fC-ped;
-				sumQT +=(ii+1)(digi.sample(ii).nominal_fC()-ped);
+				sumQ+=digi.sample(ii).nominal_fC()-ped;
+				sumQT +=(ii+1)*(digi.sample(ii).nominal_fC()-ped);
 			}
 			
 			return sumQT/sumQ-1;
 		}
 
 		template<typename DIGI>
-		double sumQ(DIGI digi, double ped, int i=0, int j=digi.size()-1)
+		double sumQ(DIGI digi, double ped, int i=0, int j=3)
 		{
 			double sum=0;
 			for (int ii=i; ii<=j; ii++)
@@ -56,7 +56,7 @@ namespace hcaldqm
 		}
 
 		template<typename DIGI>
-		double aveQ(DIGI digi, double ped, int i=0, int j=digi.size()-1)
+		double aveQ(DIGI digi, double ped, int i=0, int j=3)
 		{
 			return sumQ<DIGI>(digi, ped, i, j)/(j-i+1);
 		}

@@ -33,7 +33,7 @@ namespace hcaldqm
 		_data[isubdet][iiphi][iieta][idepth]._entries++;
 	}
 
-	/* virtual */ void ContianerCompact::dump(Container1D* c, bool q)
+	/* virtual */ void ContainerCompact::dump(Container1D* c, bool q)
 	{
 		for (int idet=0; idet<SUBDET_NUM; idet++)
 		{

@@ -82,6 +82,7 @@ namespace hcaldqm
 
 			int						_runkeyVal;
 			std::string				_runkeyName;
+			std::string				_subsystem;
 
 			int						_evsTotal;
 			int						_evsPerLS;

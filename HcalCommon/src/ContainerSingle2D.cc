@@ -5,9 +5,10 @@ namespace hcaldqm
 {
 	using namespace axis;
 
-	/* virtual */ void ContainerSingle2D::book(DQMStore::IBooker &ib)
+	/* virtual */ void ContainerSingle2D::book(DQMStore::IBooker &ib,
+		std::string subsystem)
 	{
-		ib.setCurrentFolder(SUBSYSTEM+"/"+_folder);
+		ib.setCurrentFolder(subsystem+"/"+_folder);
 		_me = ib.book2D(_name, _name,
 			_xaxis._nbins, _xaxis._min, _xaxis._max,
 			_yaxis._nbins, _yaxis._min, _yaxis._max);

@@ -30,7 +30,7 @@ namespace hcaldqm
 			{}
 			virtual ~ContainerProf2D() {}
 
-			virtual void book(DQMStore::IBooker&);
+			virtual void book(DQMStore::IBooker&, std::string subsystem="Hcal");
 
 		protected:
 	};

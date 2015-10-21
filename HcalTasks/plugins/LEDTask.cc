@@ -37,14 +37,14 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	DQTask::bookHistograms(ib, r, es);
-	_cSignalMeans1D_SubDet.book(ib);
-	_cSignalRMSs1D_SubDet.book(ib);
-	_cTimingMeans1D_SubDet.book(ib);
-	_cTimingRMSs1D_SubDet.book(ib);
-	_cSignalMeans2D_depth.book(ib);
-	_cSignalRMSs2D_depth.book(ib);
-	_cTimingMeans2D_depth.book(ib);
-	_cTimingRMSs2D_depth.book(ib);
+	_cSignalMeans1D_SubDet.book(ib, _subsystem);
+	_cSignalRMSs1D_SubDet.book(ib, _subsystem);
+	_cTimingMeans1D_SubDet.book(ib, _subsystem);
+	_cTimingRMSs1D_SubDet.book(ib, _subsystem);
+	_cSignalMeans2D_depth.book(ib, _subsystem);
+	_cSignalRMSs2D_depth.book(ib, _subsystem);
+	_cTimingMeans2D_depth.book(ib, _subsystem);
+	_cTimingRMSs2D_depth.book(ib, _subsystem);
 }
 
 /* virtual */ void LEDTask::_resetMonitors(int pflag)
@@ -67,7 +67,7 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 /* virtual */ void LEDTask::_process(edm::Event const& e,
 	edm::EventSetup const& es)
 {
-	edm::Handle<HBHEPDigiCollection>		chbhe;
+	edm::Handle<HBHEDigiCollection>		chbhe;
 	edm::Handle<HODigiCollection>		cho;
 	edm::Handle<HFDigiCollection>		chf;
 
@@ -85,25 +85,28 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		it!=chbhe->end(); ++it)
 	{
 		const HBHEDataFrame digi = (const HBHEDataFrame)(*it);
-		_cOccupancy2D_depth.fill(digi.id());
-		_cSignals.fill(digi.id(), utilities::sumQ<HBHEDataFrame>(digi, 2.5));
-		_cTiming.fill(digi.id(), utilities::aveTS<HBHEDataFrame>(digi, 2.5));
+		_cSignals.fill(digi.id(), utilities::sumQ<HBHEDataFrame>(digi, 2.5, 0,
+			digi.size()-1));
+		_cTiming.fill(digi.id(), utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
+			digi.size()-1));
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
 		it!=cho->end(); ++it)
 	{
 		const HODataFrame digi = (const HODataFrame)(*it);
-		_cOccupancy2D_depth.fill(digi.id());
-		_cSignals.fill(digi.id(), utilities::sumQ<HODataFrame>(digi, 8.5));
-		_cTiming.fill(digi.id(), utilities::aveTS<HODataFrame>(digi, 8.5));
+		_cSignals.fill(digi.id(), utilities::sumQ<HODataFrame>(digi, 8.5, 0,
+			digi.size()-1));
+		_cTiming.fill(digi.id(), utilities::aveTS<HODataFrame>(digi, 8.5, 0,
+			digi.size()-1));
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
 		it!=chf->end(); ++it)
 	{
 		const HFDataFrame digi = (const HFDataFrame)(*it);
-		_cOccupancy2D_depth.fill(digi.id());
-		_cSignals.fill(digi.id(), utilities::sumQ<HFDataFrame>(digi, 2.5));
-		_cTiming.fill(digi.id(), utilities::aveTS<HFDataFrame>(digi, 2.5));
+		_cSignals.fill(digi.id(), utilities::sumQ<HFDataFrame>(digi, 2.5, 0,
+			digi.size()-1));
+		_cTiming.fill(digi.id(), utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
+			digi.size()-1));
 	}
 
 	if (_ptype==fOnline && _evsTotal>0 &&

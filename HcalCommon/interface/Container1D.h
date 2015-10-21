@@ -57,7 +57,8 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, double, double);
 
 			//	booking
-			virtual void book(DQMStore::IBooker&);
+			virtual void book(DQMStore::IBooker&, 
+				std::string subsystem="Hcal");
 
 		protected:
 			typedef	std::vector<MonitorElement*>	MEVector;

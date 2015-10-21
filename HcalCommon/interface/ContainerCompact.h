@@ -22,7 +22,7 @@ namespace hcaldqm
 		double _sum;
 		double _sum2;
 		unsigned int _entries;
-	}
+	};
 
 	class ContainerCompact
 	{
