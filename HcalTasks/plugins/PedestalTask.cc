@@ -6,7 +6,13 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	DQTask(ps),
 
 	//	Containers
-	_cOccupancy2D_depth(_name+"/Occupancy/2D", "Occupancy",
+	_cPedestalMeans1D_SubDet(_name+"/1D", "PedestalMeans",
+		mapper::fSubDet, axis::fADC_PED, axis::fEntries),
+	_cPedestalRMSs1D_SubDet(_name+"/1D", "PedestalRMSs",
+		mapper::fSubDet, axis::fADC_PED, axis::fEntries),
+	_cPedestalMeans2D_depth(_name+"/2D", "PedestalMeans",
+		mapper::fdepth, axis::fieta, axis::fiphi),
+	_cPedestalRMSs2D_depth(_name+"/2D", "PedestalRMSs",
 		mapper::fdepth, axis::fieta, axis::fiphi)
 {
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
@@ -23,12 +29,21 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	DQTask::bookHistograms(ib, r, es);
-	_cOccupancy2D_depth.book(ib);
+	_cPedestalMeans1D_SubDet.book(ib);
+	_cPedestalRMSs1D_SubDet.book(ib);
+	_cPedestalMeans2D_depth.book(ib);
+	_cPedestalRMSs2D_depth.book(ib);
 }
 
 /* virtual */ void PedestalTask::_resetMonitors(int pflag)
 {
 	DQTask::_resetMonitors(pflag);
+}
+
+/* virtual */ void PedestalTask::_dump()
+{
+	_cPedestals.dump(&_cPedestalMeans_SubDet, true);
+	_cPedestals.dump(&_cPedestalRMSs_SubDet, false);
 }
 
 /* virtual */ void PedestalTask::_process(edm::Event const& e,
@@ -54,7 +69,6 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		const HBHEDataFrame digi = (const HBHEDataFrame)(*it);
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
-		_cOccupancy2D_depth.fill(digi.id());
 		_cPedestals.fill(did.id(), utilities::aveQ<HBHEDataFrame>(digi,
 			0, 0, digiSizeToUse));
 	}
@@ -64,7 +78,6 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		const HODataFrame digi = (const HODataFrame)(*it);
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1
-		_cOccupancy2D_depth.fill(digi.id());
 		_cPedestals.fill(did.id(), utilities::aveQ<HODataFrame>(digi, 0, 0, 
 			digiSizeToUse));
 	}
@@ -74,20 +87,16 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		const HFDataFrame digi = (const HFDataFrame)(*it);
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1
-		_cOccupancy2D_depth.fill(digi.id());
 		_cPedestals.fill(did.id(), utilities::aveQ<HFDataFrame>(digi, 0, 0, 
 			digiSizeToUse));
 	}
 
 	if (_ptype==fOnline && _evsTotal>0 && 
 		_evsTotal%constants::CALIBEVENTS_MIN==0)
-	{
-		_cPedestals.dump(&_cPedestalMeans_SubDet, true);
-		_cPedestals.dump(&_cPedestalRMSs_SubDet, false);
-	}
+		this->_dump();
 }
 
-/* virtual */ void PedestalsTask::_isApplicable(edm::Event const& e)
+/* virtual */ bool PedestalsTask::_isApplicable(edm::Event const& e)
 {
 	if (_ptype==fOnline)
 	{
@@ -97,6 +106,11 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	else 
 	{
 		//	local
+		edm::Handle<HcalTBTriggerData>	ctrigger;
+		if (!e.getByLabel(_tagTrigger, ctrigger))
+			this->_throw("Collection HcalTBTriggerData isn't available",
+				" " + _tagTrigger.label() + " " + _tagTrigger.instance());
+		return ctrigger->wasSpillIgnorantPedestalTrigger();
 	}
 
 	return false;

@@ -8,6 +8,7 @@
  */
 
 #include "DQM/HcalCommon/interface/DQTask.h"
+#include "DQM/HcalCommon/interface/ContainerCompact.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
@@ -23,18 +24,36 @@ class LEDTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
+		virtual void endRun(edm::Run const&, edm::EventSetup const&)
+		{this->_dump();}
+
 	protected:
 		//	funcs
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
 		virtual void _resetMonitors(int);
+		virtual bool _isApplicable(edm::Event const&);
+		virtual void _dump();
 
 		//	vars
 		edm::InputTag	_tagHBHE;
 		edm::InputTag	_tagHO;
 		edm::InputTag	_tagHF;
+		edm::InputTag	_tagTrigger;
 
-		Container2D		_cOccupancy2D_depth;
-		ContainerProf1D _OccupancyVSls_SubDet;
+		//	Compact
+		ContainerCompact _cSignals;
+		ContainerCompact _cTiming;
+
+		//	1D
+		Container1D		_cSignalMeans1D_SubDet;
+		Container1D		_cSignalRMSs1D_SubDet;
+		Container1D		_cTimingMeans1D_SubDet;
+		Container1D		_cTimingRMSs1D_SubDet;
+
+		Container2D		_cSignalMeans2D_depth;
+		Container1D		_cSignalRMSs2D_depth;
+		Container2D		_cTimingMeans2D_depth;
+		Container1D		_cTimingRMSs2D_depth;
 };
 
 #endif

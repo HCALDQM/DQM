@@ -111,6 +111,19 @@ namespace hcaldqm
 		double const AXIS_TIME_MIN = -50.;
 		double const AXIS_TIME_MAX = 50;
 		int const AXIS_TIME_NBINS = 200;
+		int const AXIS_ADC_NBINS_PED = 100;
+		double const AXIS_ADC_MAX_PED = 5;
+		int const AXIS_ADC_NBINS = 128;
+		double const AXIS_ADC_MIN = 0;
+		double const AXIS_ADC_MAX = 128;
+		int const AXIS_NOMFC_NBINS_3000 = 300;
+		double const AXIS_NOMFC_MAX_3000 = 3000.;
+		int const AXIS_NOMFC_NBINS = 300;
+		double const AXIS_NOMFC_MIN = 0;
+		double const AXIS_NOMFC_MAX = 3000.;
+		int const AXIS_TIMETS_NBINS = 10;
+		double const AXIS_TIMETS_MIN = 0;
+		double const AXIS_TIMETS_MAX = 10;
 
 		int const CALIBEVENTS_MIN = 100;
 

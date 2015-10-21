@@ -61,15 +61,21 @@ namespace hcaldqm
 			fEvents = 10,
 			fEnergy = 11,
 			fTime = 12,
+			fADC_PED = 13,
+			fADC_FULL = 14,
+			fNomFC_3000 = 15,
+			fNomFC_Full = 16
+			fTimeTS = 17,
 
 			//	Flag Types
 			
-			nAxisQType = 13
+			nAxisQType = 18
 		};
 		std::string const axisTitle[nAxisQType] = {
 			"SubDetector", "iphi", "ieta", "depth", "FED",
 			"Crate", "Slot", "Fiber", "FiberChannel",
-			"Entries", "Events", "Energy (GeV)", "Time"};
+			"Entries", "Events", "Energy (GeV)", "Time",
+			"ADC", "ADC", "nominal fC", "nominal fC", "Time Slice"};
 		double const axisMin[nAxisQType] = {
 			HB, IPHI_MIN-0.5, -IETA_MAX-0.5, DEPTH_MIN-0.5, 
 			0,
@@ -77,7 +83,9 @@ namespace hcaldqm
 			SLOT_uTCA_MIN, 
 			FIBER_VME_MIN, 
 			FIBERCH_MIN,
-			0, 0, constants::AXIS_ENERGY_MIN, constants::AXIS_TIME_MIN
+			0, 0, constants::AXIS_ENERGY_MIN, constants::AXIS_TIME_MIN,
+			AXIS_ADC_MIN, AXIS_ADC_MIN, AXIS_NOMFC_MIN, AXIS_NOMFC_MIN,
+			AXIS_TIMETS_MIN
 			};
 		double const axisMax[nAxisQType] = {
 			HF+1, IPHI_MAX+0.5, IETA_MAX+0.5, DEPTH_MAX+0.5, 
@@ -86,7 +94,9 @@ namespace hcaldqm
 			SLOT_VME_MAX+1, 
 			FIBER_uTCA_MAX+1, 
 			FIBERCH_MAX+1,
-			3000, 0, constants::AXIS_ENERGY_MAX, constants::AXIS_TIME_MAX 
+			3000, 0, constants::AXIS_ENERGY_MAX, constants::AXIS_TIME_MAX,
+			AXIS_ADC_MAX_PED, AXIS_ADC_MAX, AXIS_NOMFC_MAX_3000, AXIS_NOMFC_MAX,
+			AXIS_TIMETS_MAX
 			};
 		int const axisNbins[nAxisQType] = {
 			SUBDET_NUM, IPHI_NUM, IETA_NUM, DEPTH_NUM, 
@@ -95,10 +105,13 @@ namespace hcaldqm
 			SLOT_VME_MAX+1-SLOT_uTCA_MIN,
 			FIBER_uTCA_MAX+1-FIBER_VME_MIN, 
 			FIBERCH_NUM, 
-			500, 0, AXIS_ENERGY_NBINS, AXIS_TIME_NBINS};
+			500, 0, AXIS_ENERGY_NBINS, AXIS_TIME_NBINS, 
+			AXIS_ADC_NBINS_PED, AXIS_ADC_NBINS, AXIS_NOMFC_NBINS_3000,
+			AXIS_NOMFC_NBINS, AXIS_TIMETS_NBINS
+			};
 		bool const axisLogs[nAxisQType] = {
 			false, false, false, false, false, false, false, false,
-			false, false, false, false};
+			false, false, false, false, true, true, true, true, true};
 	
 		/*
 		 *	Base Class for Axis.

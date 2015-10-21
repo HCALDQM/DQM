@@ -8,6 +8,7 @@
  */
 
 #include "DQM/HcalCommon/interface/DQTask.h"
+#include "DQM/HcalCommon/interface/ContainerCompact.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
@@ -23,21 +24,31 @@ class PedestalTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
+		virtual void endRun(edm::Run const&, edm::EventSetup const&)
+		{this->_dump();}
+
 	protected:
 		//	funcs
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
 		virtual void _resetMonitors(int);
-		virtual void _isApplicable(edm::Event const&);
+		virtual bool _isApplicable(edm::Event const&);
+		virtual void _dump();
 
 		//	vars
 		edm::InputTag	_tagHBHE;
 		edm::InputTag	_tagHO;
 		edm::InputTag	_tagHF;
+		edm::InputTag	_tagTrigger;
 
 		ContainerCompact _cPedestals;
 
-		Container2D		_cOccupancy2D_depth;
-		ContainerProf1D _OccupancyVSls_SubDet;
+		//	1D
+		Container1D		_cPedestalMeans1D_SubDet;
+		Container1D		_cPedestalRMSs1D_SubDet;
+
+		//	2D
+		Container2D		_cPedestalMeans2D_depth;
+		Container2D		_cPedestalRMSs2D_depth;
 };
 
 #endif
