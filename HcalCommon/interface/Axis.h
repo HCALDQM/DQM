@@ -55,21 +55,23 @@ namespace hcaldqm
 			fSlot = 6,
 			fFiber = 7,
 			fFiberCh = 8,
+			fCoodinateLast = 9,
 
 			//	Value Types
-			fEntries = 9,
-			fEvents = 10,
-			fEnergy = 11,
-			fTime = 12,
-			fADC_PED = 13,
-			fADC_FULL = 14,
-			fNomFC_3000 = 15,
-			fNomFC_Full = 16,
-			fTimeTS = 17,
+			fEntries = 10,
+			fEvents = 11,
+			fEnergy = 12,
+			fTime = 13,
+			fADC_PED = 14,
+			fADC_FULL = 15,
+			fNomFC_3000 = 16,
+			fNomFC_Full = 17,
+			fTimeTS = 18,
+			fValueLast = 19
 
 			//	Flag Types
 			
-			nAxisQType = 18
+			nAxisQType = 20
 		};
 		std::string const axisTitle[nAxisQType] = {
 			"SubDetector", "iphi", "ieta", "depth", "FED",
@@ -115,8 +117,6 @@ namespace hcaldqm
 	
 		/*
 		 *	Base Class for Axis.
-		 *	we need only mapper type to adjust the axis based on the 
-		 *	Detector Component
 		 */
 		class Axis
 		{

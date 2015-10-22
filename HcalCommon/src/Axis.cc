@@ -112,9 +112,9 @@ namespace hcaldqm
 		/* virtual */ AxisQ Axis::getAxisQ()
 		{
 			int t = _qtype;
-			if (t<=8)
+			if (_qtype<fCoordinateLast)
 				return fCoordinate;
-			else if (t<=12)
+			else if (t<fValueLast)
 				return fValue;
 			else 
 				return fFlag;
