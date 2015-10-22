@@ -42,6 +42,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 
 /* virtual */ void PedestalTask::_dump()
 {
+	_cPedestalMeans1D_SubDet.reset();
+	_cPedestalRMSs1D_SubDet.reset();
+	_cPedestalMeans2D_depth.reset();
+	_cPedestalRMSs2D_depth.reset();
 	_cPedestals.dump(&_cPedestalMeans1D_SubDet, true);
 	_cPedestals.dump(&_cPedestalRMSs1D_SubDet, false);
 	_cPedestals.dump(&_cPedestalMeans2D_depth, true);
@@ -71,7 +75,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		const HBHEDataFrame digi = (const HBHEDataFrame)(*it);
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
-		_cPedestals.fill(digi.id(), utilities::aveQ<HBHEDataFrame>(digi,
+		_cPedestals.fill(digi.id(), utilities::aveADC<HBHEDataFrame>(digi,
 			0, 0, digiSizeToUse));
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
@@ -80,7 +84,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		const HODataFrame digi = (const HODataFrame)(*it);
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
-		_cPedestals.fill(digi.id(), utilities::aveQ<HODataFrame>(digi, 0, 0, 
+		_cPedestals.fill(digi.id(), utilities::aveADC<HODataFrame>(digi, 0, 0, 
 			digiSizeToUse));
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
@@ -89,7 +93,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		const HFDataFrame digi = (const HFDataFrame)(*it);
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
-		_cPedestals.fill(digi.id(), utilities::aveQ<HFDataFrame>(digi, 0, 0, 
+		_cPedestals.fill(digi.id(), utilities::aveADC<HFDataFrame>(digi, 0, 0, 
 			digiSizeToUse));
 	}
 

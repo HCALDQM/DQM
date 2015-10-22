@@ -102,7 +102,7 @@ namespace hcaldqm
 				" " + _tagRaw.label() + " " + _tagRaw.instance());
 
 		int badFEDs=0;
-		int types[8];
+		std::vector<int> types(8,0);
 		for (int i=FED_VME_MIN; i<=FED_VME_MAX; i++)
 		{
 			FEDRawData const& fd = craw->FEDData(i);

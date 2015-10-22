@@ -111,7 +111,7 @@ namespace hcaldqm
 			};
 		bool const axisLogs[nAxisQType] = {
 			false, false, false, false, false, false, false, false,
-			false, false, false, false, true, true, true, true, true};
+			false, false, false, false, false, false, false, false, false};
 	
 		/*
 		 *	Base Class for Axis.

@@ -60,6 +60,21 @@ namespace hcaldqm
 		{
 			return sumQ<DIGI>(digi, ped, i, j)/(j-i+1);
 		}
+
+		template<typename DIGI>
+		double sumADC(DIGI digi, double ped, int i=0, int j=3)
+		{
+			double sum = 0;
+			for (int ii=i; ii<=j; ii++)
+				sum+=digi.sample(ii).adc()-ped;
+			return sum;
+		}
+
+		template<typename DIGI>
+		double aveADC(DIGI digi, double ped, int i=0, int j=3)
+		{
+			return sumADC<DIGI>(digi, ped, i, j)/(j-i+1);
+		}
 	}
 }
 

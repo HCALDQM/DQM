@@ -59,6 +59,7 @@ namespace hcaldqm
 			//	booking
 			virtual void book(DQMStore::IBooker&, 
 				std::string subsystem="Hcal");
+			virtual void reset();
 
 		protected:
 			typedef	std::vector<MonitorElement*>	MEVector;

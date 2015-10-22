@@ -122,6 +122,12 @@ namespace hcaldqm
 			_mes.push_back(me);
 		}
 	}
+
+	/* virtual */ void Container1D::reset()
+	{
+		for (MEVector::const_iterator it=_mes.begin(); it!=_mes.end(); ++it)
+			(*it)->Reset();
+	}
 }
 
 

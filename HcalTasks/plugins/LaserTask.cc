@@ -54,6 +54,14 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 
 /* virtual */ void LaserTask::_dump()
 {
+	_cSignalMeans1D_SubDet.reset();
+	_cSignalRMSs1D_SubDet.reset();
+	_cTimingMeans1D_SubDet.reset();
+	_cTimingRMSs1D_SubDet.reset();
+	_cSignalMeans2D_depth.reset();
+	_cSignalRMSs2D_depth.reset();
+	_cTimingMeans2D_depth.reset();
+	_cTimingRMSs2D_depth.reset();
 	_cSignals.dump(&_cSignalMeans1D_SubDet, true);
 	_cSignals.dump(&_cSignalRMSs1D_SubDet, false);
 	_cTiming.dump(&_cTimingMeans1D_SubDet, true);

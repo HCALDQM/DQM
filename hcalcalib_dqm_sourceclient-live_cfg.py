@@ -101,9 +101,9 @@ process.hbhereco = process.hbheprereco.clone()
 #-------------------------------------
 #	Hcal DQM Tasks and Clients import
 #-------------------------------------
-process.load("DQM.HcalTasks.HcalLEDTask")
-process.load("DQM.HcalTasks.HcalLaserTask")
-process.load("DQM.HcalTasks.HcalPedestalTask")
+process.load("DQM.HcalTasks.LEDTask")
+process.load("DQM.HcalTasks.LaserTask")
+process.load("DQM.HcalTasks.PedestalTask")
 
 #-------------------------------------
 #	To force using uTCA
@@ -138,30 +138,15 @@ if useMap:
 #	Some Settings before Finishing up
 #-------------------------------------
 process.hcalDigis.InputLabel = rawTag
-process.hcalLEDTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-process.hcalLEDTask.moduleParameters.calibTypes = cms.untracked.vint32(
-		1,2,3,4,5)
-process.hcalLEDTask.moduleParameters.Labels.RAW = cms.untracked.InputTag(
-		"hltHcalCalibrationRaw")
-process.hcalLaserTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-process.hcalLaserTask.moduleParameters.calibTypes = cms.untracked.vint32(
-		1,2,3,4,5)
-process.hcalLaserTask.moduleParameters.Labels.RAW = cms.untracked.InputTag(
-		"hltHcalCalibrationRaw")
-process.hcalPedestalTask.moduleParameters.subsystem = cms.untracked.string(
-		subsystem)
-process.hcalPedestalTask.moduleParameters.calibTypes = cms.untracked.vint32(
-		1,2,3,4,5)
-process.hcalPedestalTask.moduleParameters.Labels.RAW = cms.untracked.InputTag(
-		"hltHcalCalibrationRaw")
+
 
 #-------------------------------------
 #	Hcal DQM Tasks Sequence Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
-		process.hcalLEDTask
-		*process.hcalLaserTask
-		*process.hcalPedestalTask
+		process.ledTask
+		*process.laserTask
+		*process.pedestalTask
 )
 
 #-------------------------------------
