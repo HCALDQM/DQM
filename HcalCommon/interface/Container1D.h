@@ -26,10 +26,10 @@ namespace hcaldqm
 		public:
 			Container1D() {}
 			Container1D(std::string const& folder, std::string const& nametitle,
-				mapper::MapperType mt, axis::AxisQType xvt=axis::fEnergy, 
-				axis::AxisQType yvt=axis::fEntries):
+				mapper::MapperType mt, axis::Axis* xaxis, 
+				axis::Axis* yaxis = new ValueAxis(fYaxis, fEntries)):
 				Container(folder, nametitle), _title(nametitle),
-				_mapper(mt), _xaxis(fXaxis, xvt), _yaxis(fYaxis, yvt)
+				_mapper(mt), _xaxis(xaxis), _yaxis(yaxis)
 			{}
 			virtual ~Container1D() {}
 
@@ -65,9 +65,9 @@ namespace hcaldqm
 			typedef	std::vector<MonitorElement*>	MEVector;
 			MEVector								_mes;
 			std::string								_title;
-			mapper::Mapper									_mapper;
-			axis::Axis									_xaxis;
-			axis::Axis									_yaxis;
+			mapper::Mapper							_mapper;
+			axis::Axis								*_xaxis;
+			axis::Axis								*_yaxis;
 
 	};
 }

@@ -22,10 +22,10 @@ namespace hcaldqm
 		public:
 			Container2D() {}
 			Container2D(std::string const& folder, std::string nametitle,
-				mapper::MapperType mt, axis::AxisQType xvt=axis::fEnergy, 
-				axis::AxisQType yvt=axis::fTime,
-				axis::AxisQType zvt=axis::fEntries):
-				Container1D(folder, nametitle, mt, xvt, yvt),
+				mapper::MapperType mt, axis::Axis *xaxis, 
+				axis::Axis *yaxis = new axis::CoordinateAxis(fYaxis,fiphi),
+				axis::Axis *zaxis = new axis::ValueAxis(fZaxis, fEntries)):
+				Container1D(folder, nametitle, mt, xaxis, yaxis, zaxis),
 				_zaxis(fZaxis, zvt)
 			{}
 			virtual ~Container2D() {}
@@ -47,7 +47,7 @@ namespace hcaldqm
 			virtual void book(DQMStore::IBooker&, std::string subsystem="Hcal");
 
 		protected:
-			Axis					_zaxis;
+			Axis					*_zaxis;
 	};
 }
 

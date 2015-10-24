@@ -24,9 +24,9 @@ namespace hcaldqm
 			ContainerProf1D() {}
 			ContainerProf1D(std::string const& folder, 
 				std::string const& nametitle, mapper::MapperType mt, 
-				axis::AxisQType xvt=axis::fEnergy, 
-				axis::AxisQType yvt=axis::fEnergy):
-				Container1D(folder, nametitle, mt, xvt, yvt)
+				axis::Axis *xaxis, 
+				axis::Axis *yaxis = new axis::ValueAxis(fYaxis, fEntries)):
+				Container1D(folder, nametitle, mt, xaxis, yaxis)
 			{}
 			virtual ~ContainerProf1D() {}
 

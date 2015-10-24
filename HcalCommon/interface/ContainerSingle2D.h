@@ -24,10 +24,11 @@ namespace hcaldqm
 				Container()
 			{}
 			ContainerSingle2D(std::string const& folder, 
-				std::string const& nametitle, axis::AxisQType xvt,
-				axis::AxisQType yvt, axis::AxisQType zvt=axis::fEntries):
+				std::string const& nametitle, axis::Axis *xaxis,
+				axis::Axis *yaxis = new CoordinateAxis(fYaxis, fiphi), 
+				axis::Axis *zaxis = new ValueAxis(fZaxis, fEntries)):
 				Container(folder, nametitle),
-				_xaxis(fXaxis, xvt), _yaxis(fYaxis, yvt), _zaxis(fZaxis,zvt)
+				_xaxis(xaxis), _yaxis(yaxis), _zaxis(zaxis)
 			{}
 			virtual ~ContainerSingle2D() {}
 
@@ -55,9 +56,9 @@ namespace hcaldqm
 
 		protected:
 			MonitorElement				*_me;
-			Axis						_xaxis;
-			Axis						_yaxis;
-			Axis						_zaxis;
+			Axis						*_xaxis;
+			Axis						*_yaxis;
+			Axis						*_zaxis;
 	};
 }
 

@@ -17,16 +17,17 @@
 
 namespace hcaldqm
 {
+	using namespace axis;
 	class ContainerProf2D : public Container2D
 	{
 		public:
 			ContainerProf2D() {}
 			ContainerProf2D(std::string const& folder, 
 				std::string const &nametitle,
-				MapperType mt, AxisQType xvt=axis::fiphi, 
-				AxisQType yvt=axis::fieta,
-				AxisQType zvt=axis::fEnergy):
-				Container2D(folder, nametitle, mt, xvt, yvt, zvt)
+				MapperType mt, Axis *xaxis, 
+				Axis *yaxis = new CoordinateAxis(fYaxis, fiphi), 
+				Axis *zaxis = new ValueAxis(fZaxis, fEntries)):
+				Container2D(folder, nametitle, mt, xaxis, yaxis, zaxis)
 			{}
 			virtual ~ContainerProf2D() {}
 
