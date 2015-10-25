@@ -55,7 +55,7 @@ namespace hcaldqm
 			fSlot = 6,
 			fFiber = 7,
 			fFiberCh = 8,
-			fCoodinateLast = 9,
+			fCoordinateLast = 9,
 
 			//	Value Types
 			fEntries = 10,
@@ -67,7 +67,7 @@ namespace hcaldqm
 			fNomFC_3000 = 16,
 			fNomFC_Full = 17,
 			fTimeTS = 18,
-			fValueLast = 19
+			fValueLast = 19,
 
 			//	Flag Types
 			

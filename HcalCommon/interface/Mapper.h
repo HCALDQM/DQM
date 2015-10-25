@@ -74,6 +74,7 @@ namespace hcaldqm
 		unsigned int generate_fCrate_Slot(Input const&);
 		index_generator const vindex[nMapperType] = { generate_fSubDet,
 			generate_fiphi, generate_fieta, generate_fdepth, 
+			generate_fSubDet_iphi, generate_fSubDet_ieta,
 			generate_fFED, generate_fCrate, generate_fFED_Slot, 
 			generate_fCrate_Slot};
 
