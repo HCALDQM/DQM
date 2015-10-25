@@ -7,7 +7,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 	//	Containers
 	_cOccupancy2D_depth(_name+"/Occupancy/2D", "Occupancy",
-		mapper::fdepth, axis::fieta, axis::fiphi)
+		mapper::fdepth, 
+		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi))
 {
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 		edm::InputTag("hcalDigis"));
@@ -21,7 +23,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	DQTask::bookHistograms(ib, r, es);
-	_cOccupancy2D_depth.book(ib);
+	_cOccupancy2D_depth.book(ib, _subsystem);
 }
 
 /* virtual */ void DigiTask::_resetMonitors(int pflag)

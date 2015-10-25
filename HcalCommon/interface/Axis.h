@@ -17,6 +17,13 @@
 
 namespace hcaldqm
 {
+	using namespace hcaldqm::constants;
+	class Container;
+	class Container1D;
+	class Container2D;
+	class ContainerProf1D;
+	class ContainerProf2D;
+	class ContainerSingle2D;
 	namespace axis
 	{
 		enum AxisType
@@ -37,31 +44,27 @@ namespace hcaldqm
 		/*
 		 *	Base Class for Axis
 		 */
-		class Container;
 		class Axis
 		{
-			friend class Container;
+			public:
+				friend class hcaldqm::Container;
+				friend class hcaldqm::Container1D;
+				friend class hcaldqm::Container2D;
+				friend class hcaldqm::ContainerProf1D;
+				friend class hcaldqm::ContainerProf2D;
+				friend class hcaldqm::ContainerSingle2D;
 
 			public:
-				Axis():
-					_type(fXaxis), _qtype(fValue), _log(false)
-				{
-					this->_setup();
-				}
+				Axis();
 				Axis(std::string title,AxisType type, AxisQType qtype, 
-					int n, double min, double max, bool log) : 
-					_nbins(n), _min(min), _max(max), _title(title)
-					_type(type), _qtype(qtype), _log(log),
-				{
-					this->_setup();
-				}
+					int n, double min, double max, bool log=false);
 				virtual ~Axis() {}
 
 				virtual int get(HcalDetId const&) {return 0;}
 				virtual int get(HcalElectronicsId const&) {return 0;}
 				virtual int get(int) {return 0;}
 			protected:
-				virtual void setup() {}
+				virtual void _setup() {}
 				
 			public:
 				AxisQType getType() {return _qtype;}
@@ -82,7 +85,7 @@ namespace hcaldqm
 				AxisType	_type;
 				AxisQType	_qtype;
 				bool		_log;
-		}
+		};
 	}
 }
 

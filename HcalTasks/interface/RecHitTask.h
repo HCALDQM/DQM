@@ -39,7 +39,7 @@
 			//	HcalElectronicsMap
 			HcalElectronicsMap const *_emap;
 
-			Container1D		_cEnergy;
+			Container1D		_cEnergy_SubDet;
 			Container1D		_cEnergy_iphi;
 			Container1D		_cEnergy_ieta;
 			Container1D		_cEnergy_Crate;

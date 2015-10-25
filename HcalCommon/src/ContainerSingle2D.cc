@@ -5,6 +5,13 @@ namespace hcaldqm
 {
 	using namespace axis;
 
+	ContainerSingle2D::ContainerSingle2D(std::string const& folder,
+		std::string const& nametitle,
+		Axis *xaxis, Axis *yaxis, Axis *zaxis):
+		Container(folder, nametitle),
+		_xaxis(xaxis), _yaxis(yaxis), _zaxis(zaxis)
+	{}
+
 	/* virtual */ void ContainerSingle2D::book(DQMStore::IBooker &ib,
 		std::string subsystem)
 	{
@@ -13,9 +20,9 @@ namespace hcaldqm
 			_xaxis->_nbins, _xaxis->_min, _xaxis->_max,
 			_yaxis->_nbins, _yaxis->_min, _yaxis->_max);
 		TObject *o = _me->getRootObject();
-		_xaxis->setAxisLog(o);
-		_yaxis->setAxisLog(o);
-		_zaxis->setAxisLog(o);
+		_xaxis->setLog(o);
+		_yaxis->setLog(o);
+		_zaxis->setLog(o);
 		_me->setAxisTitle(_xaxis->_title, 1);
 		_me->setAxisTitle(_yaxis->_title, 2);
 		_me->setAxisTitle(_zaxis->_title, 3);

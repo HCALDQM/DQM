@@ -12,7 +12,6 @@
  */
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
-#include "DQM/HcalCommon/interface/Mapper.h"
 
 #include <vector>
 #include <string>

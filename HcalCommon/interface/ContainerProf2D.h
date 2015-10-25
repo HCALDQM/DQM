@@ -24,11 +24,10 @@ namespace hcaldqm
 			ContainerProf2D() {}
 			ContainerProf2D(std::string const& folder, 
 				std::string const &nametitle,
-				MapperType mt, Axis *xaxis, 
-				Axis *yaxis = new CoordinateAxis(fYaxis, fiphi), 
-				Axis *zaxis = new ValueAxis(fZaxis, fEntries)):
-				Container2D(folder, nametitle, mt, xaxis, yaxis, zaxis)
-			{}
+				MapperType mt, 
+				Axis *xaxis, 
+				Axis *yaxis = new CoordinateAxis(axis::fYaxis, axis::fiphi), 
+				Axis *zaxis = new ValueAxis(axis::fZaxis, axis::fEntries));
 			virtual ~ContainerProf2D() {}
 
 			virtual void book(DQMStore::IBooker&, std::string subsystem="Hcal");

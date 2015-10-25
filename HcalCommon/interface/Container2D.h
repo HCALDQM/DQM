@@ -23,11 +23,10 @@ namespace hcaldqm
 			Container2D() {}
 			Container2D(std::string const& folder, std::string nametitle,
 				mapper::MapperType mt, axis::Axis *xaxis, 
-				axis::Axis *yaxis = new axis::CoordinateAxis(fYaxis,fiphi),
-				axis::Axis *zaxis = new axis::ValueAxis(fZaxis, fEntries)):
-				Container1D(folder, nametitle, mt, xaxis, yaxis, zaxis),
-				_zaxis(fZaxis, zvt)
-			{}
+				axis::Axis *yaxis = new axis::CoordinateAxis(axis::fYaxis,
+					axis::fiphi),
+				axis::Axis *zaxis = new axis::ValueAxis(axis::fZaxis, 
+					axis::fEntries));
 			virtual ~Container2D() {}
 
 			//	redeclare what to override

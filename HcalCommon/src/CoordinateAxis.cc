@@ -1,13 +1,23 @@
 
-#include "DQM/HcalCommon/CoordinateAxis.h"
+#include "DQM/HcalCommon/interface/CoordinateAxis.h"
 
 namespace hcaldqm
 {
 	namespace axis
 	{
+		CoordinateAxis::CoordinateAxis():
+			Axis(), _ctype(fSubDet)
+		{}
+
 		CoordinateAxis::CoordinateAxis(AxisType type, CoordinateType ctype,
 			int n, double min, double max, std::string title, bool log):
 			Axis(title, type, fCoordinate, n, min, max, log), _ctype(ctype)
+		{}
+
+		CoordinateAxis::CoordinateAxis(AxisType type, CoordinateType ctype,
+			bool log):
+			Axis(ctitle[ctype], type, fCoordinate, cnbins[ctype],
+				cmin[ctype], cmax[ctype], log), _ctype(ctype)
 		{}
 
 		/* virtual */ int CoordinateAxis::get(HcalDetId const& did)
@@ -67,7 +77,7 @@ namespace hcaldqm
 					if (i<=FED_VME_MAX)
 						x = i-FED_VME_MIN;
 					else 
-						x = i-FED_uTCA_MIN+FED_VME+NUM;
+						x = i-FED_uTCA_MIN+FED_VME_NUM;
 					break;
 				default :
 					break;
@@ -80,6 +90,10 @@ namespace hcaldqm
 			char name[20];
 			switch (_ctype)
 			{
+				case fSubDet:
+					for (int i=HB; i<=HF; i++)
+						_labels.push_back(SUBDET_NAME[i-1]);
+					break;
 				case fFED:
 					for (int i=FED_VME_MIN; i<=FED_VME_MAX; i++)
 					{

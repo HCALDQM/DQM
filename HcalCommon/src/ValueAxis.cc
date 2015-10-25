@@ -6,18 +6,22 @@ namespace hcaldqm
 	using namespace constants;
 	namespace axis
 	{
+		ValueAxis::ValueAxis():
+			Axis(), _vtype(fEnergy)
+		{}
+
+		ValueAxis::ValueAxis(AxisType type, ValueType vtype, bool log):
+			Axis(vtitle[vtype], type, fValue, vnbins[vtype],
+				vmin[vtype], vmax[vtype], log), _vtype(vtype)
+		{}
+
+		ValueAxis::ValueAxis(AxisType type, ValueType vtype, int n,
+			double min, double max, std::string title, bool log):
+			Axis(title, type, fValue, n, min, max, log), _vtype(vtype)
+		{}
+
 		/* virtual */ void ValueAxis::_setup()
 		{
-			char name[20];
-			switch(_vtype)
-			{
-				case fSubDet:
-					for (int i=HB; i<=HF; i++)
-						_labels.push_back(SUBDET_NAME[i-1]);
-					break;
-				default:
-					break;
-			}
 		}
 	}
 }

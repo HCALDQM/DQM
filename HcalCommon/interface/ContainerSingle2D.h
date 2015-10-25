@@ -10,7 +10,8 @@
  */
 
 #include "DQM/HcalCommon/interface/Container.h"
-#include "DQM/HcalCommon/interface/Axis.h"
+#include "DQM/HcalCommon/interface/ValueAxis.h"
+#include "DQM/HcalCommon/interface/CoordinateAxis.h"
 
 #include <string>
 
@@ -24,12 +25,10 @@ namespace hcaldqm
 				Container()
 			{}
 			ContainerSingle2D(std::string const& folder, 
-				std::string const& nametitle, axis::Axis *xaxis,
-				axis::Axis *yaxis = new CoordinateAxis(fYaxis, fiphi), 
-				axis::Axis *zaxis = new ValueAxis(fZaxis, fEntries)):
-				Container(folder, nametitle),
-				_xaxis(xaxis), _yaxis(yaxis), _zaxis(zaxis)
-			{}
+				std::string const& nametitle, 
+				axis::Axis *xaxis,
+				axis::Axis *yaxis = new CoordinateAxis(fYaxis, axis::fiphi), 
+				axis::Axis *zaxis = new ValueAxis(fZaxis, fEntries));
 			virtual ~ContainerSingle2D() {}
 
 			//	booking

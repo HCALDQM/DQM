@@ -7,13 +7,19 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 
 	//	Containers
 	_cPedestalMeans1D_SubDet(_name+"/1D", "PedestalMeans",
-		mapper::fSubDet, axis::fADC_PED, axis::fEntries),
+		mapper::fSubDet, 
+		new axis::ValueAxis(axis::fXaxis, axis::fADC_15)),
 	_cPedestalRMSs1D_SubDet(_name+"/1D", "PedestalRMSs",
-		mapper::fSubDet, axis::fADC_PED, axis::fEntries),
+		mapper::fSubDet, 
+		new axis::ValueAxis(axis::fXaxis, axis::fADC_5)),
 	_cPedestalMeans2D_depth(_name+"/2D", "PedestalMeans",
-		mapper::fdepth, axis::fieta, axis::fiphi),
+		mapper::fdepth, 
+		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
 	_cPedestalRMSs2D_depth(_name+"/2D", "PedestalRMSs",
-		mapper::fdepth, axis::fieta, axis::fiphi)
+		mapper::fdepth, 
+		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi))
 {
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 		edm::InputTag("hcalDigis"));

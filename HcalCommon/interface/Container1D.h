@@ -9,8 +9,9 @@
  *		1D Container
  */
 
+#include "DQM/HcalCommon/interface/ValueAxis.h"
+#include "DQM/HcalCommon/interface/CoordinateAxis.h"
 #include "DQM/HcalCommon/interface/Container.h"
-#include "DQM/HcalCommon/interface/Axis.h"
 #include "DQM/HcalCommon/interface/Mapper.h"
 
 #include <vector>
@@ -27,10 +28,7 @@ namespace hcaldqm
 			Container1D() {}
 			Container1D(std::string const& folder, std::string const& nametitle,
 				mapper::MapperType mt, axis::Axis* xaxis, 
-				axis::Axis* yaxis = new ValueAxis(fYaxis, fEntries)):
-				Container(folder, nametitle), _title(nametitle),
-				_mapper(mt), _xaxis(xaxis), _yaxis(yaxis)
-			{}
+				axis::Axis* yaxis = new ValueAxis(fYaxis, fEntries));
 			virtual ~Container1D() {}
 
 			//	just to have here
@@ -64,7 +62,6 @@ namespace hcaldqm
 		protected:
 			typedef	std::vector<MonitorElement*>	MEVector;
 			MEVector								_mes;
-			std::string								_title;
 			mapper::Mapper							_mapper;
 			axis::Axis								*_xaxis;
 			axis::Axis								*_yaxis;

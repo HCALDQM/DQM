@@ -9,11 +9,13 @@
  *
  */
 
+#include "DQM/HcalCommon/interface/Axis.h"
+
 namespace hcaldqm
 {
 	namespace axis
 	{
-		using namespace constants;
+		using namespace hcaldqm::constants;
 		enum CoordinateType
 		{
 			fSubDet = 0,
@@ -52,12 +54,18 @@ namespace hcaldqm
 		class CoordinateAxis : public Axis
 		{
 			public:
-				CoordinateAxis():
-					Axis(), _ctype(fSubDet)
-				{}
+				friend class hcaldqm::Container;
+				friend class hcaldqm::Container1D;
+				friend class hcaldqm::Container2D;
+				friend class hcaldqm::ContainerProf1D;
+				friend class hcaldqm::ContainerProf2D;
+				friend class hcaldqm::ContainerSingle2D;
+
+			public:
+				CoordinateAxis();
+				CoordinateAxis(AxisType, CoordinateType, bool log=false);
 				CoordinateAxis(AxisType type, CoordinateType ctype, 
-					int n=cnbins[ctype], double min=cmin[ctype], 
-					double max=cmax[ctype], std::string title=vtitle[vtype],
+					int n, double min, double max, std::string title, 
 					bool log=false);
 				virtual ~CoordinateAxis() {}
 
@@ -69,7 +77,7 @@ namespace hcaldqm
 				virtual void _setup();
 
 			protected:
-				CoordinateType _ctype
+				CoordinateType _ctype;
 		};
 	}
 }

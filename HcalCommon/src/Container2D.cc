@@ -6,6 +6,13 @@ namespace hcaldqm
 	using namespace hcaldqm::axis;
 	using namespace hcaldqm::mapper;
 	using namespace constants;
+
+	Container2D::Container2D(std::string const& folder, std::string nametitle,
+		mapper::MapperType mt, axis::Axis *xaxis, axis::Axis* yaxis,
+		axis::Axis *zaxis):
+		Container1D(folder, nametitle, mt, xaxis, yaxis), _zaxis(zaxis)
+	{}
+
 	/* virtual */ void Container2D::fill(HcalDetId const& did)
 	{
 		_mes[_mapper.index(did)]->Fill(_xaxis->get(did),
@@ -118,8 +125,8 @@ namespace hcaldqm
 	/* virtual */ void Container2D::fill(HcalElectronicsId const& eid, 
 		double x, double y)
 	{
-		AxisQType xact = _xaxis.getType();
-		AxisQType yact = _yaxis.getType();
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
 			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), x, y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
@@ -137,12 +144,12 @@ namespace hcaldqm
 		{
 			std::string hname = _mapper.buildName(i);
 			MonitorElement *me = ib.book2D(_name+"_"+hname,
-				_title+" "+hname, _xaxis->_nbins, _xaxis->_min, _xaxis->_max,
+				_name+" "+hname, _xaxis->_nbins, _xaxis->_min, _xaxis->_max,
 				_yaxis->_nbins, _yaxis->_min, _yaxis->_max);
 			TObject *o = me->getRootObject();
-			_xaxis->setAxisLog(o);
-			_yaxis->setAxisLog(o);
-			_zaxis->setAxisLog(o);
+			_xaxis->setLog(o);
+			_yaxis->setLog(o);
+			_zaxis->setLog(o);
 			me->setAxisTitle(_xaxis->_title, 1);
 			me->setAxisTitle(_yaxis->_title, 2);
 			me->setAxisTitle(_zaxis->_title, 3);

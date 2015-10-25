@@ -6,6 +6,13 @@ namespace hcaldqm
 	using namespace mapper;
 	using namespace axis;
 	using namespace constants;
+
+	Container1D::Container1D(std::string const& folder, 
+		std::string const& nametitle, mapper::MapperType mt, axis::Axis *xaxis,
+		axis::Axis *yaxis):
+		Container(folder, nametitle), _mapper(mt), _xaxis(xaxis), _yaxis(yaxis)
+	{}
+
 	/* virtual */ void Container1D::fill(int id, int x)
 	{
 		_mes[_mapper.index(id)]->Fill(x);
@@ -108,11 +115,11 @@ namespace hcaldqm
 		for (unsigned int i=0; i<size; i++)
 		{
 			std::string hname = _mapper.buildName(i);
-			MonitorElement *me = ib.book1D(_name+"_"+hname, _title+" "+hname,
+			MonitorElement *me = ib.book1D(_name+"_"+hname, _name +" "+hname,
 				_xaxis->_nbins, _xaxis->_min, _xaxis->_max);
 			TObject *o = me->getRootObject();
-			_xaxis->setAxisLog(o);
-			_yaxis->setAxisLog(o);
+			_xaxis->setLog(o);
+			_yaxis->setLog(o);
 			me->setAxisTitle(_xaxis->_title, 1);
 			me->setAxisTitle(_yaxis->_title, 2);
 			for (unsigned int i=0; i<_xaxis->_labels.size(); i++)
