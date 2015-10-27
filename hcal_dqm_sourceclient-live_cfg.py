@@ -109,6 +109,7 @@ process.hbhereco = process.hbheprereco.clone()
 #process.load("DQM.HcalTasks.HcalTPTask")
 #process.load("DQM.HcalTasks.HcalTimingTask")
 process.load("DQM.HcalTasks.RecHitTask")
+process.load("DQM.HcalTasks.DigiTask")
 
 #-------------------------------------
 #	Hcal DQM Tasks and Clients Imports
@@ -211,6 +212,7 @@ oldsubsystem = subsystem
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
 		process.recHitTask
+		+process.digiTask
 #		process.hcalDigiTask
 #		+process.hcalRawTask
 #		+process.hcalRecHitTask
@@ -269,7 +271,7 @@ process.p = cms.Path(
 #process.schedule = cms.Schedule(process.p)
 
 #-------------------------------------
-#	Scheduling
+#	Scheduling and Process Customizations
 #-------------------------------------
 process.options = cms.untracked.PSet(
 		Rethrow = cms.untracked.vstring(
@@ -278,3 +280,4 @@ process.options = cms.untracked.PSet(
 			"TooFewProducts"
 		)
 )
+process.options.wantSummary = cms.untracked.bool(True)
