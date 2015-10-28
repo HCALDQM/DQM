@@ -8,7 +8,6 @@ namespace hcaldqm
 		Axis::Axis():
 			_type(fXaxis), _qtype(fValue), _log(false)
 		{
-			this->_setup();
 		}
 
 		Axis::Axis(std::string title, AxisType type, AxisQType qtype,
@@ -16,7 +15,6 @@ namespace hcaldqm
 			_nbins(n), _min(min), _max(max), _title(title), _type(type),
 			_qtype(qtype), _log(log)
 		{
-			this->_setup();
 		}
 	}
 }

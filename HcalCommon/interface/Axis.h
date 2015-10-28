@@ -63,8 +63,6 @@ namespace hcaldqm
 				virtual int get(HcalDetId const&) {return 0;}
 				virtual int get(HcalElectronicsId const&) {return 0;}
 				virtual int get(int) {return 0;}
-			protected:
-				virtual void _setup() {}
 				
 			public:
 				AxisQType getType() {return _qtype;}

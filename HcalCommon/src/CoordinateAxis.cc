@@ -12,13 +12,17 @@ namespace hcaldqm
 		CoordinateAxis::CoordinateAxis(AxisType type, CoordinateType ctype,
 			int n, double min, double max, std::string title, bool log):
 			Axis(title, type, fCoordinate, n, min, max, log), _ctype(ctype)
-		{}
+		{
+			this->_setup();
+		}
 
 		CoordinateAxis::CoordinateAxis(AxisType type, CoordinateType ctype,
 			bool log):
 			Axis(ctitle[ctype], type, fCoordinate, cnbins[ctype],
 				cmin[ctype], cmax[ctype], log), _ctype(ctype)
-		{}
+		{
+			this->_setup();
+		}
 
 		/* virtual */ int CoordinateAxis::get(HcalDetId const& did)
 		{
@@ -101,10 +105,12 @@ namespace hcaldqm
 				case fieta:
 					for (int ieta=-41; ieta<=41; ieta++)
 					{
+						if (ieta==0)
+							continue;
 						sprintf(name, "%d", ieta);
 						if (ieta==-29 || ieta==29)
-							_labels.push_back(name);
-						_labels.push_back(name);
+							_labels.push_back(std::string(name));
+						_labels.push_back(std::string(name));
 					}
 					break;
 				case fFED:
