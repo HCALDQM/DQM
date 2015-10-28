@@ -42,6 +42,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200))
 {
+	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 		edm::InputTag("hcalDigis"));
 	_tagHO = ps.getUntrackedParameter<edm::InputTag>("tagHO",
@@ -50,6 +51,14 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		edm::InputTag("hcalDigis"));
 	_tagTrigger = ps.getUntrackedParameter<edm::InputTag>("tagTrigger",
 		edm::InputTag("tbunpacker"));
+
+	//	constants
+	_lowHBHE = ps.getUntrackedParameter<double>("lowHBHE",
+		20);
+	_lowHO = ps.getUntrackedParameter<double>("lowHO",
+		20);
+	_lowHF = ps.getUntrackedParameter<double>("lowHF",
+		20);
 }
 
 /* virtual */ void LaserTask::bookHistograms(DQMStore::IBooker &ib,
@@ -115,6 +124,9 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		const HBHEDataFrame digi = (const HBHEDataFrame)(*it);
 		double sumQ = utilities::sumQ<HBHEDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
+		if (sumQ<_lowHBHE)
+			continue;
+
 		double aveTS = utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
 		_cSignals.fill(digi.id(), sumQ>0 ? sumQ : GARBAGE_VALUE);
@@ -130,6 +142,9 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		const HODataFrame digi = (const HODataFrame)(*it);
 		double sumQ = utilities::sumQ<HODataFrame>(digi, 8.5, 0,
 			digi.size()-1);
+		if (sumQ<_lowHO)
+			continue;
+
 		double aveTS = utilities::aveTS<HODataFrame>(digi, 8.5, 0,
 			digi.size()-1);
 		_cSignals.fill(digi.id(), sumQ>0 ? sumQ : GARBAGE_VALUE);
@@ -145,6 +160,9 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		const HFDataFrame digi = (const HFDataFrame)(*it);
 		double sumQ = utilities::sumQ<HFDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
+		if (sumQ<_lowHF)
+			continue;
+
 		double aveTS = utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
 		_cSignals.fill(digi.id(), sumQ>0 ? sumQ : GARBAGE_VALUE);

@@ -41,6 +41,11 @@ class LEDTask : public DQTask
 		edm::InputTag	_tagHF;
 		edm::InputTag	_tagTrigger;
 
+		//	Cuts
+		double _lowHBHE;
+		double _lowHO;
+		double _lowHF;
+
 		//	Compact
 		ContainerCompact _cSignals;
 		ContainerCompact _cTiming;
