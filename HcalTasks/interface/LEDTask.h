@@ -56,9 +56,9 @@ class LEDTask : public DQTask
 
 		//	2D
 		Container2D		_cSignalMeans2D_depth;
-		Container1D		_cSignalRMSs2D_depth;
+		Container2D		_cSignalRMSs2D_depth;
 		Container2D		_cTimingMeans2D_depth;
-		Container1D		_cTimingRMSs2D_depth;
+		Container2D		_cTimingRMSs2D_depth;
 };
 
 #endif
