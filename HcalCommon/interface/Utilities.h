@@ -10,9 +10,11 @@
  */
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
+#include "DQM/HcalCommon/interface/Constants.h"
 
 namespace hcaldqm
 {
+	using namespace constants;
 	namespace utilities
 	{
 		/*
@@ -43,7 +45,7 @@ namespace hcaldqm
 				sumQT +=(ii+1)*(digi.sample(ii).nominal_fC()-ped);
 			}
 			
-			return sumQT/sumQ-1;
+			return sumQ>0 ? sumQT/sumQ-1 : GARBAGE_VALUE;
 		}
 
 		template<typename DIGI>

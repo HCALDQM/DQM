@@ -6,37 +6,41 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	DQTask(ps),
 
 	//	Containers
-	_cSignalMeans1D_SubDet(_name+"/1D/Signal", "SignalMeans",
+	_cSignalMeans1D_SubDet(_name+"/Signal", "SignalMeans",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_3000)),
-	_cSignalRMSs1D_SubDet(_name+"/1D/Signal", "SignalRMSs",
+	_cSignalRMSs1D_SubDet(_name+"/Signal", "SignalRMSs",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_1000)),
-	_cTimingMeans1D_SubDet(_name+"/1D/Timing", "TimingMeans",
+	_cTimingMeans1D_SubDet(_name+"/Timing", "TimingMeans",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
-	_cTimingRMSs1D_SubDet(_name+"/1D/Timing", "TimingRMSs",
+	_cTimingRMSs1D_SubDet(_name+"/Timing", "TimingRMSs",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
 	_cShape_SubDet_iphi(_name+"/Shapes", "Shape", mapper::fSubDet_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
 		new axis::ValueAxis(axis::fYaxis, axis::fNomFC_3000)),
-	_cSignalMeans2D_depth(_name+"/2D/Signal", "SignalMeans",
+	_cSignalMeans2D_depth(_name+"/Signal", "SignalMeans",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cSignalRMSs2D_depth(_name+"/2D/Signal", "SignalRMSs",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
+		new axis::ValueAxis(axis::fZaxis, axis::fNomFC_3000)),
+	_cSignalRMSs2D_depth(_name+"/Signal", "SignalRMSs",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cTimingMeans2D_depth(_name+"/2D/Timing", "TimingMeans",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
+		new axis::ValueAxis(axis::fZaxis, axis::fNomFC_1000)),
+	_cTimingMeans2D_depth(_name+"/Timing", "TimingMeans",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cTimingRMSs2D_depth(_name+"/2D/Timing", "TimingRMSs",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
+		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200)),
+	_cTimingRMSs2D_depth(_name+"/Timing", "TimingRMSs",
 		mapper::fdepth,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi))
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
+		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200))
 {
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 		edm::InputTag("hcalDigis"));
@@ -109,10 +113,12 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		it!=chbhe->end(); ++it)
 	{
 		const HBHEDataFrame digi = (const HBHEDataFrame)(*it);
-		_cSignals.fill(digi.id(), utilities::sumQ<HBHEDataFrame>(digi, 2.5, 0,
-			digi.size()-1));
-		_cTiming.fill(digi.id(), utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
-			digi.size()-1));
+		double sumQ = utilities::sumQ<HBHEDataFrame>(digi, 2.5, 0, 
+			digi.size()-1);
+		double aveTS = utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
+			digi.size()-1);
+		_cSignals.fill(digi.id(), sumQ>0 ? sumQ : GARBAGE_VALUE);
+		_cTiming.fill(digi.id(), sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		for (int i=0; i<digi.size(); i++)
 			_cShape_SubDet_iphi.fill(digi.id(), i, 
@@ -122,23 +128,27 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		it!=cho->end(); ++it)
 	{
 		const HODataFrame digi = (const HODataFrame)(*it);
-		_cSignals.fill(digi.id(), utilities::sumQ<HODataFrame>(digi, 8.5, 0,
-			digi.size()-1));
-		_cTiming.fill(digi.id(), utilities::aveTS<HODataFrame>(digi, 8.5, 0,
-			digi.size()-1));
+		double sumQ = utilities::sumQ<HODataFrame>(digi, 8.5, 0, 
+			digi.size()-1);
+		double aveTS = utilities::aveTS<HODataFrame>(digi, 8.5, 0,
+			digi.size()-1);
+		_cSignals.fill(digi.id(), sumQ>0 ? sumQ : GARBAGE_VALUE);
+		_cTiming.fill(digi.id(), sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		for (int i=0; i<digi.size(); i++)
 			_cShape_SubDet_iphi.fill(digi.id(), i, 
-				digi.sample(i).nominal_fC()-2.5);
+				digi.sample(i).nominal_fC()-8.5);
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
 		it!=chf->end(); ++it)
 	{
 		const HFDataFrame digi = (const HFDataFrame)(*it);
-		_cSignals.fill(digi.id(), utilities::sumQ<HFDataFrame>(digi, 2.5, 0,
-			digi.size()-1));
-		_cTiming.fill(digi.id(), utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
-			digi.size()-1));
+		double sumQ = utilities::sumQ<HFDataFrame>(digi, 2.5, 0, 
+			digi.size()-1);
+		double aveTS = utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
+			digi.size()-1);
+		_cSignals.fill(digi.id(), sumQ>0 ? sumQ : GARBAGE_VALUE);
+		_cTiming.fill(digi.id(), sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		for (int i=0; i<digi.size(); i++)
 			_cShape_SubDet_iphi.fill(digi.id(), i, 

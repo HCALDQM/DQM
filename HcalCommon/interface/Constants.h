@@ -126,6 +126,7 @@ namespace hcaldqm
 		double const AXIS_TIMETS_MAX = 10;
 
 		int const CALIBEVENTS_MIN = 100;
+		int const GARBAGE_VALUE = -1000;
 
 		/*
 		 *	TObject Related

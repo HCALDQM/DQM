@@ -9,6 +9,9 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerCompact::fill(HcalDetId const& did, int x)
 	{
+		if (x==GARBAGE_VALUE)
+			return;
+
 		int isubdet = did.subdet()-1;
 		int iiphi = did.iphi()-1;
 		int iieta = did.ieta()<0 ? abs(did.ieta())-IETA_MIN : 
@@ -22,6 +25,9 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerCompact::fill(HcalDetId const& did, double x)
 	{
+		if (x==GARBAGE_VALUE)
+			return;
+
 		int isubdet = did.subdet()-1;
 		int iiphi = did.iphi()-1;
 		int iieta = did.ieta()<0 ? abs(did.ieta())-IETA_MIN : 
