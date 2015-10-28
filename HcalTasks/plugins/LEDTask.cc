@@ -18,12 +18,6 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cTimingRMSs1D_SubDet(_name+"/1D/Timing", "TimingRMSs",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS)),
-	_cTiming_SubDet_iphi(_name+"/Timing/SubDet_iphi", "Timing",
-		mapper::fSubDet_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
-	_cSignal_SubDet_iphi(_name+"Signal/SubDet_iphi", "Signal",
-		mapper::fSubDet_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_3000)),
 	_cShape_SubDet_iphi(_name+"/Shapes", "Shape", mapper::fSubDet_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
 		new axis::ValueAxis(axis::fYaxis, axis::fNomFC_3000)),
@@ -66,8 +60,6 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cSignalRMSs2D_depth.book(ib, _subsystem);
 	_cTimingMeans2D_depth.book(ib, _subsystem);
 	_cTimingRMSs2D_depth.book(ib, _subsystem);
-	_cTiming_SubDet_iphi.book(ib, _subsystem);
-	_cSignal_SubDet_iphi.book(ib, _subsystem);
 	_cShape_SubDet_iphi.book(ib, _subsystem);
 }
 
@@ -86,8 +78,6 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cSignalRMSs2D_depth.reset();
 	_cTimingMeans2D_depth.reset();
 	_cTimingRMSs2D_depth.reset();
-	_cTiming_SubDet_iphi.reset();
-	_cSignal_SubDet_iphi.reset();
 	_cSignals.dump(&_cSignalMeans1D_SubDet, true);
 	_cSignals.dump(&_cSignalRMSs1D_SubDet, false);
 	_cTiming.dump(&_cTimingMeans1D_SubDet, true);
@@ -96,8 +86,6 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cSignals.dump(&_cSignalRMSs2D_depth, false);
 	_cTiming.dump(&_cTimingMeans2D_depth, true);
 	_cTiming.dump(&_cTimingRMSs2D_depth, false);
-	_cSignals.dump(&_cSignal_SubDet_iphi, true);
-	_cTiming.dump(&_cTiming_SubDet_iphi, true);
 }
 
 /* virtual */ void LEDTask::_process(edm::Event const& e,
