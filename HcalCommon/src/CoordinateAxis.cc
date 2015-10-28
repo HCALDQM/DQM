@@ -33,6 +33,10 @@ namespace hcaldqm
 					break;
 				case fieta:
 					x = did.ieta();
+					if (x<0)
+						x = did.subdet()==HcalForward ? x+41 : x+42;
+					else 
+						x = did.subdet()==HcalForward ? x+42 : x+41;
 					break;
 				case fdepth:
 					x = did.depth();
@@ -93,6 +97,15 @@ namespace hcaldqm
 				case fSubDet:
 					for (int i=HB; i<=HF; i++)
 						_labels.push_back(SUBDET_NAME[i-1]);
+					break;
+				case fieta:
+					for (int ieta=-41; ieta<=41; ieta++)
+					{
+						sprintf(name, "%d", ieta);
+						if (ieta==-29 || ieta==29)
+							_labels.push_back(name);
+						_labels.push_back(name);
+					}
 					break;
 				case fFED:
 					for (int i=FED_VME_MIN; i<=FED_VME_MAX; i++)

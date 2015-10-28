@@ -37,16 +37,16 @@ namespace hcaldqm
 			"Fiber", "Fiber Channel"
 		};
 		double const cmin[nCoordinateType] = {
-			HB, IPHI_MIN-0.5, -IETA_MAX-0.5, DEPTH_MIN-0.5,
+			HB, IPHI_MIN-0.5, 0, DEPTH_MIN-0.5,
 			0, CRATE_VME_MIN, SLOT_uTCA_MIN, FIBER_VME_MIN, FIBERCH_MIN
 		};
 		double const cmax[nCoordinateType] = {
-			HF+1, IPHI_MAX+0.5, IETA_MAX+0.5, DEPTH_MAX+0.5,
+			HF+1, IPHI_MAX+0.5, 84, DEPTH_MAX+0.5,
 			FED_VME_NUM+FED_uTCA_NUM, CRATE_uTCA_MAX+1, SLOT_VME_MAX+1,
 			FIBER_uTCA_MAX+1, FIBERCH_MAX+1
 		};
 		int const cnbins[nCoordinateType] = {
-			SUBDET_NUM, IPHI_NUM, IETA_NUM, DEPTH_NUM, FED_VME_NUM+FED_uTCA_NUM,
+			SUBDET_NUM, IPHI_NUM, 84, DEPTH_NUM, FED_VME_NUM+FED_uTCA_NUM,
 			CRATE_uTCA_MAX+1-CRATE_VME_MIN, SLOT_VME_MAX+1-SLOT_uTCA_MIN,
 			FIBER_uTCA_MAX+1-FIBER_VME_MIN, FIBERCH_NUM
 		};
