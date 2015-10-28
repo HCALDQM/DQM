@@ -18,6 +18,15 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cTimingRMSs1D_SubDet(_name+"/1D/Timing", "TimingRMSs",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS)),
+	_cTiming_SubDet_iphi(_name+"/Timing/SubDet_iphi", "Timing",
+		mapper::fSubDet_iphi,
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
+	_cSignal_SubDet_iphi(_name+"Signal/SubDet_iphi", "Signal",
+		mapper::fSubDet_iphi,
+		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_3000)),
+	_cShape_SubDet_iphi(_name+"/Shapes", "Shape", mapper::fSubDet_iphi,
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC_3000)),
 	_cSignalMeans2D_depth(_name+"/2D/Signal", "SignalMeans",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
@@ -57,6 +66,9 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cSignalRMSs2D_depth.book(ib, _subsystem);
 	_cTimingMeans2D_depth.book(ib, _subsystem);
 	_cTimingRMSs2D_depth.book(ib, _subsystem);
+	_cTiming_SubDet_iphi.book(ib, _subsystem);
+	_cSignal_SubDet_iphi.book(ib, _subsystem);
+	_cShape_SubDet_iphi.book(ib, _subsystem);
 }
 
 /* virtual */ void LEDTask::_resetMonitors(int pflag)
@@ -74,6 +86,8 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cSignalRMSs2D_depth.reset();
 	_cTimingMeans2D_depth.reset();
 	_cTimingRMSs2D_depth.reset();
+	_cTiming_SubDet_iphi.reset();
+	_cSignal_SubDet_iphi.reset();
 	_cSignals.dump(&_cSignalMeans1D_SubDet, true);
 	_cSignals.dump(&_cSignalRMSs1D_SubDet, false);
 	_cTiming.dump(&_cTimingMeans1D_SubDet, true);
@@ -82,6 +96,8 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cSignals.dump(&_cSignalRMSs2D_depth, false);
 	_cTiming.dump(&_cTimingMeans2D_depth, true);
 	_cTiming.dump(&_cTimingRMSs2D_depth, false);
+	_cSignals.dump(&_cSignal_SubDet_iphi, true);
+	_cTiming.dump(&_cTiming_SubDet_iphi, true);
 }
 
 /* virtual */ void LEDTask::_process(edm::Event const& e,
@@ -109,6 +125,10 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 			digi.size()-1));
 		_cTiming.fill(digi.id(), utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
 			digi.size()-1));
+
+		for (int i=0; i<digi.size(); i++)
+			_cShape_SubDet_iphi.fill(digi.id(), i, 
+				digi.sample(i).nominal_fC()-2.5);
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
 		it!=cho->end(); ++it)
@@ -118,6 +138,10 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 			digi.size()-1));
 		_cTiming.fill(digi.id(), utilities::aveTS<HODataFrame>(digi, 8.5, 0,
 			digi.size()-1));
+
+		for (int i=0; i<digi.size(); i++)
+			_cShape_SubDet_iphi.fill(digi.id(), i, 
+				digi.sample(i).nominal_fC()-2.5);
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
 		it!=chf->end(); ++it)
@@ -127,6 +151,10 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 			digi.size()-1));
 		_cTiming.fill(digi.id(), utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
 			digi.size()-1));
+
+		for (int i=0; i<digi.size(); i++)
+			_cShape_SubDet_iphi.fill(digi.id(), i, 
+				digi.sample(i).nominal_fC()-2.5);
 	}
 
 	if (_ptype==fOnline && _evsTotal>0 &&
