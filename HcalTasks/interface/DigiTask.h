@@ -34,8 +34,27 @@ class DigiTask : public DQTask
 		edm::InputTag	_tagHO;
 		edm::InputTag	_tagHF;
 
-		Container2D		_cOccupancy2D_depth;
-		ContainerProf1D _OccupancyVSls_SubDet;
+		//	1D 
+		Container1D		_cADCperTS_SubDet;
+		Container1D		_cfCperTS_SubDet;
+		Container1D		_cShape_SubDet_iphi;
+		Container1D		_cShapeSumQcut_SubDet_iphi;
+		Container1D		_cSumQ_SubDet_iphi;
+		Container1D		_cTimingSumQcut_SubDet_iphi;
+
+		//	Prof1D
+		Container1D		_cOccupancyvsiphi_SubDet;
+		ContainerProf1D	_cSumQvsLS_SubDet_iphi;
+		ContainerProf1D	_cTimingSumQcutvsieta_SubDet_iphi;
+		ContainerProf1D	_cTimingSumQcutvsiphi_SubDet_ieta;
+
+		//	2D
+		Container2D		_cOccupancy_depth;
+
+		//	Prof2D
+		ContainerProf2D	_cOccupancyiphivsLS_SubDet;
+		ContainerProf2D	_cSumQ_depth;
+		ContainerProf2D	_cTimingSumQcut_depth;
 };
 
 #endif
