@@ -30,38 +30,44 @@
 			virtual void _process(edm::Event const&, edm::EventSetup const&);
 			virtual void _resetMonitors(int);
 
-			//	protected vars
-			int				_numRecHits[constants::SUBDET_NUM];
+			//	tags
 			edm::InputTag	_tagHBHE;
 			edm::InputTag	_tagHO;
 			edm::InputTag	_tagHF;
 
-			//	HcalElectronicsMap
-			HcalElectronicsMap const *_emap;
+			//	counters
+			int	 _numRecHits[constants::SUBDET_NUM];
 
+			//	cuts
+			double _cutE_HBHE, _cutE_HO, _cutE_HF;
+
+			//	Energy
 			Container1D		_cEnergy_SubDet;
-			Container1D		_cEnergy_iphi;
-			Container1D		_cEnergy_ieta;
-			Container1D		_cEnergy_Crate;
-			Container1D		_cTime_SubDet;
-			Container1D		_cTime_SubDet_iphi;
-			Container1D		_cTime_SubDet_ieta;
-			Container1D		_cTime_Crate;
-			Container1D		_cTime_Crate_Slot;
 			Container1D		_cEnergy_SubDet_ieta;
 			Container1D		_cEnergy_SubDet_iphi;
+			ContainerProf1D _cEnergyvsieta_SubDet;
+			ContainerProf1D _cEnergyvsiphi_SubDet;
+			ContainerProf2D	_cEnergy_depth;
 
-			ContainerProf1D _cEnergyieta_SubDet;
-			ContainerProf1D _cEnergyiphi_SubDet;
+			ContainerProf1D _cEnergyvsietaCut_SubDet;
+			ContainerProf1D _cEnergyvsiphiCut_SubDet;
+			ContainerProf2D	_cEnergyCut_depth;
 
+			//	Timing
+			Container1D		_cTimingCut_SubDet;
+			Container1D		_cTimingCut_SubDet_iphi;
+			Container1D		_cTimingCut_SubDet_ieta;
+			ContainerProf1D _cTimingvsietaCut_SubDet_iphi;
+			ContainerProf1D	_cTimingvsiphiCut_SubDet_ieta;
+			ContainerProf2D _cTimingCut_depth;
+
+			//	Occupancy
 			Container2D		_cOccupancy_depth;
-			Container2D		_cOccupancy_Crate;
-			Container2D		_cEnergyTime_SubDet;
+			Container2D		_cOccupancyCut_depth;
 
-			ContainerProf2D	_cEnergy2D_depth;
-			
-			ContainerSingle2D _cOccupancy_SubDet_Crate;
-			ContainerSingle2D _cOccupancy_Crate_Slot;
+			//	Energy vs Timing
+			Container2D		_cEnergyvsTiming_SubDet;
+			Container2D		_cEnergyvsTimingCut_SubDet;
 	};
 
 #endif

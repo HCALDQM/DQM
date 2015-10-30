@@ -5,97 +5,135 @@
 	RecHitTask::RecHitTask(edm::ParameterSet const& ps) :
 		DQTask(ps),
 
-		//	List all the Containers to use
-		_cEnergy_SubDet(_name+"/Energy_SubDet", "Energy", mapper::fSubDet, 
-			new axis::ValueAxis(axis::fXaxis, axis::fEnergy)),
-		_cEnergy_iphi(_name+"/Energy_iphi", "Energy", mapper::fiphi,
-			new axis::ValueAxis(axis::fXaxis, axis::fEnergy)),
-		_cEnergy_ieta(_name+"/Energy_ieta", "Energy", mapper::fieta,
-			new axis::ValueAxis(axis::fXaxis, axis::fEnergy)),
-		_cEnergy_Crate(_name+"/Energy_Crate", "Energy", mapper::fCrate,
-			new axis::ValueAxis(axis::fXaxis, axis::fEnergy)),
-		_cTime_SubDet(_name+"/Time_SubDet", "Time", mapper::fSubDet,
-			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
-		_cTime_SubDet_iphi(_name+"/Time_SubDet_iphi", "Time", 
-			mapper::fSubDet_iphi, 
-			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
-		_cTime_SubDet_ieta(_name+"/Time_SubDet_ieta", "Time", 
+		//	Energy
+		_cEnergy_SubDet(_name+"/Energy/SubDet", "Energy", mapper::fSubDet, 
+			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
+		_cEnergy_SubDet_ieta(_name+"/Energy/SubDet_ieta", "Energy",
 			mapper::fSubDet_ieta, 
-			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
-//		_cTime_Crate(_name+"/Time_Crate", "Time", mapper::fCrate,
-//			axis::fTime, axis::fEntries),
-//		_cTime_Crate_Slot(_name+"/Time_Crate_Slot", "Time", mapper::fCrate_Slot,
-//			axis::fTime, axis::fEntries),
-		_cEnergy_SubDet_ieta(_name+"/Energy_SubDet_ieta", "Energy",
-			mapper::fSubDet_ieta, 
-			new axis::ValueAxis(axis::fXaxis, axis::fEnergy)),
-		_cEnergy_SubDet_iphi(_name+"/Energy", "Energy", mapper::fSubDet_iphi,
-			new axis::ValueAxis(axis::fXaxis, axis::fEnergy)),
-		_cEnergyieta_SubDet(_name+"/EnergyVSieta_SubDet", "EnergyVSieta",
+			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
+		_cEnergy_SubDet_iphi(_name+"/Energy/SubDet_iphi", 
+			"Energy", mapper::fSubDet_iphi,
+			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
+		_cEnergyvsieta_SubDet(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
-		_cEnergyiphi_SubDet(_name+"/EnergyVSiphi_SubDet", "EnergyVSiphi",
+		_cEnergyvsiphi_SubDet(_name+"/Energy/vsiphi_SubDet", "Energyvsiphi",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi), 
 			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
-		_cOccupancy_depth(_name, "Occupancy", mapper::fdepth,
+		_cEnergy_depth(_name+"/Energy/depth", "Energy",
+			mapper::fdepth, 
+			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
+			new axis::ValueAxis(axis::fZaxis, axis::fEnergy)),
+		_cEnergyvsietaCut_SubDet(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
+			mapper::fSubDet, 
+			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
+		_cEnergyvsiphiCut_SubDet(_name+"/Energy/vsiphi_SubDet", "Energyvsiphi",
+			mapper::fSubDet, 
+			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi), 
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
+		_cEnergyCut_depth(_name+"/Energy/depth", "Energy",
+			mapper::fdepth, 
+			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
+			new axis::ValueAxis(axis::fZaxis, axis::fEnergy)),
+
+		//	Timing
+		_cTimingCut_SubDet(_name+"/Timing/SubDet", "Timing", mapper::fSubDet,
+			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
+		_cTimingCut_SubDet_iphi(_name+"/Timing/SubDet_iphi", "Timing", 
+			mapper::fSubDet_iphi, 
+			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
+		_cTimingCut_SubDet_ieta(_name+"/Timing/SubDet_ieta", "Timing", 
+			mapper::fSubDet_ieta, 
+			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
+		_cTimingvsietaCut_SubDet_iphi(_name+"/Timing/vsieta_SubDet_iphi", 
+			"Timing",
+			mapper::fSubDet_iphi,
+			new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
+			new axis::ValueAxis(axis::fYaxis, axis::fTime)),
+		_cTimingvsiphiCut_SubDet_ieta(_name+"/Timing/vsiphi_SubDet_ieta", 
+			"Timing",
+			mapper::fSubDet_ieta,
+			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
+			new axis::ValueAxis(axis::fYaxis, axis::fTime)),
+		_cTimingCut_depth(_name+"/Timing/depth", "Timing",
+			mapper::fdepth, 
+			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
+			new axis::ValueAxis(axis::fZaxis, axis::fTime)),
+
+		//	Occupancy
+		_cOccupancy_depth(_name+"/Occupancy/depth", "Occupancy", mapper::fdepth,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-		_cOccupancy_Crate(_name+"/Occupancy_Crate", "Occupancy", 
-			mapper::fCrate, 
-			new axis::CoordinateAxis(axis::fXaxis, axis::fSlot), 
-			new axis::CoordinateAxis(axis::fYaxis, axis::fFiber)),
-		_cEnergyTime_SubDet(_name+"/EnergyVSTime_SubDet", "EnergyVSTime", 
+		_cOccupancyCut_depth(_name+"/Occupancy/depth", "Occupancy", 
+			mapper::fdepth,
+			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
+
+		//	Energy vs Timing
+		_cEnergyvsTiming_SubDet(_name+"/EnergyvsTiming/SubDet", "EnergyvsTime", 
 			mapper::fSubDet, 
 			new axis::ValueAxis(axis::fXaxis, axis::fTime), 
 			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
-		_cEnergy2D_depth(_name+"/Energy2D_depth", "Energy",
-			mapper::fdepth, 
-			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi))
-//		_cOccupancy_SubDet_Crate(_name, "Occupancy_SubDet_Crate", 
-//			axis::fSubDet, axis::fCrate),
-//		_cOccupancy_Crate_Slot(_name, "Occupancy_Crate_Slot", 
-//			axis::fCrate, axis::fSlot)
-
+		_cEnergyvsTimingCut_SubDet(_name+"/EnergyvsTiming/SubDet", 
+			"EnergyvsTime", 
+			mapper::fSubDet, 
+			new axis::ValueAxis(axis::fXaxis, axis::fTime), 
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy))
 	{
+		//	tags
 		_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 			edm::InputTag("hbhereco"));
 		_tagHO = ps.getUntrackedParameter<edm::InputTag>("tagHO",
 			edm::InputTag("horeco"));
 		_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF",
 			edm::InputTag("hfreco"));
+
+		//	cuts
+		_cutE_HBHE = ps.getUntrackedParameter<double>("cutE_HBHE", 5);
+		_cutE_HO = ps.getUntrackedParameter<double>("cutE_HO", 5);
+		_cutE_HF = ps.getUntrackedParameter<double>("cutE_HF", 5);
 	}
 
 	/* virtual */ void RecHitTask::bookHistograms(DQMStore::IBooker & ib,
 		edm::Run const& r, edm::EventSetup const& es)
 	{
 		DQTask::bookHistograms(ib, r, es);
+		char cutstr[200];
+		sprintf(cutstr, "_EHBHE%dHO%dHF%d", int(_cutE_HBHE),
+			int(_cutE_HO), int(_cutE_HF));
 
-		edm::ESHandle<HcalDbService> dbr;
-		es.get<HcalDbRecord>().get(dbr);
-		_emap = dbr->getHcalMapping();
+		_cEnergy_SubDet.book(ib);
+		_cEnergy_SubDet_ieta.book(ib);
+		_cEnergy_SubDet_iphi.book(ib);
+		_cEnergyvsieta_SubDet.book(ib);
+		_cEnergyvsiphi_SubDet.book(ib);
+		_cEnergy_depth.book(ib);
 
-		_cEnergy_SubDet.book(ib, _subsystem);
-		_cEnergy_SubDet_iphi.book(ib, _subsystem);
-		_cEnergy_iphi.book(ib, _subsystem);
-		_cEnergy_ieta.book(ib, _subsystem);
-		_cEnergy_Crate.book(ib, _subsystem);
-		_cTime_SubDet_iphi.book(ib, _subsystem);
-		_cTime_SubDet_ieta.book(ib, _subsystem);
-//		_cTime_Crate.book(ib);
-//		_cTime_Crate_Slot.book(ib);
-		_cTime_SubDet.book(ib, _subsystem);
-		_cEnergy_SubDet_ieta.book(ib, _subsystem);
-		_cEnergyieta_SubDet.book(ib, _subsystem);
-		_cEnergyiphi_SubDet.book(ib, _subsystem);
-		_cOccupancy_depth.book(ib, _subsystem);
-		_cOccupancy_Crate.book(ib, _subsystem);
-		_cEnergyTime_SubDet.book(ib, _subsystem);
-		_cEnergy2D_depth.book(ib, _subsystem);
-//		_cOccupancy_SubDet_Crate.book(ib);
-//		_cOccupancy_Crate_Slot.book(ib);
+		_cEnergyvsietaCut_SubDet.book(ib, _subsystem, std::string(cutstr));
+		_cEnergyvsiphiCut_SubDet.book(ib, _subsystem, std::string(cutstr));
+		_cEnergyCut_depth.book(ib, _subsystem, std::string(cutstr));
+
+		_cTimingCut_SubDet.book(ib, _subsystem, std::string(cutstr));
+		_cTimingCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
+		_cTimingCut_SubDet_ieta.book(ib, _subsystem, std::string(cutstr));
+		_cTimingvsietaCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
+		_cTimingvsiphiCut_SubDet_ieta.book(ib, _subsystem, std::string(cutstr));
+		_cTimingCut_depth.book(ib, _subsystem, std::string(cutstr));
+
+		_cOccupancyCut_depth.book(ib, _subsystem, std::string(cutstr));
+		_cOccupancy_depth.book(ib);
+
+		_cEnergyvsTiming_SubDet.book(ib);
+		_cEnergyvsTimingCut_SubDet.book(ib, _subsystem, std::string(cutstr));
 	}
 
 	/* virtual */ void RecHitTask::_process(edm::Event const& e,
@@ -122,25 +160,33 @@
 			const HBHERecHit rh = (const HBHERecHit)(*it);
 			double energy = rh.energy();
 			double time = rh.time();
-			_cEnergy_SubDet.fill(rh.id(), energy);
-			_cOccupancy_depth.fill(rh.id());
-			_cEnergy_SubDet_iphi.fill(rh.id(), energy);
-			_cEnergy_iphi.fill(rh.id(), energy);
-			_cEnergy_ieta.fill(rh.id(), energy);
-//			_cEnergy_Crate.fill(_emap->lookup(rh.id()), energy);
-//			_cTime_Crate.fill(_emap->lookup(rh.id()), time);
-//			_cTime_Crate_Slot.fill(_emap->lookup(rh.id()), time);
-			_cEnergy_SubDet_ieta.fill(rh.id(), energy);
-			_cTime_SubDet_iphi.fill(rh.id(), time);
-			_cTime_SubDet_ieta.fill(rh.id(), time);
-			_cTime_SubDet.fill(rh.id(), time);
-			_cEnergyieta_SubDet.fill(rh.id(), energy);
-			_cEnergyiphi_SubDet.fill(rh.id(), energy);
-//			_cOccupancy_Crate.fill(_emap->lookup(rh.id()));
-			_cEnergyTime_SubDet.fill(rh.id(), time, energy);
-			_cEnergy2D_depth.fill(rh.id(), energy);
-//			_cOccupancy_SubDet_Crate.fill(rh.id(), _emap->lookup(rh.id()));
-//			_cOccupancy_Crate_Slot.fill(_emap->lookup(rh.id()));
+			const HcalDetId did = rh.id();
+
+			_cEnergy_SubDet.fill(did, energy);
+			_cEnergy_SubDet_ieta.fill(did, energy);
+			_cEnergy_SubDet_iphi.fill(did, energy);
+			_cEnergyvsieta_SubDet.fill(did, energy);
+			_cEnergyvsiphi_SubDet.fill(did, energy);
+			_cEnergy_depth.fill(did, energy);
+			
+			_cOccupancy_depth.fill(did);
+			_cEnergyvsTiming_SubDet.fill(did, time, energy);
+
+			if (energy>_cutE_HBHE)
+			{
+				_cEnergyCut_depth.fill(did, energy);
+				_cEnergyvsietaCut_SubDet.fill(did, energy);
+				_cEnergyvsiphiCut_SubDet.fill(did, energy);
+				_cEnergyCut_depth.fill(did, energy);
+				_cTimingCut_SubDet.fill(did, time);
+				_cTimingCut_SubDet_iphi.fill(did, time);
+				_cTimingCut_SubDet_ieta.fill(did, time);
+				_cTimingvsietaCut_SubDet_iphi.fill(did, time);
+				_cTimingvsiphiCut_SubDet_ieta.fill(did, time);
+				_cTimingCut_depth.fill(did, time);
+				_cOccupancyCut_depth.fill(did);
+				_cEnergyvsTimingCut_SubDet.fill(did, time, energy);
+			}
 		}
 		for (HORecHitCollection::const_iterator it=cho->begin();
 			it!=cho->end(); ++it)
@@ -148,25 +194,33 @@
 			const HORecHit rh = (const HORecHit)(*it);
 			double energy = rh.energy();
 			double time = rh.time();
-			_cEnergy_SubDet.fill(rh.id(), energy);
-			_cOccupancy_depth.fill(rh.id());
-			_cEnergy_SubDet_iphi.fill(rh.id(), energy);
-			_cEnergy_iphi.fill(rh.id(), energy);
-			_cEnergy_ieta.fill(rh.id(), energy);
-//			_cEnergy_Crate.fill(_emap->lookup(rh.id()), energy);
-//			_cTime_Crate.fill(_emap->lookup(rh.id()), time);
-//			_cTime_Crate_Slot.fill(_emap->lookup(rh.id()), time);
-			_cEnergy_SubDet_ieta.fill(rh.id(), energy);
-			_cTime_SubDet_iphi.fill(rh.id(), time);
-			_cTime_SubDet_ieta.fill(rh.id(), time);
-			_cTime_SubDet.fill(rh.id(), time);
-			_cEnergyieta_SubDet.fill(rh.id(), energy);
-			_cEnergyiphi_SubDet.fill(rh.id(), energy);
-//			_cOccupancy_Crate.fill(_emap->lookup(rh.id()));
-			_cEnergyTime_SubDet.fill(rh.id(), time, energy);
-			_cEnergy2D_depth.fill(rh.id(), energy);
-//			_cOccupancy_SubDet_Crate.fill(rh.id(), _emap->lookup(rh.id()));
-//			_cOccupancy_Crate_Slot.fill(_emap->lookup(rh.id()));
+			const HcalDetId did = rh.id();
+
+			_cEnergy_SubDet.fill(did, energy);
+			_cEnergy_SubDet_ieta.fill(did, energy);
+			_cEnergy_SubDet_iphi.fill(did, energy);
+			_cEnergyvsieta_SubDet.fill(did, energy);
+			_cEnergyvsiphi_SubDet.fill(did, energy);
+			_cEnergy_depth.fill(did, energy);
+			
+			_cOccupancy_depth.fill(did);
+			_cEnergyvsTiming_SubDet.fill(did, time, energy);
+
+			if (energy>_cutE_HO)
+			{
+				_cEnergyCut_depth.fill(did, energy);
+				_cEnergyvsietaCut_SubDet.fill(did, energy);
+				_cEnergyvsiphiCut_SubDet.fill(did, energy);
+				_cEnergyCut_depth.fill(did, energy);
+				_cTimingCut_SubDet.fill(did, time);
+				_cTimingCut_SubDet_iphi.fill(did, time);
+				_cTimingCut_SubDet_ieta.fill(did, time);
+				_cTimingvsietaCut_SubDet_iphi.fill(did, time);
+				_cTimingvsiphiCut_SubDet_ieta.fill(did, time);
+				_cTimingCut_depth.fill(did, time);
+				_cOccupancyCut_depth.fill(did);
+				_cEnergyvsTimingCut_SubDet.fill(did, time, energy);
+			}
 		}
 		for (HFRecHitCollection::const_iterator it=chf->begin();
 			it!=chf->end(); ++it)
@@ -174,25 +228,33 @@
 			const HFRecHit rh = (const HFRecHit)(*it);
 			double energy = rh.energy();
 			double time = rh.time();
-			_cEnergy_SubDet.fill(rh.id(), energy);
-			_cOccupancy_depth.fill(rh.id());
-			_cEnergy_SubDet_iphi.fill(rh.id(), energy);
-			_cEnergy_iphi.fill(rh.id(), energy);
-			_cEnergy_ieta.fill(rh.id(), energy);
-//			_cEnergy_Crate.fill(_emap->lookup(rh.id()), energy);
-//			_cTime_Crate.fill(_emap->lookup(rh.id()), time);
-//			_cTime_Crate_Slot.fill(_emap->lookup(rh.id()), time);
-			_cEnergy_SubDet_ieta.fill(rh.id(), energy);
-			_cTime_SubDet_iphi.fill(rh.id(), time);
-			_cTime_SubDet_ieta.fill(rh.id(), time);
-			_cTime_SubDet.fill(rh.id(), time);
-			_cEnergyieta_SubDet.fill(rh.id(), energy);
-			_cEnergyiphi_SubDet.fill(rh.id(), energy);
-//			_cOccupancy_Crate.fill(_emap->lookup(rh.id()));
-			_cEnergyTime_SubDet.fill(rh.id(), time, energy);
-			_cEnergy2D_depth.fill(rh.id(), energy);
-//			_cOccupancy_SubDet_Crate.fill(rh.id(), _emap->lookup(rh.id()));
-//			_cOccupancy_Crate_Slot.fill(_emap->lookup(rh.id()));
+			const HcalDetId did = rh.id();
+
+			_cEnergy_SubDet.fill(did, energy);
+			_cEnergy_SubDet_ieta.fill(did, energy);
+			_cEnergy_SubDet_iphi.fill(did, energy);
+			_cEnergyvsieta_SubDet.fill(did, energy);
+			_cEnergyvsiphi_SubDet.fill(did, energy);
+			_cEnergy_depth.fill(did, energy);
+			
+			_cOccupancy_depth.fill(did);
+			_cEnergyvsTiming_SubDet.fill(did, time, energy);
+
+			if (energy>_cutE_HF)
+			{
+				_cEnergyCut_depth.fill(did, energy);
+				_cEnergyvsietaCut_SubDet.fill(did, energy);
+				_cEnergyvsiphiCut_SubDet.fill(did, energy);
+				_cEnergyCut_depth.fill(did, energy);
+				_cTimingCut_SubDet.fill(did, time);
+				_cTimingCut_SubDet_iphi.fill(did, time);
+				_cTimingCut_SubDet_ieta.fill(did, time);
+				_cTimingvsietaCut_SubDet_iphi.fill(did, time);
+				_cTimingvsiphiCut_SubDet_ieta.fill(did, time);
+				_cTimingCut_depth.fill(did, time);
+				_cOccupancyCut_depth.fill(did);
+				_cEnergyvsTimingCut_SubDet.fill(did, time, energy);
+			}
 		}
 	}
 

@@ -1,5 +1,6 @@
 
 #include "DQM/HcalCommon/interface/Container2D.h"
+#include "DQM/HcalCommon/interface/Utilities.h"
 
 namespace hcaldqm
 {
@@ -136,10 +137,10 @@ namespace hcaldqm
 	}
 
 	/* virtual */ void Container2D::book(DQMStore::IBooker &ib, 
-		std::string subsystem)
+		std::string subsystem, std::string aux)
 	{
 		unsigned int size = _mapper.getSize();
-		 ib.setCurrentFolder(subsystem+"/"+_folder);
+		ib.setCurrentFolder(subsystem+"/"+_folder+aux);
 		for (unsigned int i=0; i<size; i++)
 		{
 			std::string hname = _mapper.buildName(i);

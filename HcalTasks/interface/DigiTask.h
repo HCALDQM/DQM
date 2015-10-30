@@ -29,33 +29,42 @@ class DigiTask : public DQTask
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
 		virtual void _resetMonitors(int);
 
-		//	vars
-		int				_numDigis[constants::SUBDET_NUM];
+		//	Tags
 		edm::InputTag	_tagHBHE;
 		edm::InputTag	_tagHO;
 		edm::InputTag	_tagHF;
 
-		//	1D 
-		Container1D		_cADCperTS_SubDet;
+		//	Counters
+		int				_numDigis[constants::SUBDET_NUM];
+
+		//	Cuts
+		double _cutSumQ_HBHE, _cutSumQ_HO, _cutSumQ_HF;
+
+		// Containers by quantities
+
+		//	Signal, ADC, fC, SumQ
 		Container1D		_cfCperTS_SubDet;
-		Container1D		_cShape_SubDet_iphi;
-		Container1D		_cShapeSumQcut_SubDet_iphi;
+		Container1D		_cADCperTS_SubDet;
 		Container1D		_cSumQ_SubDet_iphi;
-		Container1D		_cTimingSumQcut_SubDet_iphi;
-		Container1D		_cOccupancyvsiphi_SubDet;
-
-		//	Prof1D
-		ContainerProf1D	_cSumQvsLS_SubDet_iphi;
-		ContainerProf1D	_cTimingSumQcutvsieta_SubDet_iphi;
-		ContainerProf1D	_cTimingSumQcutvsiphi_SubDet_ieta;
-
-		//	2D
-		Container2D		_cOccupancy_depth;
-
-		//	Prof2D
-		ContainerProf2D	_cOccupancyiphivsLS_SubDet;
 		ContainerProf2D	_cSumQ_depth;
-		ContainerProf2D	_cTimingSumQcut_depth;
+		ContainerProf1D	_cSumQvsLS_SubDet_iphi;
+
+		//	Shape
+		Container1D		_cShape_SubDet_iphi;
+		Container1D		_cShapeCut_SubDet_iphi;
+
+		//	Timing
+		Container1D		_cTimingCut_SubDet_iphi;
+		ContainerProf1D	_cTimingCutvsieta_SubDet_iphi;
+		ContainerProf1D _cTimingCutvsiphi_SubDet_ieta;
+		ContainerProf2D	_cTimingCut_depth;
+
+		//	Occupancy
+		Container1D		_cOccupancyvsiphi_SubDet;
+		Container1D		_cOccupancyCutvsiphi_SubDet;
+		Container2D		_cOccupancy_depth;
+		Container2D		_cOccupancyCut_depth;
+		ContainerProf2D	_cOccupancyCutiphivsLS_SubDet;
 };
 
 #endif

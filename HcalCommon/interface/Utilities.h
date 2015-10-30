@@ -77,6 +77,17 @@ namespace hcaldqm
 		{
 			return sumADC<DIGI>(digi, ped, i, j)/(j-i+1);
 		}
+
+		/*
+		 *	Log Functions
+		 */
+		template<typename STDTYPE>
+		void log(STDTYPE x)
+		{
+			std::cout << "%MSG" << std::endl;
+			std::cout << "%MSG-d HCALDQM::" << x;
+			std::cout << std::endl;
+		}
 	}
 }
 

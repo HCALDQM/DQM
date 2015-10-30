@@ -30,7 +30,8 @@ namespace hcaldqm
 				Axis *zaxis = new ValueAxis(axis::fZaxis, axis::fEntries));
 			virtual ~ContainerProf2D() {}
 
-			virtual void book(DQMStore::IBooker&, std::string subsystem="Hcal");
+			virtual void book(DQMStore::IBooker&,
+				std::string subsystem="Hcal", std::string aux="");
 
 		protected:
 	};

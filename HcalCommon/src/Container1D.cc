@@ -108,12 +108,14 @@ namespace hcaldqm
 	}
 
 	/* virtual */ void Container1D::book(DQMStore::IBooker& ib, 
-		std::string subsystem)
+		std::string subsystem, std::string aux)
 	{
+
 		unsigned int size = _mapper.getSize();
-		ib.setCurrentFolder(subsystem+"/"+_folder);
+		ib.setCurrentFolder(subsystem+"/"+_folder+aux);
 		for (unsigned int i=0; i<size; i++)
 		{
+//			utilities::log(_name);			
 			std::string hname = _mapper.buildName(i);
 			MonitorElement *me = ib.book1D(_name+"_"+hname, _name +" "+hname,
 				_xaxis->_nbins, _xaxis->_min, _xaxis->_max);

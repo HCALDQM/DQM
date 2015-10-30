@@ -5,87 +5,123 @@ using namespace hcaldqm;
 DigiTask::DigiTask(edm::ParameterSet const& ps):
 	DQTask(ps),
 
-	//	Containers
-	_cADCperTS_SubDet(_name+"/ADC_SubDet", "ADC",
+	//	Signal, ADC, fC, SumQ
+	_cfCperTS_SubDet(_name+"/Signal/fC_SubDet", "fCperTS",
 		mapper::fSubDet,
-		new axis::ValueAxis(axis::fXaxis, axis::fADC)),
-	_cfCperTS_SubDet(_name+"/fC_SubDet", "fC",
+		new axis::ValueAxis(axis::fXaxis, axis::fNomFC),
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
+	_cADCperTS_SubDet(_name+"/Signal/ADC_SubDet", "ADCperTS",
 		mapper::fSubDet,
-		new axis::ValueAxis(axis::fXaxis, axis::fNomFC)),
-	_cShape_SubDet_iphi(_name+"/Shape_SubDet_iphi", "Shape",
+		new axis::ValueAxis(axis::fXaxis, axis::fADC),
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
+	_cSumQ_SubDet_iphi(_name+"/Signal/SubDet_iphi", "SumQ",
 		mapper::fSubDet_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
-	_cShapeSumQcut_SubDet_iphi(_name+"/ShapeSumQcut_SubDet_iphi", "ShapeSumQcut",
-		mapper::fSubDet_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
-	_cSumQ_SubDet_iphi(_name+"/SumQ_SubDet_iphi", "SumQ",
-		mapper::fSubDet_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fNomFC)),
-	_cTimingSumQcut_SubDet_iphi(_name+"/TimingSumQcut_SubDet_iphi", 
-		"TimingSumQcut", mapper::fSubDet_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
-	_cOccupancyvsiphi_SubDet(_name+"/Occupancyvsiphi_SubDet", "Occupancyvsiphi",
-		mapper::fSubDet,
-		new axis::CoordinateAxis(fXaxis, axis::fiphi)),
-	_cSumQvsLS_SubDet_iphi(_name+"/SumQvsLS_SubDet_iphi", "SumQvsLS",
-		mapper::fSubDet_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
-	_cTimingSumQcutvsieta_SubDet_iphi(_name+"/TimingSumQcutvsieta_SubDet_iphi",
-		"TimingSumQcutvsieta", mapper::fSubDet_iphi,
-		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
-		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS)),
-	_cTimingSumQcutvsiphi_SubDet_ieta(_name+"/TimingSumQcutvsiphi_SubDet_ieta",
-		"TimingSumQcutvsiphi", mapper::fSubDet_ieta,
-		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS)),
-	_cOccupancy_depth(_name+"/Occupancy_depth", "Occupancy",
-		mapper::fdepth, 
-		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cOccupancyiphivsLS_SubDet(_name+"/OccupancyiphivsLS_SubDet", 
-		"OccupancyiphivsLS", mapper::fSubDet,
-		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cSumQ_depth(_name+"/SumQ", "SumQ",
+		new axis::ValueAxis(axis::fXaxis, axis::fNomFC),
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
+	_cSumQ_depth(_name+"/Signal/depth", "SumQ",
 		mapper::fdepth,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fNomFC)),
-	_cTimingSumQcut_depth(_name+"/TimingSumQcut", "TimingSumQcut",
+	_cSumQvsLS_SubDet_iphi(_name+"/Signal/SumQvsLS_SubDet_iphi", "SumQvsLS",
+		mapper::fSubDet_iphi,
+		new axis::ValueAxis(axis::fXaxis, axis::fLS),
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
+
+	//	Shape
+	_cShape_SubDet_iphi(_name+"/Shape/SubDet_iphi", "Shape",
+		mapper::fSubDet_iphi,
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
+	_cShapeCut_SubDet_iphi(_name+"/Shape/SubDet_iphi", "Shape",
+		mapper::fSubDet_iphi,
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
+
+	//	Timing
+	_cTimingCut_SubDet_iphi(_name+"/Timing/SubDet_iphi", 
+		"Timing", mapper::fSubDet_iphi,
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
+	_cTimingCutvsieta_SubDet_iphi(_name+"/Timing/vsieta_SubDet_iphi",
+		"Timingvsieta", mapper::fSubDet_iphi,
+		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
+		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS)),
+	_cTimingCutvsiphi_SubDet_ieta(_name+"/Timing/vsiphi_SubDet_ieta",
+		"Timingvsiphi", mapper::fSubDet_ieta,
+		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
+		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS)),
+	_cTimingCut_depth(_name+"/Timing/depth", "Timing",
 		mapper::fdepth,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS))
+		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS)),
+
+	//	Occupancy
+	_cOccupancyvsiphi_SubDet(_name+"/Occupancy/vsiphi_SubDet", "Occupancyvsiphi",
+		mapper::fSubDet,
+		new axis::CoordinateAxis(fXaxis, axis::fiphi)),
+	_cOccupancyCutvsiphi_SubDet(_name+"/Occupancy/vsiphi_SubDet", 
+		"Occupancyvsiphi",
+		mapper::fSubDet,
+		new axis::CoordinateAxis(fXaxis, axis::fiphi)),
+	_cOccupancy_depth(_name+"/Occupancy/depth", "Occupancy",
+		mapper::fdepth, 
+		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
+	_cOccupancyCut_depth(_name+"/Occupancy/depth", "Occupancy",
+		mapper::fdepth, 
+		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
+	_cOccupancyCutiphivsLS_SubDet(_name+"/Occupancy/iphivsLS_SubDet", 
+		"OccupancyiphivsLS",
+		mapper::fSubDet,
+		new axis::ValueAxis(axis::fXaxis, axis::fLS),
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
+		new axis::ValueAxis(axis::fZaxis, axis::fEntries))
 {
+	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 		edm::InputTag("hcalDigis"));
 	_tagHO = ps.getUntrackedParameter<edm::InputTag>("tagHO",
 		edm::InputTag("hcalDigis"));
 	_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF",
 		edm::InputTag("hcalDigis"));
+
+	// cuts
+	_cutSumQ_HBHE = ps.getUntrackedParameter<double>("cutSumQ_HBHE", 20);
+	_cutSumQ_HO = ps.getUntrackedParameter<double>("cutSumQ_HO", 20);
+	_cutSumQ_HF = ps.getUntrackedParameter<double>("cutSumQ_HF", 20);
+	
 }
 
 /* virtual */ void DigiTask::bookHistograms(DQMStore::IBooker &ib,
 	edm::Run const& r, edm::EventSetup const& es)
 {
+	char cutstr[200];
+	sprintf(cutstr, "_SumQHBHE%dHO%dHF%d", int(_cutSumQ_HBHE),
+		int(_cutSumQ_HO), int(_cutSumQ_HF));
+
 	DQTask::bookHistograms(ib, r, es);
 	_cADCperTS_SubDet.book(ib);
 	_cfCperTS_SubDet.book(ib);
-	_cShape_SubDet_iphi.book(ib);
-	_cShapeSumQcut_SubDet_iphi.book(ib);
 	_cSumQ_SubDet_iphi.book(ib);
-	_cTimingSumQcut_SubDet_iphi.book(ib);
-	_cOccupancyvsiphi_SubDet.book(ib);
-	_cSumQvsLS_SubDet_iphi.book(ib);
-	_cTimingSumQcutvsieta_SubDet_iphi.book(ib);
-	_cTimingSumQcutvsiphi_SubDet_ieta.book(ib);
-	_cOccupancyiphivsLS_SubDet.book(ib);
-	_cOccupancy_depth.book(ib);
 	_cSumQ_depth.book(ib);
-	_cTimingSumQcut_depth.book(ib);
+	_cSumQvsLS_SubDet_iphi.book(ib);
+
+	_cShape_SubDet_iphi.book(ib);
+	_cShapeCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
+
+	_cTimingCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
+	_cTimingCutvsieta_SubDet_iphi.book(ib, _subsystem, 
+		std::string(cutstr));
+	_cTimingCutvsiphi_SubDet_ieta.book(ib, _subsystem, std::string(cutstr));
+	_cTimingCut_depth.book(ib, _subsystem, std::string(cutstr));
+
+	_cOccupancyvsiphi_SubDet.book(ib);
+	_cOccupancyCutvsiphi_SubDet.book(ib, _subsystem, std::string(cutstr));
+	_cOccupancy_depth.book(ib);
+	_cOccupancyCut_depth.book(ib, _subsystem, std::string(cutstr));
+	_cOccupancyCutiphivsLS_SubDet.book(ib, _subsystem, std::string(cutstr));
 }
 
 /* virtual */ void DigiTask::_resetMonitors(int pflag)
@@ -123,38 +159,39 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			digi.size()-1);
 		double timing = utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
+		const HcalDetId did = digi.id();
 
 		//	fill without a cut
-		_cOccupancy_depth.fill(digi.id());
-//		_cOccupancyiphivsLS_SubDet.fill(digi.id(), _currentLS);
-		_cSumQ_SubDet_iphi.fill(digi.id(), sumQ);
-		_cSumQ_depth.fill(digi.id(), sumQ);
-		_cSumQvsLS_SubDet_iphi.fill(digi.id(), _currentLS, sumQ);
+		_cOccupancy_depth.fill(did);
+		_cOccupancyvsiphi_SubDet.fill(did);
+		_cSumQ_SubDet_iphi.fill(did, sumQ);
+		_cSumQ_depth.fill(did, sumQ);
+		_cSumQvsLS_SubDet_iphi.fill(did, _currentLS, sumQ);
 
 		//	fill with a cut
-		if (sumQ>20)
+		if (sumQ>_cutSumQ_HBHE)
 		{
-			_cTimingSumQcut_SubDet_iphi.fill(digi.id(), timing);
-			_cTimingSumQcutvsieta_SubDet_iphi.fill(digi.id(),
-				timing);
-			_cTimingSumQcutvsiphi_SubDet_ieta.fill(digi.id(),
-				timing);
-			_cTimingSumQcut_depth.fill(digi.id(), timing);
+			_cTimingCut_SubDet_iphi.fill(did, timing);
+			_cTimingCutvsieta_SubDet_iphi.fill(did, timing);
+			_cTimingCutvsiphi_SubDet_ieta.fill(did,	timing);
+			_cTimingCut_depth.fill(did, timing);
+			_cOccupancyCutvsiphi_SubDet.fill(did);
+			_cOccupancyCut_depth.fill(did);
+//			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
 		}
 		
 		//	per TS
 		for (int i=0; i<digi.size(); i++)
 		{
 			//	without a cut
-			_cADCperTS_SubDet.fill(digi.id(), digi.sample(i).adc());
-			_cfCperTS_SubDet.fill(digi.id(), digi.sample(i).nominal_fC());
-			_cShape_SubDet_iphi.fill(digi.id(), i, 
-				digi.sample(i).nominal_fC()-2.5);
+			_cADCperTS_SubDet.fill(did, digi.sample(i).adc());
+			_cfCperTS_SubDet.fill(did, digi.sample(i).nominal_fC());
+			_cShape_SubDet_iphi.fill(did, i, digi.sample(i).nominal_fC()-2.5);
 
 			//	with a cut
-			if (sumQ>20)
+			if (sumQ>_cutSumQ_HBHE)
 			{
-				_cShapeSumQcut_SubDet_iphi.fill(digi.id(), i,
+				_cShapeCut_SubDet_iphi.fill(did, i,
 					digi.sample(i).nominal_fC()-2.5);
 			}
 		}
@@ -167,38 +204,39 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			digi.size()-1);
 		double timing = utilities::aveTS<HODataFrame>(digi, 8.5, 0,
 			digi.size()-1);
+		const HcalDetId did = digi.id();
 
 		//	fill without a cut
-		_cOccupancy_depth.fill(digi.id());
-//		_cOccupancyiphivsLS_SubDet.fill(digi.id(), _currentLS);
-		_cSumQ_SubDet_iphi.fill(digi.id(), sumQ);
-		_cSumQ_depth.fill(digi.id(), sumQ);
-		_cSumQvsLS_SubDet_iphi.fill(digi.id(), _currentLS, sumQ);
+		_cOccupancy_depth.fill(did);
+		_cOccupancyvsiphi_SubDet.fill(did);
+		_cSumQ_SubDet_iphi.fill(did, sumQ);
+		_cSumQ_depth.fill(did, sumQ);
+		_cSumQvsLS_SubDet_iphi.fill(did, _currentLS, sumQ);
 
 		//	fill with a cut
-		if (sumQ>20)
+		if (sumQ>_cutSumQ_HO)
 		{
-			_cTimingSumQcut_SubDet_iphi.fill(digi.id(), timing);
-			_cTimingSumQcutvsieta_SubDet_iphi.fill(digi.id(),
-				timing);
-			_cTimingSumQcutvsiphi_SubDet_ieta.fill(digi.id(),
-				timing);
-			_cTimingSumQcut_depth.fill(digi.id(), timing);
+			_cTimingCut_SubDet_iphi.fill(did, timing);
+			_cTimingCutvsieta_SubDet_iphi.fill(did, timing);
+			_cTimingCutvsiphi_SubDet_ieta.fill(did,	timing);
+			_cTimingCut_depth.fill(did, timing);
+			_cOccupancyCutvsiphi_SubDet.fill(did);
+			_cOccupancyCut_depth.fill(did);
+//			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
 		}
 		
 		//	per TS
 		for (int i=0; i<digi.size(); i++)
 		{
 			//	without a cut
-			_cADCperTS_SubDet.fill(digi.id(), digi.sample(i).adc());
-			_cfCperTS_SubDet.fill(digi.id(), digi.sample(i).nominal_fC());
-			_cShape_SubDet_iphi.fill(digi.id(), i, 
-				digi.sample(i).nominal_fC()-8.5);
+			_cADCperTS_SubDet.fill(did, digi.sample(i).adc());
+			_cfCperTS_SubDet.fill(did, digi.sample(i).nominal_fC());
+			_cShape_SubDet_iphi.fill(did, i, digi.sample(i).nominal_fC()-8.5);
 
 			//	with a cut
-			if (sumQ>20)
+			if (sumQ>_cutSumQ_HO)
 			{
-				_cShapeSumQcut_SubDet_iphi.fill(digi.id(), i,
+				_cShapeCut_SubDet_iphi.fill(did, i,
 					digi.sample(i).nominal_fC()-8.5);
 			}
 		}
@@ -211,38 +249,39 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			digi.size()-1);
 		double timing = utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
+		const HcalDetId did = digi.id();
 
 		//	fill without a cut
-		_cOccupancy_depth.fill(digi.id());
-//		_cOccupancyiphivsLS_SubDet.fill(digi.id(), _currentLS);
-		_cSumQ_SubDet_iphi.fill(digi.id(), sumQ);
-		_cSumQ_depth.fill(digi.id(), sumQ);
-		_cSumQvsLS_SubDet_iphi.fill(digi.id(), _currentLS, sumQ);
+		_cOccupancy_depth.fill(did);
+		_cOccupancyvsiphi_SubDet.fill(did);
+		_cSumQ_SubDet_iphi.fill(did, sumQ);
+		_cSumQ_depth.fill(did, sumQ);
+		_cSumQvsLS_SubDet_iphi.fill(did, _currentLS, sumQ);
 
 		//	fill with a cut
-		if (sumQ>20)
+		if (sumQ>_cutSumQ_HF)
 		{
-			_cTimingSumQcut_SubDet_iphi.fill(digi.id(), timing);
-			_cTimingSumQcutvsieta_SubDet_iphi.fill(digi.id(),
-				timing);
-			_cTimingSumQcutvsiphi_SubDet_ieta.fill(digi.id(),
-				timing);
-			_cTimingSumQcut_depth.fill(digi.id(), timing);
+			_cTimingCut_SubDet_iphi.fill(did, timing);
+			_cTimingCutvsieta_SubDet_iphi.fill(did, timing);
+			_cTimingCutvsiphi_SubDet_ieta.fill(did,	timing);
+			_cTimingCut_depth.fill(did, timing);
+			_cOccupancyCutvsiphi_SubDet.fill(did);
+			_cOccupancyCut_depth.fill(did);
+//			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
 		}
 		
 		//	per TS
 		for (int i=0; i<digi.size(); i++)
 		{
 			//	without a cut
-			_cADCperTS_SubDet.fill(digi.id(), digi.sample(i).adc());
-			_cfCperTS_SubDet.fill(digi.id(), digi.sample(i).nominal_fC());
-			_cShape_SubDet_iphi.fill(digi.id(), i, 
-				digi.sample(i).nominal_fC()-2.5);
+			_cADCperTS_SubDet.fill(did, digi.sample(i).adc());
+			_cfCperTS_SubDet.fill(did, digi.sample(i).nominal_fC());
+			_cShape_SubDet_iphi.fill(did, i, digi.sample(i).nominal_fC()-2.5);
 
 			//	with a cut
-			if (sumQ>20)
+			if (sumQ>_cutSumQ_HF)
 			{
-				_cShapeSumQcut_SubDet_iphi.fill(digi.id(), i,
+				_cShapeCut_SubDet_iphi.fill(did, i,
 					digi.sample(i).nominal_fC()-2.5);
 			}
 		}

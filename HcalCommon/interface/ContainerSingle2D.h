@@ -32,7 +32,8 @@ namespace hcaldqm
 			virtual ~ContainerSingle2D() {}
 
 			//	booking
-			virtual void book(DQMStore::IBooker&, std::string subsystem="Hcal");
+			virtual void book(DQMStore::IBooker&,
+				std::string subsystem="Hcal", std::string aux="");
 
 			//	filling
 			virtual void fill(int, int);

@@ -53,8 +53,8 @@ namespace hcaldqm
 		edm::Run const& r,
 		edm::EventSetup const& es)
 	{
-		_cEvsTotal.book(ib, _subsystem);
-		_cEvsPerLS.book(ib, _subsystem);
+		_cEvsTotal.book(ib);
+		_cEvsPerLS.book(ib);
 	}
 
 	/* virtual */ void DQTask::dqmBeginRun(edm::Run const& r,

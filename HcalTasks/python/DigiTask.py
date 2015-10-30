@@ -12,7 +12,10 @@ digiTask = cms.EDAnalyzer(
 	#	tags
 	tagHBHE = cms.untracked.InputTag("hcalDigis"),
 	tagHO = cms.untracked.InputTag("hcalDigis"),
-	tagHF = cms.untracked.InputTag("hcalDigis")
+	tagHF = cms.untracked.InputTag("hcalDigis"),
+
+	#	Cuts
+	cutsumQ = cms.untracked.double(20)
 )
 
 

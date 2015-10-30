@@ -15,10 +15,10 @@ namespace hcaldqm
 	{}
 
 	/* virtual */ void ContainerProf1D::book(DQMStore::IBooker &ib,
-		std::string subsystem)
+		std::string subsystem, std::string aux)
 	{
 		unsigned int size = _mapper.getSize();
-		 ib.setCurrentFolder(subsystem+"/"+_folder);
+		 ib.setCurrentFolder(subsystem+"/"+_folder+aux);
 		for (unsigned int i=0; i<size; i++)
 		{
 			std::string hname = _mapper.buildName(i);

@@ -13,6 +13,7 @@
 #include "DQM/HcalCommon/interface/CoordinateAxis.h"
 #include "DQM/HcalCommon/interface/Container.h"
 #include "DQM/HcalCommon/interface/Mapper.h"
+#include "DQM/HcalCommon/interface/Utilities.h"
 
 #include <vector>
 #include <string>
@@ -26,6 +27,11 @@ namespace hcaldqm
 	{
 		public:
 			Container1D() {}
+			//	Initialize Container
+			//	@folder - folder name where to save. Should already include the
+			//	Tasks's name
+			//	@nametitle - namebase of the name and of the title
+			//
 			Container1D(std::string const& folder, std::string const& nametitle,
 				mapper::MapperType mt, axis::Axis* xaxis, 
 				axis::Axis* yaxis = new ValueAxis(fYaxis, fEntries));
@@ -55,8 +61,11 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, double, double);
 
 			//	booking
-			virtual void book(DQMStore::IBooker&, 
-				std::string subsystem="Hcal");
+			//	@aux - typically a cut or anything else
+			//	@subsystem - subsystem under which to save
+			//
+			virtual void book(DQMStore::IBooker&, std::string subsystem="Hcal",
+				std::string aux="");
 			virtual void reset();
 
 		protected:
