@@ -48,6 +48,7 @@ namespace hcaldqm
 			fFED_Slot = 8,
 			fCrate_Slot = 9,
 
+			//	Special
 			fRadDam = 10,
 
 			nMapperType = 11
@@ -79,7 +80,7 @@ namespace hcaldqm
 			generate_fiphi, generate_fieta, generate_fdepth, 
 			generate_fSubDet_iphi, generate_fSubDet_ieta,
 			generate_fFED, generate_fCrate, generate_fFED_Slot, 
-			generate_fCrate_Slot, generate_fRadDam(Input const&)};
+			generate_fCrate_Slot, generate_fRadDam};
 
 		/*
 		 *	Mapper Class

@@ -8,6 +8,7 @@
  */
 
 #include "DQM/HcalCommon/interface/DQTask.h"
+#include "DQM/HcalCommon/interface/Utilities.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
@@ -41,9 +42,9 @@ class DigiTask : public DQTask
 		Container1D		_cShapeSumQcut_SubDet_iphi;
 		Container1D		_cSumQ_SubDet_iphi;
 		Container1D		_cTimingSumQcut_SubDet_iphi;
+		Container1D		_cOccupancyvsiphi_SubDet;
 
 		//	Prof1D
-		Container1D		_cOccupancyvsiphi_SubDet;
 		ContainerProf1D	_cSumQvsLS_SubDet_iphi;
 		ContainerProf1D	_cTimingSumQcutvsieta_SubDet_iphi;
 		ContainerProf1D	_cTimingSumQcutvsiphi_SubDet_ieta;
