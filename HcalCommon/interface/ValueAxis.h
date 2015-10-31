@@ -59,6 +59,7 @@ namespace hcaldqm
 				friend class hcaldqm::ContainerProf1D;
 				friend class hcaldqm::ContainerProf2D;
 				friend class hcaldqm::ContainerSingle2D;
+				friend class hcaldqm::ContainerSingle1D;
 
 			public:
 				ValueAxis();

@@ -34,7 +34,7 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerSingle1D::fill(double x)
 	{
-		_me->Fill(double);
+		_me->Fill(x);
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(int x, int y)
@@ -75,7 +75,6 @@ namespace hcaldqm
 		double y)
 	{
 		AxisQType xact = _xaxis->getType();
-		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate)
 			_me->Fill(_xaxis->get(id), x, y);
 		else

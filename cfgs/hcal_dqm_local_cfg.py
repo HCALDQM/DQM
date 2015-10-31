@@ -30,6 +30,14 @@ options.register(
 	"Number of Events to process"
 )
 
+options.register(
+	'runType',
+	'pedestal',
+	VarParsing.VarParsing.multiplicity.singleton,
+	VarParsing.VarParsing.varType.string,
+	"Local Run Type: pedestal, led, laser, raddam"
+)
+
 options.parseArguments()
 
 #-------------------------------------
@@ -143,6 +151,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.load("DQM.HcalTasks.PedestalTask")
 process.load("DQM.HcalTasks.LaserTask")
 process.load("DQM.HcalTasks.LEDTask")
+process.load("DQM.HcalTasks.RadDamTask")
 
 #-------------------------------------
 #	To force using uTCA
@@ -193,11 +202,17 @@ process.utcaDigis.FEDs = cms.untracked.vint32(1100, 1102, 1104, 1106,
 #-------------------------------------
 #	Sequences Definition
 #-------------------------------------
-process.tasksSequence = cms.Sequence(
-	process.pedestalTask
-	*process.laserTask
-	*process.ledTask
-)
+if options.runType=="pedestal":
+	process.tasksSequence = cms.Sequence(process.pedestalTask)
+elif options.runType=='led':
+	process.tasksSequence = cms.Sequence(process.ledTask)
+elif options.runType=="laser":
+	process.tasksSequence = cms.Sequence(process.laserTask)
+elif options.runType=="raddam":
+	process.tasksSequence = cms.Sequence(process.raddamTask)
+else:
+	print "### Exiting. Wrong Run Type: " + options.runType
+	sys.exit(1)
 
 #-------------------------------------
 #	Some Settings for Local(a la DetDiag)
@@ -209,12 +224,15 @@ process.hcalDigis.InputLabel = rawTag
 process.pedestalTask.tagRaw = cms.untracked.InputTag('source')
 process.laserTask.tagRaw = cms.untracked.InputTag('source')
 process.ledTask.tagRaw = cms.untracked.InputTag('source')
+process.raddamTask.tagRaw = cms.untracked.InputTag("source")
 process.pedestalTask.subsystem = cms.untracked.string("Hcal")
 process.laserTask.subsystem = cms.untracked.string("Hcal")
 process.ledTask.subsystem = cms.untracked.string("Hcal")
 process.pedestalTask.ptype = cms.untracked.int32(2)
 process.ledTask.ptype = cms.untracked.int32(2)
 process.laserTask.ptype = cms.untracked.int32(2)
+process.raddamTask.subsystem = cms.untracked.string('Hcal')
+process.raddamTask.ptype = cms.untracked.int32(2)
 
 #-------------------------------------
 #	To see Laser Board info and trigger info

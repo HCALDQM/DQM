@@ -14,7 +14,7 @@
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
-#include "DQM/HcalCommon/interface/ContainerSignle1D.h"
+#include "DQM/HcalCommon/interface/ContainerSingle1D.h"
 
 using namespace hcaldqm;
 class RadDamTask : public DQTask
@@ -30,7 +30,6 @@ class RadDamTask : public DQTask
 	protected:
 		//	funcs
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
-		virtual void _resetMonitors(int);
 		virtual bool _isApplicable(edm::Event const&);
 
 		//	vars

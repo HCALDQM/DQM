@@ -35,34 +35,34 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	_vDetIds.push_back(HcalDetId(HcalForward, -41, 15, 2));
 	_vDetIds.push_back(HcalDetId(HcalForward, -41, 51, 2));
 
-	_vDetIds.push_back(HcalDetid(HcalForward, 30, 21, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 30, 57, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 32, 1, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 32, 37, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 34, 21, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 34, 57, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 36, 1, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 36, 37, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 38, 21, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 38, 57, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 40, 35, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 40, 71, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 41, 19, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 41, 55, 1));
-	_vDetIds.push_back(HcalDetid(HcalForward, 30, 1, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 30, 37, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 32, 21, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 32, 57, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 34, 1, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 34, 37, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 36, 21, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 36, 57, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 38, 1, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 38, 37, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 40, 19, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 40, 55, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 41, 35, 2));
-	_vDetIds.push_back(HcalDetid(HcalForward, 41, 71, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 30, 21, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 30, 57, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 32, 1, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 32, 37, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 34, 21, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 34, 57, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 36, 1, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 36, 37, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 38, 21, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 38, 57, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 40, 35, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 40, 71, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 41, 19, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 41, 55, 1));
+	_vDetIds.push_back(HcalDetId(HcalForward, 30, 1, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 30, 37, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 32, 21, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 32, 57, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 34, 1, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 34, 37, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 36, 21, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 36, 57, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 38, 1, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 38, 37, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 40, 19, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 40, 55, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 41, 35, 2));
+	_vDetIds.push_back(HcalDetId(HcalForward, 41, 71, 2));
 
 	//	Initialize all the Single Containers
 	char aux[200];
@@ -85,7 +85,7 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	DQTask::bookHistograms(ib, r, es);	
-	for (unsigned int i=0; i<_vDitIds.size(); i++)
+	for (unsigned int i=0; i<_vDetIds.size(); i++)
 		_vcShape[i].book(ib, _subsystem);
 }
 
@@ -111,7 +111,7 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	}
 }
 
-/* virtual */ void RadDamTask::_isApplicable(edm::Event const &e)
+/* virtual */ bool RadDamTask::_isApplicable(edm::Event const &e)
 {
 	if (_ptype==fOnline)
 	{
@@ -128,8 +128,7 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	return false;
 }
 
-#endif
-
+DEFINE_FWK_MODULE(RadDamTask);
 
 
 

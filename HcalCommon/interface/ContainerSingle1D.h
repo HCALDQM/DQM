@@ -27,8 +27,8 @@ namespace hcaldqm
 			ContainerSingle1D(std::string const& folder, 
 				std::string const& nametitle, 
 				axis::Axis *xaxis,
-				axis::Axis *yaxis = new CoordinateAxis(fYaxis, axis::fEntries));
-			virtual ~ContainerSingle2D() {}
+				axis::Axis *yaxis = new ValueAxis(fYaxis, axis::fEntries));
+			virtual ~ContainerSingle1D() {}
 
 			//	booking
 			virtual void book(DQMStore::IBooker&,
