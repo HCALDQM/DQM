@@ -48,10 +48,7 @@ namespace hcaldqm
 			fFED_Slot = 8,
 			fCrate_Slot = 9,
 
-			//	Special
-			fRadDam = 10,
-
-			nMapperType = 11
+			nMapperType = 10
 		};
 
 		/*
@@ -75,12 +72,11 @@ namespace hcaldqm
 		unsigned int generate_fCrate(Input const&);
 		unsigned int generate_fFED_Slot(Input const&);
 		unsigned int generate_fCrate_Slot(Input const&);
-		unsigned int generate_fRadDam(Input const&);
 		index_generator const vindex[nMapperType] = { generate_fSubDet,
 			generate_fiphi, generate_fieta, generate_fdepth, 
 			generate_fSubDet_iphi, generate_fSubDet_ieta,
 			generate_fFED, generate_fCrate, generate_fFED_Slot, 
-			generate_fCrate_Slot, generate_fRadDam};
+			generate_fCrate_Slot};
 
 		/*
 		 *	Mapper Class

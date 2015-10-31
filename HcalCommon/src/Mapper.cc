@@ -157,11 +157,6 @@ namespace hcaldqm
 
 			return index;
 		}
-
-		unsigned int generate_fRadDam(Input const& i)
-		{
-			return 0;
-		}
 	}
 }
 

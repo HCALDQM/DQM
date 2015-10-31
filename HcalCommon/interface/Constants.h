@@ -3,6 +3,8 @@
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
 
+#include <vector>
+
 namespace hcaldqm
 {
 	namespace constants
@@ -132,7 +134,73 @@ namespace hcaldqm
 		 *	TObject Related
 		 */	
 		int const FIRST_BIT_TO_USE = 19;
+
+		/*
+		 *	RadDam vector of  DetId
+		 */
+		std::vector<HcalDetId> _vRDDetIds;
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -30, 35, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -30, 71, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -32, 15, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -32, 51, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -34, 35, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -34, 71, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -36, 15, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -36, 51, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -38, 35, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -38, 71, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -40, 15, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -40, 51, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -41, 35, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -41, 71, 1));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -30, 15, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -30, 51, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -32, 35, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -32, 71, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -34, 15, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -34, 51, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -36, 35, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -36, 71, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -38, 15, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -38, 51, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -40, 35, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -40, 71, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -41, 15, 2));
+		_vRDDetIds.push_back(HcalDetId(HcalForward, -41, 51, 2));
+
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 30, 21, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 30, 57, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 32, 1, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 32, 37, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 34, 21, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 34, 57, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 36, 1, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 36, 37, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 38, 21, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 38, 57, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 40, 35, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 40, 71, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 41, 19, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 41, 55, 1));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 30, 1, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 30, 37, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 32, 21, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 32, 57, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 34, 1, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 34, 37, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 36, 21, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 36, 57, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 38, 1, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 38, 37, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 40, 19, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 40, 55, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 41, 35, 2));
+		_vRDDetIds.push_back(HcalDetid(HcalForward, 41, 71, 2));
 	}
 }
 
 #endif
+
+
+
+
