@@ -32,7 +32,7 @@ options.register(
 
 options.register(
 	'runType',
-	'pedestal',
+	'UNKNOWN',
 	VarParsing.VarParsing.multiplicity.singleton,
 	VarParsing.VarParsing.varType.string,
 	"Local Run Type: pedestal, led, laser, raddam"
@@ -212,7 +212,7 @@ elif options.runType=="raddam":
 	process.tasksSequence = cms.Sequence(process.raddamTask)
 else:
 	print "### Exiting. Wrong Run Type: " + options.runType
-	sys.exit(1)
+	sys.exit(0)
 
 #-------------------------------------
 #	Some Settings for Local(a la DetDiag)
