@@ -48,7 +48,12 @@ namespace hcaldqm
 			fFED_Slot = 8,
 			fCrate_Slot = 9,
 
-			nMapperType = 10
+			//	TP Mappers
+			fTPSubDet = 10,
+			fTPSubDet_iphi = 11,
+			fTPSubDet_ieta = 12,
+
+			nMapperType = 13
 		};
 
 		/*
@@ -72,11 +77,15 @@ namespace hcaldqm
 		unsigned int generate_fCrate(Input const&);
 		unsigned int generate_fFED_Slot(Input const&);
 		unsigned int generate_fCrate_Slot(Input const&);
+		unsigned int generate_fTPSubDet(Input const&);
+		unsigned int generate_fTPSubDet_iphi(Input const&);
+		unsigned int generate_fTPSubDet_ieta(Input const&);
 		index_generator const vindex[nMapperType] = { generate_fSubDet,
 			generate_fiphi, generate_fieta, generate_fdepth, 
 			generate_fSubDet_iphi, generate_fSubDet_ieta,
 			generate_fFED, generate_fCrate, generate_fFED_Slot, 
-			generate_fCrate_Slot};
+			generate_fCrate_Slot, generate_fTPSubDet,
+			generate_fTPSubDet_iphi, generate_fTPSubDet_ieta};
 
 		/*
 		 *	Mapper Class
@@ -140,6 +149,29 @@ namespace hcaldqm
 						i.i1 = eid.crateId();
 						i.i2 = eid.slot();
 					}
+					return vindex[_type](i);
+				}
+
+				virtual unsigned index(HcalTrigTowerDetId const& tid)
+				{
+					Input i;
+					switch(_type)
+					{
+						case fTPSubDet:
+							i.i1 = tid.ietaAbs();
+							break;
+						case fTPSubDet_iphi:
+							i.i1 = tid.ietaAbs();
+							i.i2 = tid.iphi();
+							break;
+						case fTPSubDet_ieta:
+							i.i1 = tid.ieta();
+							break;
+						default:
+							return 0;
+							break;
+					}
+
 					return vindex[_type](i);
 				}
 
@@ -290,6 +322,46 @@ namespace hcaldqm
 							builtname = name;
 							break;
 						}
+						case fTPSubDet:
+						{
+							builtname = constants::TPSUBDET_NAME[id];
+							break;
+						}
+						case fTPSubDet_iphi:
+						{
+							char name[20];
+							if (id>=IPHI_NUM)
+								sprintf(name, "HFiphi%d",
+									(id-IPHI_NUM)*IPHI_DELTA_TPHF+
+									IPHI_MIN);
+							else
+								sprintf(name, "HBHEiphi%d",
+									id+IPHI_MIN);
+							builtname = name;
+
+							break;
+						}
+						case fTPSubDet_ieta:
+						{
+							char name[20];
+							unsigned int totalHBHE = IETA_MAX_TPHBHE - IETA_MIN+1;
+							unsigned int totalHF = IETA_MAX_TPHF - IETA_MIN_HF+1;
+							if (id>=(2*totalHBHE+totalHF))
+								sprintf(name, "HFPieta%d", 
+									id - 2*totalHBHE-totalHF+IETA_MIN_HF);
+							else if (id>=2*totalHBHE)
+								sprintf(name, "HFMieta%d",
+									-(id - 2*totalHBHE + IETA_MIN_HF));
+							else if (id>=totalHBHE)
+								sprintf(name, "HBHEPieta%d",
+									id-totalHBHE+IETA_MIN);
+							else
+								sprintf(name, "HBHEMieta%d",
+									-(id+IETA_MIN));
+
+							builtname = name;
+							break;
+						}
 						default:
 						{
 							return std::string("UNKNOWN");
@@ -339,6 +411,16 @@ namespace hcaldqm
 						case fCrate_Slot:
 							_size = CRATE_VME_NUM*SLOT_VME_NUM + 
 								CRATE_uTCA_NUM*SLOT_uTCA_NUM;
+							break;
+						case fTPSubDet:
+							_size = 2;
+							break;
+						case fTPSubDet_iphi:
+							_size = IPHI_NUM+IPHI_NUM/IPHI_DELTA_TPHF;
+							break;
+						case fTPSubDet_ieta:
+							_size = 2*(IETA_MAX_TPHBHE-IETA_MIN+1)+
+								2*(IETA_MAX_TPHF-IETA_MIN_HF+1);
 							break;
 						default:
 							_size = 0;

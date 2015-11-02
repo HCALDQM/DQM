@@ -1,5 +1,6 @@
 
 #include "DQM/HcalCommon/interface/ContainerSingle2D.h"
+#include "DQM/HcalCommon/interface/Utilities.h"
 
 namespace hcaldqm
 {
@@ -133,6 +134,76 @@ namespace hcaldqm
 		HcalElectronicsId const& eid, double x)
 	{
 		_me->Fill(_xaxis->get(did), _yaxis->get(eid), x);
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& tid)
+	{
+		_me->Fill(_xaxis->get(tid), _yaxis->get(tid));
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& id, 
+		double x)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact==fCoordinate)
+			_me->Fill(_xaxis->get(id), _yaxis->get(id), x);
+		else if (xact==fCoordinate)
+			_me->Fill(_xaxis->get(id), x);
+		else if (yact==fCoordinate)
+			_me->Fill(x, _yaxis->get(id));
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& id, 
+		int x)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact==fCoordinate)
+			_me->Fill(_xaxis->get(id), _yaxis->get(id), x);
+		else if (xact==fCoordinate)
+			_me->Fill(_xaxis->get(id), x);
+		else if (yact==fCoordinate)
+			_me->Fill(x, _yaxis->get(id));
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& id, 
+		int x, int y)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact!=fCoordinate)
+			_me->Fill(_xaxis->get(id), x, y);
+		else if (xact!=fCoordinate && yact==fCoordinate)
+			_me->Fill(x, _yaxis->get(id), y);
+		else if (xact!=fCoordinate && yact!=fCoordinate)
+			_me->Fill(x, y);
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& id, 
+		int x, double y)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact!=fCoordinate)
+			_me->Fill(_xaxis->get(id), x, y);
+		else if (xact!=fCoordinate && yact==fCoordinate)
+			_me->Fill(x, _yaxis->get(id), y);
+		else if (xact!=fCoordinate && yact!=fCoordinate)
+			_me->Fill(x, y);
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& id, 
+		double x, double y)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact!=fCoordinate)
+			_me->Fill(_xaxis->get(id), x, y);
+		else if (xact!=fCoordinate && yact==fCoordinate)
+			_me->Fill(x, _yaxis->get(id), y);
+		else if (xact!=fCoordinate && yact!=fCoordinate)
+			_me->Fill(x, y);
 	}
 }
 

@@ -60,6 +60,12 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, int, double);
 			virtual void fill(HcalElectronicsId const&, double, double);
 
+			virtual void fill(HcalTrigTowerDetId const&);
+			virtual void fill(HcalTrigTowerDetId const&, int);
+			virtual void fill(HcalTrigTowerDetId const&, double);
+			virtual void fill(HcalTrigTowerDetId const&, int, int);
+			virtual void fill(HcalTrigTowerDetId const&, int, double);
+
 			//	booking
 			//	@aux - typically a cut or anything else
 			//	@subsystem - subsystem under which to save

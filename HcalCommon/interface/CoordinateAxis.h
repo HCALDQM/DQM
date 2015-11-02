@@ -29,26 +29,32 @@ namespace hcaldqm
 			fFiber = 7,
 			fFiberCh = 8,
 
-			nCoordinateType = 9
+			fTPSubDet = 9,
+			fTPieta = 10,
+
+			nCoordinateType = 11
 		};
 
 		std::string const ctitle[nCoordinateType] = {
 			"Sub Detector", "iphi", "ieta", "depth", "FED", "Crate", "Slot",
-			"Fiber", "Fiber Channel"
+			"Fiber", "Fiber Channel", "TP Sub Detector", "TP ieta"
 		};
 		double const cmin[nCoordinateType] = {
 			HB, IPHI_MIN-0.5, 0, DEPTH_MIN-0.5,
-			0, CRATE_VME_MIN, SLOT_uTCA_MIN, FIBER_VME_MIN, FIBERCH_MIN
+			0, CRATE_VME_MIN, SLOT_uTCA_MIN, FIBER_VME_MIN, FIBERCH_MIN,
+			0, 0
 		};
 		double const cmax[nCoordinateType] = {
 			HF+1, IPHI_MAX+0.5, 84, DEPTH_MAX+0.5,
 			FED_VME_NUM+FED_uTCA_NUM, CRATE_uTCA_MAX+1, SLOT_VME_MAX+1,
-			FIBER_uTCA_MAX+1, FIBERCH_MAX+1
+			FIBER_uTCA_MAX+1, FIBERCH_MAX+1,
+			2, 64
 		};
 		int const cnbins[nCoordinateType] = {
 			SUBDET_NUM, IPHI_NUM, 84, DEPTH_NUM, FED_VME_NUM+FED_uTCA_NUM,
 			CRATE_uTCA_MAX+1-CRATE_VME_MIN, SLOT_VME_MAX+1-SLOT_uTCA_MIN,
-			FIBER_uTCA_MAX+1-FIBER_VME_MIN, FIBERCH_NUM
+			FIBER_uTCA_MAX+1-FIBER_VME_MIN, FIBERCH_NUM,
+			2, 64
 		};
 
 		class CoordinateAxis : public Axis
@@ -72,6 +78,7 @@ namespace hcaldqm
 
 				virtual int get(HcalDetId const&);
 				virtual int get(HcalElectronicsId const&);
+				virtual int get(HcalTrigTowerDetId const&);
 				virtual int get(int);
 
 			protected:

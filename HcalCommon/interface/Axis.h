@@ -64,6 +64,7 @@ namespace hcaldqm
 
 				virtual int get(HcalDetId const&) {return 0;}
 				virtual int get(HcalElectronicsId const&) {return 0;}
+				virtual int get(HcalTrigTowerDetId const&) {return 0;}
 				virtual int get(int) {return 0;}
 				
 			public:

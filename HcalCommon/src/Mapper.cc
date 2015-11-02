@@ -157,6 +157,38 @@ namespace hcaldqm
 
 			return index;
 		}
+
+		unsigned int generate_fTPSubDet(Input const&i)
+		{
+			return i.i1<29 ? 0 : 1;
+		}
+
+		unsigned int generate_fTPSubDet_iphi(Input const&i)
+		{
+			unsigned int index = 0;
+			if (i.i1<29)
+				index = i.i2-IPHI_MIN;
+			else
+				index = IPHI_NUM + (i.i2 - IPHI_MIN)/IPHI_DELTA_TPHF;
+
+			return index;
+		}
+
+		unsigned int generate_fTPSubDet_ieta(Input const&i)
+		{
+			unsigned int index = 0;
+			if (i.i1>=29)
+				index = 2*(IETA_MAX_TPHBHE-IETA_MIN+1)+
+					IETA_MAX_TPHF-IETA_MIN_HF+1 + i.i1-IETA_MIN_HF;
+			else if (i.i1<=-29)
+				index = 2*(IETA_MAX_TPHBHE-IETA_MIN+1) - (i.i1+IETA_MIN_HF);
+			else if (i.i1>0)
+				index = IETA_MAX_TPHBHE-IETA_MIN+1 + i.i1-IETA_MIN;
+			else 
+				index = -(i.i1+IETA_MIN);
+
+			return index;
+		}
 	}
 }
 

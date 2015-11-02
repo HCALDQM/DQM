@@ -52,6 +52,27 @@ namespace hcaldqm
 			return x;
 		}
 
+		/* virtual */ int CoordinateAxis::get(HcalTrigTowerDetId const& tid)
+		{
+			int x;
+			switch(_ctype)
+			{
+				case fiphi:
+					x = tid.iphi();
+					break;
+				case fTPSubDet:
+					x = tid.ietaAbs()<29 ? 0 : 1;
+					break;
+				case fTPieta:
+					x = tid.ieta()<0 ? tid.ieta()+32 : tid.ieta()+31;
+					break;
+				default:
+					x = -100;
+					break;
+			}
+			return x;
+		}
+
 		/* virtual */ int CoordinateAxis::get(HcalElectronicsId const& eid)
 		{
 			int x;
@@ -125,6 +146,18 @@ namespace hcaldqm
 						_labels.push_back(std::string(name));
 					}
 					break;
+				case fTPSubDet:
+					_labels.push_back(std::string("HBHE"));
+					_labels.push_back(std::string("HF"));
+					break;
+				case fTPieta:
+					for (int ieta=-32; ieta<=32; ieta++)
+					{
+						if (ieta==0)
+							continue;
+						sprintf(name, "%d", ieta);
+						_labels.push_back(std::string(name));
+					}
 				default:
 					break;
 			}

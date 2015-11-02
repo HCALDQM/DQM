@@ -6,19 +6,19 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	DQTask(ps),
 
 	//	Containers
-	_cPedestalMeans1D_SubDet(_name+"/1D", "PedestalMeans",
+	_cPedestalMeans_SubDet(_name+"/PedestalMeans/SubDet", "PedestalMeans",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fADC_15),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cPedestalRMSs1D_SubDet(_name+"/1D", "PedestalRMSs",
+	_cPedestalRMSs_SubDet(_name+"/PedestalRMSs/SubDet", "PedestalRMSs",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fADC_5),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cPedestalMeans2D_depth(_name+"/2D", "PedestalMeans",
+	_cPedestalMeans_depth(_name+"/PedestalMeans/depth", "PedestalMeans",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cPedestalRMSs2D_depth(_name+"/2D", "PedestalRMSs",
+	_cPedestalRMSs_depth(_name+"/PedestalRMSs/depth", "PedestalRMSs",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi))
@@ -37,10 +37,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	DQTask::bookHistograms(ib, r, es);
-	_cPedestalMeans1D_SubDet.book(ib, _subsystem);
-	_cPedestalRMSs1D_SubDet.book(ib, _subsystem);
-	_cPedestalMeans2D_depth.book(ib, _subsystem);
-	_cPedestalRMSs2D_depth.book(ib, _subsystem);
+	_cPedestalMeans_SubDet.book(ib, _subsystem);
+	_cPedestalRMSs_SubDet.book(ib, _subsystem);
+	_cPedestalMeans_depth.book(ib, _subsystem);
+	_cPedestalRMSs_depth.book(ib, _subsystem);
 }
 
 /* virtual */ void PedestalTask::_resetMonitors(int pflag)
@@ -50,14 +50,14 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 
 /* virtual */ void PedestalTask::_dump()
 {
-	_cPedestalMeans1D_SubDet.reset();
-	_cPedestalRMSs1D_SubDet.reset();
-	_cPedestalMeans2D_depth.reset();
-	_cPedestalRMSs2D_depth.reset();
-	_cPedestals.dump(&_cPedestalMeans1D_SubDet, true);
-	_cPedestals.dump(&_cPedestalRMSs1D_SubDet, false);
-	_cPedestals.dump(&_cPedestalMeans2D_depth, true);
-	_cPedestals.dump(&_cPedestalRMSs2D_depth, false);
+	_cPedestalMeans_SubDet.reset();
+	_cPedestalRMSs_SubDet.reset();
+	_cPedestalMeans_depth.reset();
+	_cPedestalRMSs_depth.reset();
+	_cPedestals.dump(&_cPedestalMeans_SubDet, true);
+	_cPedestals.dump(&_cPedestalRMSs_SubDet, false);
+	_cPedestals.dump(&_cPedestalMeans_depth, true);
+	_cPedestals.dump(&_cPedestalRMSs_depth, false);
 }
 
 /* virtual */ void PedestalTask::_process(edm::Event const& e,

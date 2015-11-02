@@ -107,6 +107,49 @@ namespace hcaldqm
 			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), x, y);
 	}
 
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid)
+	{
+		_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid));
+	}
+
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid, int x)
+	{
+		AxisQType act = _xaxis->getType();
+		if (act==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x);
+		else
+			_mes[_mapper.index(tid)]->Fill(x);
+	}
+
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid, double x)
+	{
+		AxisQType act = _xaxis->getType();
+		if (act==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x);
+		else
+			_mes[_mapper.index(tid)]->Fill(x);
+	}
+
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid, int x,
+		int y)
+	{
+		AxisQType act = _xaxis->getType();
+		if (act==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x, y);
+		else
+			_mes[_mapper.index(tid)]->Fill(x, y);
+	}
+
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid, int x,
+		double y)
+	{
+		AxisQType act = _xaxis->getType();
+		if (act==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x, y);
+		else
+			_mes[_mapper.index(tid)]->Fill(x, y);
+	}
+
 	/* virtual */ void Container1D::book(DQMStore::IBooker& ib, 
 		std::string subsystem, std::string aux)
 	{

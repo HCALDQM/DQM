@@ -136,6 +136,78 @@ namespace hcaldqm
 			_mes[_mapper.index(eid)]->Fill(x, y);
 	}
 
+	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid)
+	{
+		_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), _yaxis->get(tid));
+	}
+
+	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid, int x)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid),
+				_yaxis->get(tid), x);
+		else if (xact==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid),
+				x);
+		else if (yact==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid));
+	}
+
+	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid, double x)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid),
+				_yaxis->get(tid), x);
+		else if (xact==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid),
+				x);
+		else if (yact==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid));
+	}
+
+	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid, 
+		int x, int y)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact!=fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x, y);
+		else if (xact!=fCoordinate && yact==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid), y);
+		else if (yact!=fCoordinate && xact!=fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(x, y);
+	}
+
+	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid, 
+		int x, double y)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact!=fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x, y);
+		else if (xact!=fCoordinate && yact==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid), y);
+		else if (yact!=fCoordinate && xact!=fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(x, y);
+	}
+
+	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid, 
+		double x, double y)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact==fCoordinate && yact!=fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x, y);
+		else if (xact!=fCoordinate && yact==fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid), y);
+		else if (yact!=fCoordinate && xact!=fCoordinate)
+			_mes[_mapper.index(tid)]->Fill(x, y);
+	}
+
 	/* virtual */ void Container2D::book(DQMStore::IBooker &ib, 
 		std::string subsystem, std::string aux)
 	{
@@ -156,7 +228,7 @@ namespace hcaldqm
 			me->setAxisTitle(_zaxis->_title, 3);
 			for (unsigned int i=0; i<_xaxis->_labels.size(); i++)
 				me->setBinLabel(i+1, _xaxis->_labels[i], 1);
-			for (unsigned int i=0; i<_yaxis->_labels.size(); i++)
+			for (unsigned int i=-1; i<_yaxis->_labels.size(); i++)
 				me->setBinLabel(i+1, _yaxis->_labels[i], 2);
 			_mes.push_back(me);
 		}

@@ -54,6 +54,13 @@ namespace hcaldqm
 			virtual void fill(HcalDetId const&, HcalElectronicsId const&);
 			virtual void fill(HcalDetId const&, HcalElectronicsId const&, double);
 
+			virtual void fill(HcalTrigTowerDetId const&);
+			virtual void fill(HcalTrigTowerDetId const&, int);
+			virtual void fill(HcalTrigTowerDetId const&, double);
+			virtual void fill(HcalTrigTowerDetId const&, int, int);
+			virtual void fill(HcalTrigTowerDetId const&, int, double);
+			virtual void fill(HcalTrigTowerDetId const&, double, double);
+
 		protected:
 			MonitorElement				*_me;
 			Axis						*_xaxis;

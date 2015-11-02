@@ -42,6 +42,13 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, int, double);
 			virtual void fill(HcalElectronicsId const&, double, double);
 
+			virtual void fill(HcalTrigTowerDetId const&);
+			virtual void fill(HcalTrigTowerDetId const&, int);
+			virtual void fill(HcalTrigTowerDetId const&, double);
+			virtual void fill(HcalTrigTowerDetId const&, int, int);
+			virtual void fill(HcalTrigTowerDetId const&, int, double);
+			virtual void fill(HcalTrigTowerDetId const&, double, double);
+
 			//	booking. see Container1D.h
 			virtual void book(DQMStore::IBooker&,
 				std::string subsystem="Hcal", std::string aux="");

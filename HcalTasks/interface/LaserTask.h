@@ -51,19 +51,19 @@ class LaserTask : public DQTask
 		ContainerCompact _cTiming;
 
 		//	1D
-		Container1D _cSignalMeans1D_SubDet;
-		Container1D _cSignalRMSs1D_SubDet;
-		Container1D _cTimingMeans1D_SubDet;
-		Container1D _cTimingRMSs1D_SubDet;
+		Container1D _cSignalMeans_SubDet;
+		Container1D _cSignalRMSs_SubDet;
+		Container1D _cTimingMeans_SubDet;
+		Container1D _cTimingRMSs_SubDet;
 
 		//	Prof 1D
-		ContainerProf1D _cShape_SubDet_iphi;
+		ContainerProf1D _cShapeCut_SubDet_iphi;
 
 		//	2D
-		Container2D _cSignalMeans2D_depth;
-		Container2D _cSignalRMSs2D_depth;
-		Container2D _cTimingMeans2D_depth;
-		Container2D _cTimingRMSs2D_depth;
+		Container2D _cSignalMeans_depth;
+		Container2D _cSignalRMSs_depth;
+		Container2D _cTimingMeans_depth;
+		Container2D _cTimingRMSs_depth;
 };
 
 #endif

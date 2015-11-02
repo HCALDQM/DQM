@@ -6,37 +6,37 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	DQTask(ps),
 
 	//	Containers
-	_cSignalMeans1D_SubDet(_name+"/Signal", "SignalMeans",
+	_cSignalMeans_SubDet(_name+"/SignalMeans/SubDet", "SignalMeans",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_3000)),
-	_cSignalRMSs1D_SubDet(_name+"/Signal", "SignalRMSs",
+	_cSignalRMSs_SubDet(_name+"/SignalRMSs/SubDet", "SignalRMSs",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_1000)),
-	_cTimingMeans1D_SubDet(_name+"/Timing", "TimingMeans",
+	_cTimingMeans_SubDet(_name+"/TimingMeans/SubDet", "TimingMeans",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
-	_cTimingRMSs1D_SubDet(_name+"/Timing", "TimingRMSs",
+	_cTimingRMSs_SubDet(_name+"/TimingRMSs/SubDet", "TimingRMSs",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
-	_cShape_SubDet_iphi(_name+"/Shapes", "Shape", mapper::fSubDet_iphi,
+	_cShapeCut_SubDet_iphi(_name+"/Shape", "Shape", mapper::fSubDet_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
 		new axis::ValueAxis(axis::fYaxis, axis::fNomFC_3000)),
-	_cSignalMeans2D_depth(_name+"/Signal", "SignalMeans",
+	_cSignalMeans_depth(_name+"/SignalMeans/depth", "SignalMeans",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fNomFC_3000)),
-	_cSignalRMSs2D_depth(_name+"/Signal", "SignalRMSs",
+	_cSignalRMSs_depth(_name+"/SignalRMSs/depth", "SignalRMSs",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fNomFC_1000)),
-	_cTimingMeans2D_depth(_name+"/Timing", "TimingMeans",
+	_cTimingMeans_depth(_name+"/TimingMeans/depth", "TimingMeans",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200)),
-	_cTimingRMSs2D_depth(_name+"/Timing", "TimingRMSs",
+	_cTimingRMSs_depth(_name+"/TimingRMSs/depth", "TimingRMSs",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
@@ -64,16 +64,20 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 /* virtual */ void LaserTask::bookHistograms(DQMStore::IBooker &ib,
 	edm::Run const& r, edm::EventSetup const& es)
 {
+	char cutstr[20];
+	sprintf(cutstr, "_sumQHBHE%dHO%dHF%d", int(_lowHBHE),
+		int(_lowHO), int(_lowHF));
+
 	DQTask::bookHistograms(ib, r, es);
-	_cSignalMeans1D_SubDet.book(ib, _subsystem);
-	_cSignalRMSs1D_SubDet.book(ib, _subsystem);
-	_cTimingMeans1D_SubDet.book(ib, _subsystem);
-	_cTimingRMSs1D_SubDet.book(ib, _subsystem);
-	_cSignalMeans2D_depth.book(ib, _subsystem);
-	_cSignalRMSs2D_depth.book(ib, _subsystem);
-	_cTimingMeans2D_depth.book(ib, _subsystem);
-	_cTimingRMSs2D_depth.book(ib, _subsystem);
-	_cShape_SubDet_iphi.book(ib, _subsystem);
+	_cSignalMeans_SubDet.book(ib, _subsystem, std::string(cutstr));
+	_cSignalRMSs_SubDet.book(ib, _subsystem, std::string(cutstr));
+	_cTimingMeans_SubDet.book(ib, _subsystem, std::string(cutstr));
+	_cTimingRMSs_SubDet.book(ib, _subsystem, std::string(cutstr));
+	_cSignalMeans_depth.book(ib, _subsystem, std::string(cutstr));
+	_cSignalRMSs_depth.book(ib, _subsystem, std::string(cutstr));
+	_cTimingMeans_depth.book(ib, _subsystem, std::string(cutstr));
+	_cTimingRMSs_depth.book(ib, _subsystem, std::string(cutstr));
+	_cShapeCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
 }
 
 /* virtual */ void LaserTask::_resetMonitors(int pflag)
@@ -83,22 +87,22 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 
 /* virtual */ void LaserTask::_dump()
 {
-	_cSignalMeans1D_SubDet.reset();
-	_cSignalRMSs1D_SubDet.reset();
-	_cTimingMeans1D_SubDet.reset();
-	_cTimingRMSs1D_SubDet.reset();
-	_cSignalMeans2D_depth.reset();
-	_cSignalRMSs2D_depth.reset();
-	_cTimingMeans2D_depth.reset();
-	_cTimingRMSs2D_depth.reset();
-	_cSignals.dump(&_cSignalMeans1D_SubDet, true);
-	_cSignals.dump(&_cSignalRMSs1D_SubDet, false);
-	_cTiming.dump(&_cTimingMeans1D_SubDet, true);
-	_cTiming.dump(&_cTimingRMSs1D_SubDet, false);
-	_cSignals.dump(&_cSignalMeans2D_depth, true);
-	_cSignals.dump(&_cSignalRMSs2D_depth, false);
-	_cTiming.dump(&_cTimingMeans2D_depth, true);
-	_cTiming.dump(&_cTimingRMSs2D_depth, false);
+	_cSignalMeans_SubDet.reset();
+	_cSignalRMSs_SubDet.reset();
+	_cTimingMeans_SubDet.reset();
+	_cTimingRMSs_SubDet.reset();
+	_cSignalMeans_depth.reset();
+	_cSignalRMSs_depth.reset();
+	_cTimingMeans_depth.reset();
+	_cTimingRMSs_depth.reset();
+	_cSignals.dump(&_cSignalMeans_SubDet, true);
+	_cSignals.dump(&_cSignalRMSs_SubDet, false);
+	_cTiming.dump(&_cTimingMeans_SubDet, true);
+	_cTiming.dump(&_cTimingRMSs_SubDet, false);
+	_cSignals.dump(&_cSignalMeans_depth, true);
+	_cSignals.dump(&_cSignalRMSs_depth, false);
+	_cTiming.dump(&_cTimingMeans_depth, true);
+	_cTiming.dump(&_cTimingRMSs_depth, false);
 }
 
 /* virtual */ void LaserTask::_process(edm::Event const& e,
@@ -133,7 +137,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_cTiming.fill(digi.id(), sumQ>0 ? aveTS : GARBAGE_VALUE);
 		
 		for (int i=0; i<digi.size(); i++)
-			_cShape_SubDet_iphi.fill(digi.id(), i, 
+			_cShapeCut_SubDet_iphi.fill(digi.id(), i, 
 				digi.sample(i).nominal_fC()-2.5);
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
@@ -151,7 +155,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_cTiming.fill(digi.id(), sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		for (int i=0; i<digi.size(); i++)
-			_cShape_SubDet_iphi.fill(digi.id(), i, 
+			_cShapeCut_SubDet_iphi.fill(digi.id(), i, 
 				digi.sample(i).nominal_fC()-8.5);
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
@@ -169,7 +173,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_cTiming.fill(digi.id(), sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		for (int i=0; i<digi.size(); i++)
-			_cShape_SubDet_iphi.fill(digi.id(), i, 
+			_cShapeCut_SubDet_iphi.fill(digi.id(), i, 
 				digi.sample(i).nominal_fC()-2.5);
 	}
 

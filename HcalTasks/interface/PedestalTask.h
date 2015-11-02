@@ -44,12 +44,12 @@ class PedestalTask : public DQTask
 		ContainerCompact _cPedestals;
 
 		//	1D
-		Container1D		_cPedestalMeans1D_SubDet;
-		Container1D		_cPedestalRMSs1D_SubDet;
+		Container1D		_cPedestalMeans_SubDet;
+		Container1D		_cPedestalRMSs_SubDet;
 
 		//	2D
-		Container2D		_cPedestalMeans2D_depth;
-		Container2D		_cPedestalRMSs2D_depth;
+		Container2D		_cPedestalMeans_depth;
+		Container2D		_cPedestalRMSs_depth;
 };
 
 #endif
