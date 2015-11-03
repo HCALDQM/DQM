@@ -53,7 +53,7 @@ errorstr		= "### HcalDQM::cfg::ERROR:"
 local			= True
 useMap			= False
 dbMap			= False
-cmsnet			= False
+cmsnet			= True
 
 print debugstr, "Input Files= ", options.inputFiles
 print debugstr, "Run over #events=", options.processEvents
