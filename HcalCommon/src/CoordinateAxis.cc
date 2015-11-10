@@ -32,6 +32,10 @@ namespace hcaldqm
 				case fSubDet:
 					x = did.subdet();
 					break;
+				case fSubDetPM:
+					x = did.ieta()<0 ? 2*(did.subdet()-1) : 
+						2*(did.subdet()-1)+1;
+					break;
 				case fiphi:
 					x = did.iphi();
 					break;
@@ -62,6 +66,17 @@ namespace hcaldqm
 					break;
 				case fTPSubDet:
 					x = tid.ietaAbs()<29 ? 0 : 1;
+					break;
+				case fTPSubDet:
+					int ieta = tid.ieta()
+					if (ieta<0 && ieta>-29)
+						x = 0;
+					else if (ieta>0 && ieta<29)
+						x = 1;
+					else if (ieta<0 && ieta<=-29)
+						x = 2;
+					else 
+						x = 3;
 					break;
 				case fTPieta:
 					x = tid.ieta()<0 ? tid.ieta()+32 : tid.ieta()+31;
@@ -122,6 +137,14 @@ namespace hcaldqm
 				case fSubDet:
 					for (int i=HB; i<=HF; i++)
 						_labels.push_back(SUBDET_NAME[i-1]);
+					break;
+				case fSubDetPM:
+					for (int i=0; i<2*SUBDET_NUM; i++)
+						_labels.push_back(SUBDETPM_NAME[i]);
+					break;
+				case fTPSubDetPM:
+					for (int i=0; i<2*TPSUBDET_NUM; i++)
+						_labels.push_back(TPSUBDETPM_NAME[i]);
 					break;
 				case fieta:
 					for (int ieta=-41; ieta<=41; ieta++)

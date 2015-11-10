@@ -53,7 +53,13 @@ namespace hcaldqm
 			fTPSubDet_iphi = 11,
 			fTPSubDet_ieta = 12,
 
-			nMapperType = 13
+			//	Separating Plus Minus
+			fSubDetPM = 13,
+			fSubDetPM_iphi = 14,
+			fTPSubDetPM = 15,
+			fTPSubDetPM_iphi = 16
+
+			nMapperType = 17
 		};
 
 		/*
@@ -80,12 +86,18 @@ namespace hcaldqm
 		unsigned int generate_fTPSubDet(Input const&);
 		unsigned int generate_fTPSubDet_iphi(Input const&);
 		unsigned int generate_fTPSubDet_ieta(Input const&);
+		unsigned int generate_fSubDetPM(Input const&);
+		unsigned int generate_fSubDetPM_iphi(Input const&);
+		unsigned int generate_fTPSubDetPM(Input const&);
+		unsigned int generate_fTPSubDetPM_iphi(Input const&);
 		index_generator const vindex[nMapperType] = { generate_fSubDet,
 			generate_fiphi, generate_fieta, generate_fdepth, 
 			generate_fSubDet_iphi, generate_fSubDet_ieta,
 			generate_fFED, generate_fCrate, generate_fFED_Slot, 
 			generate_fCrate_Slot, generate_fTPSubDet,
-			generate_fTPSubDet_iphi, generate_fTPSubDet_ieta};
+			generate_fTPSubDet_iphi, generate_fTPSubDet_ieta,
+			generate_fSubDetPM, generate_fSubDetPM_iphi, 
+			generate_fTPSubDetPM, generate_fTPSubDetPM_iphi};
 
 		/*
 		 *	Mapper Class
@@ -136,6 +148,17 @@ namespace hcaldqm
 						i.i1 = did.subdet();
 						i.i2 = did.ieta();
 					}
+					else if (_type==fSubDetPM)
+					{
+						i.i1 = did.subdet();
+						i.i2 = did.ieta()>0 ? 1 : 0;
+					}
+					else if (_type==fSubDetPM_iphi)
+					{
+						i.i1 = did.subdet();
+						i.i2 = did.iphi();
+						i.i3 = did.ieta()>0 ? 1 : 0;
+					}
 
 					return vindex[_type](i);
 				}
@@ -167,6 +190,12 @@ namespace hcaldqm
 						case fTPSubDet_ieta:
 							i.i1 = tid.ieta();
 							break;
+						case fTPSubDetPM:
+							i.i1 = tid.ieta();
+							break;
+						case fTPSubDetPM_iphi:
+							i.i1 = tid.ieta();
+							i.i2 = tid.iphi();
 						default:
 							return 0;
 							break;
@@ -362,6 +391,75 @@ namespace hcaldqm
 							builtname = name;
 							break;
 						}
+						case fSubDetPM:
+						{
+							builtname = constants::SUBDETPM_NAME[id];
+							break;
+						}
+						case fSubDetPM_iphi:
+						{
+							char name[20];
+							if (id>=(IPHI_NUM*6)+IPHI_NUM_HF) // HFP
+								sprintf(name, "HFPiphi%d",
+									(id-6*IPHI_NUM-IPHI_NUM_HF)*
+									constants::IPHI_DELTA_HF+
+									constants::IPHI_MIN);
+							else if (id>=6*IPHI_NUM) // HFM
+								sprintf(name, "HFMiphi%d",
+									(id-6*IPHI_NUM)*
+									constants::IPHI_DELTA_HF+
+									constants::IPHI_MIN);
+							else if (id>=5*IPHI_NUM) // HOP
+								sprintf(name, "HOPiphi%d",
+									(id-5*IPHI_NUM)*
+									constants::IPHI_DELTA+constants::IPHI_MIN);
+							else if (id>=4*IPHI_NUM) //	HOM
+								sprintf(name, "HOMiphi%d",
+									(id-4*IPHI_NUM)*
+									constants::IPHI_DELTA+constants::IPHI_MIN);
+							else if (id>=3*IPHI_NUM) // HEP
+								sprintf(name, "HEPiphi%d",
+									(id-3*IPHI_NUM)*
+									IPHI_DELTA+IPHI_MIN);
+							else if (id>=2*IPHI_NUM) //	HEM
+								sprintf(name, "HEMiphi%d",
+									(id-2*IPHI_NUM)*
+									IPHI_DELTA+IPHI_MIN);
+							else if (id>=IPHI_NUM) // HBP
+								sprintf(name, "HBPiphi%d",
+									(id-IPHI_NUM)*IPHI_DELTA+IPHI_MIN);
+							else //	HBM
+								sprintf(name, "HBMiphi%d",
+									id*IPHI_DELTA+IPHI_MIN);
+
+							builtname = name;
+							break;
+						}
+						case fTPSubDetPM:
+						{
+							builtname = constants::TPSUBDETPM_NAME[id];
+							break;
+						}
+						case fTPSubDetPM_iphi:
+						{
+							char name[20];
+							if (id>=(2*IPHI_NUM+IPHI_NUM_TPHF))
+								sprintf(name, "HFPiphi%d",
+									(id-2*IPHI_NUM-IPHI_NUM_TPHF)*
+									IPHI_DELTA_TPFH+IPHI_MIN);
+							else if (id>=2*IPHI_NUM)
+								sprintf(name, "HFMiphi%d",
+									(id-2*IPHI_NUM)*
+									IPHI_DELTA_TPHF+IPHI_MIN);
+							else if (id>IPHI_NUM)
+								sprintf(name, "HBHEPiphi%d",
+									(id-IPHI_NUM)*IPHI_DELTA+IPHI_MIN);
+							else 
+								sprintf(name, "HBHEMiphi%d",
+									id*IPHI_DELTA+IPHI_MIN);
+							builtname = name;
+							break;
+						}
 						default:
 						{
 							return std::string("UNKNOWN");
@@ -421,6 +519,19 @@ namespace hcaldqm
 						case fTPSubDet_ieta:
 							_size = 2*(IETA_MAX_TPHBHE-IETA_MIN+1)+
 								2*(IETA_MAX_TPHF-IETA_MIN_HF+1);
+							break;
+						case fSubDetPM:
+							_size = 8;
+							break;
+						case fSubDetPM_iphi:
+							//	6 * 72 + 2*72/2 for the current detecto
+							_size = 6*IPHI_NUM+2*IPHI_NUM/IPHI_DELTA_HF;
+							break;
+						case fTPSubDetPM:
+							_size = 4;
+							break;
+						case fTPSubDetPM_iphi:
+							_size = 2*IPHI_NUM + 2*IPHI_NUM/IPHI_DELTA_TPHF;
 							break;
 						default:
 							_size = 0;

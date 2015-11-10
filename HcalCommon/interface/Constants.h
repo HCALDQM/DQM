@@ -73,13 +73,19 @@ namespace hcaldqm
 		int const SUBDET_NUM = 4;
 		int const TPSUBDET_NUM = 2;
 		std::string const SUBDET_NAME[SUBDET_NUM]={"HB", "HE", "HO", "HF"};
+		std::string const SUBDETPM_NAME[2*SUBDET_NUM] = { "HBM", "HBP",
+			"HEM", "HEP", "HOM", "HOP", "HFM", "HFP"};
 		std::string const SUBSYSTEM = "Hcal";
 		std::string const TPSUBDET_NAME[TPSUBDET_NUM] = {"HBHE", "HF"};
+		std::string const TPSUBDETPM_NAME[2*TPSUBDET_NUM] = {
+			"HBHEM", "HBHEP", "HFM", "HFP"};
 
 		//	iphis
 		int const IPHI_MIN = 1;
 		int const IPHI_MAX = 72;
 		int const IPHI_NUM = 72;
+		int const IPHI_NUM_HF = 36;
+		int const IPHI_NUM_TPHF = 18;
 		int const IPHI_DELTA = 1;
 		int const IPHI_DELTA_HF = 2;
 		int const IPHI_DELTA_TPHF = 4;
