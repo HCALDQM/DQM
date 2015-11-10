@@ -6,8 +6,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	DQTask(ps),
 
 	//	Et
-	_cEtData_SubDet(_name+"/Et/Data_SubDet", "Et",
-		mapper::fTPSubDet,
+	_cEtData_SubDetPM(_name+"/Et/Data_SubDetPM", "Et",
+		mapper::fTPSubDetPM,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
 	_cEtEmul_SubDet(_name+"/Et/Emul_SubDet", "Et",
@@ -22,8 +22,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		new axis::CoordinateAxis(axis::fXaxis, axis::fTPieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
-	_cEtData_SubDet_iphi(_name+"/Et/Data_SubDet_iphi", "EtData",
-		mapper::fTPSubDet_iphi,
+	_cEtData_SubDetPM_iphi(_name+"/Et/Data_SubDetPM_iphi", "EtData",
+		mapper::fTPSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
 	_cEtData_SubDet_ieta(_name+"/Et/Data_SubDet_ieta", "EtData",
@@ -74,11 +74,11 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	DQTask::bookHistograms(ib, r, es);
-	_cEtData_SubDet.book(ib);
+	_cEtData_SubDetPM.book(ib);
 	_cEtEmul_SubDet.book(ib);
 	_cEtCorr_SubDet.book(ib);
 	_cEtMsm.book(ib);
-	_cEtData_SubDet_iphi.book(ib);
+	_cEtData_SubDetPM_iphi.book(ib);
 	_cEtData_SubDet_ieta.book(ib);
 	_cEtCorr_SubDet_iphi.book(ib);
 	_cFGCorr_SubDet.book(ib);
@@ -121,8 +121,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		// tmp
 
 		//	fill individual
-		_cEtData_SubDet.fill(hddigi->id(), soiEt_d);
-		_cEtData_SubDet_iphi.fill(hddigi->id(), soiEt_d);
+		_cEtData_SubDetPM.fill(hddigi->id(), soiEt_d);
+		_cEtData_SubDetPM_iphi.fill(hddigi->id(), soiEt_d);
 		_cEtData_SubDet_ieta.fill(hddigi->id(), soiEt_d);
 		_cOccupancyData.fill(hddigi->id());
 

@@ -57,7 +57,7 @@ namespace hcaldqm
 			fSubDetPM = 13,
 			fSubDetPM_iphi = 14,
 			fTPSubDetPM = 15,
-			fTPSubDetPM_iphi = 16
+			fTPSubDetPM_iphi = 16,
 
 			nMapperType = 17
 		};
@@ -196,6 +196,7 @@ namespace hcaldqm
 						case fTPSubDetPM_iphi:
 							i.i1 = tid.ieta();
 							i.i2 = tid.iphi();
+							break;
 						default:
 							return 0;
 							break;
@@ -446,12 +447,12 @@ namespace hcaldqm
 							if (id>=(2*IPHI_NUM+IPHI_NUM_TPHF))
 								sprintf(name, "HFPiphi%d",
 									(id-2*IPHI_NUM-IPHI_NUM_TPHF)*
-									IPHI_DELTA_TPFH+IPHI_MIN);
+									IPHI_DELTA_TPHF+IPHI_MIN);
 							else if (id>=2*IPHI_NUM)
 								sprintf(name, "HFMiphi%d",
 									(id-2*IPHI_NUM)*
 									IPHI_DELTA_TPHF+IPHI_MIN);
-							else if (id>IPHI_NUM)
+							else if (id>=IPHI_NUM)
 								sprintf(name, "HBHEPiphi%d",
 									(id-IPHI_NUM)*IPHI_DELTA+IPHI_MIN);
 							else 

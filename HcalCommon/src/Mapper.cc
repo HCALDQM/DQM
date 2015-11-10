@@ -201,19 +201,19 @@ namespace hcaldqm
 			int subdetector = 2*(i.i1-1)+i.i3;
 			int iphi = i.i2;
 
-			if (subdetector==HB) //	HBM
+			if (subdetector==2*(HB-1)) //	HBM
 				index = (iphi-IPHI_MIN)/IPHI_DELTA;
-			else if (subdetector==HB+1) // HBP
+			else if (subdetector==2*(HB-1)+1) // HBP
 				index = IPHI_NUM+(iphi-IPHI_MIN)/IPHI_DELTA;
-			else if (subdetector==HE)	//	HEM
+			else if (subdetector==2*(HE-1))	//	HEM
 				index = 2*IPHI_NUM+(iphi-IPHI_MIN)/IPHI_DELTA;
-			else if (subdetector==HE+1)	//	HEP
+			else if (subdetector==2*(HE-1)+1)	//	HEP
 				index = 3*IPHI_NUM+(iphi-IPHI_MIN)/IPHI_DELTA;
-			else if (subdetector==HO)	//	HOM
+			else if (subdetector==2*(HO-1))	//	HOM
 				index = 4*IPHI_NUM+(iphi-IPHI_MIN)/IPHI_DELTA;
-			else if (subdetector==HO+1)	//	HOP
+			else if (subdetector==2*(HO-1)+1)	//	HOP
 				index = 5*IPHI_NUM+(iphi-IPHI_MIN)/IPHI_DELTA;
-			else if (subdetector==HF)	//	HFM
+			else if (subdetector==2*(HF-1))	//	HFM
 				index = 6*IPHI_NUM+(iphi-IPHI_MIN)/IPHI_DELTA_HF;
 			else 
 				index = 6*IPHI_NUM+IPHI_NUM/IPHI_DELTA_HF + 
@@ -239,7 +239,7 @@ namespace hcaldqm
 		unsigned int generate_fTPSubDetPM_iphi(Input const& i)
 		{
 			unsigned int index = 0;
-			int ieta = i.i1
+			int ieta = i.i1;
 			int iphi = i.i2;
 			if (ieta<0 && ieta>-29)	//	HBHEM
 				index = iphi-IPHI_MIN;

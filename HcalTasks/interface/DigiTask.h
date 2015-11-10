@@ -43,15 +43,15 @@ class DigiTask : public DQTask
 		// Containers by quantities
 
 		//	Signal, ADC, fC, SumQ
-		Container1D		_cfCperTS_SubDet;
-		Container1D		_cADCperTS_SubDet;
+		Container1D		_cfCperTS_SubDetPM;
+		Container1D		_cADCperTS_SubDetPM;
 		Container1D		_cSumQ_SubDet_iphi;
 		ContainerProf2D	_cSumQ_depth;
 		ContainerProf1D	_cSumQvsLS_SubDet_iphi;
 
 		//	Shape
-		Container1D		_cShape_SubDet_iphi;
-		Container1D		_cShapeCut_SubDet_iphi;
+		Container1D		_cShape_SubDetPM_iphi;
+		Container1D		_cShapeCut_SubDetPM_iphi;
 
 		//	Timing
 		Container1D		_cTimingCut_SubDet_iphi;

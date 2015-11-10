@@ -6,12 +6,12 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	DQTask(ps),
 
 	//	Signal, ADC, fC, SumQ
-	_cfCperTS_SubDet(_name+"/Signal/fC_SubDet", "fCperTS",
-		mapper::fSubDet,
+	_cfCperTS_SubDetPM(_name+"/Signal/fC_SubDetPM", "fCperTS",
+		mapper::fSubDetPM,
 		new axis::ValueAxis(axis::fXaxis, axis::fNomFC),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cADCperTS_SubDet(_name+"/Signal/ADC_SubDet", "ADCperTS",
-		mapper::fSubDet,
+	_cADCperTS_SubDetPM(_name+"/Signal/ADC_SubDetPM", "ADCperTS",
+		mapper::fSubDetPM,
 		new axis::ValueAxis(axis::fXaxis, axis::fADC),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
 	_cSumQ_SubDet_iphi(_name+"/Signal/SubDet_iphi", "SumQ",
@@ -29,12 +29,12 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
 
 	//	Shape
-	_cShape_SubDet_iphi(_name+"/Shape/SubDet_iphi", "Shape",
-		mapper::fSubDet_iphi,
+	_cShape_SubDetPM_iphi(_name+"/Shape/SubDetPM_iphi", "Shape",
+		mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
 		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
-	_cShapeCut_SubDet_iphi(_name+"/Shape/SubDet_iphi", "Shape",
-		mapper::fSubDet_iphi,
+	_cShapeCut_SubDetPM_iphi(_name+"/Shape/SubDetPM_iphi", "Shape",
+		mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
 		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
 
@@ -102,14 +102,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		int(_cutSumQ_HO), int(_cutSumQ_HF));
 
 	DQTask::bookHistograms(ib, r, es);
-	_cADCperTS_SubDet.book(ib);
-	_cfCperTS_SubDet.book(ib);
+	_cADCperTS_SubDetPM.book(ib);
+	_cfCperTS_SubDetPM.book(ib);
 	_cSumQ_SubDet_iphi.book(ib);
 	_cSumQ_depth.book(ib);
 	_cSumQvsLS_SubDet_iphi.book(ib);
 
-	_cShape_SubDet_iphi.book(ib);
-	_cShapeCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
+	_cShape_SubDetPM_iphi.book(ib);
+	_cShapeCut_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
 
 	_cTimingCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
 	_cTimingCutvsieta_SubDet_iphi.book(ib, _subsystem, 
@@ -184,14 +184,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		for (int i=0; i<digi.size(); i++)
 		{
 			//	without a cut
-			_cADCperTS_SubDet.fill(did, digi.sample(i).adc());
-			_cfCperTS_SubDet.fill(did, digi.sample(i).nominal_fC());
-			_cShape_SubDet_iphi.fill(did, i, digi.sample(i).nominal_fC()-2.5);
+			_cADCperTS_SubDetPM.fill(did, digi.sample(i).adc());
+			_cfCperTS_SubDetPM.fill(did, digi.sample(i).nominal_fC());
+			_cShape_SubDetPM_iphi.fill(did, i, digi.sample(i).nominal_fC()-2.5);
 
 			//	with a cut
 			if (sumQ>_cutSumQ_HBHE)
 			{
-				_cShapeCut_SubDet_iphi.fill(did, i,
+				_cShapeCut_SubDetPM_iphi.fill(did, i,
 					digi.sample(i).nominal_fC()-2.5);
 			}
 		}
@@ -229,14 +229,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		for (int i=0; i<digi.size(); i++)
 		{
 			//	without a cut
-			_cADCperTS_SubDet.fill(did, digi.sample(i).adc());
-			_cfCperTS_SubDet.fill(did, digi.sample(i).nominal_fC());
-			_cShape_SubDet_iphi.fill(did, i, digi.sample(i).nominal_fC()-8.5);
+			_cADCperTS_SubDetPM.fill(did, digi.sample(i).adc());
+			_cfCperTS_SubDetPM.fill(did, digi.sample(i).nominal_fC());
+			_cShape_SubDetPM_iphi.fill(did, i, digi.sample(i).nominal_fC()-8.5);
 
 			//	with a cut
 			if (sumQ>_cutSumQ_HO)
 			{
-				_cShapeCut_SubDet_iphi.fill(did, i,
+				_cShapeCut_SubDetPM_iphi.fill(did, i,
 					digi.sample(i).nominal_fC()-8.5);
 			}
 		}
@@ -274,14 +274,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		for (int i=0; i<digi.size(); i++)
 		{
 			//	without a cut
-			_cADCperTS_SubDet.fill(did, digi.sample(i).adc());
-			_cfCperTS_SubDet.fill(did, digi.sample(i).nominal_fC());
-			_cShape_SubDet_iphi.fill(did, i, digi.sample(i).nominal_fC()-2.5);
+			_cADCperTS_SubDetPM.fill(did, digi.sample(i).adc());
+			_cfCperTS_SubDetPM.fill(did, digi.sample(i).nominal_fC());
+			_cShape_SubDetPM_iphi.fill(did, i, digi.sample(i).nominal_fC()-2.5);
 
 			//	with a cut
 			if (sumQ>_cutSumQ_HF)
 			{
-				_cShapeCut_SubDet_iphi.fill(did, i,
+				_cShapeCut_SubDetPM_iphi.fill(did, i,
 					digi.sample(i).nominal_fC()-2.5);
 			}
 		}

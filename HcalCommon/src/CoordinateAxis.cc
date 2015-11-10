@@ -64,11 +64,15 @@ namespace hcaldqm
 				case fiphi:
 					x = tid.iphi();
 					break;
+				case fTPieta:
+					x = tid.ieta()<0 ? tid.ieta()+32 : tid.ieta()+31;
+					break;
 				case fTPSubDet:
 					x = tid.ietaAbs()<29 ? 0 : 1;
 					break;
-				case fTPSubDet:
-					int ieta = tid.ieta()
+				case fTPSubDetPM:
+				{
+					int ieta = tid.ieta();
 					if (ieta<0 && ieta>-29)
 						x = 0;
 					else if (ieta>0 && ieta<29)
@@ -78,9 +82,7 @@ namespace hcaldqm
 					else 
 						x = 3;
 					break;
-				case fTPieta:
-					x = tid.ieta()<0 ? tid.ieta()+32 : tid.ieta()+31;
-					break;
+				}
 				default:
 					x = -100;
 					break;

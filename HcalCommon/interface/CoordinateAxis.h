@@ -33,7 +33,7 @@ namespace hcaldqm
 			fTPieta = 10,
 
 			fSubDetPM = 11,
-			fTPSubDetPM = 12
+			fTPSubDetPM = 12,
 
 			nCoordinateType = 13
 		};

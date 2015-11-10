@@ -31,9 +31,8 @@ namespace hcaldqm
 			virtual ~ContainerCompact() {}
 
 			//	fills
-			virtual void fill(HcalDetId const&, int);
 			virtual void fill(HcalDetId const&, double);
-			virtual void dump(Container1D*, bool);
+			virtual void dump(Container1D*, bool, double delta=0);
 
 		protected:
 			Compact		_data[SUBDET_NUM][IPHI_NUM][IETA_NUM][DEPTH_NUM];
