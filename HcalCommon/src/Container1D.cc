@@ -58,6 +58,14 @@ namespace hcaldqm
 		else if (act==fCoordinate)
 			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), x, y);
 	}
+	/* virtual */ void Container1D::fill(HcalDetId const& did, int x, int y)
+	{
+		AxisQType act = _xaxis->getType();
+		if (act==fValue || act==fFlag)
+			_mes[_mapper.index(did)]->Fill(x, y);
+		else if (act==fCoordinate)
+			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), x, y);
+	}
 	/* virtual */ void Container1D::fill(HcalDetId const& did, double x , 
 			double y)
 	{

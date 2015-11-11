@@ -36,6 +36,7 @@ class DigiTask : public DQTask
 
 		//	Counters
 		int				_numDigis[constants::SUBDET_NUM];
+		int				_numDigisCut[constants::SUBDET_NUM];
 
 		//	Cuts
 		double _cutSumQ_HBHE, _cutSumQ_HO, _cutSumQ_HF;
@@ -62,6 +63,8 @@ class DigiTask : public DQTask
 		//	Occupancy
 		Container1D		_cOccupancyvsiphi_SubDet;
 		Container1D		_cOccupancyCutvsiphi_SubDet;
+		ContainerProf1D _cOccupancyvsLS_SubDet;
+		ContainerProf1D	_cOccupancyCutvsLS_SubDet;
 		Container2D		_cOccupancy_depth;
 		Container2D		_cOccupancyCut_depth;
 		ContainerProf2D	_cOccupancyCutiphivsLS_SubDet;

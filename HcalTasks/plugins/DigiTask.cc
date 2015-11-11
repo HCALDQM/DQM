@@ -64,6 +64,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		"Occupancyvsiphi",
 		mapper::fSubDet,
 		new axis::CoordinateAxis(fXaxis, axis::fiphi)),
+	_cOccupancyvsLS_SubDet(_name+"/Occupancy/vsLS_SubDet",
+		"OccupancyvsLS",
+		mapper::fSubDet,
+		new axis::ValueAxis(fXaxis, axis::fLS),
+		new axis::ValueAxis(fYaxis, axis::fEntries)),
+	_cOccupancyCutvsLS_SubDet(_name+"/Occupancy/vsLS_SubDet",
+		"OccupancyvsLS",
+		mapper::fSubDet,
+		new axis::ValueAxis(fXaxis, axis::fLS),
+		new axis::ValueAxis(fYaxis, axis::fEntries)),
 	_cOccupancy_depth(_name+"/Occupancy/depth", "Occupancy",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
@@ -119,6 +129,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 	_cOccupancyvsiphi_SubDet.book(ib);
 	_cOccupancyCutvsiphi_SubDet.book(ib, _subsystem, std::string(cutstr));
+	_cOccupancyvsLS_SubDet.book(ib);
+	_cOccupancyCutvsLS_SubDet.book(ib, _subsystem, std::string(cutstr));
 	_cOccupancy_depth.book(ib);
 	_cOccupancyCut_depth.book(ib, _subsystem, std::string(cutstr));
 	_cOccupancyCutiphivsLS_SubDet.book(ib, _subsystem, std::string(cutstr));
@@ -130,7 +142,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	if (pflag==0)
 	{
 		for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
+		{
 			_numDigis[i]=0;
+			_numDigisCut[i] = 0;
+		}
 	}
 }
 
@@ -167,6 +182,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSumQ_SubDet_iphi.fill(did, sumQ);
 		_cSumQ_depth.fill(did, sumQ);
 		_cSumQvsLS_SubDet_iphi.fill(did, _currentLS, sumQ);
+		_numDigis[digi.id().subdet()-1]++;
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HBHE)
@@ -178,6 +194,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancyCutvsiphi_SubDet.fill(did);
 			_cOccupancyCut_depth.fill(did);
 //			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
+
+			_numDigisCut[digi.id().subdet()-1]++;
 		}
 		
 		//	per TS
@@ -212,6 +230,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSumQ_SubDet_iphi.fill(did, sumQ);
 		_cSumQ_depth.fill(did, sumQ);
 		_cSumQvsLS_SubDet_iphi.fill(did, _currentLS, sumQ);
+		_numDigis[digi.id().subdet()-1]++;
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HO)
@@ -223,6 +242,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancyCutvsiphi_SubDet.fill(did);
 			_cOccupancyCut_depth.fill(did);
 //			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
+		
+			_numDigisCut[digi.id().subdet()-1]++;
 		}
 		
 		//	per TS
@@ -257,6 +278,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSumQ_SubDet_iphi.fill(did, sumQ);
 		_cSumQ_depth.fill(did, sumQ);
 		_cSumQvsLS_SubDet_iphi.fill(did, _currentLS, sumQ);
+		_numDigis[digi.id().subdet()-1]++;
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HF)
@@ -268,6 +290,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancyCutvsiphi_SubDet.fill(did);
 			_cOccupancyCut_depth.fill(did);
 //			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
+		
+			_numDigisCut[digi.id().subdet()-1]++;
 		}
 		
 		//	per TS
@@ -286,6 +310,24 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			}
 		}
 	}
+
+	//	Fill the occupancy vs LS
+	_cOccupancyvsLS_SubDet.fill(HcalDetId(HcalBarrel, 5, 5, 1), _currentLS,
+		_numDigis[0]);
+	_cOccupancyCutvsLS_SubDet.fill(HcalDetId(HcalBarrel, 5, 5, 1), _currentLS,
+		_numDigisCut[0]);
+	_cOccupancyvsLS_SubDet.fill(HcalDetId(HcalEndcap, 18, 5, 1), _currentLS,
+		_numDigis[1]);
+	_cOccupancyCutvsLS_SubDet.fill(HcalDetId(HcalEndcap, 18, 5, 1), _currentLS,
+		_numDigisCut[1]);
+	_cOccupancyvsLS_SubDet.fill(HcalDetId(HcalOuter, 5, 5, 4), _currentLS,
+		_numDigis[2]);
+	_cOccupancyCutvsLS_SubDet.fill(HcalDetId(HcalOuter, 5, 5, 4), _currentLS,
+		_numDigisCut[2]);
+	_cOccupancyvsLS_SubDet.fill(HcalDetId(HcalForward, 34, 5, 1), _currentLS,
+		_numDigis[3]);
+	_cOccupancyCutvsLS_SubDet.fill(HcalDetId(HcalForward, 34, 5, 1), _currentLS,
+		_numDigisCut[3]);
 }
 
 DEFINE_FWK_MODULE(DigiTask);

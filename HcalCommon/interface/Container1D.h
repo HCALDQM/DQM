@@ -51,6 +51,7 @@ namespace hcaldqm
 			virtual void fill(HcalDetId const&, int);
 			virtual void fill(HcalDetId const&, double);
 			virtual void fill(HcalDetId const&, int, double);
+			virtual void fill(HcalDetId const&, int, int);
 			virtual void fill(HcalDetId const&, double, double);
 
 			//	using ElectronicsId as mapper
