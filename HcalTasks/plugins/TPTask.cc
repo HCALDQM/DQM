@@ -69,6 +69,9 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		edm::InputTag("hcalDigis"));
 	_tagEmul = ps.getUntrackedParameter<edm::InputTag>("tagEmul",
 		edm::InputTag("emulDigis"));
+
+	//	Special
+	_skip1x1 = ps.getUntrackedParameter<bool>("skip1x1", true);
 }
 
 /* virtual */ void TPTask::bookHistograms(DQMStore::IBooker &ib,
@@ -112,6 +115,12 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	for (HcalTrigPrimDigiCollection::const_iterator hddigi=ctpd->begin();
 		hddigi!=ctpd->end(); ++hddigi)
 	{
+		//	tmpt
+		if (_skip1x1)
+			if (hddigi->id().depth()==10) // 10 is the depth for 1x1 TPs
+				continue;
+		//\tmp
+
 		//	get quantities
 		int soiEt_d = hddigi->SOI_compressedEt();
 		int soiFG_d = hddigi->SOI_fineGrain() ? 1 : 0;
@@ -119,7 +128,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		//	tmp
 		if (hddigi->id().depth()==1)
 			useD1 = true;
-		// tmp
+		//\tmp
 
 		//	fill individual
 		_cEtData_SubDet.fill(hddigi->id(), soiEt_d);
@@ -160,12 +169,18 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	for (HcalTrigPrimDigiCollection::const_iterator hedigi=ctpe->begin();
 		hedigi!=ctpe->end(); ++hedigi)
 	{
+		//	tmp
+		if (_skip1x1)
+			if (hedigi->id().depth()==10)	// 10 for 1x1
+				continue;
+		//	\tmp
+
 		//	now, find the emulator digi and compare
 		//	tmp
 		HcalTrigPrimDigiCollection::const_iterator hddigi = 
 			ctpd->find(HcalTrigTowerDetId(hedigi->id().ieta(),
 				hedigi->id().iphi(), useD1 ? 1: 0));
-		//	tmp
+		//	\tmp
 
 		//	we have to only check those that are missing
 		if (hddigi==ctpd->end())

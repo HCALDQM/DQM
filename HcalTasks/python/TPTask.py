@@ -11,7 +11,10 @@ tpTask = cms.EDAnalyzer(
 
 	#	tags
 	tagData = cms.untracked.InputTag("hcalDigis"),
-	tagEmul = cms.untracked.InputTag("emulTPDigis")
+	tagEmul = cms.untracked.InputTag("emulTPDigis"),
+
+	#	some speacial features
+	skip1x1 = cms.untracked.bool(True)
 )
 
 

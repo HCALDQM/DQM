@@ -36,6 +36,9 @@
 
 			//	counters
 
+			// flags
+			bool	_skip1x1;
+
 			//	Et
 			Container1D		_cEtData_SubDet;
 			Container1D		_cEtEmul_SubDet;	
