@@ -40,7 +40,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 	//	Timing
 	_cTimingCut_SubDetPM_iphi(_name+"/Timing/SubDetPM_iphi", 
-		"Timing", mapper::fSubDet_iphi,
+		"Timing", mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
 	_cTimingCutvsieta_SubDet_iphi(_name+"/Timing/vsieta_SubDet_iphi",
 		"Timingvsieta", mapper::fSubDet_iphi,
@@ -64,7 +64,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cQ2Q12CutvsLS_HFPM_iphi(_name+"/Q2Q12/vsLS_HFPM_iphi",
 		"Q2Q12", mapper::fHFPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axix::fYaxis, axis::fRatio)),
+		new axis::ValueAxis(axis::fYaxis, axis::fRatio)),
 
 	//	Occupancy
 	_cOccupancyvsiphi_SubDet(_name+"/Occupancy/vsiphi_SubDet", "Occupancyvsiphi",
@@ -124,8 +124,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	sprintf(cutstr2, "_SumQHF%d", int(_cutSumQ_HF));
 
 	DQTask::bookHistograms(ib, r, es);
-	_cADCperTS_SubDetPM.book(ib);
-	_cfCperTS_SubDetPM.book(ib);
+	_cADCperTS_SubDet.book(ib);
+	_cfCperTS_SubDet.book(ib);
 	_cSumQ_SubDetPM_iphi.book(ib);
 	_cSumQ_depth.book(ib);
 	_cSumQvsLS_SubDetPM_iphi.book(ib);
@@ -308,7 +308,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancyCut_depth.fill(did);
 		
 			double q1 = digi.sample(1).nominal_fC()-2.5;
-			double q2 = digi.sample(1).nominal_fC()-2.5;
+			double q2 = digi.sample(2).nominal_fC()-2.5;
 			double q2q12 = q2/(q1+q2);
 			_cQ2Q12CutvsLS_HFPM_iphi.fill(did, _currentLS, q2q12);
 			
@@ -321,8 +321,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		for (int i=0; i<digi.size(); i++)
 		{
 			//	without a cut
-			_cADCperTS_SubDetPM.fill(did, digi.sample(i).adc());
-			_cfCperTS_SubDetPM.fill(did, digi.sample(i).nominal_fC());
+			_cADCperTS_SubDet.fill(did, digi.sample(i).adc());
+			_cfCperTS_SubDet.fill(did, digi.sample(i).nominal_fC());
 			_cShape_SubDetPM_iphi.fill(did, i, digi.sample(i).nominal_fC()-2.5);
 
 			//	with a cut

@@ -34,7 +34,7 @@ namespace hcaldqm
 			fEt_256 = 14,
 			fEt_128 = 15,
 			fFG = 16, 
-			fRatio = 17
+			fRatio = 17,
 
 			nValueType = 18
 		};
@@ -55,7 +55,7 @@ namespace hcaldqm
 		};
 		int const vnbins[nValueType] = {
 			500, 100, 100, 400, 200, 128, 100, 300, 1000, 200, 600, 10, 
-			200, 4001, 256, 128, 2, 100
+			200, 4001, 256, 128, 2, 200
 		};
 
 		class ValueAxis : public Axis

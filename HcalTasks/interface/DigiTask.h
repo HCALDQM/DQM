@@ -47,7 +47,7 @@ class DigiTask : public DQTask
 
 		//	Flags
 		//	There are 2 types of flags, based on how often we check 
-		bool			_flags_Event[nDigiFlag];
+//		bool			_flags_Event[nDigiFlag];
 
 		//	Counters
 		int				_numDigis[constants::SUBDET_NUM];
