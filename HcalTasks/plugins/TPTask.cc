@@ -6,8 +6,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	DQTask(ps),
 
 	//	Et
-	_cEtData_SubDetPM(_name+"/Et/Data_SubDetPM", "Et",
-		mapper::fTPSubDetPM,
+	_cEtData_SubDet(_name+"/Et/Data_SubDet", "Et",
+		mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
 	_cEtEmul_SubDet(_name+"/Et/Emul_SubDet", "Et",
@@ -30,8 +30,9 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		mapper::fTPSubDet_ieta,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cEtCorr_SubDet_iphi(_name+"/Et/Correlation_SubDet_iphi", "Et_DataVSEmul",
-		mapper::fTPSubDet_iphi,
+	_cEtCorr_SubDetPM_iphi(_name+"/Et/Correlation_SubDetPM_iphi", 
+		"Et_DataVSEmul",
+		mapper::fTPSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_128),
 		new axis::ValueAxis(axis::fYaxis, axis::fEt_128)),
 
@@ -74,13 +75,13 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	DQTask::bookHistograms(ib, r, es);
-	_cEtData_SubDetPM.book(ib);
+	_cEtData_SubDet.book(ib);
 	_cEtEmul_SubDet.book(ib);
 	_cEtCorr_SubDet.book(ib);
 	_cEtMsm.book(ib);
 	_cEtData_SubDetPM_iphi.book(ib);
 	_cEtData_SubDet_ieta.book(ib);
-	_cEtCorr_SubDet_iphi.book(ib);
+	_cEtCorr_SubDetPM_iphi.book(ib);
 	_cFGCorr_SubDet.book(ib);
 	_cFGMsm.book(ib);
 	_cOccupancyData.book(ib);
@@ -121,7 +122,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		// tmp
 
 		//	fill individual
-		_cEtData_SubDetPM.fill(hddigi->id(), soiEt_d);
+		_cEtData_SubDet.fill(hddigi->id(), soiEt_d);
 		_cEtData_SubDetPM_iphi.fill(hddigi->id(), soiEt_d);
 		_cEtData_SubDet_ieta.fill(hddigi->id(), soiEt_d);
 		_cOccupancyData.fill(hddigi->id());
@@ -139,7 +140,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			//	fill correlations
 			_cEtEmul_SubDet.fill(hedigi->id(), soiEt_e);
 			_cEtCorr_SubDet.fill(hddigi->id(), soiEt_e, soiEt_d);
-			_cEtCorr_SubDet_iphi.fill(hddigi->id(), soiEt_e, soiEt_d);
+			_cEtCorr_SubDetPM_iphi.fill(hddigi->id(), soiEt_e, soiEt_d);
 			_cFGCorr_SubDet.fill(hddigi->id(), soiFG_e, soiFG_d);
 			_cOccupancyEmul.fill(hedigi->id());
 

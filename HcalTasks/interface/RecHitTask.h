@@ -44,7 +44,7 @@
 			//	Energy
 			Container1D		_cEnergy_SubDet;
 			Container1D		_cEnergy_SubDet_ieta;
-			Container1D		_cEnergy_SubDet_iphi;
+			Container1D		_cEnergy_SubDetPM_iphi;
 			ContainerProf1D _cEnergyvsieta_SubDet;
 			ContainerProf1D _cEnergyvsiphi_SubDet;
 			ContainerProf2D	_cEnergy_depth;
@@ -55,7 +55,8 @@
 
 			//	Timing
 			Container1D		_cTimingCut_SubDet;
-			Container1D		_cTimingCut_SubDet_iphi;
+			Container1D		_cTimingCut_SubDetPM_iphi;
+			ContainerProf1D _cTimingCutvsLS_SubDetPM_iphi;
 			Container1D		_cTimingCut_SubDet_ieta;
 			ContainerProf1D _cTimingvsietaCut_SubDet_iphi;
 			ContainerProf1D	_cTimingvsiphiCut_SubDet_ieta;

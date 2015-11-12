@@ -253,6 +253,12 @@ namespace hcaldqm
 
 			return index;
 		}
+
+		unsigned int generate_fHFPM_iphi(Input const& i)
+		{
+			return IPHI_NUM_HF*i.i2 + 
+				(i.i1-IPHI_MIN)/IPHI_DELTA_HF;
+		}
 	}
 }
 

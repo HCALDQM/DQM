@@ -58,8 +58,9 @@ namespace hcaldqm
 			fSubDetPM_iphi = 14,
 			fTPSubDetPM = 15,
 			fTPSubDetPM_iphi = 16,
+			fHFPM_iphi = 17,
 
-			nMapperType = 17
+			nMapperType = 18
 		};
 
 		/*
@@ -90,6 +91,7 @@ namespace hcaldqm
 		unsigned int generate_fSubDetPM_iphi(Input const&);
 		unsigned int generate_fTPSubDetPM(Input const&);
 		unsigned int generate_fTPSubDetPM_iphi(Input const&);
+		unsigned int generate_fHFPM_iphi(Input const&);
 		index_generator const vindex[nMapperType] = { generate_fSubDet,
 			generate_fiphi, generate_fieta, generate_fdepth, 
 			generate_fSubDet_iphi, generate_fSubDet_ieta,
@@ -97,7 +99,8 @@ namespace hcaldqm
 			generate_fCrate_Slot, generate_fTPSubDet,
 			generate_fTPSubDet_iphi, generate_fTPSubDet_ieta,
 			generate_fSubDetPM, generate_fSubDetPM_iphi, 
-			generate_fTPSubDetPM, generate_fTPSubDetPM_iphi};
+			generate_fTPSubDetPM, generate_fTPSubDetPM_iphi,
+			generate_fHFPM_iphi};
 
 		/*
 		 *	Mapper Class
@@ -159,6 +162,11 @@ namespace hcaldqm
 						i.i2 = did.iphi();
 						i.i3 = did.ieta()>0 ? 1 : 0;
 					}
+					else if (_type==fHFPM_iphi)
+					{
+						i.i1 = did.iphi();
+						i.i2 = did.ieta()>0 ? 1 : 0;
+					}
 
 					return vindex[_type](i);
 				}
@@ -218,6 +226,20 @@ namespace hcaldqm
 							char name[10];
 							sprintf(name, "iphi%d", 
 								constants::IPHI_MIN+id*constants::IPHI_DELTA);
+							builtname = name;
+							break;
+						}
+						case fHFPM_iphi:
+						{
+							char name[20];
+							if (id>=IPHI_NUM_HF)
+								sprintf(name, "HFPiphi%d",
+									(id-IPHI_NUM_HF)*IPHI_DELTA_HF + 
+									IPHI_MIN);
+							else 
+								sprintf(name, "HFMiphi%d",
+									id*IPHI_DELTA_HF + IPHI_MIN);
+
 							builtname = name;
 							break;
 						}
@@ -533,6 +555,9 @@ namespace hcaldqm
 							break;
 						case fTPSubDetPM_iphi:
 							_size = 2*IPHI_NUM + 2*IPHI_NUM/IPHI_DELTA_TPHF;
+							break;
+						case fHFPM_iphi:
+							_size = 72;
 							break;
 						default:
 							_size = 0;

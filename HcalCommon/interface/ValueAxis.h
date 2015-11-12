@@ -34,27 +34,28 @@ namespace hcaldqm
 			fEt_256 = 14,
 			fEt_128 = 15,
 			fFG = 16, 
+			fRatio = 17
 
-			nValueType = 17
+			nValueType = 18
 		};
 
 		std::string const vtitle[nValueType] = {
 			"Entries", "Events", "1/Events", "Energy (GeV)", "Time (ns)",
 			"ADC", "ADC", "ADC", "nom. fC", "nom. fC", "nom. fC", "Time Slice",
-			"Time Slice", "LS", "Et", "Et", "Fine Grain Bit"
+			"Time Slice", "LS", "Et", "Et", "Fine Grain Bit", "Ratio"
 		};
 		double const vmin[nValueType] = {
 			0, 0, 0, 0, -50, 0, 0, 0, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5,
-			-0.5, -0.5, -0.5
+			-0.5, -0.5, -0.5, 0
 
 		};
 		double const vmax[nValueType] = {
 			3000, 500, 1, 200, 50, 128, 5, 15, 10000, 1000, 3000, 9.5, 9.5, 
-			4000.5, 255.5, 255.5, 1.5
+			4000.5, 255.5, 255.5, 1.5, 1.05
 		};
 		int const vnbins[nValueType] = {
-			500, 100, 100, 400, 200, 128, 100, 300, 1000, 200, 600, 10, 200, 4001,
-			256, 128, 2
+			500, 100, 100, 400, 200, 128, 100, 300, 1000, 200, 600, 10, 
+			200, 4001, 256, 128, 2, 100
 		};
 
 		class ValueAxis : public Axis

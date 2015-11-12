@@ -37,14 +37,14 @@
 			//	counters
 
 			//	Et
-			Container1D		_cEtData_SubDetPM;
+			Container1D		_cEtData_SubDet;
 			Container1D		_cEtEmul_SubDet;	
 			Container2D		_cEtCorr_SubDet;
 			ContainerSingle2D	_cEtMsm;
 
 			Container1D		_cEtData_SubDetPM_iphi;
 			Container1D		_cEtData_SubDet_ieta;
-			Container2D	_cEtCorr_SubDet_iphi;
+			Container2D		_cEtCorr_SubDetPM_iphi;
 
 			//	FG
 			Container2D		_cFGCorr_SubDet;

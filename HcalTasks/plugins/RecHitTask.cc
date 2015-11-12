@@ -13,8 +13,8 @@
 			mapper::fSubDet_ieta, 
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
 			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-		_cEnergy_SubDet_iphi(_name+"/Energy/SubDet_iphi", 
-			"Energy", mapper::fSubDet_iphi,
+		_cEnergy_SubDetPM_iphi(_name+"/Energy/SubDetPM_iphi", 
+			"Energy", mapper::fSubDetPM_iphi,
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
 			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
 		_cEnergyvsieta_SubDet(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
@@ -47,9 +47,13 @@
 		//	Timing
 		_cTimingCut_SubDet(_name+"/Timing/SubDet", "Timing", mapper::fSubDet,
 			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
-		_cTimingCut_SubDet_iphi(_name+"/Timing/SubDet_iphi", "Timing", 
-			mapper::fSubDet_iphi, 
+		_cTimingCut_SubDetPM_iphi(_name+"/Timing/SubDetPM_iphi", "Timing", 
+			mapper::fSubDetPM_iphi, 
 			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
+		_cTimingCutvsLS_SubDetPM_iphi(_name+"/Timing/vsLS_SubDetPM_iphi",
+			"Timing", mapper::fSubDetPM_iphi,
+			new axis::ValueAxis(axis::fXaxis, axis::fLS),
+			new axis::ValueAxis(axis::fYaxis, axis::fTime)),
 		_cTimingCut_SubDet_ieta(_name+"/Timing/SubDet_ieta", "Timing", 
 			mapper::fSubDet_ieta, 
 			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
@@ -113,7 +117,7 @@
 
 		_cEnergy_SubDet.book(ib);
 		_cEnergy_SubDet_ieta.book(ib);
-		_cEnergy_SubDet_iphi.book(ib);
+		_cEnergy_SubDetPM_iphi.book(ib);
 		_cEnergyvsieta_SubDet.book(ib);
 		_cEnergyvsiphi_SubDet.book(ib);
 		_cEnergy_depth.book(ib);
@@ -123,11 +127,12 @@
 		_cEnergyCut_depth.book(ib, _subsystem, std::string(cutstr));
 
 		_cTimingCut_SubDet.book(ib, _subsystem, std::string(cutstr));
-		_cTimingCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
+		_cTimingCut_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
 		_cTimingCut_SubDet_ieta.book(ib, _subsystem, std::string(cutstr));
 		_cTimingvsietaCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
 		_cTimingvsiphiCut_SubDet_ieta.book(ib, _subsystem, std::string(cutstr));
 		_cTimingCut_depth.book(ib, _subsystem, std::string(cutstr));
+		_cTimingCutvsLS_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
 
 		_cOccupancyCut_depth.book(ib, _subsystem, std::string(cutstr));
 		_cOccupancy_depth.book(ib);
@@ -164,7 +169,7 @@
 
 			_cEnergy_SubDet.fill(did, energy);
 			_cEnergy_SubDet_ieta.fill(did, energy);
-			_cEnergy_SubDet_iphi.fill(did, energy);
+			_cEnergy_SubDetPM_iphi.fill(did, energy);
 			_cEnergyvsieta_SubDet.fill(did, energy);
 			_cEnergyvsiphi_SubDet.fill(did, energy);
 			_cEnergy_depth.fill(did, energy);
@@ -179,10 +184,11 @@
 				_cEnergyvsiphiCut_SubDet.fill(did, energy);
 				_cEnergyCut_depth.fill(did, energy);
 				_cTimingCut_SubDet.fill(did, time);
-				_cTimingCut_SubDet_iphi.fill(did, time);
+				_cTimingCut_SubDetPM_iphi.fill(did, time);
 				_cTimingCut_SubDet_ieta.fill(did, time);
 				_cTimingvsietaCut_SubDet_iphi.fill(did, time);
 				_cTimingvsiphiCut_SubDet_ieta.fill(did, time);
+				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, time);
 				_cTimingCut_depth.fill(did, time);
 				_cOccupancyCut_depth.fill(did);
 				_cEnergyvsTimingCut_SubDet.fill(did, time, energy);
@@ -198,7 +204,7 @@
 
 			_cEnergy_SubDet.fill(did, energy);
 			_cEnergy_SubDet_ieta.fill(did, energy);
-			_cEnergy_SubDet_iphi.fill(did, energy);
+			_cEnergy_SubDetPM_iphi.fill(did, energy);
 			_cEnergyvsieta_SubDet.fill(did, energy);
 			_cEnergyvsiphi_SubDet.fill(did, energy);
 			_cEnergy_depth.fill(did, energy);
@@ -213,11 +219,12 @@
 				_cEnergyvsiphiCut_SubDet.fill(did, energy);
 				_cEnergyCut_depth.fill(did, energy);
 				_cTimingCut_SubDet.fill(did, time);
-				_cTimingCut_SubDet_iphi.fill(did, time);
+				_cTimingCut_SubDetPM_iphi.fill(did, time);
 				_cTimingCut_SubDet_ieta.fill(did, time);
 				_cTimingvsietaCut_SubDet_iphi.fill(did, time);
 				_cTimingvsiphiCut_SubDet_ieta.fill(did, time);
 				_cTimingCut_depth.fill(did, time);
+				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, time);
 				_cOccupancyCut_depth.fill(did);
 				_cEnergyvsTimingCut_SubDet.fill(did, time, energy);
 			}
@@ -232,7 +239,7 @@
 
 			_cEnergy_SubDet.fill(did, energy);
 			_cEnergy_SubDet_ieta.fill(did, energy);
-			_cEnergy_SubDet_iphi.fill(did, energy);
+			_cEnergy_SubDetPM_iphi.fill(did, energy);
 			_cEnergyvsieta_SubDet.fill(did, energy);
 			_cEnergyvsiphi_SubDet.fill(did, energy);
 			_cEnergy_depth.fill(did, energy);
@@ -247,11 +254,12 @@
 				_cEnergyvsiphiCut_SubDet.fill(did, energy);
 				_cEnergyCut_depth.fill(did, energy);
 				_cTimingCut_SubDet.fill(did, time);
-				_cTimingCut_SubDet_iphi.fill(did, time);
+				_cTimingCut_SubDetPM_iphi.fill(did, time);
 				_cTimingCut_SubDet_ieta.fill(did, time);
 				_cTimingvsietaCut_SubDet_iphi.fill(did, time);
 				_cTimingvsiphiCut_SubDet_ieta.fill(did, time);
 				_cTimingCut_depth.fill(did, time);
+				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, time);
 				_cOccupancyCut_depth.fill(did);
 				_cEnergyvsTimingCut_SubDet.fill(did, time, energy);
 			}
