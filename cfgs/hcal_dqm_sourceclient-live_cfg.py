@@ -106,6 +106,7 @@ process.hbhereco = process.hbheprereco.clone()
 process.load("DQM.HcalTasks.RecHitTask")
 process.load("DQM.HcalTasks.DigiTask")
 process.load('DQM.HcalTasks.TPTask')
+process.load('DQM.HcalTasks.RawTask')
 
 #-------------------------------------
 #	To force using uTCA
@@ -140,13 +141,6 @@ if useMap:
 #	Some Settings before Finishing up
 #	New Style Modules
 #-------------------------------------
-#process.hcalDigiTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-#process.hcalRawTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-#process.hcalRecHitTask.moduleParameters.subsystem = cms.untracked.string(
-#		subsystem)
-#process.hcalTPTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-#process.hcalTimingTask.moduleParameters.subsystem = cms.untracked.string(
-#		subsystem)
 
 oldsubsystem = subsystem
 
@@ -155,6 +149,7 @@ oldsubsystem = subsystem
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
 		process.recHitTask
+		+process.rawTask
 		+process.digiTask
 		+process.tpTask
 #		process.hcalDigiTask

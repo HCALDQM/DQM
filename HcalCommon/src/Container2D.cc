@@ -30,9 +30,9 @@ namespace hcaldqm
 				_yaxis->get(did), x);
 		else if (xact==fCoordinate)
 			_mes[_mapper.index(did)]->Fill(_xaxis->get(did),
-				x);
+				_yaxis->get(x));
 		else if (yact==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(x, _yaxis->get(did));
+			_mes[_mapper.index(did)]->Fill(_xaxis->get(x), _yaxis->get(did));
 	}
 
 	/* virtual */ void Container2D::fill(HcalDetId const& did, double x)
@@ -44,9 +44,9 @@ namespace hcaldqm
 				_yaxis->get(did), x);
 		else if (xact==fCoordinate)
 			_mes[_mapper.index(did)]->Fill(_xaxis->get(did),
-				x);
+				_yaxis->get(x));
 		else if (yact==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(x, _yaxis->get(did));
+			_mes[_mapper.index(did)]->Fill(_xaxis->get(x), _yaxis->get(did));
 	}
 
 	/* virtual */ void Container2D::fill(HcalDetId const& did, 
@@ -55,11 +55,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), x, y);
+			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(x, _yaxis->get(did), y);
+			_mes[_mapper.index(did)]->Fill(_xaxis->get(x), _yaxis->get(did), y);
 		else if (yact!=fCoordinate && xact!=fCoordinate)
-			_mes[_mapper.index(did)]->Fill(x, y);
+			_mes[_mapper.index(did)]->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void Container2D::fill(HcalDetId const& did, 
@@ -68,11 +68,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), x, y);
+			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(x, _yaxis->get(did), y);
+			_mes[_mapper.index(did)]->Fill(_xaxis->get(x), _yaxis->get(did), y);
 		else if (yact!=fCoordinate && xact!=fCoordinate)
-			_mes[_mapper.index(did)]->Fill(x, y);
+			_mes[_mapper.index(did)]->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	//	HcalElectronicsId based
@@ -91,9 +91,9 @@ namespace hcaldqm
 				_yaxis->get(eid), x);
 		else if (xact==fCoordinate)
 			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid),
-				x);
+				_yaxis->get(x));
 		else if (yact==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(x, _yaxis->get(eid));
+			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x), _yaxis->get(eid));
 	}
 
 	/* virtual */ void Container2D::fill(HcalElectronicsId const& eid, double x)
@@ -105,9 +105,9 @@ namespace hcaldqm
 				_yaxis->get(eid), x);
 		else if (xact==fCoordinate)
 			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid),
-				x);
+				_yaxis->get(x));
 		else if (yact==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(x, _yaxis->get(eid));
+			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x), _yaxis->get(eid));
 	}
 
 	/* virtual */ void Container2D::fill(HcalElectronicsId const& eid, 
@@ -116,11 +116,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), x, y);
+			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(x, _yaxis->get(eid), y);
+			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x), _yaxis->get(eid), y);
 		else if (yact!=fCoordinate && xact!=fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(x, y);
+			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void Container2D::fill(HcalElectronicsId const& eid, 
@@ -129,11 +129,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), x, y);
+			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(x, _yaxis->get(eid), y);
+			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x), _yaxis->get(eid), y);
 		else if (yact!=fCoordinate && xact!=fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(x, y);
+			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid)
@@ -150,9 +150,9 @@ namespace hcaldqm
 				_yaxis->get(tid), x);
 		else if (xact==fCoordinate)
 			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid),
-				x);
+				_yaxis->get(x));
 		else if (yact==fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid));
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(tid));
 	}
 
 	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid, double x)
@@ -164,9 +164,9 @@ namespace hcaldqm
 				_yaxis->get(tid), x);
 		else if (xact==fCoordinate)
 			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid),
-				x);
+				_yaxis->get(x));
 		else if (yact==fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid));
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(tid));
 	}
 
 	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid, 
@@ -175,11 +175,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x, y);
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid), y);
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(tid), y);
 		else if (yact!=fCoordinate && xact!=fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(x, y);
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid, 
@@ -188,11 +188,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x, y);
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid), y);
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(tid), y);
 		else if (yact!=fCoordinate && xact!=fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(x, y);
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void Container2D::fill(HcalTrigTowerDetId const& tid, 
@@ -201,11 +201,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), x, y);
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(x, _yaxis->get(tid), y);
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(tid), y);
 		else if (yact!=fCoordinate && xact!=fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(x, y);
+			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void Container2D::book(DQMStore::IBooker &ib, 
@@ -232,6 +232,43 @@ namespace hcaldqm
 				me->setBinLabel(i+1, _yaxis->_labels[i], 2);
 			_mes.push_back(me);
 		}
+	}
+
+	/* virtual */ void Container2D::setBinContent(int id, int x, int y, double z)
+	{
+		_mes[id]->setBinContent(_xaxis->getBin(x),
+			_yaxis->getBin(y), z);
+	}
+
+	/* virtual */ void Container2D::setBinContent(int id, int x, double y, double z)
+	{
+		_mes[id]->setBinContent(_xaxis->getBin(x),
+			_yaxis->getBin(y), z);
+	}
+
+	/* virtual */ void Container2D::setBinContent(int id, double x, int y, double z)
+	{
+		_mes[id]->setBinContent(_xaxis->getBin(x),
+			_yaxis->getBin(y), z);
+	}
+
+	/* virtual */ void Container2D::setBinContent(int id, double x, double y, double z)
+	{
+		_mes[id]->setBinContent(_xaxis->getBin(x),
+			_yaxis->getBin(y), z);
+	}
+
+	/* virtual */ void Container2D::loadLabels(
+		std::vector<std::string> const& labels)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact!=fFlag && yact!=fFlag)
+			return;
+		else if (xact!=fFlag)
+			_yaxis->loadLabels(labels);
+		else
+			_xaxis->loadLabels(labels);
 	}
 }
 

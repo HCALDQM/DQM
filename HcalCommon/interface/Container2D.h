@@ -49,9 +49,16 @@ namespace hcaldqm
 			virtual void fill(HcalTrigTowerDetId const&, int, double);
 			virtual void fill(HcalTrigTowerDetId const&, double, double);
 
+			virtual void setBinContent(int, int, int, double);
+			virtual void setBinContent(int, int, double, double);
+			virtual void setBinContent(int, double, int, double);
+			virtual void setBinContent(int, double, double, double);
+
 			//	booking. see Container1D.h
 			virtual void book(DQMStore::IBooker&,
 				std::string subsystem="Hcal", std::string aux="");
+
+			virtual void loadLabels(std::vector<std::string> const&);
 
 		protected:
 			Axis					*_zaxis;

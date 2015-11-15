@@ -65,6 +65,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		"Q2Q12", mapper::fHFPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::ValueAxis(axis::fYaxis, axis::fRatio)),
+	_cDigiSizevsLS_SubDet(_name+"/DigiSize/vsLS_SubDet", "DigiSize",
+		mapper::fSubDet,
+		new axis::ValueAxis(axis::fXaxis, axis::fLS),
+		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize)),
 
 	//	Occupancy
 	_cOccupancyvsiphi_SubDet(_name+"/Occupancy/vsiphi_SubDet", "Occupancyvsiphi",
@@ -97,7 +101,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		mapper::fSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fEntries))
+		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
+
+	//	Summaries
+	_cSummary(_name+"/Summary", "Summary",
+		new axis::CoordinateAxis(axis::fXaxis, axis::fSubDet),
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nDigiFlag))),
+	_cSummaryvsLS_SubDet(_name+"/Summary/vsLS_SubDet", "SummaryvsLS",
+		mapper::fSubDet,
+		new axis::ValueAxis(axis::fXaxis, axis::fLS),
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nDigiFlag)))
 {
 	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
@@ -112,6 +125,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cutSumQ_HO = ps.getUntrackedParameter<double>("cutSumQ_HO", 20);
 	_cutSumQ_HF = ps.getUntrackedParameter<double>("cutSumQ_HF", 20);
 	
+	//	flags
+	_fNames.push_back("Low Occupancy");
+	_fNames.push_back("Digi Size Drift");
+	_cSummary.loadLabels(_fNames);
+	_cSummaryvsLS_SubDet.loadLabels(_fNames);
 }
 
 /* virtual */ void DigiTask::bookHistograms(DQMStore::IBooker &ib,
@@ -148,6 +166,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cOccupancy_depth.book(ib);
 	_cOccupancyCut_depth.book(ib, _subsystem, std::string(cutstr));
 	_cOccupancyCutiphivsLS_SubDet.book(ib, _subsystem, std::string(cutstr));
+
+	_cDigiSizevsLS_SubDet.book(ib);
+
+	_cSummary.book(ib);
+	_cSummaryvsLS_SubDet.book(ib);
 }
 
 /* virtual */ void DigiTask::_resetMonitors(int pflag)
@@ -196,7 +219,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSumQ_SubDetPM_iphi.fill(did, sumQ);
 		_cSumQ_depth.fill(did, sumQ);
 		_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
-		_numDigis[digi.id().subdet()-1]++;
+		_numDigis[did.subdet()-1]++;
+		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HBHE)
@@ -245,7 +269,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSumQ_SubDetPM_iphi.fill(did, sumQ);
 		_cSumQ_depth.fill(did, sumQ);
 		_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
-		_numDigis[digi.id().subdet()-1]++;
+		_numDigis[did.subdet()-1]++;
+		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HO)
@@ -295,6 +320,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSumQ_depth.fill(did, sumQ);
 		_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
 		_numDigis[digi.id().subdet()-1]++;
+		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HF)
@@ -351,19 +377,64 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_numDigis[3]);
 	_cOccupancyCutvsLS_SubDet.fill(HcalDetId(HcalForward, 34, 5, 1), _currentLS,
 		_numDigisCut[3]);
+}
+
+/* virtual */ void DigiTask::endLuminosityBlock(edm::LuminosityBlock const&,
+	edm::EventSetup const&)
+{
+	//	statuses
+	//	By default the flag is not applicable
+	double status[nDigiFlag][constants::SUBDET_NUM]; 
+	for (int i=fLowOcp; i<nDigiFlag; i++)
+		for (unsigned int j=0; j<constants::SUBDET_NUM; j++)
+			status[i][j]=constants::NOT_APPLICABLE;
 
 	/*
-	 *	Per Event Checks
+	 * Do the checks here.
+	 * -> HF Digi Occupancy
+	 * -> Digi Size Fluctuations
 	 */
-/*	if (_numDigis[3]<1728)	//	in HF
-		_flags_Event[fOcp_lt1728] = true;
-	if (_numDigis[3]<1718)
-		_flags_Event[fOcp_lt1718] = true;
-	if (_numDigis[3]<1680)
-		_flags_Event[fOcp_lt1680] = true;
-	if (_numDigis[3]>1728)
-		_flags_Event[fOcp_gt1728] = true;
-		*/
+
+	//	HF Digi Occupancy Check
+	MonitorElement *meocpHF = _cOccupancyvsLS_SubDet.at(3);
+	double numChs = meocpHF->getBinContent(_currentLS);
+	if (constants::CHS_NUM[3] - numChs>=48)
+		status[fLowOcp][3] = constants::VERY_LOW;
+	else if (constants::CHS_NUM[3] - numChs>=24)
+		status[fLowOcp][3] = constants::LOW;
+	else if (constants::CHS_NUM[3] - numChs>=10)
+		status[fLowOcp][3] = constants::LOW;
+	else if (constants::CHS_NUM[3] - numChs>=1)
+		status[fLowOcp][3] = constants::PROBLEMATIC;
+	else if (constants::CHS_NUM[3] - numChs<0)
+		status[fLowOcp][3] = constants::PROBLEMATIC;
+	else if (constants::CHS_NUM[3]==numChs)
+		status[fLowOcp][3] = constants::GOOD;
+	for (int i=0; i<constants::SUBDET_NUM; i++)
+	{
+		_cSummary.setBinContent(i, int(fLowOcp), status[fLowOcp][i]);
+		_cSummaryvsLS_SubDet.setBinContent(i, 
+			_currentLS, int(fLowOcp), status[fLowOcp][i]);
+	}
+
+	//	Digi Size Check
+	for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
+	{
+		MonitorElement *meds = _cDigiSizevsLS_SubDet.at(i);
+		double size = meds->getBinContent(_currentLS);
+		double error = meds->getBinError(_currentLS);
+		if (size==constants::TS_NUM[i] && error!=0)
+			status[fDigiSize][i] = constants::GOOD;
+		else
+			status[fDigiSize][i] = constants::PROBLEMATIC;
+
+	}
+	for (int i=0; i<constants::SUBDET_NUM; i++)
+	{
+		_cSummary.setBinContent(i, int(fDigiSize), status[fDigiSize][i]);
+		_cSummaryvsLS_SubDet.setBinContent(i,
+			_currentLS, int(fLowOcp), status[fLowOcp][i]);
+	}
 }
 
 DEFINE_FWK_MODULE(DigiTask);

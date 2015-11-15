@@ -24,6 +24,28 @@ namespace hcaldqm
 			this->_setup();
 		}
 
+		/* virtual */ int ValueAxis::getBin(int value)
+		{
+			//	only LS type right now
+			int r=1;
+			switch(_vtype)
+			{
+				case fLS:
+					r = value;
+					break;
+				default:
+					r = 1;
+					break;
+			}
+
+			return r;
+		}
+
+		/* virtual */ int ValueAxis::getBin(double v)
+		{
+			return 1;
+		}
+
 		/* virtual */ void ValueAxis::_setup()
 		{
 		}

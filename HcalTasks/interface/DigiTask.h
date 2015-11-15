@@ -13,6 +13,7 @@
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
+#include "DQM/HcalCommon/interface/ContainerSingle2D.h"
 
 using namespace hcaldqm;
 class DigiTask : public DQTask
@@ -24,17 +25,17 @@ class DigiTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
-/*
+		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
+			edm::EventSetup const&);
+
 		enum DigiFlag_Event
 		{
-			fOcp_lt1728 = 0,
-			fOcp_lt1718 = 1,
-			fOcp_lt1680 = 2,
-			fOcp_gt1728 = 3,
+			fLowOcp = 0,
+			fDigiSize = 1,
 
-			nDigiFlag = 4
+			nDigiFlag = 2
 		};
-*/
+
 	protected:
 		//	funcs
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
@@ -45,9 +46,8 @@ class DigiTask : public DQTask
 		edm::InputTag	_tagHO;
 		edm::InputTag	_tagHF;
 
-		//	Flags
-		//	There are 2 types of flags, based on how often we check 
-//		bool			_flags_Event[nDigiFlag];
+		//	Flag Names
+		std::vector<std::string> _fNames;
 
 		//	Counters
 		int				_numDigis[constants::SUBDET_NUM];
@@ -78,6 +78,7 @@ class DigiTask : public DQTask
 
 		//	Specific
 		ContainerProf1D _cQ2Q12CutvsLS_HFPM_iphi;
+		ContainerProf1D	_cDigiSizevsLS_SubDet;
 
 		//	Occupancy
 		Container1D		_cOccupancyvsiphi_SubDet;
@@ -87,6 +88,10 @@ class DigiTask : public DQTask
 		Container2D		_cOccupancy_depth;
 		Container2D		_cOccupancyCut_depth;
 		ContainerProf2D	_cOccupancyCutiphivsLS_SubDet;
+
+		//	Summaries
+		ContainerSingle2D		_cSummary;
+		Container2D		_cSummaryvsLS_SubDet;
 };
 
 #endif

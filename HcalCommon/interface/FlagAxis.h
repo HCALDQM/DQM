@@ -6,6 +6,17 @@
  *	Author:			Viktor Khristenko
  *
  *	Description:
+ *		Flag Axis plots only flag variables on the axis.
+ *		Have to provide the number of flags only (int)
+ *
+ *		The mapping between the actual flags and bins is straghtforward:
+ *		flags(0 -> n-1) - axis range
+ *		bins (1 -> n)
+ *		bin = value+1
+ *
+ *		Important to note that there are no predefine flags. All the flags
+ *		are defined in specific tasks and all the labels are loaded at the 
+ *		construction of the Task
  */
 
 #include "DQM/HcalCommon/interface/Axis.h"
@@ -28,10 +39,12 @@ namespace hcaldqm
 
 			public:
 				FlagAxis();
-				FlagAxis(AxisType, FlagType, int, int, int, std::string);
+				FlagAxis(AxisType,  std::string, int);
 				virtual ~FlagAxis() {}
 
-				virtual loadLabels(std::vector<std::string> const&);
+				virtual inline int getBin(int v) {return v+1;}
+
+				virtual void loadLabels(std::vector<std::string> const&);
 
 			protected:
 				virtual void _setup();

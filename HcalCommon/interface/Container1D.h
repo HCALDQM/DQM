@@ -11,6 +11,7 @@
 
 #include "DQM/HcalCommon/interface/ValueAxis.h"
 #include "DQM/HcalCommon/interface/CoordinateAxis.h"
+#include "DQM/HcalCommon/interface/FlagAxis.h"
 #include "DQM/HcalCommon/interface/Container.h"
 #include "DQM/HcalCommon/interface/Mapper.h"
 #include "DQM/HcalCommon/interface/Utilities.h"
@@ -45,6 +46,9 @@ namespace hcaldqm
 			virtual void fill(int, double);
 			virtual void fill(int, int, double);
 			virtual void fill(int, double, double);
+			virtual void fill(int, int, int, double);
+			virtual void fill(int, int, double, double);
+			virtual void fill(int, double, double, double);
 
 			//	using DetId as mapper
 			virtual void fill(HcalDetId const&);
@@ -66,6 +70,17 @@ namespace hcaldqm
 			virtual void fill(HcalTrigTowerDetId const&, double);
 			virtual void fill(HcalTrigTowerDetId const&, int, int);
 			virtual void fill(HcalTrigTowerDetId const&, int, double);
+
+			//	getters
+			//	get the MonitorElement 
+			//	@i is the index within the container
+			virtual MonitorElement* at(unsigned int i);
+			virtual MonitorElement* at(HcalDetId const&);
+			virtual MonitorElement* at(HcalElectronicsId const&);
+			virtual MonitorElement* at(HcalTrigTowerDetId const&);
+
+			//	get the Size of Container
+			virtual inline unsigned int size() {return _mes.size();}
 
 			//	booking
 			//	@aux - typically a cut or anything else

@@ -95,14 +95,85 @@ namespace hcaldqm
 			int x;
 			switch(_ctype)
 			{
-				case fCrate:
+				case fCrateVME:
 					x = eid.crateId();
+					if (x<=CRATE_VME_MAX)
+						x = x-CRATE_VME_MIN;
+					else 
+						x = 100;
 					break;
-				case fSlot:
+				case fCrateuTCA:
+					x = eid.crateId();
+					if (x>CRATE_VME_MAX && x<=CRATE_uTCA_MAX)
+						x = x-CRATE_uTCA_MIN;
+					else 
+						x = 100;
+					break;
+				case fCrateComb:
+					x = eid.crateId();
+					if (x<=CRATE_VME_MAX)
+						x = x-CRATE_VME_MIN;
+					else if (x<=CRATE_uTCA_MAX)
+						x = CRATE_VME_NUM+ x-CRATE_uTCA_MIN;
+					else
+						x = 100;
+					break;
+				case fSlotVME:
 					x = eid.slot();
+					if (x<=SLOT_VME_MIN1)
+						x = x-SLOT_VME_MIN;
+					else if (x>=SLOT_VME_MIN2 && x<=SLOT_VME_MAX)
+						x = SLOT_VME_NUM1+ x-SLOT_VME_MIN2;
+					else 
+						x = 100;
 					break;
-				case fFiber:
+				case fSlotuTCA:
+					x = eid.slot();
+					if (x<=SLOT_uTCA_MAX)
+						x = x-SLOT_uTCA_MIN;
+					else
+						x = 100;
+					break;
+				case fSlotComb:
+					x = eid.slot();
+					if (eid.isVMEid()) // VME
+					{
+						if (x<=SLOT_VME_MIN1)
+							x = x-SLOT_VME_MIN;
+						else if (x>=SLOT_VME_MIN2 && x<=SLOT_VME_MAX)
+							x = SLOT_VME_NUM1+ x-SLOT_VME_MIN2;	
+						else x = 100;
+					}
+					else // uTCA
+					{
+						if (x<=SLOT_uTCA_MAX)
+							x = x-SLOT_uTCA_MIN;
+						else 
+							x = 100;
+					}
+					break;
+				case fSpigot:
+					x = eid.spigot();
+					break;
+				case fFiberVME:
+					{
+						x = eid.fiberIndex();
+						int tb = eid.htrTopBottom(); //1 for t
+						x = tb*FIBER_VME_NUM + (x-FIBER_VME_MIN);
+					}
+					break;
+				case fFiberuTCA:
+					x = eid.fiberIndex()-FIBER_uTCA_MIN;
+					break;
+				case fFiberComb:
 					x = eid.fiberIndex();
+					if (eid.isVMEid())
+					{
+						int tb = eid.htrTopBottom();
+						x = tb*FIBER_VME_NUM+(x-FIBER_VME_MIN);
+					}
+					else
+						x = x-FIBER_uTCA_MIN;
 					break;
 				case fFiberCh:
 					x = eid.fiberChanId();
@@ -119,16 +190,66 @@ namespace hcaldqm
 			int x = 0;
 			switch(_ctype)
 			{
-				case fFED:
+				case fFEDVME:
+					x = i-FED_VME_MIN;
+					break;
+				case fFEDuTCA:
+					x = (i-FED_uTCA_MIN)/FED_uTCA_DELTA;
+					break;
+				case fFEDComb:
 					if (i<=FED_VME_MAX)
 						x = i-FED_VME_MIN;
 					else 
-						x = i-FED_uTCA_MIN+FED_VME_NUM;
+						x = FED_VME_NUM+ (i-FED_uTCA_MIN)/FED_uTCA_DELTA;
+					break;
+				case fCrateVME:
+					x = i-CRATE_VME_MIN;
+					break;
+				case fCrateuTCA:
+					x = i-CRATE_uTCA_MIN;
+					break;
+				case fCrateComb:
+					if (i<CRATE_VME_MAX)
+						x = i-CRATE_VME_MIN;
+					else 
+						x = CRATE_VME_NUM+i-CRATE_uTCA_MIN;
 					break;
 				default :
 					break;
 			}
 			return x;
+		}
+
+		/* virtual */ int CoordinateAxis::getBin(HcalDetId const&)
+		{
+			return 1;
+		}
+
+		/* virtual */ int CoordinateAxis::getBin(HcalElectronicsId const&)
+		{
+			return 1;
+		}
+
+		/* virtual */ int CoordinateAxis::getBin(HcalTrigTowerDetId const&)
+		{
+			return 1;
+		}
+
+		/* virtual */ int CoordinateAxis::getBin(int value)
+		{
+			// for now it's only applicable for SubDet type
+			int r = 1;
+			switch (_ctype)
+			{
+				case fSubDet:
+					r = value+1;
+					break;
+				default:
+					r = 1;
+					break;
+			}
+
+			return r;
 		}
 
 		/* virtual */ void CoordinateAxis::_setup()
@@ -159,16 +280,133 @@ namespace hcaldqm
 						_labels.push_back(std::string(name));
 					}
 					break;
-				case fFED:
+				case fFEDVME:
 					for (int i=FED_VME_MIN; i<=FED_VME_MAX; i++)
 					{
-						sprintf(name, "FED%d", i);
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fFEDuTCA:
+					for (int i=FED_uTCA_MIN; i<=FED_uTCA_MAX; i+=2)
+					{
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fFEDComb:	// uTCA and VME combined
+					for (int i=FED_VME_MIN; i<=FED_VME_MAX; i++)
+					{
+						sprintf(name, "%d", i);
 						_labels.push_back(std::string(name));
 					}
 					for (int i=FED_uTCA_MIN; i<=FED_uTCA_MAX; i+=2)
 					{
-						sprintf(name, "FED%d", i);
+						sprintf(name, "%d", i);
 						_labels.push_back(std::string(name));
+					}
+					break;
+				case fCrateVME:
+					for (int i=CRATE_VME_MIN; i<=CRATE_VME_MAX; i++)
+					{
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fCrateuTCA:
+					for (int i=CRATE_uTCA_MIN; i<=CRATE_uTCA_MAX; i++)
+					{
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fCrateComb:
+					for (int i=CRATE_VME_MIN; i<=CRATE_VME_MAX; i++)
+					{
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					for (int i=CRATE_uTCA_MIN; i<=CRATE_uTCA_MAX; i++)
+					{
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fSlotVME:
+					for (int i=SLOT_VME_MIN; i<=SLOT_VME_MIN1; i++)
+					{
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					for (int i=SLOT_VME_MIN2; i<=SLOT_VME_MAX; i++)
+					{
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fSlotuTCA:
+					for (int i=SLOT_uTCA_MIN; i<=SLOT_uTCA_MAX; i++)
+					{
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fSlotComb:
+					{
+						int j = SLOT_uTCA_MIN;
+						for (int i=SLOT_VME_MIN; i<=SLOT_VME_MIN1; i++)
+						{
+							sprintf(name, "%d (%d)", i, j);
+							_labels.push_back(std::string(name));
+							j++;
+						}
+						for (int i=SLOT_VME_MIN2; i<=SLOT_VME_MAX; i++)
+						{
+							sprintf(name, "%d (%d)", i, j);
+							_labels.push_back(std::string(name));
+							j++;
+						}
+					}
+					break;
+				case fFiberVME:
+					for (int i=FIBER_VME_MIN; i<=FIBER_VME_MAX; i++)
+					{
+						sprintf(name, "%d-b", i);
+						_labels.push_back(std::string(name));
+					}
+					for (int i=FIBER_VME_MIN; i<=FIBER_VME_MAX; i++)
+					{
+						sprintf(name, "%d-t", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fFiberuTCA:
+					for (int i=FIBER_uTCA_MIN; i<=FIBER_uTCA_MAX; i++)
+					{
+						sprintf(name, "%d", i);
+						_labels.push_back(std::string(name));
+					}
+					break;
+				case fFiberComb:
+					{
+						int j = FIBER_uTCA_MIN;
+						for (int i=FIBER_VME_MIN; i<=FIBER_VME_MAX; i++)
+						{
+							sprintf(name, "%d-b (%d)", i, j);
+							_labels.push_back(std::string(name));
+							j++;
+						}
+						for (int i=FIBER_VME_MIN; i<=FIBER_VME_MAX; i++)
+						{
+							sprintf(name, "%d-t (%d)", i, j);
+							_labels.push_back(std::string(name));
+							j++;
+						}
+						for (int k=j; k<+FIBER_uTCA_MAX; k++)
+						{
+							sprintf(name, "%d", k);
+							_labels.push_back(std::string(name));
+						}
 					}
 					break;
 				case fTPSubDet:

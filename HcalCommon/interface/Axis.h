@@ -62,10 +62,21 @@ namespace hcaldqm
 					int n, double min, double max, bool log=false);
 				virtual ~Axis() {}
 
+				//	getters of Value to put
 				virtual int get(HcalDetId const&) {return 0;}
 				virtual int get(HcalElectronicsId const&) {return 0;}
 				virtual int get(HcalTrigTowerDetId const&) {return 0;}
-				virtual int get(int) {return 0;}
+				virtual inline int get(int x) {return x;}
+				virtual inline double get(double x) {return x;}
+
+				//	getters of the Bin
+				virtual int getBin(HcalDetId const&) {return 1;}
+				virtual int getBin(HcalElectronicsId const&) {return 1;}
+				virtual int getBin(HcalTrigTowerDetId const&) {return 1;}
+				virtual int getBin(int) {return 1;}
+
+				//	load labels
+				virtual void loadLabels(std::vector<std::string> const&) {}
 				
 			public:
 				AxisQType getType() {return _qtype;}

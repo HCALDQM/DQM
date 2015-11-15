@@ -35,32 +35,62 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerSingle2D::fill(int x, int y)
 	{
-		_me->Fill(x, y);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(int x, double y)
 	{
-		_me->Fill(x, y);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(int x, double y, double z)
 	{
-		_me->Fill(x, y, z);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y), z);
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(double x, int y)
 	{
-		_me->Fill(x, y);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(double x, double y)
 	{
-		_me->Fill(x, y);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(double x, double y, double z)
 	{
-		_me->Fill(x, y, z);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y), z);
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(int x, int y, double z)
+	{
+		_me->Fill(_xaxis->get(x), _yaxis->get(y), z);
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(int x, int y, int z)
+	{
+		_me->Fill(_xaxis->get(x), _yaxis->get(y), z);
+	}
+
+	/* virtual */ void ContainerSingle2D::setBinContent(int x, int y, double z)
+	{
+		_me->setBinContent(_xaxis->getBin(x), _yaxis->getBin(y), z);
+	}
+
+	/* virtual */ void ContainerSingle2D::setBinContent(int x, double y, double z)
+	{
+		_me->setBinContent(_xaxis->getBin(x), _yaxis->getBin(y), z);
+	}
+
+	/* virtual */ void ContainerSingle2D::setBinContent(double x, int y, double z)
+	{
+		_me->setBinContent(_xaxis->getBin(x), _yaxis->getBin(y), z);
+	}
+
+	/* virtual */ void ContainerSingle2D::setBinContent(double x, double y, double z)
+	{
+		_me->setBinContent(_xaxis->getBin(x), _yaxis->getBin(y), z);
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(HcalDetId const& id)
@@ -75,9 +105,9 @@ namespace hcaldqm
 		if (xact==fCoordinate && yact==fCoordinate)
 			_me->Fill(_xaxis->get(id), _yaxis->get(id), x);
 		else if (xact==fCoordinate)
-			_me->Fill(_xaxis->get(id), x);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x));
 		else if (yact==fCoordinate)
-			_me->Fill(x, _yaxis->get(id));
+			_me->Fill(_xaxis->get(x), _yaxis->get(id));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(HcalDetId const& id, double x,
@@ -86,11 +116,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_me->Fill(_xaxis->get(id), x, y);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_me->Fill(x, _yaxis->get(id), y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(id), y);
 		else if (xact!=fCoordinate && yact!=fCoordinate)
-			_me->Fill(x, y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(HcalElectronicsId const& id)
@@ -106,9 +136,9 @@ namespace hcaldqm
 		if (xact==fCoordinate && yact==fCoordinate)
 			_me->Fill(_xaxis->get(id), _yaxis->get(id), x);
 		else if (xact==fCoordinate)
-			_me->Fill(_xaxis->get(id), x);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x));
 		else if (yact==fCoordinate)
-			_me->Fill(x, _yaxis->get(id));
+			_me->Fill(_xaxis->get(x), _yaxis->get(id));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(HcalElectronicsId const& id, 
@@ -117,11 +147,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_me->Fill(_xaxis->get(id), x, y);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_me->Fill(x, _yaxis->get(id), y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(id), y);
 		else if (xact!=fCoordinate && yact!=fCoordinate)
-			_me->Fill(x, y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(HcalDetId const& did, 
@@ -149,9 +179,9 @@ namespace hcaldqm
 		if (xact==fCoordinate && yact==fCoordinate)
 			_me->Fill(_xaxis->get(id), _yaxis->get(id), x);
 		else if (xact==fCoordinate)
-			_me->Fill(_xaxis->get(id), x);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x));
 		else if (yact==fCoordinate)
-			_me->Fill(x, _yaxis->get(id));
+			_me->Fill(_xaxis->get(x), _yaxis->get(id));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& id, 
@@ -162,9 +192,9 @@ namespace hcaldqm
 		if (xact==fCoordinate && yact==fCoordinate)
 			_me->Fill(_xaxis->get(id), _yaxis->get(id), x);
 		else if (xact==fCoordinate)
-			_me->Fill(_xaxis->get(id), x);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x));
 		else if (yact==fCoordinate)
-			_me->Fill(x, _yaxis->get(id));
+			_me->Fill(_xaxis->get(x), _yaxis->get(id));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& id, 
@@ -173,11 +203,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_me->Fill(_xaxis->get(id), x, y);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_me->Fill(x, _yaxis->get(id), y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(id), y);
 		else if (xact!=fCoordinate && yact!=fCoordinate)
-			_me->Fill(x, y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& id, 
@@ -186,11 +216,11 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_me->Fill(_xaxis->get(id), x, y);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_me->Fill(x, _yaxis->get(id), y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(id), y);
 		else if (xact!=fCoordinate && yact!=fCoordinate)
-			_me->Fill(x, y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(HcalTrigTowerDetId const& id, 
@@ -199,11 +229,42 @@ namespace hcaldqm
 		AxisQType xact = _xaxis->getType();
 		AxisQType yact = _yaxis->getType();
 		if (xact==fCoordinate && yact!=fCoordinate)
-			_me->Fill(_xaxis->get(id), x, y);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x), y);
 		else if (xact!=fCoordinate && yact==fCoordinate)
-			_me->Fill(x, _yaxis->get(id), y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(id), y);
 		else if (xact!=fCoordinate && yact!=fCoordinate)
-			_me->Fill(x, y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(y));
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(int x,
+		HcalElectronicsId const& eid)
+	{
+		_me->Fill(_xaxis->get(x), _yaxis->get(eid));
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(int x,
+		HcalElectronicsId const& eid, int z)
+	{
+		_me->Fill(_xaxis->get(x), _yaxis->get(eid), z);
+	}
+
+	/* virtual */ void ContainerSingle2D::fill(int x,
+		HcalElectronicsId const& eid, double z)
+	{
+		_me->Fill(_xaxis->get(x), _yaxis->get(eid), z);
+	}
+
+	/* virtual */ void ContainerSingle2D::loadLabels(
+		std::vector<std::string> const& labels)
+	{
+		AxisQType xact = _xaxis->getType();
+		AxisQType yact = _yaxis->getType();
+		if (xact!=fFlag && yact!=fFlag)
+			return;
+		else if (xact!=fFlag)
+			_yaxis->loadLabels(labels);
+		else 
+			_xaxis->loadLabels(labels);
 	}
 }
 

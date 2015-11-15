@@ -39,9 +39,18 @@ namespace hcaldqm
 			virtual void fill(int, int);
 			virtual void fill(int, double);
 			virtual void fill(int, double, double);
+			virtual void fill(int, int, int);
+			virtual void fill(int, int, double);
 			virtual void fill(double, int);
 			virtual void fill(double, double);
 			virtual void fill(double, double, double);
+
+			//	any of the following 3 funcs must only be used with FEDs as
+			//	X-axis and whatever coordinate as Yaxis
+			//	there are no checks done on the axis!
+			virtual void fill(int, HcalElectronicsId const&);
+			virtual void fill(int, HcalElectronicsId const&, int);
+			virtual void fill(int, HcalElectronicsId const&, double);
 
 			virtual void fill(HcalDetId const&);
 			virtual void fill(HcalDetId const&, double);
@@ -60,6 +69,13 @@ namespace hcaldqm
 			virtual void fill(HcalTrigTowerDetId const&, int, int);
 			virtual void fill(HcalTrigTowerDetId const&, int, double);
 			virtual void fill(HcalTrigTowerDetId const&, double, double);
+
+			virtual void setBinContent(int, int, double);
+			virtual void setBinContent(int, double, double);
+			virtual void setBinContent(double, int, double);
+			virtual void setBinContent(double, double, double);
+
+			virtual void loadLabels(std::vector<std::string> const&);
 
 		protected:
 			MonitorElement				*_me;

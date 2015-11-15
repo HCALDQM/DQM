@@ -29,32 +29,32 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerSingle1D::fill(int x)
 	{
-		_me->Fill(x);
+		_me->Fill(_xaxis->get(x));
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(double x)
 	{
-		_me->Fill(x);
+		_me->Fill(_xaxis->get(x));
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(int x, int y)
 	{
-		_me->Fill(x, y);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(int x, double y)
 	{
-		_me->Fill(x, y);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(double x, int y)
 	{
-		_me->Fill(x, y);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(double x, double y)
 	{
-		_me->Fill(x, y);
+		_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(HcalDetId const& id)
@@ -66,9 +66,9 @@ namespace hcaldqm
 	{
 		AxisQType xact = _xaxis->getType();
 		if (xact==fCoordinate)
-			_me->Fill(_xaxis->get(id), x);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x));
 		else
-			_me->Fill(x);
+			_me->Fill(_xaxis->get(x));
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(HcalDetId const& id, double x,
@@ -76,9 +76,9 @@ namespace hcaldqm
 	{
 		AxisQType xact = _xaxis->getType();
 		if (xact==fCoordinate)
-			_me->Fill(_xaxis->get(id), x, y);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x), y);
 		else
-			_me->Fill(x, y);
+			_me->Fill(_xaxis->get(x), _yaxis->get(y));
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(HcalElectronicsId const& id)
@@ -91,9 +91,9 @@ namespace hcaldqm
 	{
 		AxisQType xact = _xaxis->getType();
 		if (xact==fCoordinate)
-			_me->Fill(_xaxis->get(id), x);
+			_me->Fill(_xaxis->get(id), _yaxis->get(x));
 		else
-			_me->Fill(x);
+			_me->Fill(_xaxis->get(x));
 	}
 }
 

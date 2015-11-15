@@ -10,6 +10,15 @@ namespace hcaldqm
 	namespace constants
 	{
 		/*
+		 *	Detector Subsystem Status States
+		 */
+		double const GOOD = 0.98;
+		double const PROBLEMATIC = 0.95;
+		double const LOW = 0.75;
+		double const VERY_LOW = 0.5;
+		double const NOT_APPLICABLE = -1;
+
+		/*
 		 *	Electronics Constants
 		 */
 
@@ -48,6 +57,10 @@ namespace hcaldqm
 		int const SLOT_VME_NUM1 = SLOT_VME_MIN1-SLOT_VME_MIN+1;
 		int const SLOT_VME_NUM2 = SLOT_VME_MAX-SLOT_VME_MIN2+1;
 		int const SLOT_VME_NUM = SLOT_VME_NUM1+SLOT_VME_NUM2;
+
+		int const SPIGOT_MIN = 0;
+		int const SPIGOT_MAX = 11;
+		int const SPIGOT_NUM = SPIGOT_MAX-SPIGOT_MIN+1;
 
 		//	Fibers
 		int const FIBER_VME_MIN = 1;
@@ -117,6 +130,16 @@ namespace hcaldqm
 		int const CAPS_NUM = 4;
 
 		/*
+		 *	Number of Channels Constants
+		 */
+		int const CHS_NUM[SUBDET_NUM] = { 2592, 2592,2192, 1728};	// HO ??!
+
+		/*
+		 *	Number of Time Samples
+		 */
+		int const TS_NUM[SUBDET_NUM] = {10, 10, 10, 4};
+
+		/*
 		 *	Value Constants
 		 */
 		double const AXIS_ENERGY_MIN = -10.;
@@ -141,6 +164,9 @@ namespace hcaldqm
 
 		int const CALIBEVENTS_MIN = 100;
 		int const GARBAGE_VALUE = -1000;
+
+		int const RAW_EMPTY = 16;
+		int const UTCA_DATAFLAVOR = 0x5;
 
 		/*
 		 *	TObject Related
