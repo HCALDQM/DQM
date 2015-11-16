@@ -28,7 +28,7 @@
 		protected:
 			//	protected funcs
 			virtual void _process(edm::Event const&, edm::EventSetup const&);
-			virtual void _resetMonitors(int);
+			virtual void _resetMonitors(UpdateFreq);
 
 			//	tags
 			edm::InputTag	_tagHBHE;

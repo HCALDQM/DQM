@@ -80,9 +80,9 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_cShapeCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
 }
 
-/* virtual */ void LaserTask::_resetMonitors(int pflag)
+/* virtual */ void LaserTask::_resetMonitors(UpdateFreq uf)
 {
-	DQTask::_resetMonitors(pflag);
+	DQTask::_resetMonitors(uf);
 }
 
 /* virtual */ void LaserTask::_dump()

@@ -108,6 +108,7 @@ namespace hcaldqm
 				friend class hcaldqm::ContainerProf2D;
 				friend class hcaldqm::ContainerSingle2D;
 				friend class hcaldqm::ContainerSingle1D;
+				friend class hcaldqm::ContainerSingleProf1D;
 
 			public:
 				CoordinateAxis();

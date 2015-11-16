@@ -3,7 +3,8 @@
 
 namespace hcaldqm
 {
-	DQModule::DQModule(edm::ParameterSet const& ps)
+	DQModule::DQModule(edm::ParameterSet const& ps):
+		_evsTotal(0), _evsPerLS(0)
 	{
 		_name = ps.getUntrackedParameter<std::string>("name", "Unknown_Module");
 		_debug = ps.getUntrackedParameter<int>("debug", 0);

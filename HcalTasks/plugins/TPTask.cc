@@ -190,8 +190,10 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	}
 }
 
-/* virtual */ void TPTask::_resetMonitors(int)
-{}
+/* virtual */ void TPTask::_resetMonitors(UpdateFreq uf)
+{
+	DQTask::_resetMonitors(uf);
+}
 
 DEFINE_FWK_MODULE(TPTask);
 

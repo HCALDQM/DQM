@@ -48,9 +48,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cPedestalMeans_SubDet_tmp.book(ib, _subsystem);
 }
 
-/* virtual */ void PedestalTask::_resetMonitors(int pflag)
+/* virtual */ void PedestalTask::_resetMonitors(UpdateFreq uf)
 {
-	DQTask::_resetMonitors(pflag);
+	DQTask::_resetMonitors(uf);
 }
 
 /* virtual */ void PedestalTask::_dump()

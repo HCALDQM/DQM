@@ -228,7 +228,7 @@ namespace hcaldqm
 			me->setAxisTitle(_zaxis->_title, 3);
 			for (unsigned int i=0; i<_xaxis->_labels.size(); i++)
 				me->setBinLabel(i+1, _xaxis->_labels[i], 1);
-			for (unsigned int i=-1; i<_yaxis->_labels.size(); i++)
+			for (unsigned int i=0; i<_yaxis->_labels.size(); i++)
 				me->setBinLabel(i+1, _yaxis->_labels[i], 2);
 			_mes.push_back(me);
 		}

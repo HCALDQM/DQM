@@ -25,6 +25,7 @@ namespace hcaldqm
 	class ContainerProf2D;
 	class ContainerSingle2D;
 	class ContainerSingle1D;
+	class ContainerSingleProf1D;
 	namespace axis
 	{
 		enum AxisType
@@ -55,6 +56,7 @@ namespace hcaldqm
 				friend class hcaldqm::ContainerProf2D;
 				friend class hcaldqm::ContainerSingle2D;
 				friend class hcaldqm::ContainerSingle1D;
+				friend class hcaldqm::ContainerSingleProf1D;
 
 			public:
 				Axis();

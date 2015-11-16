@@ -40,7 +40,7 @@ class RawTask : public DQTask
 	protected:
 		//	funcs
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
-		virtual void _resetMonitors(int);
+		virtual void _resetMonitors(UpdateFreq);
 
 		//	Tags
 		edm::InputTag	_tagFEDs;

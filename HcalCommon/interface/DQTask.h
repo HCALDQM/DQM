@@ -12,6 +12,17 @@
 
 namespace hcaldqm
 {
+	enum UpdateFreq
+	{
+		fEvent = 0,
+		fLS = 1,
+		f10LS = 2,
+		f50LS = 3,
+		f100LS = 4,
+
+		nUpdateFreq = 5
+	};
+
 	class DQTask : public DQMEDAnalyzer, public DQModule
 	{
 		public:
@@ -30,7 +41,7 @@ namespace hcaldqm
 
 		protected:
 			// protected funcs
-			virtual void _resetMonitors(int);
+			virtual void _resetMonitors(UpdateFreq);
 			virtual void _process(edm::Event const&, edm::EventSetup const&) = 0;
 			virtual bool _isApplicable(edm::Event const&) {return true;}
 			virtual int _getCalibType(edm::Event const&);
@@ -39,7 +50,8 @@ namespace hcaldqm
 			ContainerI _cEvsTotal;
 			ContainerI _cEvsPerLS;
 
-			int			_evsTotal, _evsPerLS;
+			//	counters
+			int			_procLSs;
 
 			edm::InputTag		_tagRaw;
 	};

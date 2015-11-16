@@ -266,14 +266,18 @@
 		}
 	}
 
-	/* virtual */ void RecHitTask::_resetMonitors(int pflag)
+	/* virtual */ void RecHitTask::_resetMonitors(UpdateFreq uf)
 	{
-		DQTask::_resetMonitors(pflag);
-		if (pflag==0)
+		switch(uf)
 		{
-			for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
-				_numRecHits[i] = 0;
+			case fEvent:
+				for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
+					_numRecHits[i] = 0;
+				break;
+			default:
+				break;
 		}
+		DQTask::_resetMonitors(uf);
 	}
 
 DEFINE_FWK_MODULE(RecHitTask);

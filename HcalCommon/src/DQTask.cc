@@ -8,7 +8,7 @@ namespace hcaldqm
 		DQModule(ps),
 		_cEvsTotal(_name, "EventsTotal"),
 		_cEvsPerLS(_name, "EventssPerLS"),
-		_evsTotal(0), _evsPerLS(0)
+		_procLSs(0)
 	{
 		_tagRaw = ps.getUntrackedParameter<edm::InputTag>("tagRaw",
 			edm::InputTag("rawDataCollector"));
@@ -23,7 +23,7 @@ namespace hcaldqm
 	{
 		try
 		{
-			this->_resetMonitors(0);
+			this->_resetMonitors(fEvent);
 			this->_logdebug(_name+" processing");
 			if (!this->_isApplicable(e))
 				return;
@@ -60,35 +60,51 @@ namespace hcaldqm
 	/* virtual */ void DQTask::dqmBeginRun(edm::Run const& r,
 		edm::EventSetup const& es)
 	{
-		this->_resetMonitors(0);
-		this->_resetMonitors(1);
+		this->_resetMonitors(fEvent);
+		this->_resetMonitors(fLS);
+		this->_resetMonitors(f10LS);
+		this->_resetMonitors(f50LS);
+		this->_resetMonitors(f100LS);
 	}
 
 	/* virtual */ void DQTask::beginLuminosityBlock(
 		edm::LuminosityBlock const& lb,
 		edm::EventSetup const& es)
 	{
-		this->_resetMonitors(1);
+		this->_resetMonitors(fLS);
+		if (_procLSs%10==0)
+			this->_resetMonitors(fLS);
+		if (_procLSs%50==0)
+			this->_resetMonitors(f50LS);
+		if (_procLSs%100==0)
+			this->_resetMonitors(f100LS);
 	}
 
 	/* virtual */ void DQTask::endLuminosityBlock(
 		edm::LuminosityBlock const& lb,
 		edm::EventSetup const& es)
 	{
-
+		_procLSs++;
 	}
 
-	/* virtual */ void DQTask::_resetMonitors(int pflag)
+	/* virtual */ void DQTask::_resetMonitors(UpdateFreq uf)
 	{
 		//	reset per event
-		if (pflag==0)
+		switch (uf)
 		{
-			
-		}
-		else if (pflag==1)
-		{
-			//	reset per LS
-			_evsPerLS = 0;
+			case fEvent:
+				break;
+			case fLS:
+				_evsPerLS = 0;
+				break;
+			case f10LS:
+				break;
+			case f50LS:
+				break;
+			case f100LS:
+				break;
+			default:
+				break;
 		}
 	}
 

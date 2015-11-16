@@ -31,7 +31,7 @@ class LEDTask : public DQTask
 	protected:
 		//	funcs
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
-		virtual void _resetMonitors(int);
+		virtual void _resetMonitors(UpdateFreq);
 		virtual bool _isApplicable(edm::Event const&);
 		virtual void _dump();
 

@@ -81,9 +81,9 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cShapeCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
 }
 
-/* virtual */ void LEDTask::_resetMonitors(int pflag)
+/* virtual */ void LEDTask::_resetMonitors(UpdateFreq uf)
 {
-	DQTask::_resetMonitors(pflag);
+	DQTask::_resetMonitors(uf);
 }
 
 /* virtual */ void LEDTask::_dump()

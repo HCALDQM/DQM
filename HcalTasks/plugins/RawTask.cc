@@ -147,13 +147,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	}
 }
 
-/* virtual */ void RawTask::_resetMonitors(int pflag)
+/* virtual */ void RawTask::_resetMonitors(UpdateFreq uf)
 {
-	DQTask::_resetMonitors(pflag);
-	if (pflag==0)	// per event
-	{}
-	else
-	{}
+	DQTask::_resetMonitors(uf);
 }
 
 DEFINE_FWK_MODULE(RawTask);

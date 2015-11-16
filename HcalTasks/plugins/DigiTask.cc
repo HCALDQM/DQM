@@ -173,17 +173,23 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cSummaryvsLS_SubDet.book(ib);
 }
 
-/* virtual */ void DigiTask::_resetMonitors(int pflag)
+/* virtual */ void DigiTask::_resetMonitors(UpdateFreq uf)
 {
-	DQTask::_resetMonitors(pflag);
-	if (pflag==0)
+	switch (uf)
 	{
-		for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
-		{
-			_numDigis[i]=0;
-			_numDigisCut[i] = 0;
-		}
+		case fEvent:
+			for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
+			{
+				_numDigis[i]=0;
+				_numDigisCut[i] = 0;
+			}
+			break;
+		case hcaldqm::fLS:
+			break;
+		default:
+			break;
 	}
+	DQTask::_resetMonitors(uf);
 }
 
 /* virtual */ void DigiTask::_process(edm::Event const& e,
@@ -423,7 +429,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		MonitorElement *meds = _cDigiSizevsLS_SubDet.at(i);
 		double size = meds->getBinContent(_currentLS);
 		double error = meds->getBinError(_currentLS);
-		if (size==constants::TS_NUM[i] && error!=0)
+		if (size==constants::TS_NUM[i] && error==0)
 			status[fDigiSize][i] = constants::GOOD;
 		else
 			status[fDigiSize][i] = constants::PROBLEMATIC;
