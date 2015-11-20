@@ -14,6 +14,8 @@
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
 #include "DQM/HcalCommon/interface/ContainerSingle2D.h"
+#include "DQM/HcalCommon/interface/ContainerSingle1D.h"
+#include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 
 using namespace hcaldqm;
 class DigiTask : public DQTask
@@ -32,8 +34,13 @@ class DigiTask : public DQTask
 		{
 			fLowOcp = 0,
 			fDigiSize = 1,
+			fUniphi = 2,
+			fFibBcnOff = 3,
+			fMsn1LS = 4,
+			fMsn10Ls = 5,
+			fMsnAlways = 6,
 
-			nDigiFlag = 2
+			nDigiFlag = 7
 		};
 
 	protected:
@@ -52,6 +59,9 @@ class DigiTask : public DQTask
 		//	Counters
 		int				_numDigis[constants::SUBDET_NUM];
 		int				_numDigisCut[constants::SUBDET_NUM];
+		bool			_occ_1LS[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
+		bool			_occ_10LS[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
+		bool			_occ_Always[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
 
 		//	Cuts
 		double _cutSumQ_HBHE, _cutSumQ_HO, _cutSumQ_HF;
@@ -68,6 +78,8 @@ class DigiTask : public DQTask
 		//	Shape
 		Container1D		_cShape_SubDetPM_iphi;
 		Container1D		_cShapeCut_SubDetPM_iphi;
+		ContainerSingle1D		_cShapeCut_p3e41d2;
+		ContainerSingle1D		_cShapeCut_p3em41d2;
 
 		//	Timing
 		Container1D		_cTimingCut_SubDetPM_iphi;
@@ -78,6 +90,8 @@ class DigiTask : public DQTask
 
 		//	Specific
 		ContainerProf1D _cQ2Q12CutvsLS_HFPM_iphi;
+		ContainerSingleProf1D _cQ2Q12CutvsLS_p3e41d2;
+		ContainerSingleProf1D _cQ2Q12CutvsLS_p3em41d2;
 		ContainerProf1D	_cDigiSizevsLS_SubDet;
 
 		//	Occupancy
@@ -88,6 +102,8 @@ class DigiTask : public DQTask
 		Container2D		_cOccupancy_depth;
 		Container2D		_cOccupancyCut_depth;
 		ContainerProf2D	_cOccupancyCutiphivsLS_SubDet;
+		Container2D		_cMsn1LS_depth;
+		Container2D		_cMsn10LS_depth;
 
 		//	Summaries
 		ContainerSingle2D		_cSummary;

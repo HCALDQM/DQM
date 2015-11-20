@@ -88,6 +88,12 @@ namespace hcaldqm
 			std::cout << "%MSG-d HCALDQM::" << x;
 			std::cout << std::endl;
 		}
+
+		/*
+		 *	Useful Detector Functions. For Fast Detector Validity Check
+		 */
+		bool validDetId(HcalSubdetector, int , int, int );
+		bool validDetId(HcalDetId const&);
 	}
 }
 

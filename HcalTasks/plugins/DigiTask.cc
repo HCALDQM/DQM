@@ -37,6 +37,12 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
 		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
+	_cShapeCut_p3e41d2(_name+"/Shape/iphi3ieta41d2", "Shape",
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
+	_cShapeCut_p3em41d2(_name+"/Shape/iphi3ieta-41d2", "Shape",
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
 
 	//	Timing
 	_cTimingCut_SubDetPM_iphi(_name+"/Timing/SubDetPM_iphi", 
@@ -63,6 +69,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	//	Special
 	_cQ2Q12CutvsLS_HFPM_iphi(_name+"/Q2Q12/vsLS_HFPM_iphi",
 		"Q2Q12", mapper::fHFPM_iphi,
+		new axis::ValueAxis(axis::fXaxis, axis::fLS),
+		new axis::ValueAxis(axis::fYaxis, axis::fRatio)),
+	_cQ2Q12CutvsLS_p3e41d2(_name+"/Q2Q12/vsLS_iphi3ieta41d2",
+		"Q2Q12",
+		new axis::ValueAxis(axis::fXaxis, axis::fLS),
+		new axis::ValueAxis(axis::fYaxis, axis::fRatio)),
+	_cQ2Q12CutvsLS_p3em41d2(_name+"/Q2Q12/vsLS_iphi3ieta-41d2",
+		"Q2Q12",
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::ValueAxis(axis::fYaxis, axis::fRatio)),
 	_cDigiSizevsLS_SubDet(_name+"/DigiSize/vsLS_SubDet", "DigiSize",
@@ -102,6 +116,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
+	_cMsn1LS_depth(_name+"/Missing/1LS_depth", "Missing",
+		mapper::fdepth, 
+		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
+	_cMsn10LS_depth(_name+"/Missing/10LS_depth", "Missing",
+		mapper::fdepth, 
+		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
 
 	//	Summaries
 	_cSummary(_name+"/Summary", "Summary",
@@ -128,6 +150,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	//	flags
 	_fNames.push_back("Low Occupancy");
 	_fNames.push_back("Digi Size Drift");
+	_fNames.push_back("iphi Uniformity");
+	_fNames.push_back("Fiber Bcn Offset");
+	_fNames.push_back("Missing for 1LS");
+	_fNames.push_back("Missing for 10LS");
+	_fNames.push_back("Missing Always");
 	_cSummary.loadLabels(_fNames);
 	_cSummaryvsLS_SubDet.loadLabels(_fNames);
 }
@@ -150,6 +177,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 	_cShape_SubDetPM_iphi.book(ib);
 	_cShapeCut_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
+	_cShapeCut_p3e41d2.book(ib, _subsystem, std::string(cutstr));
+	_cShapeCut_p3em41d2.book(ib, _subsystem, std::string(cutstr));
 
 	_cTimingCut_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
 	_cTimingCutvsieta_SubDet_iphi.book(ib, _subsystem, 
@@ -157,6 +186,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cTimingCutvsiphi_SubDet_ieta.book(ib, _subsystem, std::string(cutstr));
 	_cTimingCutvsLS_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
 	_cQ2Q12CutvsLS_HFPM_iphi.book(ib, _subsystem, std::string(cutstr2));
+	_cQ2Q12CutvsLS_p3e41d2.book(ib, _subsystem, std::string(cutstr2));
+	_cQ2Q12CutvsLS_p3em41d2.book(ib, _subsystem, std::string(cutstr2));
 	_cTimingCut_depth.book(ib, _subsystem, std::string(cutstr));
 
 	_cOccupancyvsiphi_SubDet.book(ib);
@@ -166,11 +197,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cOccupancy_depth.book(ib);
 	_cOccupancyCut_depth.book(ib, _subsystem, std::string(cutstr));
 	_cOccupancyCutiphivsLS_SubDet.book(ib, _subsystem, std::string(cutstr));
+	_cMsn1LS_depth.book(ib);
+	_cMsn10LS_depth.book(ib);
 
 	_cDigiSizevsLS_SubDet.book(ib);
 
 	_cSummary.book(ib);
 	_cSummaryvsLS_SubDet.book(ib);
+
 }
 
 /* virtual */ void DigiTask::_resetMonitors(UpdateFreq uf)
@@ -185,6 +219,22 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			}
 			break;
 		case hcaldqm::fLS:
+			for (unsigned int idet=0; idet<constants::SUBDET_NUM; idet++)
+				for (int iiphi=0; iiphi<constants::IPHI_NUM; iiphi++)
+					for (int iieta=0; iieta<constants::IETA_NUM; iieta++)
+						for (int id=0; id<constants::DEPTH_NUM; id++)
+							_occ_1LS[idet][iiphi][iieta][id] = false;
+			break;
+		case hcaldqm::f10LS:
+			for (unsigned int idet=0; idet<constants::SUBDET_NUM; idet++)
+				for (int iiphi=0; iiphi<constants::IPHI_NUM; iiphi++)
+					for (int iieta=0; iieta<constants::IETA_NUM; iieta++)
+						for (int id=0; id<constants::DEPTH_NUM; id++)
+							_occ_10LS[idet][iiphi][iieta][id] = false;
+			_cMsn1LS_depth.reset();
+			break;
+		case hcaldqm::f50LS:
+			_cMsn10LS_depth.reset();
 			break;
 		default:
 			break;
@@ -218,6 +268,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		double timing = utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
 		const HcalDetId did = digi.id();
+		int iieta = did.ieta()<0 ? abs(did.ieta())-constants::IETA_MIN :
+			did.ieta()-constants::IETA_MIN+constants::IETA_NUM/2;
 
 		//	fill without a cut
 		_cOccupancy_depth.fill(did);
@@ -227,6 +279,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
 		_numDigis[did.subdet()-1]++;
 		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
+		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
+		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
+		_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HBHE)
@@ -268,6 +323,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		double timing = utilities::aveTS<HODataFrame>(digi, 8.5, 0,
 			digi.size()-1);
 		const HcalDetId did = digi.id();
+		int iieta = did.ieta()<0 ? abs(did.ieta())-constants::IETA_MIN :
+			did.ieta()-constants::IETA_MIN+constants::IETA_NUM/2;
 
 		//	fill without a cut
 		_cOccupancy_depth.fill(did);
@@ -277,6 +334,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
 		_numDigis[did.subdet()-1]++;
 		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
+		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
+		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
+		_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HO)
@@ -318,6 +378,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		double timing = utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
 		const HcalDetId did = digi.id();
+		int iieta = did.ieta()<0 ? abs(did.ieta())-constants::IETA_MIN :
+			did.ieta()-constants::IETA_MIN+constants::IETA_NUM/2;
 
 		//	fill without a cut
 		_cOccupancy_depth.fill(did);
@@ -327,6 +389,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
 		_numDigis[digi.id().subdet()-1]++;
 		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
+		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
+		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
+		_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HF)
@@ -343,6 +408,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			double q2 = digi.sample(2).nominal_fC()-2.5;
 			double q2q12 = q2/(q1+q2);
 			_cQ2Q12CutvsLS_HFPM_iphi.fill(did, _currentLS, q2q12);
+			if (did.iphi()==3 && did.ieta()==41 && did.depth()==2)
+				_cQ2Q12CutvsLS_p3e41d2.fill(did, _currentLS, q2q12);
+			if (did.iphi()==3 && did.ieta()==-41 && did.depth()==2)
+				_cQ2Q12CutvsLS_p3em41d2.fill(did, _currentLS, q2q12);
 			
 //			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
 		
@@ -362,6 +431,12 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			{
 				_cShapeCut_SubDetPM_iphi.fill(did, i,
 					digi.sample(i).nominal_fC()-2.5);
+				if (did.iphi()==3 && did.ieta()==41 && did.depth()==2)
+					_cShapeCut_p3e41d2.fill(did, i,
+						digi.sample(i).nominal_fC()-2.5);
+				if (did.iphi()==3 && did.ieta()==-41 && did.depth()==2)
+					_cShapeCut_p3em41d2.fill(did, i,
+						digi.sample(i).nominal_fC()-2.5);
 			}
 		}
 	}
@@ -385,8 +460,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_numDigisCut[3]);
 }
 
-/* virtual */ void DigiTask::endLuminosityBlock(edm::LuminosityBlock const&,
-	edm::EventSetup const&)
+/* virtual */ void DigiTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
+	edm::EventSetup const& es)
 {
 	//	statuses
 	//	By default the flag is not applicable
@@ -441,6 +516,46 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSummaryvsLS_SubDet.setBinContent(i,
 			_currentLS, int(fLowOcp), status[fLowOcp][i]);
 	}
+
+	/*
+	 *	Generic all Hcal Loop.
+	 *	-> Possible Missing Channels
+	 */
+	for (unsigned int idet=0; idet<constants::SUBDET_NUM; idet++)
+	{
+		HcalSubdetector subd = HcalEmpty;
+		if (idet+1==HB)
+			subd = HcalBarrel;
+		else if (idet+1==HE)
+			subd = HcalEndcap;
+		else if (idet+1==HO)
+			subd = HcalOuter;
+		else
+			subd = HcalForward;
+		for (int iiphi=0; iiphi<constants::IPHI_NUM; iiphi++)
+			for (int iieta=0; iieta<constants::IETA_NUM; iieta++)
+				for (int id=0; id<constants::DEPTH_NUM; id++)
+				{
+					int ieta = iieta<constants::IETA_NUM/2 ? 
+						-(iieta+constants::IETA_MIN) : 
+						iieta-constants::IETA_NUM/2+constants::IETA_MIN;
+					HcalDetId did(subd, ieta, iiphi+1, id+1);
+					//	if not a valid Detector cell continue;
+					if (!utilities::validDetId(did))
+						continue;
+
+					//	if absent for 1 full LS;
+					if (!_occ_1LS[idet][iiphi][iieta][id])
+						_cMsn1LS_depth.fill(did);
+					//	if absent for 10LSs 
+					if (_procLSs>0 && _procLSs%10==0 && 
+						!_occ_10LS[idet][iiphi][iieta][id])
+						_cMsn10LS_depth.fill(did);
+				}
+	}
+
+	//	in the end always do the DQTask::endLumi
+	DQTask::endLuminosityBlock(lb, es);
 }
 
 DEFINE_FWK_MODULE(DigiTask);

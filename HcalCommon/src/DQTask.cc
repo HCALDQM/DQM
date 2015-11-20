@@ -73,7 +73,7 @@ namespace hcaldqm
 	{
 		this->_resetMonitors(fLS);
 		if (_procLSs%10==0)
-			this->_resetMonitors(fLS);
+			this->_resetMonitors(f10LS);
 		if (_procLSs%50==0)
 			this->_resetMonitors(f50LS);
 		if (_procLSs%100==0)

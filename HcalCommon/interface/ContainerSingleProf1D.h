@@ -9,20 +9,18 @@
  *		Container to hold a single ME - for convenience of initialization
  */
 
-#include "DQM/HcalCommon/interface/Container.h"
-#include "DQM/HcalCommon/interface/ValueAxis.h"
-#include "DQM/HcalCommon/interface/CoordinateAxis.h"
+#include "DQM/HcalCommon/interface/ContainerSingle1D.h"
 
 #include <string>
 
 namespace hcaldqm
 {
 	using namespace axis;
-	class ContainerSingleProf1D : public Container
+	class ContainerSingleProf1D : public ContainerSingle1D
 	{
 		public:
 			ContainerSingleProf1D():
-				Container()
+				ContainerSingle1D()
 			{}
 			ContainerSingleProf1D(std::string const& folder, 
 				std::string const& nametitle, 
@@ -33,11 +31,6 @@ namespace hcaldqm
 			//	booking
 			virtual void book(DQMStore::IBooker&,
 				std::string subsystem="Hcal", std::string aux="");
-
-		protected:
-			MonitorElement				*_me;
-			Axis						*_xaxis;
-			Axis						*_yaxis;
 	};
 }
 

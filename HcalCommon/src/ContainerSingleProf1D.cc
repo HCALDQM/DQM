@@ -7,8 +7,7 @@ namespace hcaldqm
 	ContainerSingleProf1D::ContainerSingleProf1D(std::string const& folder,
 		std::string const& nametitle, axis::Axis *xaxis,
 		axis::Axis *yaxis):
-		Container(folder, nametitle),
-		_xaxis(xaxis), _yaxis(yaxis)
+		ContainerSingle1D(folder, nametitle, xaxis, yaxis)
 	{}
 
 	/* virtual */ void ContainerSingleProf1D::book(DQMStore::IBooker& ib,
