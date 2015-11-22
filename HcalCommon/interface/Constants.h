@@ -12,11 +12,11 @@ namespace hcaldqm
 		/*
 		 *	Detector Subsystem Status States
 		 */
-		double const GOOD = 0.98;
-		double const PROBLEMATIC = 0.95;
-		double const LOW = 0.75;
-		double const VERY_LOW = 0.5;
-		double const NOT_APPLICABLE = -1;
+		double const GOOD = 0.98+0.01;
+		double const PROBLEMATIC = 0.95+0.001;
+		double const LOW = 0.75+0.001;
+		double const VERY_LOW = 0.5+0.001;
+		double const NOT_APPLICABLE = -1+0.001;
 
 		/*
 		 *	Electronics Constants

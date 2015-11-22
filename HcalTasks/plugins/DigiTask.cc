@@ -124,6 +124,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
+	_cMsn1LSvsLS_depth(_name+"/Missing/1LSvsLS_SubDet", "Missing",
+		mapper::fSubDet,
+		new axis::ValueAxis(axis::fXaxis, axis::fLS),
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
 
 	//	Summaries
 	_cSummary(_name+"/Summary", "Summary",
@@ -220,10 +224,13 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			break;
 		case hcaldqm::fLS:
 			for (unsigned int idet=0; idet<constants::SUBDET_NUM; idet++)
+			{
 				for (int iiphi=0; iiphi<constants::IPHI_NUM; iiphi++)
 					for (int iieta=0; iieta<constants::IETA_NUM; iieta++)
 						for (int id=0; id<constants::DEPTH_NUM; id++)
 							_occ_1LS[idet][iiphi][iieta][id] = false;
+				_nMsn[idet] = 0;
+			}
 			break;
 		case hcaldqm::f10LS:
 			for (unsigned int idet=0; idet<constants::SUBDET_NUM; idet++)
@@ -546,13 +553,20 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 					//	if absent for 1 full LS;
 					if (!_occ_1LS[idet][iiphi][iieta][id])
+					{
 						_cMsn1LS_depth.fill(did);
+						_nMsn[idet]++;
+					}
 					//	if absent for 10LSs 
 					if (_procLSs>0 && _procLSs%10==0 && 
 						!_occ_10LS[idet][iiphi][iieta][id])
 						_cMsn10LS_depth.fill(did);
 				}
 	}
+	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalBarrel, 5, 5, 1), _nMsn[0]);
+	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalEndcap, 18, 5, 1), _nMsn[1]);
+	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalOuter, 5, 5, 4), _nMsn[2]);
+	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalForward, 32, 5, 1), _nMsn[3]);
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

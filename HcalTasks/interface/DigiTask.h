@@ -30,7 +30,7 @@ class DigiTask : public DQTask
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
 
-		enum DigiFlag_Event
+		enum DigiFlag
 		{
 			fLowOcp = 0,
 			fDigiSize = 1,
@@ -59,6 +59,7 @@ class DigiTask : public DQTask
 		//	Counters
 		int				_numDigis[constants::SUBDET_NUM];
 		int				_numDigisCut[constants::SUBDET_NUM];
+		int				_nMsn[constants::SUBDET_NUM];
 		bool			_occ_1LS[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
 		bool			_occ_10LS[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
 		bool			_occ_Always[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
@@ -104,6 +105,7 @@ class DigiTask : public DQTask
 		ContainerProf2D	_cOccupancyCutiphivsLS_SubDet;
 		Container2D		_cMsn1LS_depth;
 		Container2D		_cMsn10LS_depth;
+		ContainerProf1D	_cMsn1LSvsLS_SubDet;
 
 		//	Summaries
 		ContainerSingle2D		_cSummary;
