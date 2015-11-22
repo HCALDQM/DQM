@@ -124,7 +124,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cMsn1LSvsLS_depth(_name+"/Missing/1LSvsLS_SubDet", "Missing",
+	_cMsn1LSvsLS_SubDet(_name+"/Missing/1LSvsLS_SubDet", "Missing",
 		mapper::fSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
@@ -203,6 +203,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cOccupancyCutiphivsLS_SubDet.book(ib, _subsystem, std::string(cutstr));
 	_cMsn1LS_depth.book(ib);
 	_cMsn10LS_depth.book(ib);
+	_cMsn1LSvsLS_SubDet.book(ib);
 
 	_cDigiSizevsLS_SubDet.book(ib);
 
