@@ -564,10 +564,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 						_cMsn10LS_depth.fill(did);
 				}
 	}
-	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalBarrel, 5, 5, 1), _nMsn[0]);
-	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalEndcap, 18, 5, 1), _nMsn[1]);
-	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalOuter, 5, 5, 4), _nMsn[2]);
-	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalForward, 32, 5, 1), _nMsn[3]);
+	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalBarrel, 5, 5, 1), _currentLS, 
+		_nMsn[0]);
+	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalEndcap, 18, 5, 1), _currentLS, 
+		_nMsn[1]);
+	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalOuter, 5, 5, 4), _currentLS, 
+		_nMsn[2]);
+	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalForward, 32, 5, 1), _currentLS, 
+		_nMsn[3]);
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);
