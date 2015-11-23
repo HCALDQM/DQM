@@ -78,6 +78,12 @@ namespace hcaldqm
 		_me->setBinContent(_xaxis->getBin(x), _yaxis->getBin(y), z);
 	}
 
+	/* virtual */ void ContainerSingle2D::setBinContent(unsigned int x, 
+		int y, double z)
+	{
+		_me->setBinContent(_xaxis->getBin(x), _yaxis->getBin(y), z);
+	}
+
 	/* virtual */ void ContainerSingle2D::setBinContent(int x, double y, double z)
 	{
 		_me->setBinContent(_xaxis->getBin(x), _yaxis->getBin(y), z);

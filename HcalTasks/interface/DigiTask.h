@@ -35,10 +35,9 @@ class DigiTask : public DQTask
 			fLowOcp = 0,
 			fDigiSize = 1,
 			fUniphi = 2,
-			fFibBcnOff = 3,
-			fMsn1LS = 4,
+			fMsn1LS = 3,
 
-			nDigiFlag = 5
+			nDigiFlag = 4
 		};
 
 	protected:
@@ -92,7 +91,6 @@ class DigiTask : public DQTask
 		ContainerSingleProf1D _cQ2Q12CutvsLS_p3e41d2;
 		ContainerSingleProf1D _cQ2Q12CutvsLS_p3em41d2;
 		ContainerProf1D	_cDigiSizevsLS_SubDet;
-		ContainerProf1D	_cFiberOffsetvsLS_SubDet;
 
 		//	Occupancy
 		Container1D		_cOccupancyvsiphi_SubDet;

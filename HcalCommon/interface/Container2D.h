@@ -50,6 +50,7 @@ namespace hcaldqm
 			virtual void fill(HcalTrigTowerDetId const&, double, double);
 
 			virtual void setBinContent(int, int, int, double);
+			virtual void setBinContent(unsigned int, int, int, double);
 			virtual void setBinContent(int, int, double, double);
 			virtual void setBinContent(int, double, int, double);
 			virtual void setBinContent(int, double, double, double);

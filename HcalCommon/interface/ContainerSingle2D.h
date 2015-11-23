@@ -72,6 +72,7 @@ namespace hcaldqm
 
 			virtual void setBinContent(int, int, double);
 			virtual void setBinContent(int, double, double);
+			virtual void setBinContent(unsigned int, int, double);
 			virtual void setBinContent(double, int, double);
 			virtual void setBinContent(double, double, double);
 

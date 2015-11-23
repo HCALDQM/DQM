@@ -240,6 +240,13 @@ namespace hcaldqm
 			_yaxis->getBin(y), z);
 	}
 
+	/* virtual */ void Container2D::setBinContent(unsigned int id, 
+		int x, int y, double z)
+	{
+		_mes[id]->setBinContent(_xaxis->getBin(x),
+			_yaxis->getBin(y), z);
+	}
+
 	/* virtual */ void Container2D::setBinContent(int id, int x, double y, double z)
 	{
 		_mes[id]->setBinContent(_xaxis->getBin(x),
