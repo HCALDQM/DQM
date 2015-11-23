@@ -83,6 +83,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		mapper::fSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize)),
+	_cFiberOFfsetvsLS_SubDet(_name+"/FiberOffset/vsLS_SubDet", "FiberOffset",
+		mapper::fSubDet,
+		new axis::ValueAxis(axis::fXaxis, axis::fLS),
+		new axis::ValueAxis(axis::fYaxis, axis::fAroundZero)),
 
 	//	Occupancy
 	_cOccupancyvsiphi_SubDet(_name+"/Occupancy/vsiphi_SubDet", "Occupancyvsiphi",
@@ -116,6 +120,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
+	_cOccpancyOnce_depth(_name+"/Occupancy/Once_depth",
+		"Occupancy", mapper::fdepth,
+		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
 	_cMsn1LS_depth(_name+"/Missing/1LS_depth", "Missing",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
@@ -157,8 +165,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_fNames.push_back("iphi Uniformity");
 	_fNames.push_back("Fiber Bcn Offset");
 	_fNames.push_back("Missing for 1LS");
-	_fNames.push_back("Missing for 10LS");
-	_fNames.push_back("Missing Always");
 	_cSummary.loadLabels(_fNames);
 	_cSummaryvsLS_SubDet.loadLabels(_fNames);
 }
@@ -199,6 +205,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cOccupancyvsLS_SubDet.book(ib);
 	_cOccupancyCutvsLS_SubDet.book(ib, _subsystem, std::string(cutstr));
 	_cOccupancy_depth.book(ib);
+	_cOccpancyOnce_depth.book(ib);
 	_cOccupancyCut_depth.book(ib, _subsystem, std::string(cutstr));
 	_cOccupancyCutiphivsLS_SubDet.book(ib, _subsystem, std::string(cutstr));
 	_cMsn1LS_depth.book(ib);
@@ -206,6 +213,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cMsn1LSvsLS_SubDet.book(ib);
 
 	_cDigiSizevsLS_SubDet.book(ib);
+	_cFiberOffsetvsLS_SubDet.book(ib);
 
 	_cSummary.book(ib);
 	_cSummaryvsLS_SubDet.book(ib);
@@ -278,6 +286,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		const HcalDetId did = digi.id();
 		int iieta = did.ieta()<0 ? abs(did.ieta())-constants::IETA_MIN :
 			did.ieta()-constants::IETA_MIN+constants::IETA_NUM/2;
+		int offset = digi.fiberIdleOffset();
+		_cFiberOFfsetvsLS_SubDet.fill(did, _currentLS, offset);
 
 		//	fill without a cut
 		_cOccupancy_depth.fill(did);
@@ -289,7 +299,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
 		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
-		_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
+		if (_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==false)
+		{
+			_cOccpancyOnce_depth.fill(did);
+			_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==true;
+		}
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HBHE)
@@ -333,6 +347,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		const HcalDetId did = digi.id();
 		int iieta = did.ieta()<0 ? abs(did.ieta())-constants::IETA_MIN :
 			did.ieta()-constants::IETA_MIN+constants::IETA_NUM/2;
+		int offset = digi.fiberIdleOffset();
+		_cFiberOFfsetvsLS_SubDet.fill(did, _currentLS, offset);
 
 		//	fill without a cut
 		_cOccupancy_depth.fill(did);
@@ -344,7 +360,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
 		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
-		_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
+		if (_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==false)
+		{
+			_cOccpancyOnce_depth.fill(did);
+			_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==true;
+		}
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HO)
@@ -388,6 +408,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		const HcalDetId did = digi.id();
 		int iieta = did.ieta()<0 ? abs(did.ieta())-constants::IETA_MIN :
 			did.ieta()-constants::IETA_MIN+constants::IETA_NUM/2;
+		int offset = digi.fiberIdleOffset();
+		_cFiberOFfsetvsLS_SubDet.fill(did, _currentLS, offset);
 
 		//	fill without a cut
 		_cOccupancy_depth.fill(did);
@@ -399,7 +421,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
 		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
-		_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
+		if (_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==false)
+		{
+			_cOccpancyOnce_depth.fill(did);
+			_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==true;
+		}
 
 		//	fill with a cut
 		if (sumQ>_cutSumQ_HF)
@@ -572,6 +598,18 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_nMsn[2]);
 	_cMsn1LSvsLS_SubDet.fill(HcalDetId(HcalForward, 32, 5, 1), _currentLS, 
 		_nMsn[3]);
+	for (unsigned int idet=0; idet<constants::SUBDET_NUM; idet++)
+	{
+		double ratio = _nMsn[idet]/constants::CHS_NUM[idet];
+		if (ratio>=GOOD)
+			status[fMsn1LS][idet] = constants::GOOD;
+		else if (ratio>=constants::PROBLEMATIC)
+			status[fMsn1LS][idet] = constants::PROBLEMATIC;
+		else if (ratio>=constants::LOW)
+			status[fMsn1LS][idet] = constants::LOW;
+		else
+			status[fMsn1LS][idet] = constants::VERY_LOW;
+	}
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

@@ -12,11 +12,11 @@ namespace hcaldqm
 		/*
 		 *	Detector Subsystem Status States
 		 */
-		double const GOOD = 0.98+0.01;
-		double const PROBLEMATIC = 0.95+0.001;
-		double const LOW = 0.75+0.001;
-		double const VERY_LOW = 0.5+0.001;
-		double const NOT_APPLICABLE = -1+0.001;
+		double const GOOD = 0.98;
+		double const PROBLEMATIC = 0.95;
+		double const LOW = 0.75;
+		double const VERY_LOW = 0.5;
+		double const NOT_APPLICABLE = -1;
 
 		/*
 		 *	Electronics Constants
@@ -164,6 +164,7 @@ namespace hcaldqm
 
 		int const CALIBEVENTS_MIN = 100;
 		int const GARBAGE_VALUE = -1000;
+		int const FIBEROFFSET_INVALID = -1000;
 
 		int const RAW_EMPTY = 16;
 		int const UTCA_DATAFLAVOR = 0x5;
