@@ -343,7 +343,7 @@ namespace hcaldqm
 									(id-FED_VME_NUM)*FED_uTCA_DELTA+FED_uTCA_MIN);
 							else
 								sprintf(name, "FED%d",
-									id*CRATE_VME_DELTA+CRATE_VME_MIN);	
+									id*FED_VME_DELTA+FED_VME_MIN);	
 							builtname = name;
 							break;
 						}

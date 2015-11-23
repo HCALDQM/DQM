@@ -54,32 +54,6 @@ namespace hcaldqm
 			return validDetId(did.subdet(), 
 				did.ieta(), did.iphi(), did.depth());
 		}
-
-		template<typename DIGI>
-		bool isError(DIGI digi)
-		{
-			int capId = 0;
-			int lastcapId = 0;
-			bool anycapId = true;
-			bool anyerror = false;
-			bool anydv = true;
-			bool er, dv;
-			for (int its=0; its<digi.size(); its++)
-			{
-				capId = digi.sample(its).capid();
-				er = digi.sample(its).er();
-				dv = digi.sample(its).dv();
-				if (its!=0 && (lastcapId+1)%4!=capId)
-					anycapId = false;
-				lastcapId = capId;
-				if (er)
-					anyerror = true;
-				if (!dv)
-					anydv = false;
-			}
-
-			return !anycapId || anyerror || !anydv;
-		}
 	}
 }
 

@@ -32,9 +32,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	//	Summary Containers
 	_cSummary(_name+"/Summary", "Summary",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDComb),
-		new axis::FlagAxis(axis::fYaxis, int(nRawFlag))),
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nRawFlag))),
 	_cSummaryvsLS_FED(_name+"/Summary/vsLS_FED", "SummaryvsLS",
-		mapper::fFEDComb,
+		mapper::fFED,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::FlagAxis(axis::fYaxis, "Flag", int(nRawFlag)))
 {

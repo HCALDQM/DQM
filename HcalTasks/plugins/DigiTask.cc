@@ -89,10 +89,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
 
 	//	Occupancy
-	_cOccupancyvsiphi_SubDet(_name+"/Occupancy/vsiphi_SubDetPM", "Occupancyvsiphi",
+	_cOccupancyvsiphi_SubDetPM(_name+"/Occupancy/vsiphi_SubDetPM", "Occupancyvsiphi",
 		mapper::fSubDetPM,
 		new axis::CoordinateAxis(fXaxis, axis::fiphi)),
-	_cOccupancyCutvsiphi_SubDet(_name+"/Occupancy/vsiphi_SubDetPM", 
+	_cOccupancyCutvsiphi_SubDetPM(_name+"/Occupancy/vsiphi_SubDetPM", 
 		"Occupancyvsiphi",
 		mapper::fSubDetPM,
 		new axis::CoordinateAxis(fXaxis, axis::fiphi)),
@@ -303,7 +303,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_error_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = 
-			utilities::isError(digi);
+			utilities::isError<HBHEDataFrame>(digi);
 		if (_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==false)
 		{
 			_cOccupancyOnce_depth.fill(did);
@@ -364,7 +364,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_error_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = 
-			utilities::isError(digi);
+			utilities::isError<HODataFrame>(digi);
 		if (_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==false)
 		{
 			_cOccupancyOnce_depth.fill(did);
@@ -425,7 +425,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_error_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = 
-			utilities::isError(digi);
+			utilities::isError<HFDataFrame>(digi);
 		if (_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==false)
 		{
 			_cOccupancyOnce_depth.fill(did);
