@@ -36,8 +36,9 @@ class DigiTask : public DQTask
 			fDigiSize = 1,
 			fUniphi = 2,
 			fMsn1LS = 3,
+			fCapIdRot = 4,
 
-			nDigiFlag = 4
+			nDigiFlag = 5
 		};
 
 	protected:
@@ -57,7 +58,9 @@ class DigiTask : public DQTask
 		int				_numDigis[constants::SUBDET_NUM];
 		int				_numDigisCut[constants::SUBDET_NUM];
 		int				_nMsn[constants::SUBDET_NUM];
+		int				_nCapIdRots[constants::SUBDET_NUM];
 		bool			_occ_1LS[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
+		bool			_error_1LS[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
 		bool			_occ_10LS[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
 		bool			_occ_Always[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
 
@@ -91,10 +94,11 @@ class DigiTask : public DQTask
 		ContainerSingleProf1D _cQ2Q12CutvsLS_p3e41d2;
 		ContainerSingleProf1D _cQ2Q12CutvsLS_p3em41d2;
 		ContainerProf1D	_cDigiSizevsLS_SubDet;
+		Container2D		_cCapIdRots_depth;
 
 		//	Occupancy
-		Container1D		_cOccupancyvsiphi_SubDet;
-		Container1D		_cOccupancyCutvsiphi_SubDet;
+		Container1D		_cOccupancyvsiphi_SubDetPM;
+		Container1D		_cOccupancyCutvsiphi_SubDetPM;
 		ContainerProf1D _cOccupancyvsLS_SubDet;
 		ContainerProf1D	_cOccupancyCutvsLS_SubDet;
 		Container2D		_cOccupancy_depth;

@@ -27,11 +27,27 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new axis::CoordinateAxis(axis::fYaxis, axis::fSpigot)),
 	_cuTCAOccupancy(_name+"/uTCA/Occupancy", "Occupancy",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDuTCA),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA))
+		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA)),
+
+	//	Summary Containers
+	_cSummary(_name+"/Summary", "Summary",
+		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDComb),
+		new axis::FlagAxis(axis::fYaxis, int(nRawFlag))),
+	_cSummaryvsLS_FED(_name+"/Summary/vsLS_FED", "SummaryvsLS",
+		mapper::fFEDComb,
+		new axis::ValueAxis(axis::fXaxis, axis::fLS),
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nRawFlag)))
 {
 	//	tags
 	_tagFEDs = ps.getUntrackedParameter<edm::InputTag>("tagFEDs",
 		edm::InputTag("rawDataCollector"));
+
+	//	load labels 
+	_fNames.push_back("EVN Mismatch");
+	_fNames.push_back("ORN Mismatch");
+	_fNames.push_back("BCN Mismatch");
+	_cSummary.loadLabels(_fNames);
+	_cSummaryvsLS_FED.loadLabels(_fNames);
 }
 
 /* virtual */ void RawTask::bookHistograms(DQMStore::IBooker &ib,
@@ -46,6 +62,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cuTCAOrnMsm.book(ib);
 	_cVMEOccupancy.book(ib);
 	_cuTCAOccupancy.book(ib);
+
+	_cSummary.book(ib);
+	_cSummaryvsLS_FED.book(ib);
 }
 
 /* virtual */ void RawTask::endLuminosityBlock(edm::LuminosityBlock const&,

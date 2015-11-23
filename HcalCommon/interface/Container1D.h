@@ -71,6 +71,8 @@ namespace hcaldqm
 			virtual void fill(HcalTrigTowerDetId const&, int, int);
 			virtual void fill(HcalTrigTowerDetId const&, int, double);
 
+			virtual double getBinContent(unsigned int, int);
+
 			//	getters
 			//	get the MonitorElement 
 			//	@i is the index within the container

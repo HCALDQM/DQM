@@ -196,6 +196,11 @@ namespace hcaldqm
 		}
 	}
 
+	/* virtual */ double Container1D::getBinContent(unsigned int id, int x)
+	{
+		return _mes[id]->getBinContent(_xaxis->getBin(x));
+	}
+
 	/* virtual */ void Container1D::reset()
 	{
 		for (MEVector::const_iterator it=_mes.begin(); it!=_mes.end(); ++it)

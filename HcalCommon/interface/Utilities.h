@@ -78,6 +78,9 @@ namespace hcaldqm
 			return sumADC<DIGI>(digi, ped, i, j)/(j-i+1);
 		}
 
+		template<typename DIGI>
+		bool isError(DIGI digi);
+
 		/*
 		 *	Log Functions
 		 */
@@ -94,6 +97,7 @@ namespace hcaldqm
 		 */
 		bool validDetId(HcalSubdetector, int , int, int );
 		bool validDetId(HcalDetId const&);
+
 	}
 }
 
