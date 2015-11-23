@@ -60,7 +60,9 @@ namespace hcaldqm
 			fTPSubDetPM_iphi = 16,
 			fHFPM_iphi = 17,
 
-			nMapperType = 18
+			fHBHEPartition = 18,
+
+			nMapperType = 19
 		};
 
 		/*
@@ -92,6 +94,7 @@ namespace hcaldqm
 		unsigned int generate_fTPSubDetPM(Input const&);
 		unsigned int generate_fTPSubDetPM_iphi(Input const&);
 		unsigned int generate_fHFPM_iphi(Input const&);
+		unsigned int generate_fHBHEPartition(Input const&);
 		index_generator const vindex[nMapperType] = { generate_fSubDet,
 			generate_fiphi, generate_fieta, generate_fdepth, 
 			generate_fSubDet_iphi, generate_fSubDet_ieta,
@@ -100,7 +103,7 @@ namespace hcaldqm
 			generate_fTPSubDet_iphi, generate_fTPSubDet_ieta,
 			generate_fSubDetPM, generate_fSubDetPM_iphi, 
 			generate_fTPSubDetPM, generate_fTPSubDetPM_iphi,
-			generate_fHFPM_iphi};
+			generate_fHFPM_iphi, generate_fHBHEPartition};
 
 		/*
 		 *	Mapper Class
@@ -166,6 +169,10 @@ namespace hcaldqm
 					{
 						i.i1 = did.iphi();
 						i.i2 = did.ieta()>0 ? 1 : 0;
+					}
+					else if (_type==fHBHEPartition)
+					{
+						i.i1 = did.iphi();
 					}
 
 					return vindex[_type](i);
@@ -483,6 +490,16 @@ namespace hcaldqm
 							builtname = name;
 							break;
 						}
+						case fHBHEPartition:
+						{
+							if (id==0)
+								builtname = "HBHEa";
+							else if (id==1)
+								builtname = "HBHEb";
+							else if (id==2)
+								builtname = "HBHEc";
+							break;
+						}
 						default:
 						{
 							return std::string("UNKNOWN");
@@ -558,6 +575,9 @@ namespace hcaldqm
 							break;
 						case fHFPM_iphi:
 							_size = 72;
+							break;
+						case fHBHEPartition:
+							_size = 3;
 							break;
 						default:
 							_size = 0;

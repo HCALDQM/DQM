@@ -504,9 +504,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 {
 	//	statuses
 	//	By default the flag is not applicable
-	double status[nDigiFlag][constants::SUBDET_NUM]; 
-	for (int i=fLowOcp; i<nDigiFlag; i++)
-		for (unsigned int j=0; j<constants::SUBDET_NUM; j++)
+	double status[constants::SUBDET_NUM][nDigiFlag]; 
+	for (int j=fLowOcp; j<nDigiFlag; j++)
+		for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
 			status[i][j]=constants::NOT_APPLICABLE;
 
 	/*
@@ -520,23 +520,17 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	MonitorElement *meocpHF = _cOccupancyvsLS_SubDet.at(3);
 	double numChs = meocpHF->getBinContent(_currentLS);
 	if (constants::CHS_NUM[3] - numChs>=48)
-		status[fLowOcp][3] = constants::VERY_LOW;
+		status[3][fLowOcp] = constants::VERY_LOW;
 	else if (constants::CHS_NUM[3] - numChs>=24)
-		status[fLowOcp][3] = constants::LOW;
+		status[3][fLowOcp] = constants::LOW;
 	else if (constants::CHS_NUM[3] - numChs>=10)
-		status[fLowOcp][3] = constants::LOW;
+		status[3][fLowOcp] = constants::LOW;
 	else if (constants::CHS_NUM[3] - numChs>=1)
-		status[fLowOcp][3] = constants::PROBLEMATIC;
+		status[3][fLowOcp] = constants::PROBLEMATIC;
 	else if (constants::CHS_NUM[3] - numChs<0)
-		status[fLowOcp][3] = constants::PROBLEMATIC;
+		status[3][fLowOcp] = constants::PROBLEMATIC;
 	else if (constants::CHS_NUM[3]==numChs)
-		status[fLowOcp][3] = constants::GOOD;
-	for (int i=0; i<constants::SUBDET_NUM; i++)
-	{
-		_cSummary.setBinContent(i, int(fLowOcp), status[fLowOcp][i]);
-		_cSummaryvsLS_SubDet.setBinContent(i, 
-			_currentLS, int(fLowOcp), status[fLowOcp][i]);
-	}
+		status[3][fLowOcp] = constants::GOOD;
 
 	//	Digi Size Check
 	for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
@@ -545,9 +539,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		double size = meds->getBinContent(_currentLS);
 		double error = meds->getBinError(_currentLS);
 		if (size==constants::TS_NUM[i] && error==0)
-			status[fDigiSize][i] = constants::GOOD;
+			status[i][fDigiSize] = constants::GOOD;
 		else
-			status[fDigiSize][i] = constants::PROBLEMATIC;
+			status[i][fDigiSize] = constants::PROBLEMATIC;
 
 	}
 
@@ -578,9 +572,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		double ratio_p = std::min(occ1_p, occ2_p)/std::max(occ1_p, occ2_p);
 
 		if (ratio_m<0.8 || ratio_p<0.8)
-			status[fUniphi][3] = constants::VERY_LOW;
+			status[3][fUniphi] = constants::VERY_LOW;
 		else
-			status[fUniphi][3] = constants::GOOD;
+			status[3][fUniphi] = constants::GOOD;
 	}
 
 	/*
@@ -643,34 +637,34 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		//	deal with missing channels
 		double ratio = 1-double(_nMsn[idet])/double(constants::CHS_NUM[idet]);
 		if (ratio>=GOOD)
-			status[fMsn1LS][idet] = constants::GOOD;
+			status[idet][fMsn1LS] = constants::GOOD;
 		else if (ratio>=constants::PROBLEMATIC)
-			status[fMsn1LS][idet] = constants::PROBLEMATIC;
+			status[idet][fMsn1LS] = constants::PROBLEMATIC;
 		else if (ratio>=constants::LOW)
-			status[fMsn1LS][idet] = constants::LOW;
+			status[idet][fMsn1LS] = constants::LOW;
 		else
-			status[fMsn1LS][idet] = constants::VERY_LOW;
+			status[idet][fMsn1LS] = constants::VERY_LOW;
 
 		//	deal with cap Id rotations
 		ratio = 1-double(_nCapIdRots[idet])/
 			double(constants::CHS_NUM[idet]);
 		if (ratio>=GOOD)
-			status[fCapIdRot][idet] = constants::GOOD;
+			status[idet][fCapIdRot] = constants::GOOD;
 		else if (ratio>=constants::PROBLEMATIC)
-			status[fCapIdRot][idet] = constants::PROBLEMATIC;
+			status[idet][fCapIdRot] = constants::PROBLEMATIC;
 		else if (ratio>=constants::LOW)
-			status[fCapIdRot][idet] = constants::LOW;
+			status[idet][fCapIdRot] = constants::LOW;
 		else
-			status[fCapIdRot][idet] = constants::VERY_LOW;
+			status[idet][fCapIdRot] = constants::VERY_LOW;
 	}
 
 	//	finally set all the statuses!
-	for (int i=fLowOcp; i<nDigiFlag; i++)
-		for (unsigned int j=0; j<constants::SUBDET_NUM; j++)
+	for (int j=fLowOcp; j<nDigiFlag; j++)
+		for (unsigned int i=0; i<constants::SUBDET_NUM; i++)
 		{
-			_cSummary.setBinContent(j, i, status[i][j]);
-			_cSummaryvsLS_SubDet.setBinContent(j,
-				_currentLS, i, status[j][i]);
+			_cSummary.setBinContent(i, j, status[i][j]);
+			_cSummaryvsLS_SubDet.setBinContent(i,
+				_currentLS, j, status[i][j]);
 		}
 
 	//	in the end always do the DQTask::endLumi

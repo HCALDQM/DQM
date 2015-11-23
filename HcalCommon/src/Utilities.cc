@@ -54,6 +54,25 @@ namespace hcaldqm
 			return validDetId(did.subdet(), 
 				did.ieta(), did.iphi(), did.depth());
 		}
+
+		int getTPSubDet(HcalTrigTowerDetId const& tid)
+		{	
+			return tid.ietaAbs()<29 ? 0 : 1;
+		}
+
+		int getTPSubDetPM(HcalTrigTowerDetId const& tid)
+		{
+			int ieta = tid.ieta();
+			if (ieta<0 && ieta>-29)
+				return 0;
+			else if (ieta>0 && ieta<29)
+				return 1;
+			else if (ieta<=-29)
+				return 2;
+			else 
+				return 3;
+			return 0;
+		}
 	}
 }
 

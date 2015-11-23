@@ -120,7 +120,8 @@ namespace hcaldqm
 		 */
 		bool validDetId(HcalSubdetector, int , int, int );
 		bool validDetId(HcalDetId const&);
-
+		int getTPSubDet(HcalTrigTowerDetId const&);
+		int getTPSubDetPM(HcalTrigTowerDetId const&);
 	}
 }
 

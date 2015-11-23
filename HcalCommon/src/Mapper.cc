@@ -259,6 +259,19 @@ namespace hcaldqm
 			return IPHI_NUM_HF*i.i2 + 
 				(i.i1-IPHI_MIN)/IPHI_DELTA_HF;
 		}
+
+		unsigned int generate_fHBHEPartition(Input const& i)
+		{
+			unsigned int index = 0;
+			if (i.i1>=3 && i.i1<=26)
+				index = 0;
+			else if (i.i1>=27 && i.i1<=50)
+				index = 1;
+			else
+				index = 2;
+
+			return index;
+		}
 	}
 }
 

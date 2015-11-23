@@ -24,6 +24,17 @@
 
 			virtual void bookHistograms(DQMStore::IBooker &,
 				edm::Run const&, edm::EventSetup const&);
+			virtual void endLuminosityBlock(edm::LuminosityBlock const&,
+				edm::EventSetup const&);
+
+			enum RecHitFlag
+			{
+				fLowOcp = 0,
+				fUniphi = 1,
+				fTCDS = 2,
+
+				nRecHitFlag = 3
+			};
 
 		protected:
 			//	protected funcs
@@ -36,7 +47,12 @@
 			edm::InputTag	_tagHF;
 
 			//	counters
-			int	 _numRecHits[constants::SUBDET_NUM];
+			int		_nRecHits[constants::SUBDET_NUM];
+			int		_nRecHitsCut[constants::SUBDET_NUM];
+//			bool	_nDups[constants::SUBDET_NUM][constants::IPHI_NUM][constants::IETA_NUM][constants::DEPTH_NUM];
+
+			//	Flag Names
+			std::vector<std::string>	_fNames;
 
 			//	cuts
 			double _cutE_HBHE, _cutE_HO, _cutE_HF;
@@ -61,14 +77,23 @@
 			ContainerProf1D _cTimingvsietaCut_SubDet_iphi;
 			ContainerProf1D	_cTimingvsiphiCut_SubDet_ieta;
 			ContainerProf2D _cTimingCut_depth;
+			Container1D		_cTimingCut_HBHEPrt;
 
 			//	Occupancy
 			Container2D		_cOccupancy_depth;
+			ContainerProf1D _cOccupancyvsLS_SubDet;
+			ContainerProf1D	_cOccupancyCutvsLS_SubDet;
 			Container2D		_cOccupancyCut_depth;
+			Container1D		_cOccupancyvsiphi_SubDetPM;
+			Container1D		_cOccupancyCutvsiphi_SubDetPM;
 
 			//	Energy vs Timing
 			Container2D		_cEnergyvsTiming_SubDet;
 			Container2D		_cEnergyvsTimingCut_SubDet;
+
+			//	Summaries
+			ContainerSingle2D		_cSummary;
+			Container2D				_cSummaryvsLS_SubDet;
 	};
 
 #endif
