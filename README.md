@@ -1,8 +1,8 @@
 # Description of HCAL DQM CMSSW related Components
-DQM/HcalCommon - Core Components of the HCAL DQM CMSSW. Contains declarations and definitions of Containers, Mappers, Axis Classes. Utilities are also implemented in this package. Base Processing Classes (DQModule, DQTask, DQHarvester) reside there as well.
-DQM/HcalTasks - DQMEDAnalyzers - all the main monitoring tasks are here
-DQM/HcalClients - clients, at the moment client functionality isn't being used
-DQM/cfgs - contain all the cmsRun configuration files
+* DQM/HcalCommon - Core Components of the HCAL DQM CMSSW. Contains declarations and definitions of Containers, Mappers, Axis Classes. Utilities are also implemented in this package. Base Processing Classes (DQModule, DQTask, DQHarvester) reside there as well.
+* DQM/HcalTasks - DQMEDAnalyzers - all the main monitoring tasks are here
+* DQM/HcalClients - clients, at the moment client functionality isn't being used
+* DQM/cfgs - contain all the cmsRun configuration files
 
 **See HowTo Section for the usage.**
 
