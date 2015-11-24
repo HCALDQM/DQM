@@ -73,8 +73,6 @@
 			ContainerProf1D	_cNumEtMsmvsLS_TPSubDet;
 			Container1D		_cNumEtMsm_TPSubDet;
 			Container1D		_cNumEtMsmvsiphi_TPSubDetPM;
-			ContainerProf1D	_cdEtRatiovsLS_TPSubDet;
-			Container1D		_cdEtRatio_TPSubDet;
 			ContainerProf1D _cSumdEtvsLS_TPSubDet;
 			Container1D		_cSumdEt_TPSubDet;
 

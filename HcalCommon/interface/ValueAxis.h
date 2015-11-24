@@ -42,7 +42,7 @@ namespace hcaldqm
 			fAroundZero = 19,
 			fRatio2 = 20,
 			fEntries500 = 21,
-			fEntries100 = 22,,
+			fEntries100 = 22,
 			fdEtRatio = 23,
 			fSumdEt = 24,
 

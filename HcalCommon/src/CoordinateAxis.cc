@@ -244,6 +244,9 @@ namespace hcaldqm
 				case fSubDet:
 					r = value+1;
 					break;
+				case fTPSubDet:
+					r = value+1;
+					break;
 				case fiphi:
 					r = value;
 					break;

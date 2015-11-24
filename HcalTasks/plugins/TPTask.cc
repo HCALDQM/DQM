@@ -46,14 +46,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		"Et_Mismatched", mapper::fTPSubDetPM,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
-	_cdEtRatiovsLS_TPSubDet(_name+"/dEtRatio/vsLS_TPSubDet",
-		"dEtRatio", mapper::fTPSubDet,
-		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fdEtRatio)),
-	_cdEtRatio_TPSubDet(_name+"/dEtRatio/TPSubDet",
-		"dEtRatio", mapper::fTPSubDet,
-		new axis::ValueAxis(axis::fXaxis, axis::fdEtRatio),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
 	_cSumdEtvsLS_TPSubDet(_name+"/SumdEt/vsLS_TPSubDet",
 		"SumdEt", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
@@ -123,20 +115,20 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
 
 	//	Digi Sizes
-	_cDigiSizeData_TPSubDet(_name+"/DigiSize/DatavsLS_TPSubDet",
+	_cDigiSizeDatavsLS_TPSubDet(_name+"/DigiSize/DatavsLS_TPSubDet",
 		"DigiSize_Data", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize)),
-	_cDigiSizeEmul_TPSubDet(_name+"/DigiSize/EmulvsLS_TPSubDet",
+	_cDigiSizeEmulvsLS_TPSubDet(_name+"/DigiSize/EmulvsLS_TPSubDet",
 		"DigiSize_Emul", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize)),
 
 	//	Summary
 	_cSummary(_name+"/Summary", "Summary",
-		new axis::CoordinateAxis(axis::fXaxis, axis::fSubDet),
+		new axis::CoordinateAxis(axis::fXaxis, axis::fTPSubDet),
 		new axis::FlagAxis(axis::fYaxis, "Flag", int(nTPFlag))),
-	_cSummaryvsLS_TPSubDet(_name+"/Summary/vsLS_TPSubDet", "Summary"
+	_cSummaryvsLS_TPSubDet(_name+"/Summary/vsLS_TPSubDet", "Summary",
 		mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::FlagAxis(axis::fYaxis, "Flag", int(nTPFlag)))
@@ -159,7 +151,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_fNames.push_back("Msm. Et iphi Uniform. ");
 	_fNames.push_back("Msm. Et Number");
 	_fNames.push_back("Missing iphi Uniform. D");
-	_fNames.push_back("Missing iphi Uniform. E");
 	_cSummary.loadLabels(_fNames);
 	_cSummaryvsLS_TPSubDet.loadLabels(_fNames);
 }
@@ -175,8 +166,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_cEtCorrRatio_TPSubDet.book(ib);
 	_cEtCorrRatiovsiphi_TPSubDetPM.book(ib);
 	_cEtMsm.book(ib);
-	_cdEtRatiovsLS_TPSubDet.book(ib);
-	_cdEtRatio_TPSubDet.book(ib);
 	_cSumdEtvsLS_TPSubDet.book(ib);
 	_cSumdEt_TPSubDet.book(ib);
 	_cNumEtMsmvsLS_TPSubDet.book(ib);
@@ -223,9 +212,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 
 
 	//	iterate thru the Data Digis
-	double sumdEtRatio[2] = 0;
-	double sumdEt[2] = 0;
-	int nMatches[2] = 0;
+	double sumdEt[2] = {0, 0};
 	for (HcalTrigPrimDigiCollection::const_iterator hddigi=ctpd->begin();
 		hddigi!=ctpd->end(); ++hddigi)
 	{
@@ -265,11 +252,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			int soiFG_e = hedigi->SOI_fineGrain() ? 1 : 0;
 			double rEt = double(std::min(soiEt_d, soiEt_e))/
 				double(std::max(soiEt_e, soiEt_d));
-			sumdEt[utilities::getTPSubDet(toi)]+=std::abs(soiEt_e-soiEt_d);
-			sumdEtRatio[utilities::getTPSubDet(toi)]+=
-				double(std::abs(soiEt_e-soiEt_d))/
-				double(std::max(soiEt_e, soiEt_d));
-			nMatches[utilities::getTPSubDet(toi)]++;
+			sumdEt[utilities::getTPSubDet(tid)]+=std::abs(soiEt_e-soiEt_d);
 
 			//	fill correlations
 			_cEtEmul_SubDet.fill(tid, soiEt_e);
@@ -324,6 +307,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		if (hddigi==ctpd->end())
 		{
 			_cMsData.fill(hedigi->id());
+			_cMsDatavsiphi_TPSubDetPM.fill(hedigi->id());
 			_cOccupancyEmulvsiphi_TPSubDetPM.fill(hedigi->id());
 			_nTPs_Emul[utilities::getTPSubDet(hedigi->id())]++;
 			_cDigiSizeEmulvsLS_TPSubDet.fill(hedigi->id(), _currentLS,
@@ -346,14 +330,14 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		_currentLS, _nMsmEt[1]);
 	_cNumEtMsm_TPSubDet.fill(HcalTrigTowerDetId(5, 5), _nMsmEt[0]);
 	_cNumEtMsm_TPSubDet.fill(HcalTrigTowerDetId(30, 5), _nMsmEt[1]);
-	_cdEtRatiovsLS_TPSubDet.fill(HcalTrigTowerDetId(5, 5), _currentLS,
-		sumdEtRatio[0]/nMatches[0]);
-	_cdEtRatiovsLS_TPSubDet.fill(HcalTrigTowerDetId(30, 5), _currentLS,
-		sumdEtRatio[1]/nMatches[1]);
-	_cdEtRatio_TPSubDet.fill(HcalTrigTowerDetId(5, 5),
-		sumdEtRatio[0]/nMatches[0]);
-	_cdEtRatio_TPSubDet.fill(HcalTrigTowerDetId(30, 5),
-		sumdEtRatio[1]/nMatches[1]);
+	_cSumdEtvsLS_TPSubDet.fill(HcalTrigTowerDetId(5, 5), _currentLS,
+		sumdEt[0]);
+	_cSumdEtvsLS_TPSubDet.fill(HcalTrigTowerDetId(30, 5), _currentLS,
+		sumdEt[1]);
+	_cSumdEt_TPSubDet.fill(HcalTrigTowerDetId(5, 5),
+		sumdEt[0]);
+	_cSumdEt_TPSubDet.fill(HcalTrigTowerDetId(30, 5),
+		sumdEt[1]);
 }
 
 /* virtual */ void TPTask::endLuminosityBlock(edm::LuminosityBlock const&,
@@ -384,7 +368,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		status[1][fLowOcp_Emul] = constants::VERY_LOW;
 	else if (constants::TPCHS_NUM[1] - numChs>=1)
 		status[1][fLowOcp_Emul] = constants::LOW;
-	else if [constants::TPCHS_NUM[1]-numChs<0]
+	else if (constants::TPCHS_NUM[1]-numChs<0)
 		status[1][fLowOcp_Emul] = constants::LOW;
 	else if (constants::TPCHS_NUM[1]==numChs)
 		status[1][fLowOcp_Emul] = constants::GOOD;
@@ -422,6 +406,15 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		double msmratio_p = std::min(msm1_p, msm2_p)/
 			std::max(msm1_p, msm2_p);
 
+		double msn1_m = _cMsDatavsiphi_TPSubDetPM.getBinContent(2, i1);
+		double msn2_m = _cMsDatavsiphi_TPSubDetPM.getBinContent(2, i2);
+		double msnratio_m = std::min(msn1_m, msn2_m)/
+			std::max(msn1_m, msn2_m);
+		double msn1_p = _cMsDatavsiphi_TPSubDetPM.getBinContent(3, i1);
+		double msn2_p = _cMsDatavsiphi_TPSubDetPM.getBinContent(3, i2);
+		double msnratio_p = std::min(msn1_p, msn2_p)/
+			std::max(msn1_p, msn2_p);
+
 		if (ratio_m_d<0.8 || ratio_p_d<0.8)
 			status[1][fOccUniphi_Data] = constants::VERY_LOW;
 		else
@@ -434,11 +427,17 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			status[1][fMsmEtUniphi] = constants::LOW;
 		else 
 			status[1][fMsmEtUniphi] = constants::GOOD;
+		if (msnratio_m<0.8 || msnratio_p<0.8)
+			status[1][fMsnUniphi_Data] = constants::LOW;
+		else
+			status[1][fMsnUniphi_Data] = constants::GOOD;
 	}
 
 	//	Correlation Ratio
-	double ratio_HBHE  = _cEtCorrRatiovsLS_TPSubDet.at(0);
-	double ratio_HF  = _cEtCorrRatiovsLS_TPSubDet.at(1);
+	double ratio_HBHE  = _cEtCorrRatiovsLS_TPSubDet.at(0)
+		->getBinContent(_currentLS);
+	double ratio_HF  = _cEtCorrRatiovsLS_TPSubDet.at(1)
+		->getBinContent(_currentLS);
 	if (ratio_HBHE<0.7)
 		status[0][fCorrRatio] = constants::LOW;
 	else if (ratio_HBHE<0.8)
@@ -453,10 +452,10 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		status[1][fCorrRatio] = constants::GOOD;
 
 	//	Number of Mismatches
-	double ratio_nmsm_HBHE = _cNumEtMsmvsLS_TPSubDet.at(0)/
-		constants::TPCHS_NUM[0];
-	double ratio_nmsm_HF = _cNumEtMsmvsLS_TPSubDet.at(1)/
-		constants::TPCHS_NUM[1];
+	double ratio_nmsm_HBHE = _cNumEtMsmvsLS_TPSubDet.at(0)
+		->getBinContent(_currentLS)/constants::TPCHS_NUM[0];
+	double ratio_nmsm_HF = _cNumEtMsmvsLS_TPSubDet.at(1)
+		->getBinContent(_currentLS)/constants::TPCHS_NUM[1];
 	if (ratio_nmsm_HBHE>=0.2)
 		status[0][fMsmEtNum] = constants::VERY_LOW;
 	else if (ratio_nmsm_HBHE>=0.1)
@@ -465,6 +464,12 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		status[0][fMsmEtNum] = constants::PROBLEMATIC;
 	else 
 		status[0][fMsmEtNum] = constants::GOOD;
+	if (ratio_nmsm_HF>=0.1)
+		status[1][fMsmEtNum] = constants::LOW;
+	else if (ratio_nmsm_HF>=0.05)
+		status[1][fMsmEtNum] = constants::PROBLEMATIC;
+	else
+		status[1][fMsmEtNum] = constants::GOOD;
 
 	//	finally set all the statuses
 	for (unsigned int i=0; i<constants::TPSUBDET_NUM; i++)
