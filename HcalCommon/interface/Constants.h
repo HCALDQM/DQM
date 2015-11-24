@@ -133,6 +133,7 @@ namespace hcaldqm
 		 *	Number of Channels Constants
 		 */
 		int const CHS_NUM[SUBDET_NUM] = { 2592, 2592,2192, 1728};	// HO ??!
+		int const TPCHS_NUM[TPSUBDET_NUM] = {2*28*72, 144};
 
 		/*
 		 *	Number of Time Samples

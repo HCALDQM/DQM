@@ -29,11 +29,16 @@
 
 			enum TPFlag
 			{
-				fMsmEt = 0,
-				fMsmFG = 1,
-				fUniphi = 2,
+				fOccUniphi_Data = 0,
+				fOccUniphi_Emul = 1,
+				fLowOcp_Emul = 2,
+				fCorrRatio = 3,
+				fCorrUniphi = 4,
+				fMsmEtUniphi = 5,
+				fMsmEtNum = 6,
+				fMsnUniphi_Data = 7,
 
-				nTPFlag = 3
+				nTPFlag = 9
 			};
 
 		protected:
@@ -51,8 +56,11 @@
 			int _nTPs_Data[constants::TPSUBDET_NUM];
 			int _nTPs_Emul[constants::TPSUBDET_NUM];
 
-			// flags
+			// some tmp flags
 			bool	_skip1x1;
+
+			//	dqm flags
+			std::vector<std::string> _fNames;
 
 			//	Et
 			Container1D		_cEtData_SubDet;
@@ -60,10 +68,15 @@
 			Container2D		_cEtCorr_SubDet;
 			ContainerProf1D	_cEtCorrRatiovsLS_TPSubDet;
 			Container1D		_cEtCorrRatio_TPSubDet;
+			ContainerProf1D _cEtCorrRatiovsiphi_TPSubDetPM;
 			ContainerSingle2D	_cEtMsm;
 			ContainerProf1D	_cNumEtMsmvsLS_TPSubDet;
 			Container1D		_cNumEtMsm_TPSubDet;
 			Container1D		_cNumEtMsmvsiphi_TPSubDetPM;
+			ContainerProf1D	_cdEtRatiovsLS_TPSubDet;
+			Container1D		_cdEtRatio_TPSubDet;
+			ContainerProf1D _cSumdEtvsLS_TPSubDet;
+			Container1D		_cSumdEt_TPSubDet;
 
 			Container1D		_cEtData_SubDetPM_iphi;
 			Container1D		_cEtData_SubDet_ieta;
@@ -81,7 +94,16 @@
 			ContainerProf1D			_cOccupancyDatavsLS_TPSubDet;
 			ContainerProf1D			_cOccupancyEmulvsLS_TPSubDet;
 			ContainerSingle2D		_cMsData;
+			Container1D				_cMsDatavsiphi_TPSubDetPM;
 			ContainerSingle2D		_cMsEmul;
+
+			//	Special
+			ContainerProf1D			_cDigiSizeDatavsLS_TPSubDet;
+			ContainerProf1D			_cDigiSizeEmulvsLS_TPSubDet;
+
+			//	Summaries
+			ContainerSingle2D		_cSummary;
+			Container2D				_cSummaryvsLS_TPSubDet;
 	};
 
 #endif

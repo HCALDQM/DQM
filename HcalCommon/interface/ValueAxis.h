@@ -42,29 +42,31 @@ namespace hcaldqm
 			fAroundZero = 19,
 			fRatio2 = 20,
 			fEntries500 = 21,
-			fEntries100 = 22,
+			fEntries100 = 22,,
+			fdEtRatio = 23,
+			fSumdEt = 24,
 
-			nValueType = 23
+			nValueType = 25
 		};
 
 		std::string const vtitle[nValueType] = {
 			"Entries", "Events", "1/Events", "Energy (GeV)", "Time (ns)",
 			"ADC", "ADC", "ADC", "nom. fC", "nom. fC", "nom. fC", "Time Slice",
 			"Time Slice", "LS", "Et", "Et", "Fine Grain Bit", "Ratio",
-			"Digi Size", "Quantity", "Ratio", "Entries", "Entries"
+			"Digi Size", "Quantity", "Ratio", "Entries", "Entries", 
+			"Summed dEt/Et", "Summed dEt"
 		};
 		double const vmin[nValueType] = {
 			0, 0, 0, 0, -50, 0, 0, 0, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5,
-			-0.5, -0.5, -0.5, 0, -0.5, -10, 0, 0
-
+			-0.5, -0.5, -0.5, 0, -0.5, -10, 0, 0, 0, -0.05, 0
 		};
 		double const vmax[nValueType] = {
 			3000, 500, 1, 200, 50, 128, 5, 15, 10000, 1000, 3000, 9.5, 9.5, 
-			4000.5, 255.5, 255.5, 1.5, 1.05, 10.5, 10, 2, 500, 100
+			4000.5, 255.5, 255.5, 1.5, 1.05, 10.5, 10, 2, 500, 100, 1.05, 2000
 		};
 		int const vnbins[nValueType] = {
 			500, 100, 100, 400, 200, 128, 100, 300, 1000, 200, 600, 10, 
-			200, 4000, 256, 128, 2, 200, 11, 20, 200, 500, 100
+			200, 4000, 256, 128, 2, 200, 11, 20, 200, 500, 100, 200, 1000
 		};
 
 		class ValueAxis : public Axis
