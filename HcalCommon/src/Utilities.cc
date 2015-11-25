@@ -73,6 +73,25 @@ namespace hcaldqm
 				return 3;
 			return 0;
 		}
+
+		int getFEDById(int id)
+		{
+			int fed = 700;
+			if (id>=FED_VME_NUM)
+				fed = FED_uTCA_MIN + FED_uTCA_DELTA*(id-FED_VME_NUM);
+			else 
+				fed = FED_VME_MIN + id;
+			return fed;
+		}
+		
+		int getIdByFED(int fed)
+		{
+			int id = 0;
+			if (fed>=FED_VME_MIN && fed<=FED_VME_MAX)
+				id = fed-FED_VME_MIN;
+			else if (fed>=FED_uTCA_MIN && fed<=FED_uTCA_MAX)
+				id = FED_VME_NUM + (fed-FED_uTCA_MIN)/FED_uTCA_DELTA;
+		}
 	}
 }
 

@@ -237,7 +237,6 @@ namespace hcaldqm
 
 		/* virtual */ int CoordinateAxis::getBin(int value)
 		{
-			// for now it's only applicable for SubDet type
 			int r = 1;
 			switch (_ctype)
 			{
@@ -249,6 +248,9 @@ namespace hcaldqm
 					break;
 				case fiphi:
 					r = value;
+					break;
+				case fFEDComb:
+					r = 1+value;
 					break;
 				default:
 					r = 1;

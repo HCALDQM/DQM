@@ -49,6 +49,12 @@ class RawTask : public DQTask
 		std::vector<std::string> _fNames;
 
 		//	Counters
+		int		_nEvnMsm[constants::FED_VME_NUM+
+			constants::FED_uTCA_NUM];
+		int		_nOrnMsm[constants::FED_VME_NUM+
+			constants::FED_uTCA_NUM];
+		int		_nBcnMsm[constants::FED_VME_NUM+
+			constants::FED_uTCA_NUM];
 
 		//	Cuts
 

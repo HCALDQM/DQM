@@ -354,8 +354,8 @@
 		DQTask::_resetMonitors(uf);
 	}
 
-/* virtual */ void RecHitTask::endLuminosityBlock(edm::LuminosityBlock const&,
-	edm::EventSetup const&)
+/* virtual */ void RecHitTask::endLuminosityBlock(edm::LuminosityBlock const& l,
+	edm::EventSetup const& es)
 {
 	//	statuses
 	//	By default all the flags are set as NOT APPLICABLE
@@ -437,6 +437,8 @@
 			_cSummary.setBinContent(i, j, status[i][j]);
 			_cSummaryvsLS_SubDet.setBinContent(i, _currentLS, j, status[i][j]);
 		}
+
+	DQTask::endLuminosityBlock(l, es);
 }
 
 DEFINE_FWK_MODULE(RecHitTask);

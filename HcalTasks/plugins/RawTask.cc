@@ -67,9 +67,47 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cSummaryvsLS_FED.book(ib);
 }
 
-/* virtual */ void RawTask::endLuminosityBlock(edm::LuminosityBlock const&,
-	edm::EventSetup const&)
-{}
+/* virtual */ void RawTask::endLuminosityBlock(edm::LuminosityBlock const& l,
+	edm::EventSetup const& es)
+{
+	//	statuses
+	//	By default the flag is not applicable
+	double status[constants::FED_TOTAL_NUM][nRawFlag];
+	for (int i=0; i<constants::FED_TOTAL_NUM; i++)
+		for (int j=fEvnMsm; j<nRawFlag; j++)
+			status[i][j] = constants::NOT_APPLICABLE;
+
+	/*
+	 *	Do the checks here
+	 *	-> Evn Mismatch
+	 *	-> Bcn Mismatch
+	 *	-> Orn Mismatch (Not Applicable)
+	 */
+
+	//	evn/bcn
+	for (int i=0; i<constants::FED_TOTAL_NUM; i++)
+	{
+		if (_nEvnMsm[i]>0)
+			status[i][fEvnMsm] = constants::LOW;
+		else 
+			status[i][fEvnMsm] = constants::GOOD;
+		if (_cBcnMsm[i]>0)
+			status[i][fBcnMsm] = constants::LOW;
+		else 
+			status[i][fBcnMsm] = constants::GOOD;
+	}
+
+	//	finally set all the statuses
+	for (unsigned int i=0; i<constants::FED_TOTAL_NUM; i++)
+		for (int j=fEvnMsm; j<nRawFlag; j++)
+		{
+			_cSummary.setBinContent(i, j, status[i][j]);
+			_cSummaryvsLS_FED.setBinContent(i, _currentLS, 
+				j, status[i][j]);
+		}
+
+	DQTask::endLuminosityBlock(l, es);
+}
 
 /* virtual */ void RawTask::_process(edm::Event const& e, 
 	edm::EventSetup const&)
@@ -119,6 +157,8 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 				_cVMEEvnMsm.fill(fed, eid, abs(htr_evn-evn));
 				_cVMEBcnMsm.fill(fed, eid, abs(htr_bx-bx));
 				_cVMEOrnMsm.fill(fed, eid, abs(htr_orn-orn));
+				_nEvnMsm[utilities::getIdByFED(fed)]+=abs(htr_evn-evn);
+				_nBcnMsm[utilities::getIdByFED(fed)]+=abs(htr_bx-bx);
 				_cVMEOccupancy.fill(fed, eid);
 			}
 			
@@ -159,6 +199,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 						_cuTCAEvnMsm.fill(fed, eid, abs(l1a_uhtr-l1a));
 						_cuTCABcnMsm.fill(fed, eid, abs(bx_uhtr-bx));
 						_cuTCAOrnMsm.fill(fed, eid, abs(orn_uhtr-orn));
+						_nEvnMsm[utilities::getIdByFED(fed)]+=
+							abs(l1a_uhtr-l1a);
+						_nBcnMsm[utilities::getIdByFED(fed)]+=abs(bx_uhtr-bx);
 					}
 				}
 			}
@@ -168,6 +211,19 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 /* virtual */ void RawTask::_resetMonitors(UpdateFreq uf)
 {
+	switch (uf)
+	{
+		case fEvent:
+			break;
+		case hcaldqm::fLS:
+			_qEvnMsm = {};
+			_qOrnMsm = {};
+			_qBcnMsm = {};
+			break;
+		default:
+			break;
+	}
+
 	DQTask::_resetMonitors(uf);
 }
 

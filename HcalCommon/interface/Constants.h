@@ -32,6 +32,7 @@ namespace hcaldqm
 		int const FED_uTCA_MAX = 1122;
 		int const FED_uTCA_NUM = 12;
 		int const FED_uTCA_DELTA = 2;
+		int const FED_TOTAL_NUM = FED_VME_NUM+FED_uTCA_NUM;
 		
 		//	Crates
 		int const CRATE_VME_MIN = 0;

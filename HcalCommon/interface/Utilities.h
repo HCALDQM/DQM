@@ -122,6 +122,8 @@ namespace hcaldqm
 		bool validDetId(HcalDetId const&);
 		int getTPSubDet(HcalTrigTowerDetId const&);
 		int getTPSubDetPM(HcalTrigTowerDetId const&);
+		int getFEDById(int);
+		int getIdByFED(int);
 	}
 }
 

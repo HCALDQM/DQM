@@ -340,8 +340,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		sumdEt[1]);
 }
 
-/* virtual */ void TPTask::endLuminosityBlock(edm::LuminosityBlock const&,
-	edm::EventSetup const&)
+/* virtual */ void TPTask::endLuminosityBlock(edm::LuminosityBlock const& l,
+	edm::EventSetup const& es)
 {
 	//	statuses
 	double status[constants::TPSUBDET_NUM][nTPFlag];
@@ -479,6 +479,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			_cSummaryvsLS_TPSubDet.setBinContent(i, _currentLS, j,
 				status[i][j]);
 		}
+
+	DQTask::endLuminiosityBlock(l, es);
 }
 
 /* virtual */ void TPTask::_resetMonitors(UpdateFreq uf)
