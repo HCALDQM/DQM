@@ -28,7 +28,7 @@ class RawTask : public DQTask
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
 
-		enum RawFlag_Event
+		enum RawFlag
 		{
 			fEvnMsm = 0,
 			fOrnMsm = 1,
@@ -41,6 +41,9 @@ class RawTask : public DQTask
 		//	funcs
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
 		virtual void _resetMonitors(UpdateFreq);
+
+		//	FED Skip List
+		std::vector<int>	_vSkipFEDList;
 
 		//	Tags
 		edm::InputTag	_tagFEDs;

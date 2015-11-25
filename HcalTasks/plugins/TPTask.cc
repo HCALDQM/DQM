@@ -480,7 +480,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 				status[i][j]);
 		}
 
-	DQTask::endLuminiosityBlock(l, es);
+	DQTask::endLuminosityBlock(l, es);
 }
 
 /* virtual */ void TPTask::_resetMonitors(UpdateFreq uf)

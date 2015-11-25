@@ -77,6 +77,7 @@ namespace hcaldqm
 			virtual void setBinContent(double, double, double);
 
 			virtual void loadLabels(std::vector<std::string> const&);
+			virtual void reset();
 
 		protected:
 			MonitorElement				*_me;

@@ -42,6 +42,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_tagFEDs = ps.getUntrackedParameter<edm::InputTag>("tagFEDs",
 		edm::InputTag("rawDataCollector"));
 
+	//	Skip List
+	_vSkipFEDList = ps.getUntrackedParameter<std::vector<int> >("skipFEDList");
+
 	//	load labels 
 	_fNames.push_back("EVN Mismatch");
 	_fNames.push_back("ORN Mismatch");
@@ -87,11 +90,23 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	//	evn/bcn
 	for (int i=0; i<constants::FED_TOTAL_NUM; i++)
 	{
+		//	skip status evaluation of empty FEDs
+		bool q = false;
+		for (std::vector<int>::const_iterator it=_vSkipFEDList.begin();
+			it!=_vSkipFEDList.end(); ++it)
+			if ((*it) == utilities::getFEDById(i))
+			{
+				q = true;
+				break;
+			}
+		if (q==true)
+			continue;
+
 		if (_nEvnMsm[i]>0)
 			status[i][fEvnMsm] = constants::LOW;
 		else 
 			status[i][fEvnMsm] = constants::GOOD;
-		if (_cBcnMsm[i]>0)
+		if (_nBcnMsm[i]>0)
 			status[i][fBcnMsm] = constants::LOW;
 		else 
 			status[i][fBcnMsm] = constants::GOOD;
@@ -127,7 +142,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			continue;
 
 		FEDRawData const& raw = craw->FEDData(fed);
-		if (raw.size() < RAW_EMPTY)	// skip if empty
+		if (raw.size() < RAW_EMPTY)// skip if empty
 			continue;
 
 		if (fed<=FEDNumbering::MAXHCALFEDID) // VME
@@ -135,9 +150,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			HcalDCCHeader const* hdcc = (HcalDCCHeader const*)(raw.data());
 			if (!hdcc)
 				continue;;
-			int bx = hdcc->getBunchId();
+			unsigned int bcn = hdcc->getBunchId();
 			unsigned int orn = hdcc->getOrbitNumber();
-			unsigned evn = hdcc->getDCCEventNumber();
+			unsigned long evn = hdcc->getDCCEventNumber();
 			int dccId = hdcc->getSourceId()-700; //	700 is the hard offset
 
 			//	 Iterate over all the spigots
@@ -152,13 +167,18 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 				unsigned int htr_evn = htr.getL1ANumber();
 				unsigned int htr_orn = htr.getOrbitNumber();
-				unsigned int htr_bx = htr.getBunchNumber();
+				unsigned int htr_bcn = htr.getBunchNumber();
+				bool qevn = htr_evn!=evn;
+				bool qorn = htr_orn!=orn;
+				bool qbcn = htr_bcn!=bcn;
 				HcalElectronicsId eid(0, 1, is, dccId);
-				_cVMEEvnMsm.fill(fed, eid, abs(htr_evn-evn));
-				_cVMEBcnMsm.fill(fed, eid, abs(htr_bx-bx));
-				_cVMEOrnMsm.fill(fed, eid, abs(htr_orn-orn));
-				_nEvnMsm[utilities::getIdByFED(fed)]+=abs(htr_evn-evn);
-				_nBcnMsm[utilities::getIdByFED(fed)]+=abs(htr_bx-bx);
+				_cVMEEvnMsm.fill(fed, eid, qevn ? 1 : 0);
+				_cVMEBcnMsm.fill(fed, eid, qbcn ? 1 : 0);
+				_cVMEOrnMsm.fill(fed, eid, qorn ? 1 : 0);
+				_nEvnMsm[utilities::getIdByFED(fed)]+=
+					qevn ? 1 : 0;
+				_nBcnMsm[utilities::getIdByFED(fed)]+=
+					qbcn ? 1 : 0;
 				_cVMEOccupancy.fill(fed, eid);
 			}
 			
@@ -170,9 +190,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			if (!hamc13)
 				continue;
 
-			int bx = hamc13->bunchId();
+			unsigned int bcn = hamc13->bunchId();
 			unsigned int orn = hamc13->orbitNumber();
-			int l1a = hamc13->l1aNumber();
+			unsigned int evn = hamc13->l1aNumber();
 			int namc = hamc13->NAMC();
 
 			//	itearte over all AMC13
@@ -193,15 +213,22 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					//	use data flavour - found in the unpacker
 					if (iuhtr.flavor()==UTCA_DATAFLAVOR)
 					{
-						uint32_t l1a_uhtr = uhtr.l1ANumber();
-						uint32_t bx_uhtr = uhtr.bunchNumber();
-						uint32_t orn_uhtr = uhtr.orbitNumber();
-						_cuTCAEvnMsm.fill(fed, eid, abs(l1a_uhtr-l1a));
-						_cuTCABcnMsm.fill(fed, eid, abs(bx_uhtr-bx));
-						_cuTCAOrnMsm.fill(fed, eid, abs(orn_uhtr-orn));
+						uint32_t uhtr_evn = uhtr.l1ANumber();
+						uint32_t uhtr_bcn = uhtr.bunchNumber();
+						uint32_t uhtr_orn = uhtr.orbitNumber();
+						bool qevn = uhtr_evn!=evn;
+						bool qorn = uhtr_orn!=orn;
+						bool qbcn = uhtr_bcn!=bcn;
+						_cuTCAEvnMsm.fill(fed, eid, 
+							qevn ? 1 : 0);
+						_cuTCABcnMsm.fill(fed, eid, 
+							qbcn ? 1 : 0);
+						_cuTCAOrnMsm.fill(fed, eid, 
+							qorn ? 1 : 0);
 						_nEvnMsm[utilities::getIdByFED(fed)]+=
-							abs(l1a_uhtr-l1a);
-						_nBcnMsm[utilities::getIdByFED(fed)]+=abs(bx_uhtr-bx);
+							qevn ? 1 : 0;
+						_nBcnMsm[utilities::getIdByFED(fed)]+=
+							qbcn ? 1 : 0;
 					}
 				}
 			}
@@ -216,9 +243,20 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		case fEvent:
 			break;
 		case hcaldqm::fLS:
-			_qEvnMsm = {};
-			_qOrnMsm = {};
-			_qBcnMsm = {};
+			for (int i=0; i<constants::FED_TOTAL_NUM; i++)
+			{
+				_nEvnMsm[i] = 0;
+				_nOrnMsm[i] = 0;
+				_nBcnMsm[i] = 0;
+			}
+			break;
+		case hcaldqm::f10LS:
+//			_cVMEEvnMsm.reset();
+//			_cVMEOrnMsm.reset();
+//			_cVMEBcnMsm.reset();
+//			_cuTCAEvnMsm.reset();
+//			_cuTCAOrnMsm.reset();
+//			_cuTCABcnMsm.reset();
 			break;
 		default:
 			break;

@@ -272,6 +272,11 @@ namespace hcaldqm
 		else 
 			_xaxis->loadLabels(labels);
 	}
+
+	/* virtual */ void ContainerSingle2D::reset()
+	{
+		_me->Reset();
+	}
 }
 
 

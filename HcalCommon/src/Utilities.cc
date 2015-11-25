@@ -91,6 +91,7 @@ namespace hcaldqm
 				id = fed-FED_VME_MIN;
 			else if (fed>=FED_uTCA_MIN && fed<=FED_uTCA_MAX)
 				id = FED_VME_NUM + (fed-FED_uTCA_MIN)/FED_uTCA_DELTA;
+			return id;
 		}
 	}
 }
