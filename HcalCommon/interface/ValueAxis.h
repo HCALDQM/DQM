@@ -91,6 +91,12 @@ namespace hcaldqm
 				virtual int getBin(int);
 				virtual int getBin(double);
 
+				virtual void setBitAxisLS(TObject *o)
+				{
+					if (_vtype==fLS)
+						o->SetBit(BIT(BIT_OFFSET+BIT_AXIS_LS));
+				}
+
 			protected:
 				virtual void _setup();
 

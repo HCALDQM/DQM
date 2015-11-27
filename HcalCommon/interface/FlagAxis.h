@@ -46,6 +46,10 @@ namespace hcaldqm
 				virtual inline int getBin(int v) {return v+1;}
 
 				virtual void loadLabels(std::vector<std::string> const&);
+				virtual void setBinAxisFlag(TObject *o)
+				{
+					o->SetBit(BIT(BIT_OFFSET+BIT_AXIS_FLAG));	
+				}
 
 			protected:
 				virtual void _setup();

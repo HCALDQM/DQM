@@ -86,7 +86,15 @@ namespace hcaldqm
 				void setLog(TObject* o)
 				{
 					if (_log)
-						o->SetBit(BIT(FIRST_BIT_TO_USE+_type));
+						o->SetBit(BIT(BIT_OFFSET+_type));
+				}
+				virtual void setBitAxisLS(TObject *o)
+				{
+					return;
+				}
+				virtual void setBitAxisFlag(TObject *o)
+				{
+					return;
 				}
 			protected:
 

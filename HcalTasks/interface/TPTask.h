@@ -65,7 +65,7 @@
 			//	Et
 			Container1D		_cEtData_SubDet;
 			Container1D		_cEtEmul_SubDet;	
-			Container2D		_cEtCorr_SubDet;
+			Container2D		_cEtCorr_TPSubDet;
 			ContainerProf1D	_cEtCorrRatiovsLS_TPSubDet;
 			Container1D		_cEtCorrRatio_TPSubDet;
 			ContainerProf1D _cEtCorrRatiovsiphi_TPSubDetPM;

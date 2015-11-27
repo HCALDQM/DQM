@@ -188,6 +188,10 @@ namespace hcaldqm
 			TObject *o = me->getRootObject();
 			_xaxis->setLog(o);
 			_yaxis->setLog(o);
+			_xaxis->setBitAxisLS(o);
+			_yaxis->setBitAxisLS(o);
+			_xaxis->setBitAxisFlag(o);
+			_yaxis->setBitAxisFlag(o);
 			me->setAxisTitle(_xaxis->_title, 1);
 			me->setAxisTitle(_yaxis->_title, 2);
 			for (unsigned int i=0; i<_xaxis->_labels.size(); i++)

@@ -29,6 +29,10 @@ namespace hcaldqm
 			_xaxis->setLog(o);
 			_yaxis->setLog(o);
 			_zaxis->setLog(o);
+			_xaxis->setBitAxisLS(o);
+			_yaxis->setBitAxisLS(o);
+			_xaxis->setBitAxisFlag(o);
+			_yaxis->setBitAxisFlag(o);
 			me->setAxisTitle(_xaxis->_title, 1);
 			me->setAxisTitle(_yaxis->_title, 2);
 			me->setAxisTitle(_zaxis->_title, 3);

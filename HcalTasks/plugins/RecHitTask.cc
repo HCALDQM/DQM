@@ -29,7 +29,7 @@
 			mapper::fdepth, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fZaxis, axis::fEnergy)),
+			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true)),
 		_cEnergyvsietaCut_SubDet(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
@@ -42,7 +42,7 @@
 			mapper::fdepth, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fZaxis, axis::fEnergy)),
+			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true)),
 
 		//	Timing
 		_cTimingCut_SubDet(_name+"/Timing/SubDet", "Timing", mapper::fSubDet,
@@ -102,15 +102,11 @@
 			new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
 
 		//	Energy vs Timing
-		_cEnergyvsTiming_SubDet(_name+"/EnergyvsTiming/SubDet", "EnergyvsTime", 
-			mapper::fSubDet, 
-			new axis::ValueAxis(axis::fXaxis, axis::fTime), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
-		_cEnergyvsTimingCut_SubDet(_name+"/EnergyvsTiming/SubDet", 
-			"EnergyvsTime", 
-			mapper::fSubDet, 
-			new axis::ValueAxis(axis::fXaxis, axis::fTime), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
+		_cTimingvsEnergyCut_SubDetPM_iphi(
+			_name+"/TimingvsEnergy/SubDetPM_iphi", 
+			"TimingvsEnergy", mapper::fSubDetPM_iphi, 
+			new axis::ValueAxis(axis::fXaxis, axis::fEnergy), 
+			new axis::ValueAxis(axis::fYaxis, axis::fTime)),
 		_cSummary(_name+"/Summary", "Summary",
 			new axis::CoordinateAxis(axis::fXaxis, axis::fSubDet),
 			new axis::FlagAxis(axis::fYaxis, "Flag", int(nRecHitFlag))),
@@ -175,8 +171,7 @@
 		_cOccupancyvsiphi_SubDetPM.book(ib);
 		_cOccupancyCutvsiphi_SubDetPM.book(ib, _subsystem, std::string(cutstr));
 
-		_cEnergyvsTiming_SubDet.book(ib);
-		_cEnergyvsTimingCut_SubDet.book(ib, _subsystem, std::string(cutstr));
+		_cTimingvsEnergyCut_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
 
 		_cSummary.book(ib);
 		_cSummaryvsLS_SubDet.book(ib);
@@ -216,7 +211,6 @@
 			_cEnergy_depth.fill(did, energy);
 			
 			_cOccupancy_depth.fill(did);
-			_cEnergyvsTiming_SubDet.fill(did, time, energy);
 			_cOccupancyvsiphi_SubDetPM.fill(did);
 			_nRecHits[did.subdet()-1]++;
 
@@ -234,7 +228,7 @@
 				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, time);
 				_cTimingCut_depth.fill(did, time);
 				_cOccupancyCut_depth.fill(did);
-				_cEnergyvsTimingCut_SubDet.fill(did, time, energy);
+				_cTimingvsEnergyCut_SubDetPM_iphi.fill(did, energy, time);
 				_cOccupancyCutvsiphi_SubDetPM.fill(did);
 				_nRecHitsCut[did.subdet()-1]++;
 				_cTimingCut_HBHEPrt.fill(did, time);
@@ -256,7 +250,6 @@
 			_cEnergy_depth.fill(did, energy);
 			
 			_cOccupancy_depth.fill(did);
-			_cEnergyvsTiming_SubDet.fill(did, time, energy);
 			_cOccupancyvsiphi_SubDetPM.fill(did);
 			_nRecHits[did.subdet()-1]++;
 
@@ -274,7 +267,7 @@
 				_cTimingCut_depth.fill(did, time);
 				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, time);
 				_cOccupancyCut_depth.fill(did);
-				_cEnergyvsTimingCut_SubDet.fill(did, time, energy);
+				_cTimingvsEnergyCut_SubDetPM_iphi.fill(did, energy, time);
 				_cOccupancyCutvsiphi_SubDetPM.fill(did);
 				_nRecHitsCut[did.subdet()-1]++;
 			}
@@ -295,7 +288,6 @@
 			_cEnergy_depth.fill(did, energy);
 			
 			_cOccupancy_depth.fill(did);
-			_cEnergyvsTiming_SubDet.fill(did, time, energy);
 			_cOccupancyvsiphi_SubDetPM.fill(did);
 			_nRecHits[did.subdet()-1]++;
 
@@ -313,7 +305,7 @@
 				_cTimingCut_depth.fill(did, time);
 				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, time);
 				_cOccupancyCut_depth.fill(did);
-				_cEnergyvsTimingCut_SubDet.fill(did, time, energy);
+				_cTimingvsEnergyCut_SubDetPM_iphi.fill(did, energy, time);
 				_cOccupancyCutvsiphi_SubDetPM.fill(did);
 				_nRecHitsCut[did.subdet()-1]++;
 			}

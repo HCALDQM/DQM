@@ -172,9 +172,17 @@ namespace hcaldqm
 		int const UTCA_DATAFLAVOR = 0x5;
 
 		/*
-		 *	TObject Related
+		 *	TObject Related. The first 3 bits are set by the Axis Class
+		 *	0 - log X axis
+		 *	1 - log Y axis
+		 *	2 - log Z axis
 		 */	
-		int const FIRST_BIT_TO_USE = 19;
+		int const BIT_OFFSET = 19;
+		int const BIT_AXIS_XLOG = 0;
+		int const BIT_AXIS_YLOG = 1;
+		int const BIT_AXIS_ZLOG = 2;
+		int const BIT_AXIS_LS = 3;
+		int const BIT_AXIS_FLAG = 4;
 	}
 }
 

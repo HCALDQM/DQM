@@ -88,8 +88,7 @@
 			Container1D		_cOccupancyCutvsiphi_SubDetPM;
 
 			//	Energy vs Timing
-			Container2D		_cEnergyvsTiming_SubDet;
-			Container2D		_cEnergyvsTimingCut_SubDet;
+			Container2D		_cTimingvsEnergyCut_SubDetPM_iphi;
 
 			//	Summaries
 			ContainerSingle2D		_cSummary;
