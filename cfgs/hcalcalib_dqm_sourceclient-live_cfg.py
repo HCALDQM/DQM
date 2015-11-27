@@ -63,7 +63,6 @@ process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
 process.load("CondCore.DBCommon.CondDBSetup_cfi")
 process.load("L1Trigger.Configuration.L1DummyConfig_cff")
 process.load("EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi")
-process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module Settings
@@ -77,15 +76,19 @@ process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
 runType			= process.runType.getRunType()
+runTypeName		= process.runType.getRunTypeName()
+isCosmicRun		= runTypeName=="cosmic_run" or runTypeName=="cosmic_run_stage1"
+isHeavyIon		= runTypeName=="hi_run"
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
 rawTag			= cms.InputTag("hltHcalCalibrationRaw")
+rawTagUntracked	= cms.InputTag("hltHcalCalibrationRaw")
 process.essourceSev = cms.ESSource(
 		"EmptyESSource",
 		recordName		= cms.string("HcalSeverityLevelComputerRcd"),
 		firstValid		= cms.vuint32(1),
 		iovIsRunNotTime	= cms.bool(True)
 )
-process.hcalRecAlgos.DropChannelStatusBits = cms.vstring('')
+process.hcalRecalgos.DropChannelStatusBits = cms.vstring('')
 process.emulTPDigis = \
 		process.simHcalTriggerPrimitiveDigis.clone()
 process.emulTPDigis.inputLabel = \
@@ -104,6 +107,7 @@ process.hbhereco = process.hbheprereco.clone()
 process.load("DQM.HcalTasks.LEDTask")
 process.load("DQM.HcalTasks.LaserTask")
 process.load("DQM.HcalTasks.PedestalTask")
+process.load('DQM.HcalTasks.RadDamTask')
 
 #-------------------------------------
 #	To force using uTCA
@@ -139,7 +143,6 @@ if useMap:
 #-------------------------------------
 process.hcalDigis.InputLabel = rawTag
 
-
 #-------------------------------------
 #	Hcal DQM Tasks Sequence Definition
 #-------------------------------------
@@ -147,6 +150,7 @@ process.tasksSequence = cms.Sequence(
 		process.ledTask
 		*process.laserTask
 		*process.pedestalTask
+		*process.raddamTask
 )
 
 #-------------------------------------

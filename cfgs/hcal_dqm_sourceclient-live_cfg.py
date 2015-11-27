@@ -48,11 +48,6 @@ process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
 process.DQMStore.verbose = 0
 
-#	Note, runType is obtained after importing DQM-related modules
-#	=> DQM-dependent
-runType			= process.runType.getRunType()
-print debugstr, "Running with run type= ", runType
-
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
 #-------------------------------------
@@ -64,7 +59,6 @@ process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
 process.load("CondCore.DBCommon.CondDBSetup_cfi")
 process.load("L1Trigger.Configuration.L1DummyConfig_cff")
 process.load("EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi")
-process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module Settings
@@ -78,8 +72,15 @@ process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
 runType			= process.runType.getRunType()
+runTypeName		= process.runType.getRunTypeName()
+isCosmicRun		= runTypeName=="cosmic_run" or runTypeName=="cosmic_run_stage1"
+isHeavyIon		= runTypeName=="hi_run"
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
 rawTag			= cms.InputTag("rawDataCollector")
+rawTagUntracked = cms.untracked.InputTag("rawDataCollector")
+if isHeavyIon:
+	rawTag = cms.InputTag("rawDataRepacker")
+	rawTagUntracked = cms.untracked.InputTag("rawDataRepacker")
 process.essourceSev = cms.ESSource(
 		"EmptyESSource",
 		recordName		= cms.string("HcalSeverityLevelComputerRcd"),
@@ -98,6 +99,7 @@ process.emulTPDigis.FG_threshold = cms.uint32(2)
 process.emulTPDigis.InputTagFEDRaw = rawTag
 process.l1GtUnpack.DaqGtInputTag = rawTag
 process.hbhereco = process.hbheprereco.clone()
+process.hcalDigis.InputLabel = rawTag
 
 #-------------------------------------
 #	Hcal DQM Tasks and Clients import
@@ -141,8 +143,16 @@ if useMap:
 #	Some Settings before Finishing up
 #	New Style Modules
 #-------------------------------------
-
 oldsubsystem = subsystem
+process.rawTask.tagFEDs = rawTagUntracked
+process.digiTask.runkeyVal = runType
+process.digiTask.runkeyName = runTypeName
+process.rawTask.runkeyVal = runType
+process.rawTask.runkeyName = runTypeName
+process.recHitTask.runkeyVal = runType
+process.recHitTask.runkeyName = runTypeName
+process.tpTask.runkeyVal = runType
+process.tpTask.runkeyName = runTypeName
 
 #-------------------------------------
 #	Hcal DQM Tasks/Clients Sequences Definition
