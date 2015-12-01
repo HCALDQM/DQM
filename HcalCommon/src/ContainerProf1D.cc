@@ -22,9 +22,9 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerProf1D::initialize(std::string const& folder,
 		std::string const& nametitle, mapper::MapperType mt,
-		axis::Axis *xaxis, axis::Axis *yaxis)
+		axis::Axis *xaxis, axis::Axis *yaxis, int debug/*=0*/)
 	{
-		Container1D::initialize(folder, nametitle, mt, xaxis, yaxis);
+		Container1D::initialize(folder, nametitle, mt, xaxis, yaxis, debug);
 	}
 
 	/* virtual */ void ContainerProf1D::book(DQMStore::IBooker &ib,
@@ -32,8 +32,13 @@ namespace hcaldqm
 	{
 		unsigned int size = _mapper.getSize();
 		 ib.setCurrentFolder(subsystem+"/"+_folder+aux);
+		 _logger.debug(_folder+aux);
+		 _logger.debug("Size:");
+		 _logger.debug(size);
 		for (unsigned int i=0; i<size; i++)
 		{
+			_logger.debug(i);
+			_logger.debug(_name);
 			std::string hname = _mapper.buildName(i);
 			MonitorElement *me = ib.bookProfile(_name+"_"+hname, 
 				_name+" "+hname, _xaxis->_nbins, _xaxis->_min, _xaxis->_max,

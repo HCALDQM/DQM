@@ -33,7 +33,7 @@ namespace hcaldqm
 				std::string const& nametitle, mapper::MapperType mt, 
 				axis::Axis *xaxis, 
 				axis::Axis *yaxis = new axis::ValueAxis(axis::fYaxis, 
-				axis::fEntries));
+				axis::fEntries), int debug=0);
 
 			//	booking
 			virtual void book(DQMStore::IBooker&,

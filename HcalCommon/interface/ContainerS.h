@@ -2,12 +2,13 @@
 #define ContainerS_h
 
 #include "DQM/HcalCommon/interface/Container.h"
+#include "DQM/HcalCommon/interface/Constants.h"
 
 namespace hcaldqm
 {
+	using namespace constants;
 	class ContainerS : public Container
 	{
-		using namespace constants;
 		public:
 			ContainerS():
 				Container()
@@ -18,22 +19,23 @@ namespace hcaldqm
 			virtual ~ContainerS() {}
 			
 			virtual void initialize(std::string const& folder, 
-				std::string const& name)
+				std::string const& name, int debug=0)
 			{
 				_folder = folder;
 				_name = name;
+				_logger.set(_name, debug);
 			}
 
 			virtual void fill(std::string const& x)
 			{
-				_me->Fill(x);
+				_me->Fill((std::string&)x);
 			}
 			
 			virtual void book(DQMStore::IBooker &ib,
 				std::string subsystem="Hcal", std::string aux="")
 			{
 				ib.setCurrentFolder(subsystem+"/"+_folder+aux);
-				_me = ib.bookString(_name);
+				_me = ib.bookString(_name, "NameToStart");
 			}
 
 		protected:

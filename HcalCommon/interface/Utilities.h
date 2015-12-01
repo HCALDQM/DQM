@@ -108,8 +108,10 @@ namespace hcaldqm
 		 *	Log Functions
 		 */
 		template<typename STDTYPE>
-		void log(STDTYPE x)
+		void dqmdebug(STDTYPE x, int debug=0)
 		{
+			if (debug==0)
+				return;
 			std::cout << "%MSG" << std::endl;
 			std::cout << "%MSG-d HCALDQM::" << x;
 			std::cout << std::endl;

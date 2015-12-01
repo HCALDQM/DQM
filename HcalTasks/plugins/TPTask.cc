@@ -208,11 +208,11 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	edm::Handle<HcalTrigPrimDigiCollection> ctpe;
 
 	if (!e.getByLabel(_tagData, ctpd))
-		this->_throw("Collection HcalTrigPrimDigiCollection isn't available",
-			" " + _tagData.label() + " " + _tagData.instance());
+		_logger.dqmthrow("Collection HcalTrigPrimDigiCollection isn't available"
+			+ _tagData.label() + " " + _tagData.instance());
 	if (!e.getByLabel(_tagEmul, ctpe))
-		this->_throw("Collection HcalTrigPrimDigiCollection isn't available",
-			" " + _tagEmul.label() + " " + _tagEmul.instance());
+		_logger.dqmthrow("Collection HcalTrigPrimDigiCollection isn't available"
+			+ _tagEmul.label() + " " + _tagEmul.instance());
 
 	//	tmp
 	bool useD1 = false;

@@ -9,6 +9,7 @@
 
 #include "DQM/HcalCommon/interface/DQModule.h"
 #include "DQM/HcalCommon/interface/ContainerI.h"
+#include "DQM/HcalCommon/interface/ContainerS.h"
 
 namespace hcaldqm
 {

@@ -19,12 +19,12 @@ namespace hcaldqm
 		Container(folder, nametitle), _mapper(mt), _xaxis(xaxis), _yaxis(yaxis)
 	{}
 
-	/* vurtial */ void Container1D::intialize(std::string const& folder, 
+	/* virtuial */ void Container1D::initialize(std::string const& folder, 
 		std::string const& nametitle, mapper::MapperType mt, axis::Axis *xaxis,
-		axis::Axis *yaxis)
+		axis::Axis *yaxis, int debug /* =0 */)
 	{
-		Container::initialize(folder, nametitle);
-		_mapper.initialize(mt);
+		Container::initialize(folder, nametitle, debug);
+		_mapper.initialize(mt, debug);
 		_xaxis = xaxis;
 		_yaxis = yaxis;
 	}

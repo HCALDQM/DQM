@@ -18,10 +18,11 @@ namespace hcaldqm
 			virtual ~ContainerD() {}
 
 			virtual void initialize(std::string const& folder,
-				std::string const& name)
+				std::string const& name, int debug=0)
 			{
 				_folder = folder;
 				_name = name;
+				_logger.set(_name, debug);
 			}
 
 			virtual void fill(double x)

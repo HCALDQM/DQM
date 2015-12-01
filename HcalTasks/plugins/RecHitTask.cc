@@ -8,105 +8,112 @@
 		//	Energy
 		_cEnergy_SubDet.initialize(_name+"/Energy/SubDet", "Energy", mapper::fSubDet, 
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true), _debug);
 		_cEnergy_SubDet_ieta.initialize(_name+"/Energy/SubDet_ieta", "Energy",
 			mapper::fSubDet_ieta, 
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true), _debug);
 		_cEnergy_SubDetPM_iphi.initialize(_name+"/Energy/SubDetPM_iphi", 
 			"Energy", mapper::fSubDetPM_iphi,
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true), _debug);
 		_cEnergyvsieta_SubDet.initialize(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy));
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy), _debug);
 		_cEnergyvsiphi_SubDet.initialize(_name+"/Energy/vsiphi_SubDet", "Energyvsiphi",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy));
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy), _debug);
 		_cEnergy_depth.initialize(_name+"/Energy/depth", "Energy",
 			mapper::fdepth, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true));
+			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true), _debug);
 		_cEnergyvsietaCut_SubDet.initialize(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy));
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy), _debug);
 		_cEnergyvsiphiCut_SubDet.initialize(_name+"/Energy/vsiphi_SubDet", "Energyvsiphi",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy));
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy), _debug);
 		_cEnergyCut_depth.initialize(_name+"/Energy/depth", "Energy",
 			mapper::fdepth, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true));
+			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true), _debug);
 
 		//	Timing
 		_cTimingCut_SubDet.initialize(_name+"/Timing/SubDet", "Timing", mapper::fSubDet,
-			new axis::ValueAxis(axis::fXaxis, axis::fTime));
+			new axis::ValueAxis(axis::fXaxis, axis::fTime), 
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries), _debug);
 		_cTimingCut_SubDetPM_iphi.initialize(_name+"/Timing/SubDetPM_iphi", "Timing", 
 			mapper::fSubDetPM_iphi, 
-			new axis::ValueAxis(axis::fXaxis, axis::fTime));
+			new axis::ValueAxis(axis::fXaxis, axis::fTime), 
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries), _debug);
 		_cTimingCutvsLS_SubDetPM_iphi.initialize(_name+"/Timing/vsLS_SubDetPM_iphi",
 			"Timing", mapper::fSubDetPM_iphi,
 			new axis::ValueAxis(axis::fXaxis, axis::fLS),
-			new axis::ValueAxis(axis::fYaxis, axis::fTime));
+			new axis::ValueAxis(axis::fYaxis, axis::fTime), _debug);
 		_cTimingCut_SubDet_ieta.initialize(_name+"/Timing/SubDet_ieta", "Timing", 
 			mapper::fSubDet_ieta, 
-			new axis::ValueAxis(axis::fXaxis, axis::fTime));
+			new axis::ValueAxis(axis::fXaxis, axis::fTime), 
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries), _debug);
 		_cTimingvsietaCut_SubDet_iphi.initialize(_name+"/Timing/vsieta_SubDet_iphi", 
 			"Timing",
 			mapper::fSubDet_iphi,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
-			new axis::ValueAxis(axis::fYaxis, axis::fTime));
+			new axis::ValueAxis(axis::fYaxis, axis::fTime), _debug);
 		_cTimingvsiphiCut_SubDet_ieta.initialize(_name+"/Timing/vsiphi_SubDet_ieta", 
 			"Timing",
 			mapper::fSubDet_ieta,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fYaxis, axis::fTime));
+			new axis::ValueAxis(axis::fYaxis, axis::fTime), _debug);
 		_cTimingCut_depth.initialize(_name+"/Timing/depth", "Timing",
 			mapper::fdepth, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fZaxis, axis::fTime));
+			new axis::ValueAxis(axis::fZaxis, axis::fTime), _debug);
 		_cTimingCut_HBHEPrt.initialize(_name+"/Timing/HBHEPartition", "Timing",
 			mapper::fHBHEPartition,
-			new axis::ValueAxis(axis::fXaxis, axis::fTime));
+			new axis::ValueAxis(axis::fXaxis, axis::fTime), 
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries), _debug);
 
 		//	Occupancy
 		_cOccupancy_depth.initialize(_name+"/Occupancy/depth", "Occupancy", mapper::fdepth,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi), 
+			new axis::ValueAxis(axis::fZaxis, axis::fEntries), _debug);
 		_cOccupancyvsLS_SubDet.initialize(_name+"/Occupancy/vsLS_SubDet", "Occupancy",
 			mapper::fSubDet,
 			new axis::ValueAxis(axis::fXaxis, axis::fLS),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries), _debug);
 		_cOccupancyCutvsLS_SubDet.initialize(_name+"/Occupancy/vsLS_SubDet", "Occupancy",
 			mapper::fSubDet,
 			new axis::ValueAxis(axis::fXaxis, axis::fLS),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries), _debug);
 		_cOccupancyCut_depth.initialize(_name+"/Occupancy/depth", "Occupancy", 
 			mapper::fdepth,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi), 
+			new axis::ValueAxis(axis::fZaxis, axis::fEntries), _debug);
 		_cOccupancyvsiphi_SubDetPM.initialize(_name+"/Occupancy/vsiphi_SubDetPM",
 			"Occupancy", mapper::fSubDetPM,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries), _debug);
 		_cOccupancyCutvsiphi_SubDetPM.initialize(_name+"/Occupancy/vsiphi_SubDetPM",
 			"Occupancy", mapper::fSubDetPM,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries), _debug);
 
 		//	Energy vs Timing
 		_cTimingvsEnergyCut_SubDetPM_iphi.initialize(
 			_name+"/TimingvsEnergy/SubDetPM_iphi", 
 			"TimingvsEnergy", mapper::fSubDetPM_iphi, 
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy), 
-			new axis::ValueAxis(axis::fYaxis, axis::fTime));
+			new axis::ValueAxis(axis::fYaxis, axis::fTime), 
+			new axis::ValueAxis(axis::fZaxis, axis::fEntries), _debug);
 		_cSummary.initialize(_name+"/Summary", "Summary",
 			new axis::CoordinateAxis(axis::fXaxis, axis::fSubDet),
 			new axis::FlagAxis(axis::fYaxis, "Flag", int(nRecHitFlag)));
@@ -185,14 +192,14 @@
 		edm::Handle<HFRecHitCollection>		chf;
 
 		if (!(e.getByLabel(_tagHBHE, chbhe)))
-			this->_throw("Collection HBHERecHitCollection not available",
-				" " + _tagHBHE.label() + " " + _tagHBHE.instance());
+			_logger.dqmthrow("Collection HBHERecHitCollection not available "
+				+ _tagHBHE.label() + " " + _tagHBHE.instance());
 		if (!(e.getByLabel(_tagHO, cho)))
-			this->_throw("Collection HORecHitCollection not available",
-				" " + _tagHO.label() + " " + _tagHO.instance());
+			_logger.dqmthrow("Collection HORecHitCollection not available "
+				+ _tagHO.label() + " " + _tagHO.instance());
 		if (!(e.getByLabel(_tagHF, chf)))
-			this->_throw("Collection HFRecHitCollection not available",
-				" " + _tagHF.label() + " " + _tagHF.instance());
+			_logger.dqmthrow("Collection HFRecHitCollection not available "
+				+ _tagHF.label() + " " + _tagHF.instance());
 
 		//	Processing
 		for (HBHERecHitCollection::const_iterator it=chbhe->begin();

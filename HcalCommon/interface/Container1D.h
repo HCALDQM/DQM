@@ -46,7 +46,8 @@ namespace hcaldqm
 			virtual void initialize(std::string const& folder, 
 				std::string const& nametitle,
 				mapper::MapperType mt, axis::Axis* xaxis, 
-				axis::Axis* yaxis = new ValueAxis(fYaxis, fEntries));
+				axis::Axis* yaxis = new ValueAxis(fYaxis, fEntries),
+				int debug=0);
 
 			//	just to have here
 			virtual void fill(double ) {}

@@ -20,11 +20,12 @@ namespace hcaldqm
 		Container2D(folder, nametitle, mt, xaxis, yaxis, zaxis)
 	{}
 	
-	/* virtual */ void initialize(std::string const& folder,
+	/* virtual */ void ContainerProf2D::initialize(std::string const& folder,
 		std::string const& nametitle, MapperType mt, Axis *xaxis,
-		Axis *yaxis, Axis *zaxis);
+		Axis *yaxis, Axis *zaxis, int debug/*=0*/)
 	{
-		Container2D::initialize(folder, nametitle, mt, xaxis, yaxis, zaxis);
+		Container2D::initialize(folder, nametitle, mt, xaxis, yaxis, zaxis, 
+			debug);
 	}
 
 	/* virtual */ void ContainerProf2D::book(DQMStore::IBooker &ib,

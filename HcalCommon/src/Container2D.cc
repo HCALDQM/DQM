@@ -24,9 +24,9 @@ namespace hcaldqm
 	/* virtual */ void Container2D::initialize(std::string const& folder, 
 		std::string nametitle,
 		mapper::MapperType mt, axis::Axis *xaxis, axis::Axis* yaxis,
-		axis::Axis *zaxis)
+		axis::Axis *zaxis, int debug/*=0*/)
 	{
-		Container1D::initialize(folder, nametitle, mt, xaxis, yaxis);
+		Container1D::initialize(folder, nametitle, mt, xaxis, yaxis, debug);
 		_zaxis = zaxis;
 	}
 

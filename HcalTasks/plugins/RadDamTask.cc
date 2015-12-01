@@ -94,8 +94,8 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 {
 	edm::Handle<HFDigiCollection> chf;
 	if (!e.getByLabel(_tagHF, chf))
-		this->_throw("Collection HFDigiCollection isn't avalaible",
-			" " + _tagHF.label() + " " + _tagHF.instance());
+		_logger.dqmthrow("Collection HFDigiCollection isn't avalaible"
+			+ _tagHF.label() + " " + _tagHF.instance());
 
 	for (HFDigiCollection::const_iterator it=chf->begin(); 
 		it!=chf->end(); ++it)

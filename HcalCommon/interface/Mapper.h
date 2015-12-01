@@ -12,6 +12,7 @@
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
 #include "DQM/HcalCommon/interface/Constants.h"
+#include "DQM/HcalCommon/interface/Logger.h"
 
 #include <string>
 #include <vector>
@@ -118,9 +119,11 @@ namespace hcaldqm
 				}
 				virtual ~Mapper() {}
 	
-				virtual void initialize(MapperType type)
+				virtual void initialize(MapperType type, int debug=0)
 				{
 					_type = type;
+					this->setSize();
+					_logger.set("Mapper", debug);
 				}
 				virtual unsigned int index() {return 0;}
 				virtual unsigned int index(double) { return 0;}
@@ -222,6 +225,8 @@ namespace hcaldqm
 
 				virtual std::string buildName(unsigned id)
 				{
+					_logger.debug(id);
+					_logger.debug(_type);
 					std::string builtname;
 					switch(_type)
 					{
@@ -514,6 +519,7 @@ namespace hcaldqm
 			protected:
 				MapperType			_type;
 				unsigned int		_size;
+				Logger				_logger;
 				void setSize()
 				{
 					switch (_type)

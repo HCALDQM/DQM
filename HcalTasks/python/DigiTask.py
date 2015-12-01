@@ -5,7 +5,7 @@ digiTask = cms.EDAnalyzer(
 	
 	#	standard parameters
 	name = cms.untracked.string("DigiTask"),
-	debug = cms.untracked.int32(0),
+	debug = cms.untracked.int32(10),
 	runkeyVal = cms.untracked.int32(0),
 	runkeyName = cms.untracked.string("pp_run"),
 

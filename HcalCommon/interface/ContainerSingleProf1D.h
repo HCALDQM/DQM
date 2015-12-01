@@ -29,7 +29,8 @@ namespace hcaldqm
 			virtual void initialize(std::string const& folder, 
 				std::string const& nametitle, 
 				axis::Axis *xaxis,
-				axis::Axis *yaxis = new ValueAxis(fYaxis, axis::fEntries));
+				axis::Axis *yaxis = new ValueAxis(fYaxis, axis::fEntries),
+				int debug=0);
 
 			//	booking
 			virtual void book(DQMStore::IBooker&,

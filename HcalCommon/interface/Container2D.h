@@ -38,7 +38,7 @@ namespace hcaldqm
 				axis::Axis *yaxis = new axis::CoordinateAxis(axis::fYaxis,
 					axis::fiphi),
 				axis::Axis *zaxis = new axis::ValueAxis(axis::fZaxis, 
-					axis::fEntries));
+					axis::fEntries), int debug=0);
 
 			//	redeclare what to override
 			virtual void fill(HcalDetId const&);

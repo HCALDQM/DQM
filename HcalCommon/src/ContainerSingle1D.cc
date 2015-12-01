@@ -20,9 +20,9 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerSingle1D::initialize(std::string const& folder,
 		std::string const& nametitle,
-		Axis *xaxis, Axis *yaxis)
+		Axis *xaxis, Axis *yaxis, int debug/*=0*/)
 	{
-		Container::initialize(folder, nametitle);
+		Container::initialize(folder, nametitle, debug);
 		_xaxis = xaxis;
 		_yaxis = yaxis;
 	}

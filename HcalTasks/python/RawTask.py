@@ -11,7 +11,7 @@ rawTask = cms.EDAnalyzer(
 	
 	#	standard parameters
 	name = cms.untracked.string("RawTask"),
-	debug = cms.untracked.int32(0),
+	debug = cms.untracked.int32(10),
 	runkeyVal = cms.untracked.int32(0),
 	runkeyName = cms.untracked.string("pp_run"),
 

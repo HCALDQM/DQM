@@ -19,9 +19,9 @@ namespace hcaldqm
 	/* virtual */ void ContainerSingleProf1D::initialize(std::string const& 
 		folder,
 		std::string const& nametitle, axis::Axis *xaxis,
-		axis::Axis *yaxis)
+		axis::Axis *yaxis, int debug/*=0*/)
 	{
-		ContainerSingle1D::initialize(folder, nametitle, xaxis, yaxis);
+		ContainerSingle1D::initialize(folder, nametitle, xaxis, yaxis, debug);
 	}
 
 	/* virtual */ void ContainerSingleProf1D::book(DQMStore::IBooker& ib,

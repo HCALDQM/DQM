@@ -12,6 +12,7 @@
  */
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
+#include "DQM/HcalCommon/interface/Logger.h"
 
 #include <vector>
 #include <string>
@@ -30,15 +31,18 @@ namespace hcaldqm
 			virtual ~Container() {}
 
 			virtual void initialize(std::string const &folder, 
-				std::string const &name)
+				std::string const &name, int debug=0)
 			{
 				_folder = folder;
 				_name = name;
+				_logger.set(_name, debug);
 			}
 
 		protected:
 			std::string					_folder;
 			std::string					_name;
+			Logger						_logger;
+
 	};
 }
 

@@ -31,10 +31,10 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA));
 
 	//	Summary Containers
-	_cSummary(_name+"/Summary", "Summary",
+	_cSummary.initialize(_name+"/Summary", "Summary",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDComb),
 		new axis::FlagAxis(axis::fYaxis, "Flag", int(nRawFlag)));
-	_cSummaryvsLS_FED(_name+"/Summary/vsLS_FED", "SummaryvsLS",
+	_cSummaryvsLS_FED.initialize(_name+"/Summary/vsLS_FED", "SummaryvsLS",
 		mapper::fFED,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::FlagAxis(axis::fYaxis, "Flag", int(nRawFlag)));
@@ -130,8 +130,8 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 {
 	edm::Handle<FEDRawDataCollection> craw;
 	if (!e.getByLabel(_tagFEDs, craw))
-		this->_throw("Collection FEDRawDataCollection isn't available",
-			" " + _tagFEDs.label() + " " + _tagFEDs.instance());
+		_logger.dqmthrow("Collection FEDRawDataCollection isn't available"
+			+ _tagFEDs.label() + " " + _tagFEDs.instance());
 	
 	for (int fed=FEDNumbering::MINHCALFEDID; 
 		fed<+FEDNumbering::MAXHCALuTCAFEDID; fed++)

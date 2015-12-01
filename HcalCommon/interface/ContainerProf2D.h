@@ -35,7 +35,8 @@ namespace hcaldqm
 				MapperType mt, 
 				Axis *xaxis, 
 				Axis *yaxis = new CoordinateAxis(axis::fYaxis, axis::fiphi), 
-				Axis *zaxis = new ValueAxis(axis::fZaxis, axis::fEntries));
+				Axis *zaxis = new ValueAxis(axis::fZaxis, axis::fEntries),
+				int debug=0);
 
 			virtual void book(DQMStore::IBooker&,
 				std::string subsystem="Hcal", std::string aux="");

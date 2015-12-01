@@ -72,14 +72,14 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	edm::Handle<HFDigiCollection>		chf;
 
 	if (!e.getByLabel(_tagHBHE, chbhe))
-		this->_throw("Collection HBHEDigiCollection isn't available",
-			" " + _tagHBHE.label() + " " + _tagHBHE.instance());
+		_logger.dqmthrow("Collection HBHEDigiCollection isn't available"
+			+ _tagHBHE.label() + " " + _tagHBHE.instance());
 	if (!e.getByLabel(_tagHO, cho))
-		this->_throw("Collection HODigiCollection isn't available",
-			" " + _tagHO.label() + " " + _tagHO.instance());
+		_logger.dqmthrow("Collection HODigiCollection isn't available"
+			+ _tagHO.label() + " " + _tagHO.instance());
 	if (!e.getByLabel(_tagHF, chf))
-		this->_throw("Collection HFDigiCollection isn't available",
-			" " + _tagHF.label() + " " + _tagHF.instance());
+		_logger.dqmthrow("Collection HFDigiCollection isn't available"
+			+ _tagHF.label() + " " + _tagHF.instance());
 
 	for (HBHEDigiCollection::const_iterator it=chbhe->begin();
 		it!=chbhe->end(); ++it)
@@ -126,8 +126,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		//	local
 		edm::Handle<HcalTBTriggerData>	ctrigger;
 		if (!e.getByLabel(_tagTrigger, ctrigger))
-			this->_throw("Collection HcalTBTriggerData isn't available",
-				" " + _tagTrigger.label() + " " + _tagTrigger.instance());
+			_logger.dqmthrow("Collection HcalTBTriggerData isn't available"
+				+ _tagTrigger.label() + " " + _tagTrigger.instance());
 		return ctrigger->wasSpillIgnorantPedestalTrigger();
 	}
 

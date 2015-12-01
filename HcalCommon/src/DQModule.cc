@@ -8,6 +8,7 @@ namespace hcaldqm
 	{
 		_name = ps.getUntrackedParameter<std::string>("name", "Unknown_Module");
 		_debug = ps.getUntrackedParameter<int>("debug", 0);
+		_logger.set(_name, _debug);
 		_runkeyVal = ps.getUntrackedParameter<int>("runkeyVal", 0);
 		_runkeyName = ps.getUntrackedParameter<std::string>("runkeyName", 
 			"pp_run");
@@ -25,8 +26,8 @@ namespace hcaldqm
 			_ptype = fOffline;
 		else
 			_ptype = fLocal;
-			
-		this->_logdebug("Calling Constructor");
+
+		_logger.debug("Calling Constructor");
 	}
 }
 
