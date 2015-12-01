@@ -3,118 +3,118 @@
 
 	using namespace hcaldqm;
 	RecHitTask::RecHitTask(edm::ParameterSet const& ps) :
-		DQTask(ps),
-
+		DQTask(ps)
+	{
 		//	Energy
-		_cEnergy_SubDet(_name+"/Energy/SubDet", "Energy", mapper::fSubDet, 
+		_cEnergy_SubDet.initialize(_name+"/Energy/SubDet", "Energy", mapper::fSubDet, 
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-		_cEnergy_SubDet_ieta(_name+"/Energy/SubDet_ieta", "Energy",
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+		_cEnergy_SubDet_ieta.initialize(_name+"/Energy/SubDet_ieta", "Energy",
 			mapper::fSubDet_ieta, 
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-		_cEnergy_SubDetPM_iphi(_name+"/Energy/SubDetPM_iphi", 
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+		_cEnergy_SubDetPM_iphi.initialize(_name+"/Energy/SubDetPM_iphi", 
 			"Energy", mapper::fSubDetPM_iphi,
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-		_cEnergyvsieta_SubDet(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+		_cEnergyvsieta_SubDet.initialize(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
-		_cEnergyvsiphi_SubDet(_name+"/Energy/vsiphi_SubDet", "Energyvsiphi",
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy));
+		_cEnergyvsiphi_SubDet.initialize(_name+"/Energy/vsiphi_SubDet", "Energyvsiphi",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
-		_cEnergy_depth(_name+"/Energy/depth", "Energy",
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy));
+		_cEnergy_depth.initialize(_name+"/Energy/depth", "Energy",
 			mapper::fdepth, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true)),
-		_cEnergyvsietaCut_SubDet(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
+			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true));
+		_cEnergyvsietaCut_SubDet.initialize(_name+"/Energy/vsieta_SubDet", "Energyvsieta",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
-		_cEnergyvsiphiCut_SubDet(_name+"/Energy/vsiphi_SubDet", "Energyvsiphi",
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy));
+		_cEnergyvsiphiCut_SubDet.initialize(_name+"/Energy/vsiphi_SubDet", "Energyvsiphi",
 			mapper::fSubDet, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi), 
-			new axis::ValueAxis(axis::fYaxis, axis::fEnergy)),
-		_cEnergyCut_depth(_name+"/Energy/depth", "Energy",
+			new axis::ValueAxis(axis::fYaxis, axis::fEnergy));
+		_cEnergyCut_depth.initialize(_name+"/Energy/depth", "Energy",
 			mapper::fdepth, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true)),
+			new axis::ValueAxis(axis::fZaxis, axis::fEnergy, true));
 
 		//	Timing
-		_cTimingCut_SubDet(_name+"/Timing/SubDet", "Timing", mapper::fSubDet,
-			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
-		_cTimingCut_SubDetPM_iphi(_name+"/Timing/SubDetPM_iphi", "Timing", 
+		_cTimingCut_SubDet.initialize(_name+"/Timing/SubDet", "Timing", mapper::fSubDet,
+			new axis::ValueAxis(axis::fXaxis, axis::fTime));
+		_cTimingCut_SubDetPM_iphi.initialize(_name+"/Timing/SubDetPM_iphi", "Timing", 
 			mapper::fSubDetPM_iphi, 
-			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
-		_cTimingCutvsLS_SubDetPM_iphi(_name+"/Timing/vsLS_SubDetPM_iphi",
+			new axis::ValueAxis(axis::fXaxis, axis::fTime));
+		_cTimingCutvsLS_SubDetPM_iphi.initialize(_name+"/Timing/vsLS_SubDetPM_iphi",
 			"Timing", mapper::fSubDetPM_iphi,
 			new axis::ValueAxis(axis::fXaxis, axis::fLS),
-			new axis::ValueAxis(axis::fYaxis, axis::fTime)),
-		_cTimingCut_SubDet_ieta(_name+"/Timing/SubDet_ieta", "Timing", 
+			new axis::ValueAxis(axis::fYaxis, axis::fTime));
+		_cTimingCut_SubDet_ieta.initialize(_name+"/Timing/SubDet_ieta", "Timing", 
 			mapper::fSubDet_ieta, 
-			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
-		_cTimingvsietaCut_SubDet_iphi(_name+"/Timing/vsieta_SubDet_iphi", 
+			new axis::ValueAxis(axis::fXaxis, axis::fTime));
+		_cTimingvsietaCut_SubDet_iphi.initialize(_name+"/Timing/vsieta_SubDet_iphi", 
 			"Timing",
 			mapper::fSubDet_iphi,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
-			new axis::ValueAxis(axis::fYaxis, axis::fTime)),
-		_cTimingvsiphiCut_SubDet_ieta(_name+"/Timing/vsiphi_SubDet_ieta", 
+			new axis::ValueAxis(axis::fYaxis, axis::fTime));
+		_cTimingvsiphiCut_SubDet_ieta.initialize(_name+"/Timing/vsiphi_SubDet_ieta", 
 			"Timing",
 			mapper::fSubDet_ieta,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fYaxis, axis::fTime)),
-		_cTimingCut_depth(_name+"/Timing/depth", "Timing",
+			new axis::ValueAxis(axis::fYaxis, axis::fTime));
+		_cTimingCut_depth.initialize(_name+"/Timing/depth", "Timing",
 			mapper::fdepth, 
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fZaxis, axis::fTime)),
-		_cTimingCut_HBHEPrt(_name+"/Timing/HBHEPartition", "Timing",
+			new axis::ValueAxis(axis::fZaxis, axis::fTime));
+		_cTimingCut_HBHEPrt.initialize(_name+"/Timing/HBHEPartition", "Timing",
 			mapper::fHBHEPartition,
-			new axis::ValueAxis(axis::fXaxis, axis::fTime)),
+			new axis::ValueAxis(axis::fXaxis, axis::fTime));
 
 		//	Occupancy
-		_cOccupancy_depth(_name+"/Occupancy/depth", "Occupancy", mapper::fdepth,
+		_cOccupancy_depth.initialize(_name+"/Occupancy/depth", "Occupancy", mapper::fdepth,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-		_cOccupancyvsLS_SubDet(_name+"/Occupancy/vsLS_SubDet", "Occupancy",
+			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+		_cOccupancyvsLS_SubDet.initialize(_name+"/Occupancy/vsLS_SubDet", "Occupancy",
 			mapper::fSubDet,
 			new axis::ValueAxis(axis::fXaxis, axis::fLS),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
-		_cOccupancyCutvsLS_SubDet(_name+"/Occupancy/vsLS_SubDet", "Occupancy",
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+		_cOccupancyCutvsLS_SubDet.initialize(_name+"/Occupancy/vsLS_SubDet", "Occupancy",
 			mapper::fSubDet,
 			new axis::ValueAxis(axis::fXaxis, axis::fLS),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
-		_cOccupancyCut_depth(_name+"/Occupancy/depth", "Occupancy", 
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+		_cOccupancyCut_depth.initialize(_name+"/Occupancy/depth", "Occupancy", 
 			mapper::fdepth,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-		_cOccupancyvsiphi_SubDetPM(_name+"/Occupancy/vsiphi_SubDetPM",
+			new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+		_cOccupancyvsiphi_SubDetPM.initialize(_name+"/Occupancy/vsiphi_SubDetPM",
 			"Occupancy", mapper::fSubDetPM,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
-		_cOccupancyCutvsiphi_SubDetPM(_name+"/Occupancy/vsiphi_SubDetPM",
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+		_cOccupancyCutvsiphi_SubDetPM.initialize(_name+"/Occupancy/vsiphi_SubDetPM",
 			"Occupancy", mapper::fSubDetPM,
 			new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-			new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
+			new axis::ValueAxis(axis::fYaxis, axis::fEntries));
 
 		//	Energy vs Timing
-		_cTimingvsEnergyCut_SubDetPM_iphi(
+		_cTimingvsEnergyCut_SubDetPM_iphi.initialize(
 			_name+"/TimingvsEnergy/SubDetPM_iphi", 
 			"TimingvsEnergy", mapper::fSubDetPM_iphi, 
 			new axis::ValueAxis(axis::fXaxis, axis::fEnergy), 
-			new axis::ValueAxis(axis::fYaxis, axis::fTime)),
-		_cSummary(_name+"/Summary", "Summary",
+			new axis::ValueAxis(axis::fYaxis, axis::fTime));
+		_cSummary.initialize(_name+"/Summary", "Summary",
 			new axis::CoordinateAxis(axis::fXaxis, axis::fSubDet),
-			new axis::FlagAxis(axis::fYaxis, "Flag", int(nRecHitFlag))),
-		_cSummaryvsLS_SubDet(_name+"/Summary/vsLS_SubDet", "SummaryvsLS",
+			new axis::FlagAxis(axis::fYaxis, "Flag", int(nRecHitFlag)));
+		_cSummaryvsLS_SubDet.initialize(_name+"/Summary/vsLS_SubDet", "SummaryvsLS",
 			mapper::fSubDet,
 			new axis::ValueAxis(axis::fXaxis, axis::fLS),
-			new axis::FlagAxis(axis::fYaxis, "Flag", int(nRecHitFlag)))
-	{
+			new axis::FlagAxis(axis::fYaxis, "Flag", int(nRecHitFlag)));
+	
 		//	tags
 		_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 			edm::InputTag("hbhereco"));

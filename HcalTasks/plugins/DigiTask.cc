@@ -3,149 +3,152 @@
 
 using namespace hcaldqm;
 DigiTask::DigiTask(edm::ParameterSet const& ps):
-	DQTask(ps),
-
+	DQTask(ps)
+{
 	//	Signal, ADC, fC, SumQ
-	_cfCperTS_SubDet(_name+"/Signal/fC_SubDet", "fCperTS",
+	_cfCperTS_SubDet.initialize(_name+"/Signal/fC_SubDet", "fCperTS",
 		mapper::fSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fNomFC),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cADCperTS_SubDet(_name+"/Signal/ADC_SubDet", "ADCperTS",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cADCperTS_SubDet.initialize(_name+"/Signal/ADC_SubDet", "ADCperTS",
 		mapper::fSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fADC),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cSumQ_SubDetPM_iphi(_name+"/Signal/SubDetPM_iphi", "SumQ",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cSumQ_SubDetPM_iphi.initialize(_name+"/Signal/SubDetPM_iphi", "SumQ",
 		mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fNomFC),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cSumQ_depth(_name+"/Signal/depth", "SumQ",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cSumQ_depth.initialize(_name+"/Signal/depth", "SumQ",
 		mapper::fdepth,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fNomFC)),
-	_cSumQvsLS_SubDetPM_iphi(_name+"/Signal/vsLS_SubDetPM_iphi", "SumQvsLS",
+		new axis::ValueAxis(axis::fZaxis, axis::fNomFC));
+	_cSumQvsLS_SubDetPM_iphi.initialize(_name+"/Signal/vsLS_SubDetPM_iphi", "SumQvsLS",
 		mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC));
 
 	//	Shape
-	_cShape_SubDetPM_iphi(_name+"/Shape/SubDetPM_iphi", "Shape",
+	_cShape_SubDetPM_iphi.initialize(_name+"/Shape/SubDetPM_iphi", "Shape",
 		mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
-	_cShapeCut_SubDetPM_iphi(_name+"/Shape/SubDetPM_iphi", "Shape",
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC));
+	_cShapeCut_SubDetPM_iphi.initialize(_name+"/Shape/SubDetPM_iphi", "Shape",
 		mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
-	_cShapeCut_p3e41d2(_name+"/Shape/iphi3ieta41d2", "Shape",
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC));
+	_cShapeCut_p3e41d2.initialize(_name+"/Shape/iphi3ieta41d2", "Shape",
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
-	_cShapeCut_p3em41d2(_name+"/Shape/iphi3ieta-41d2", "Shape",
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC));
+	_cShapeCut_p3em41d2.initialize(_name+"/Shape/iphi3ieta-41d2", "Shape",
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC)),
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC));
 
 	//	Timing
-	_cTimingCut_SubDetPM_iphi(_name+"/Timing/SubDetPM_iphi", 
+	_cTimingCut_SubDetPM_iphi.initialize(_name+"/Timing/SubDetPM_iphi", 
 		"Timing", mapper::fSubDetPM_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
-	_cTimingCutvsieta_SubDet_iphi(_name+"/Timing/vsieta_SubDet_iphi",
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200));
+	_cTimingCutvsieta_SubDet_iphi.initialize(_name+"/Timing/vsieta_SubDet_iphi",
 		"Timingvsieta", mapper::fSubDet_iphi,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
-		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS_200)),
-	_cTimingCutvsiphi_SubDet_ieta(_name+"/Timing/vsiphi_SubDet_ieta",
+		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS_200));
+	_cTimingCutvsiphi_SubDet_ieta.initialize(_name+"/Timing/vsiphi_SubDet_ieta",
 		"Timingvsiphi", mapper::fSubDet_ieta,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS_200)),
-	_cTimingCutvsLS_SubDetPM_iphi(_name+"/Timing/vsLS_SubDetPM_iphi",
+		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS_200));
+	_cTimingCutvsLS_SubDetPM_iphi.initialize(_name+"/Timing/vsLS_SubDetPM_iphi",
 		"Timing", mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS_200)),
-	_cTimingCut_depth(_name+"/Timing/depth", "Timing",
+		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS_200));
+	_cTimingCut_depth.initialize(_name+"/Timing/depth", "Timing",
 		mapper::fdepth,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200)),
+		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200));
 
 	//	Special
-	_cQ2Q12CutvsLS_HFPM_iphi(_name+"/Q2Q12/vsLS_HFPM_iphi",
+	_cQ2Q12CutvsLS_HFPM_iphi.initialize(_name+"/Q2Q12/vsLS_HFPM_iphi",
 		"Q2Q12", mapper::fHFPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fRatio)),
-	_cQ2Q12CutvsLS_p3e41d2(_name+"/Q2Q12/vsLS_iphi3ieta41d2",
+		new axis::ValueAxis(axis::fYaxis, axis::fRatio));
+	_cQ2Q12CutvsLS_p3e41d2.initialize(_name+"/Q2Q12/vsLS_iphi3ieta41d2",
 		"Q2Q12",
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fRatio)),
-	_cQ2Q12CutvsLS_p3em41d2(_name+"/Q2Q12/vsLS_iphi3ieta-41d2",
+		new axis::ValueAxis(axis::fYaxis, axis::fRatio));
+	_cQ2Q12CutvsLS_p3em41d2.initialize(_name+"/Q2Q12/vsLS_iphi3ieta-41d2",
 		"Q2Q12",
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fRatio)),
-	_cDigiSizevsLS_SubDet(_name+"/DigiSize/vsLS_SubDet", "DigiSize",
+		new axis::ValueAxis(axis::fYaxis, axis::fRatio));
+	_cDigiSizevsLS_SubDet.initialize(_name+"/DigiSize/vsLS_SubDet", "DigiSize",
 		mapper::fSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize)),
-	_cCapIdRots_depth(_name+"/CapIdRotations/depth", "CapIdRotations",
+		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize));
+	_cCapIdRots_depth.initialize(
+		_name+"/CapIdRotations/depth", "CapIdRotations",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
 
 	//	Occupancy
-	_cOccupancyvsiphi_SubDetPM(_name+"/Occupancy/vsiphi_SubDetPM", "Occupancyvsiphi",
+	_cOccupancyvsiphi_SubDetPM.initialize(_name+"/Occupancy/vsiphi_SubDetPM", "Occupancyvsiphi",
 		mapper::fSubDetPM,
-		new axis::CoordinateAxis(fXaxis, axis::fiphi)),
-	_cOccupancyCutvsiphi_SubDetPM(_name+"/Occupancy/vsiphi_SubDetPM", 
+		new axis::CoordinateAxis(fXaxis, axis::fiphi));
+	_cOccupancyCutvsiphi_SubDetPM.initialize(
+		_name+"/Occupancy/vsiphi_SubDetPM", 
 		"Occupancyvsiphi",
 		mapper::fSubDetPM,
-		new axis::CoordinateAxis(fXaxis, axis::fiphi)),
-	_cOccupancyvsLS_SubDet(_name+"/Occupancy/vsLS_SubDet",
+		new axis::CoordinateAxis(fXaxis, axis::fiphi));
+	_cOccupancyvsLS_SubDet.initialize(_name+"/Occupancy/vsLS_SubDet",
 		"OccupancyvsLS",
 		mapper::fSubDet,
 		new axis::ValueAxis(fXaxis, axis::fLS),
-		new axis::ValueAxis(fYaxis, axis::fEntries)),
-	_cOccupancyCutvsLS_SubDet(_name+"/Occupancy/vsLS_SubDet",
+		new axis::ValueAxis(fYaxis, axis::fEntries));
+	_cOccupancyCutvsLS_SubDet.initialize(_name+"/Occupancy/vsLS_SubDet",
 		"OccupancyvsLS",
 		mapper::fSubDet,
 		new axis::ValueAxis(fXaxis, axis::fLS),
-		new axis::ValueAxis(fYaxis, axis::fEntries)),
-	_cOccupancy_depth(_name+"/Occupancy/depth", "Occupancy",
+		new axis::ValueAxis(fYaxis, axis::fEntries));
+	_cOccupancy_depth.initialize(_name+"/Occupancy/depth", "Occupancy",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cOccupancyCut_depth(_name+"/Occupancy/depth", "Occupancy",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+	_cOccupancyCut_depth.initialize(_name+"/Occupancy/depth", "Occupancy",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cOccupancyCutiphivsLS_SubDet(_name+"/Occupancy/iphivsLS_SubDet", 
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+	_cOccupancyCutiphivsLS_SubDet.initialize(
+		_name+"/Occupancy/iphivsLS_SubDet", 
 		"OccupancyiphivsLS",
 		mapper::fSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
-	_cOccupancyOnce_depth(_name+"/Occupancy/Once_depth",
+		new axis::ValueAxis(axis::fZaxis, axis::fEntries));
+	_cOccupancyOnce_depth.initialize(_name+"/Occupancy/Once_depth",
 		"Occupancy", mapper::fdepth,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cMsn1LS_depth(_name+"/Missing/1LS_depth", "Missing",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+	_cMsn1LS_depth.initialize(_name+"/Missing/1LS_depth", "Missing",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cMsn10LS_depth(_name+"/Missing/10LS_depth", "Missing",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+	_cMsn10LS_depth.initialize(_name+"/Missing/10LS_depth", "Missing",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cMsn1LSvsLS_SubDet(_name+"/Missing/1LSvsLS_SubDet", "Missing",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+	_cMsn1LSvsLS_SubDet.initialize(_name+"/Missing/1LSvsLS_SubDet", "Missing",
 		mapper::fSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries));
 
 	//	Summaries
-	_cSummary(_name+"/Summary", "Summary",
+	_cSummary.initialize(_name+"/Summary", "Summary",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fSubDet),
-		new axis::FlagAxis(axis::fYaxis, "Flag", int(nDigiFlag))),
-	_cSummaryvsLS_SubDet(_name+"/Summary/vsLS_SubDet", "SummaryvsLS",
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nDigiFlag)));
+	_cSummaryvsLS_SubDet.initialize(_name+"/Summary/vsLS_SubDet", "SummaryvsLS",
 		mapper::fSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::FlagAxis(axis::fYaxis, "Flag", int(nDigiFlag)))
-{
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nDigiFlag)));
+
 	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 		edm::InputTag("hcalDigis"));

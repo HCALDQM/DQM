@@ -2,42 +2,43 @@
 
 using namespace hcaldqm;
 RawTask::RawTask(edm::ParameterSet const& ps):
-	DQTask(ps),
+	DQTask(ps)
+{
 	//	specify all the Containers
-	_cVMEEvnMsm(_name+"/VME/EvnMsm", "EvnMismatch",
+	_cVMEEvnMsm.initialize(_name+"/VME/EvnMsm", "EvnMismatch",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDVME),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fSpigot)),
-	_cVMEBcnMsm(_name+"/VME/BcnMsm", "BcnMismatch",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fSpigot));
+	_cVMEBcnMsm.initialize(_name+"/VME/BcnMsm", "BcnMismatch",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDVME),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fSpigot)),
-	_cVMEOrnMsm(_name+"/VME/OrnMsm", "OrnMismatch",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fSpigot));
+	_cVMEOrnMsm.initialize(_name+"/VME/OrnMsm", "OrnMismatch",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDVME),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fSpigot)),
-	_cuTCAEvnMsm(_name+"/uTCA/EvnMsm", "EvnMismatch",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fSpigot));
+	_cuTCAEvnMsm.initialize(_name+"/uTCA/EvnMsm", "EvnMismatch",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDuTCA),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA)),
-	_cuTCABcnMsm(_name+"/uTCA/BcnMsm", "BcnMismatch",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA));
+	_cuTCABcnMsm.initialize(_name+"/uTCA/BcnMsm", "BcnMismatch",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDuTCA),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA)),
-	_cuTCAOrnMsm(_name+"/uTCA/OrnMsm", "OrnMismatch",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA));
+	_cuTCAOrnMsm.initialize(_name+"/uTCA/OrnMsm", "OrnMismatch",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDuTCA),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA)),
-	_cVMEOccupancy(_name+"/VME/Occupancy", "Occupancy",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA));
+	_cVMEOccupancy.initialize(_name+"/VME/Occupancy", "Occupancy",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDVME),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fSpigot)),
-	_cuTCAOccupancy(_name+"/uTCA/Occupancy", "Occupancy",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fSpigot));
+	_cuTCAOccupancy.initialize(_name+"/uTCA/Occupancy", "Occupancy",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDuTCA),
-		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA)),
+		new axis::CoordinateAxis(axis::fYaxis, axis::fSlotuTCA));
 
 	//	Summary Containers
 	_cSummary(_name+"/Summary", "Summary",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fFEDComb),
-		new axis::FlagAxis(axis::fYaxis, "Flag", int(nRawFlag))),
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nRawFlag)));
 	_cSummaryvsLS_FED(_name+"/Summary/vsLS_FED", "SummaryvsLS",
 		mapper::fFED,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::FlagAxis(axis::fYaxis, "Flag", int(nRawFlag)))
-{
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nRawFlag)));
+
 	//	tags
 	_tagFEDs = ps.getUntrackedParameter<edm::InputTag>("tagFEDs",
 		edm::InputTag("rawDataCollector"));

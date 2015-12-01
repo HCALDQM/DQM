@@ -3,26 +3,30 @@
 
 using namespace hcaldqm;
 PedestalTask::PedestalTask(edm::ParameterSet const& ps):
-	DQTask(ps),
-
+	DQTask(ps)
+{
 	//	Containers
-	_cPedestalMeans_SubDet(_name+"/PedestalMeans/SubDet", "PedestalMeans",
+	_cPedestalMeans_SubDet.initialize(_name+"/PedestalMeans/SubDet", 
+		"PedestalMeans",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fADC_15),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cPedestalRMSs_SubDet(_name+"/PedestalRMSs/SubDet", "PedestalRMSs",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cPedestalRMSs_SubDet.initialize(_name+"/PedestalRMSs/SubDet", 
+		"PedestalRMSs",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fADC_5),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cPedestalMeans_depth(_name+"/PedestalMeans/depth", "PedestalMeans",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cPedestalMeans_depth.initialize(_name+"/PedestalMeans/depth", 
+		"PedestalMeans",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi)),
-	_cPedestalRMSs_depth(_name+"/PedestalRMSs/depth", "PedestalRMSs",
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+	_cPedestalRMSs_depth.initialize(_name+"/PedestalRMSs/depth", "PedestalRMSs",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
-		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi))
-{
+		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi));
+
+	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 		edm::InputTag("hcalDigis"));
 	_tagHO = ps.getUntrackedParameter<edm::InputTag>("tagHO",

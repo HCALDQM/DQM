@@ -3,45 +3,45 @@
 
 using namespace hcaldqm;
 LaserTask::LaserTask(edm::ParameterSet const& ps):
-	DQTask(ps),
-
+	DQTask(ps)
+{
 	//	Containers
-	_cSignalMeans_SubDet(_name+"/SignalMeans/SubDet", "SignalMeans",
+	_cSignalMeans_SubDet.initialize(_name+"/SignalMeans/SubDet", "SignalMeans",
 		mapper::fSubDet, 
-		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_3000)),
-	_cSignalRMSs_SubDet(_name+"/SignalRMSs/SubDet", "SignalRMSs",
+		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_3000));
+	_cSignalRMSs_SubDet.initialize(_name+"/SignalRMSs/SubDet", "SignalRMSs",
 		mapper::fSubDet, 
-		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_1000)),
-	_cTimingMeans_SubDet(_name+"/TimingMeans/SubDet", "TimingMeans",
+		new axis::ValueAxis(axis::fXaxis, axis::fNomFC_1000));
+	_cTimingMeans_SubDet.initialize(_name+"/TimingMeans/SubDet", "TimingMeans",
 		mapper::fSubDet, 
-		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
-	_cTimingRMSs_SubDet(_name+"/TimingRMSs/SubDet", "TimingRMSs",
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200));
+	_cTimingRMSs_SubDet.initialize(_name+"/TimingRMSs/SubDet", "TimingRMSs",
 		mapper::fSubDet, 
-		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
-	_cShapeCut_SubDetPM_iphi(_name+"/Shape/SubDetPM_iphi", "Shape", 
+		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200));
+	_cShapeCut_SubDetPM_iphi.initialize(_name+"/Shape/SubDetPM_iphi", "Shape", 
 		mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC_3000)),
-	_cSignalMeans_depth(_name+"/SignalMeans/depth", "SignalMeans",
+		new axis::ValueAxis(axis::fYaxis, axis::fNomFC_3000));
+	_cSignalMeans_depth.initialize(_name+"/SignalMeans/depth", "SignalMeans",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fNomFC_3000)),
-	_cSignalRMSs_depth(_name+"/SignalRMSs/depth", "SignalRMSs",
+		new axis::ValueAxis(axis::fZaxis, axis::fNomFC_3000));
+	_cSignalRMSs_depth.initialize(_name+"/SignalRMSs/depth", "SignalRMSs",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fNomFC_1000)),
-	_cTimingMeans_depth(_name+"/TimingMeans/depth", "TimingMeans",
+		new axis::ValueAxis(axis::fZaxis, axis::fNomFC_1000));
+	_cTimingMeans_depth.initialize(_name+"/TimingMeans/depth", "TimingMeans",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200)),
-	_cTimingRMSs_depth(_name+"/TimingRMSs/depth", "TimingRMSs",
+		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200));
+	_cTimingRMSs_depth.initialize(_name+"/TimingRMSs/depth", "TimingRMSs",
 		mapper::fdepth, 
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta), 
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200))
+		new axis::ValueAxis(axis::fZaxis, axis::fTimeTS_200));
 {
 	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",

@@ -3,136 +3,144 @@
 
 using namespace hcaldqm;
 TPTask::TPTask(edm::ParameterSet const& ps):
-	DQTask(ps),
-
+	DQTask(ps)
+{
 	//	Et
-	_cEtData_SubDet(_name+"/Et/SubDet_Data", "Et",
+	_cEtData_SubDet.initialize(_name+"/Et/SubDet_Data", "Et",
 		mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cEtEmul_SubDet(_name+"/Et/SubDet_Data", "Et",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cEtEmul_SubDet.initialize(_name+"/Et/SubDet_Data", "Et",
 		mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cEtCorr_TPSubDet(_name+"/EtCorrelation/TPSubDet", "EtCorrelation",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cEtCorr_TPSubDet.initialize(_name+"/EtCorrelation/TPSubDet", 
+		"EtCorrelation",
 		mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_128),
-		new axis::ValueAxis(axis::fYaxis, axis::fEt_128)),
-	_cEtCorrRatiovsLS_TPSubDet(_name+"/EtCorrRatio/vsLS_TPSubDet",
+		new axis::ValueAxis(axis::fYaxis, axis::fEt_128));
+	_cEtCorrRatiovsLS_TPSubDet.initialize(_name+"/EtCorrRatio/vsLS_TPSubDet",
 		"EtCorrelationRatio", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fRatio)),
-	_cEtCorrRatio_TPSubDet(_name+"/EtCorrRatio/TPSubDet",
+		new axis::ValueAxis(axis::fYaxis, axis::fRatio));
+	_cEtCorrRatio_TPSubDet.initialize(_name+"/EtCorrRatio/TPSubDet",
 		"EtCorrelationRatio", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fRatio),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cEtCorrRatiovsiphi_TPSubDetPM(_name+"/EtCorrRatio/vsiphi_TPSubDetPM",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cEtCorrRatiovsiphi_TPSubDetPM.initialize(
+		_name+"/EtCorrRatio/vsiphi_TPSubDetPM",
 		"EtCorrelationRatio", mapper::fTPSubDetPM,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fXaxis, axis::fRatio)),
-	_cEtMsm(_name+"/EtMisMatched", "EtMismatched",
+		new axis::ValueAxis(axis::fXaxis, axis::fRatio));
+	_cEtMsm.initialize(_name+"/EtMisMatched", "EtMismatched",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fTPieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
-	_cNumEtMsmvsLS_TPSubDet(_name+"/EtMismatched/vsLS_TPSubDet",
+		new axis::ValueAxis(axis::fZaxis, axis::fEntries));
+	_cNumEtMsmvsLS_TPSubDet.initialize(_name+"/EtMismatched/vsLS_TPSubDet",
 		"EtMismatched", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries100)),
-	_cNumEtMsm_TPSubDet(_name+"/EtMismatched/TPSubDet",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries100));
+	_cNumEtMsm_TPSubDet.initialize(_name+"/EtMismatched/TPSubDet",
 		"EtMismatched", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fEntries100),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cNumEtMsmvsiphi_TPSubDetPM(_name+"/EtMismatched/vsiphi_TPSubDetPM",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cNumEtMsmvsiphi_TPSubDetPM.initialize(
+		_name+"/EtMismatched/vsiphi_TPSubDetPM",
 		"EtMismatched", mapper::fTPSubDetPM,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
-	_cSumdEtvsLS_TPSubDet(_name+"/SumdEt/vsLS_TPSubDet",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+	_cSumdEtvsLS_TPSubDet.initialize(_name+"/SumdEt/vsLS_TPSubDet",
 		"SumdEt", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fSumdEt)),
-	_cSumdEt_TPSubDet(_name+"/SumdEt/TPSubDet",
+		new axis::ValueAxis(axis::fYaxis, axis::fSumdEt));
+	_cSumdEt_TPSubDet.initialize(_name+"/SumdEt/TPSubDet",
 		"SumdEt", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fSumdEt),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cEtData_SubDetPM_iphi(_name+"/Et/SubDetPM_iphi_Data", "Et",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cEtData_SubDetPM_iphi.initialize(_name+"/Et/SubDetPM_iphi_Data", "Et",
 		mapper::fTPSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cEtData_SubDet_ieta(_name+"/Et/SubDet_ieta_Data", "Et",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cEtData_SubDet_ieta.initialize(_name+"/Et/SubDet_ieta_Data", "Et",
 		mapper::fTPSubDet_ieta,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)),
-	_cEtCorr_SubDetPM_iphi(_name+"/EtCorrelation/SubDetPM_iphi", 
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries, true));
+	_cEtCorr_SubDetPM_iphi.initialize(_name+"/EtCorrelation/SubDetPM_iphi", 
 		"Et",
 		mapper::fTPSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fEt_128),
-		new axis::ValueAxis(axis::fYaxis, axis::fEt_128)),
+		new axis::ValueAxis(axis::fYaxis, axis::fEt_128));
 
 	//	FG
-	_cFGCorr_SubDet(_name+"/FGCorrelation/SubDet", "FG",
+	_cFGCorr_SubDet.initialize(_name+"/FGCorrelation/SubDet", "FG",
 		mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fFG),
-		new axis::ValueAxis(axis::fYaxis, axis::fFG)),
-	_cFGMsm(_name+"/FGMisMatched", "FGMismatched",
+		new axis::ValueAxis(axis::fYaxis, axis::fFG));
+	_cFGMsm.initialize(_name+"/FGMisMatched", "FGMismatched",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fTPieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
+		new axis::ValueAxis(axis::fZaxis, axis::fEntries));
 
 	//	Occupancy
-	_cOccupancyData(_name+"/Occupancy/Data", "Occupancy",
+	_cOccupancyData.initialize(_name+"/Occupancy/Data", "Occupancy",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fTPieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
-	_cOccupancyEmul(_name+"/Occupancy/Emul", "Occupancy",
+		new axis::ValueAxis(axis::fZaxis, axis::fEntries));
+	_cOccupancyEmul.initialize(_name+"/Occupancy/Emul", "Occupancy",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fTPieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
-	_cOccupancyDatavsiphi_TPSubDetPM(_name+"/Occupancy/vsiphi_TPSubDetPM_Data",
+		new axis::ValueAxis(axis::fZaxis, axis::fEntries));
+	_cOccupancyDatavsiphi_TPSubDetPM.initialize(
+		_name+"/Occupancy/vsiphi_TPSubDetPM_Data",
 		"Occupancy", mapper::fTPSubDetPM,
-		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi)),
-	_cOccupancyEmulvsiphi_TPSubDetPM(_name+"/Occupancy/vsiphi_TPSubDetPM_Emul",
+		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi));
+	_cOccupancyEmulvsiphi_TPSubDetPM.initialize(
+		_name+"/Occupancy/vsiphi_TPSubDetPM_Emul",
 		"Occupancy", mapper::fTPSubDetPM,
-		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi)),
-	_cOccupancyDatavsLS_TPSubDet(_name+"/Occupancy/vsLS_TPSubDet_Data",
+		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi));
+	_cOccupancyDatavsLS_TPSubDet.initialize(
+		_name+"/Occupancy/vsLS_TPSubDet_Data",
 		"Occupancy", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
-	_cOccupancyEmulvsLS_TPSubDet(_name+"/Occupancy/vsLS_TPSubDet_Emul",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+	_cOccupancyEmulvsLS_TPSubDet.initialize(
+		_name+"/Occupancy/vsLS_TPSubDet_Emul",
 		"Occupancy", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
-	_cMsData(_name+"/Missing/Data", "Missing",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+	_cMsData.initialize(_name+"/Missing/Data", "Missing",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fTPieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
-	_cMsDatavsiphi_TPSubDetPM(_name+"/Missing/vsiphi_TPSubDetPM_Data",
+		new axis::ValueAxis(axis::fZaxis, axis::fEntries));
+	_cMsDatavsiphi_TPSubDetPM.initialize(
+		_name+"/Missing/vsiphi_TPSubDetPM_Data",
 		"Missing", mapper::fTPSubDetPM,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fYaxis, axis::fEntries)),
-	_cMsEmul(_name+"/Missing/Emul", "Missing",
+		new axis::ValueAxis(axis::fYaxis, axis::fEntries));
+	_cMsEmul.initialize(_name+"/Missing/Emul", "Missing",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fTPieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fZaxis, axis::fEntries)),
+		new axis::ValueAxis(axis::fZaxis, axis::fEntries));
 
 	//	Digi Sizes
-	_cDigiSizeDatavsLS_TPSubDet(_name+"/DigiSize/vsLS_TPSubDet_Data",
+	_cDigiSizeDatavsLS_TPSubDet.initialize(_name+"/DigiSize/vsLS_TPSubDet_Data",
 		"DigiSize", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize)),
-	_cDigiSizeEmulvsLS_TPSubDet(_name+"/DigiSize/vsLS_TPSubDet_Emul",
+		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize));
+	_cDigiSizeEmulvsLS_TPSubDet.initialize(_name+"/DigiSize/vsLS_TPSubDet_Emul",
 		"DigiSize", mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize)),
+		new axis::ValueAxis(axis::fYaxis, axis::fDigiSize));
 
 	//	Summary
-	_cSummary(_name+"/Summary", "Summary",
+	_cSummary.initialize(_name+"/Summary", "Summary",
 		new axis::CoordinateAxis(axis::fXaxis, axis::fTPSubDet),
-		new axis::FlagAxis(axis::fYaxis, "Flag", int(nTPFlag))),
-	_cSummaryvsLS_TPSubDet(_name+"/Summary/vsLS_TPSubDet", "Summary",
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nTPFlag)));
+	_cSummaryvsLS_TPSubDet.initialize(_name+"/Summary/vsLS_TPSubDet", "Summary",
 		mapper::fTPSubDet,
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::FlagAxis(axis::fYaxis, "Flag", int(nTPFlag)))
-{
+		new axis::FlagAxis(axis::fYaxis, "Flag", int(nTPFlag)));
+
 	//	tags
 	_tagData = ps.getUntrackedParameter<edm::InputTag>("tagData",
 		edm::InputTag("hcalDigis"));
