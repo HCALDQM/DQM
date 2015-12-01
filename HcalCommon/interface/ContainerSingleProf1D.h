@@ -19,14 +19,17 @@ namespace hcaldqm
 	class ContainerSingleProf1D : public ContainerSingle1D
 	{
 		public:
-			ContainerSingleProf1D():
-				ContainerSingle1D()
-			{}
+			ContainerSingleProf1D();
 			ContainerSingleProf1D(std::string const& folder, 
 				std::string const& nametitle, 
 				axis::Axis *xaxis,
 				axis::Axis *yaxis = new ValueAxis(fYaxis, axis::fEntries));
 			virtual ~ContainerSingleProf1D() {}
+
+			virtual void initialize(std::string const& folder, 
+				std::string const& nametitle, 
+				axis::Axis *xaxis,
+				axis::Axis *yaxis = new ValueAxis(fYaxis, axis::fEntries));
 
 			//	booking
 			virtual void book(DQMStore::IBooker&,

@@ -21,7 +21,7 @@ namespace hcaldqm
 	class ContainerProf2D : public Container2D
 	{
 		public:
-			ContainerProf2D() {}
+			ContainerProf2D();
 			ContainerProf2D(std::string const& folder, 
 				std::string const &nametitle,
 				MapperType mt, 
@@ -29,6 +29,13 @@ namespace hcaldqm
 				Axis *yaxis = new CoordinateAxis(axis::fYaxis, axis::fiphi), 
 				Axis *zaxis = new ValueAxis(axis::fZaxis, axis::fEntries));
 			virtual ~ContainerProf2D() {}
+			
+			virtual void initialize(std::string const& folder, 
+				std::string const &nametitle,
+				MapperType mt, 
+				Axis *xaxis, 
+				Axis *yaxis = new CoordinateAxis(axis::fYaxis, axis::fiphi), 
+				Axis *zaxis = new ValueAxis(axis::fZaxis, axis::fEntries));
 
 			virtual void book(DQMStore::IBooker&,
 				std::string subsystem="Hcal", std::string aux="");

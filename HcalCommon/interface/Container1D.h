@@ -27,7 +27,7 @@ namespace hcaldqm
 	class Container1D : public Container
 	{
 		public:
-			Container1D() {}
+			Container1D();
 			//	Initialize Container
 			//	@folder - folder name where to save. Should already include the
 			//	Tasks's name
@@ -38,6 +38,11 @@ namespace hcaldqm
 				axis::Axis* yaxis = new ValueAxis(fYaxis, fEntries));
 			virtual ~Container1D() {}
 
+			//	Initialize Container
+			//	@folder - folder name where to save. Should already include the
+			//	Tasks's name
+			//	@nametitle - namebase of the name and of the title
+			//
 			virtual void initialize(std::string const& folder, 
 				std::string const& nametitle,
 				mapper::MapperType mt, axis::Axis* xaxis, 

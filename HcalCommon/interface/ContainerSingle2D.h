@@ -21,15 +21,19 @@ namespace hcaldqm
 	class ContainerSingle2D : public Container
 	{
 		public:
-			ContainerSingle2D():
-				Container()
-			{}
+			ContainerSingle2D();
 			ContainerSingle2D(std::string const& folder, 
 				std::string const& nametitle, 
 				axis::Axis *xaxis,
 				axis::Axis *yaxis = new CoordinateAxis(fYaxis, axis::fiphi), 
 				axis::Axis *zaxis = new ValueAxis(fZaxis, fEntries));
 			virtual ~ContainerSingle2D() {}
+
+			virtual void initialize(std::string const& folder, 
+				std::string const& nametitle, 
+				axis::Axis *xaxis,
+				axis::Axis *yaxis = new CoordinateAxis(fYaxis, axis::fiphi), 
+				axis::Axis *zaxis = new ValueAxis(fZaxis, fEntries));
 
 			//	booking
 			virtual void book(DQMStore::IBooker&,

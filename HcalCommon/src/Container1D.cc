@@ -7,11 +7,27 @@ namespace hcaldqm
 	using namespace axis;
 	using namespace constants;
 
+	Container1D::Container1D()
+	{
+		_xaxis = NULL;
+		_yaxis = NULL;
+	}
+
 	Container1D::Container1D(std::string const& folder, 
 		std::string const& nametitle, mapper::MapperType mt, axis::Axis *xaxis,
 		axis::Axis *yaxis):
 		Container(folder, nametitle), _mapper(mt), _xaxis(xaxis), _yaxis(yaxis)
 	{}
+
+	/* vurtial */ void Container1D::intialize(std::string const& folder, 
+		std::string const& nametitle, mapper::MapperType mt, axis::Axis *xaxis,
+		axis::Axis *yaxis)
+	{
+		Container::initialize(folder, nametitle);
+		_mapper.initialize(mt);
+		_xaxis = xaxis;
+		_yaxis = yaxis;
+	}
 
 	/* virtual */ void Container1D::fill(int id, int x)
 	{

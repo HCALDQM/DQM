@@ -8,11 +8,27 @@ namespace hcaldqm
 	using namespace hcaldqm::mapper;
 	using namespace constants;
 
+	Container2D::Container2D()
+	{
+		_xaxis = NULL;
+		_yaxis = NULL;
+		_zaxis = NULL;
+	}
+
 	Container2D::Container2D(std::string const& folder, std::string nametitle,
 		mapper::MapperType mt, axis::Axis *xaxis, axis::Axis* yaxis,
 		axis::Axis *zaxis):
 		Container1D(folder, nametitle, mt, xaxis, yaxis), _zaxis(zaxis)
 	{}
+	
+	/* virtual */ void Container2D::initialize(std::string const& folder, 
+		std::string nametitle,
+		mapper::MapperType mt, axis::Axis *xaxis, axis::Axis* yaxis,
+		axis::Axis *zaxis)
+	{
+		Container1D::initialize(folder, nametitle, mt, xaxis, yaxis);
+		_zaxis = zaxis;
+	}
 
 	/* virtual */ void Container2D::fill(HcalDetId const& did)
 	{

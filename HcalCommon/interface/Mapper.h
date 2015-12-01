@@ -118,7 +118,7 @@ namespace hcaldqm
 				}
 				virtual ~Mapper() {}
 	
-				virtual void	configure(MapperType type)
+				virtual void initialize(MapperType type)
 				{
 					_type = type;
 				}

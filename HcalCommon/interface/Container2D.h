@@ -20,7 +20,7 @@ namespace hcaldqm
 	class Container2D : public Container1D
 	{
 		public:
-			Container2D() {}
+			Container2D();
 			Container2D(std::string const& folder, std::string nametitle,
 				mapper::MapperType mt, axis::Axis *xaxis, 
 				axis::Axis *yaxis = new axis::CoordinateAxis(axis::fYaxis,
@@ -28,6 +28,17 @@ namespace hcaldqm
 				axis::Axis *zaxis = new axis::ValueAxis(axis::fZaxis, 
 					axis::fEntries));
 			virtual ~Container2D() {}
+
+			//	Initialize Container
+			//	@folder
+			//	@nametitle, 
+			virtual void initialize(std::string const& folder, 
+				std::string nametitle,
+				mapper::MapperType mt, axis::Axis *xaxis, 
+				axis::Axis *yaxis = new axis::CoordinateAxis(axis::fYaxis,
+					axis::fiphi),
+				axis::Axis *zaxis = new axis::ValueAxis(axis::fZaxis, 
+					axis::fEntries));
 
 			//	redeclare what to override
 			virtual void fill(HcalDetId const&);

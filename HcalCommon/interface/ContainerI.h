@@ -16,6 +16,13 @@ namespace hcaldqm
 				Container(folder, name)
 			{}
 			virtual ~ContainerI() {}
+			
+			virtual void initialize(std::string const& folder, 
+				std::string const& name)
+			{
+				_folder = folder;
+				_name = name;
+			}
 
 			virtual void fill(int x)
 			{

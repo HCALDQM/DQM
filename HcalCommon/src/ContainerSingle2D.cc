@@ -6,6 +6,13 @@ namespace hcaldqm
 {
 	using namespace axis;
 
+	ContainerSingle2D::ContainerSingle2D()
+	{
+		_xaxis = NULL;
+		_yaxis = NULL;
+		_zaxis = NULL;
+	}
+
 	ContainerSingle2D::ContainerSingle2D(std::string const& folder,
 		std::string const& nametitle,
 		Axis *xaxis, Axis *yaxis, Axis *zaxis):
@@ -13,6 +20,16 @@ namespace hcaldqm
 		_xaxis(xaxis), _yaxis(yaxis), _zaxis(zaxis)
 	{}
 
+	/* virtual */ void ContainerSingle2D::initialize(std::string const& folder,
+		std::string const& nametitle,
+		Axis *xaxis, Axis *yaxis, Axis *zaxis)
+	{
+		Container::initialize(folder, nametitle);
+		_xaxis =xaxis;
+		_yaxis = yaxis;
+		_zaxis = zaxis;
+	}
+	
 	/* virtual */ void ContainerSingle2D::book(DQMStore::IBooker &ib,
 		 std::string subsystem, std::string aux)
 	{
