@@ -8,6 +8,9 @@ namespace hcaldqm
 		DQModule(ps),
 		_cEvsTotal(_name, "EventsTotal"),
 		_cEvsPerLS(_name, "EventssPerLS"),
+		_cRunKeyVal(_name, "RunKeyValue"),
+		_cRunKeyName(_name, "RunKeyName"),
+		_cProcessingTypeName(_name, "ProcessingType"),
 		_procLSs(0)
 	{
 		_tagRaw = ps.getUntrackedParameter<edm::InputTag>("tagRaw",
@@ -55,6 +58,14 @@ namespace hcaldqm
 	{
 		_cEvsTotal.book(ib);
 		_cEvsPerLS.book(ib);
+		_cRunKeyVal.book(ib);
+		_cRunKeyName.book(ib);
+		_cProcessingTypeName.book(ib);
+
+		//	fill what you can now
+		_cRunKeyVal.fill(_runkeyVal);
+		_cRunKeyName.fill(_runkeyName);
+		_cProcessingTypeName.fill(pTypeNames[_ptype]);
 	}
 
 	/* virtual */ void DQTask::dqmBeginRun(edm::Run const& r,

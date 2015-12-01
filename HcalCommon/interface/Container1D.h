@@ -38,6 +38,11 @@ namespace hcaldqm
 				axis::Axis* yaxis = new ValueAxis(fYaxis, fEntries));
 			virtual ~Container1D() {}
 
+			virtual void initialize(std::string const& folder, 
+				std::string const& nametitle,
+				mapper::MapperType mt, axis::Axis* xaxis, 
+				axis::Axis* yaxis = new ValueAxis(fYaxis, fEntries));
+
 			//	just to have here
 			virtual void fill(double ) {}
 			virtual void fill(int) {}

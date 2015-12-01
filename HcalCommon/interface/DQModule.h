@@ -30,6 +30,10 @@ namespace hcaldqm
 		nProcessingType = 3
 	};
 
+	std::string const pTypeNames[nProcessingType] = {
+		"Online", "Offline", "Local"
+	}
+
 	class DQModule
 	{
 		public:

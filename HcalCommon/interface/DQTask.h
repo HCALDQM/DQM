@@ -49,6 +49,9 @@ namespace hcaldqm
 			//	protected vars
 			ContainerI _cEvsTotal;
 			ContainerI _cEvsPerLS;
+			ContainerI _cRunKeyVal;
+			ContainerS _cRunKeyName;
+			ContainerS _cProcessingTypeName;
 
 			//	counters
 			int			_procLSs;

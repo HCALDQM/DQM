@@ -18,7 +18,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_cTimingRMSs_SubDet(_name+"/TimingRMSs/SubDet", "TimingRMSs",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS_200)),
-	_cShapeCut_SubDet_iphi(_name+"/Shape", "Shape", mapper::fSubDet_iphi,
+	_cShapeCut_SubDetPM_iphi(_name+"/Shape/SubDetPM_iphi", "Shape", 
+		mapper::fSubDetPM_iphi,
 		new axis::ValueAxis(axis::fXaxis, axis::fTimeTS),
 		new axis::ValueAxis(axis::fYaxis, axis::fNomFC_3000)),
 	_cSignalMeans_depth(_name+"/SignalMeans/depth", "SignalMeans",
@@ -77,7 +78,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_cSignalRMSs_depth.book(ib, _subsystem, std::string(cutstr));
 	_cTimingMeans_depth.book(ib, _subsystem, std::string(cutstr));
 	_cTimingRMSs_depth.book(ib, _subsystem, std::string(cutstr));
-	_cShapeCut_SubDet_iphi.book(ib, _subsystem, std::string(cutstr));
+	_cShapeCut_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
 }
 
 /* virtual */ void LaserTask::_resetMonitors(UpdateFreq uf)
@@ -137,7 +138,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_cTiming.fill(digi.id(), sumQ>0 ? aveTS : GARBAGE_VALUE);
 		
 		for (int i=0; i<digi.size(); i++)
-			_cShapeCut_SubDet_iphi.fill(digi.id(), i, 
+			_cShapeCut_SubDetPM_iphi.fill(digi.id(), i, 
 				digi.sample(i).nominal_fC()-2.5);
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
@@ -155,7 +156,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_cTiming.fill(digi.id(), sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		for (int i=0; i<digi.size(); i++)
-			_cShapeCut_SubDet_iphi.fill(digi.id(), i, 
+			_cShapeCut_SubDetPM_iphi.fill(digi.id(), i, 
 				digi.sample(i).nominal_fC()-8.5);
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
@@ -173,7 +174,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_cTiming.fill(digi.id(), sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		for (int i=0; i<digi.size(); i++)
-			_cShapeCut_SubDet_iphi.fill(digi.id(), i, 
+			_cShapeCut_SubDetPM_iphi.fill(digi.id(), i, 
 				digi.sample(i).nominal_fC()-2.5);
 	}
 

@@ -57,7 +57,7 @@ class LaserTask : public DQTask
 		Container1D _cTimingRMSs_SubDet;
 
 		//	Prof 1D
-		ContainerProf1D _cShapeCut_SubDet_iphi;
+		ContainerProf1D _cShapeCut_SubDetPM_iphi;
 
 		//	2D
 		Container2D _cSignalMeans_depth;
