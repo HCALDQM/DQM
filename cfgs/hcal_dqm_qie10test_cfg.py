@@ -51,7 +51,7 @@ debugstr		= "### HcalDQM::cfg::DEBUG: "
 warnstr			= "### HcalDQM::cfg::WARN: "
 errorstr		= "### HcalDQM::cfg::ERROR:"
 local			= True
-useMap			= False
+useMap			= True
 dbMap			= False
 cmsnet			= False
 
@@ -182,7 +182,8 @@ elif useMap==True and dbMap==False:
 		input = cms.VPSet(
 			cms.PSet(
 				object = cms.string('ElectronicsMap'),
-				file = cms.FileInPath('version_G_emap_2015_may_20')
+				file = cms.FileInPath('version_qie10.txt')
+#				file = cms.FileInPath('version_G_emap_2015_may_20')
 			)
 		)
 	)
