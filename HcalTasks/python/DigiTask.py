@@ -8,6 +8,9 @@ digiTask = cms.EDAnalyzer(
 	debug = cms.untracked.int32(10),
 	runkeyVal = cms.untracked.int32(0),
 	runkeyName = cms.untracked.string("pp_run"),
+	ptype = cms.untracked.int32(0),
+	mtype = cms.untracked.bool(1),
+	subsystem = cms.untracked.string("Hcal"),
 
 	#	tags
 	tagHBHE = cms.untracked.InputTag("hcalDigis"),

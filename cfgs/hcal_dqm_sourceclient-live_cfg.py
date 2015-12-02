@@ -162,31 +162,20 @@ process.tasksSequence = cms.Sequence(
 		+process.rawTask
 		+process.digiTask
 		+process.tpTask
-#		process.hcalDigiTask
-#		+process.hcalRawTask
-#		+process.hcalRecHitTask
-#		+process.hcalTPTask
-#		+process.hcalTimingTask
-#		+process.hcalMonitor
-#		+process.hcalMonitorTasksOnlineSequence
 )
 
-#process.clientsSequence = cms.Sequence(
-#	process.hcalClient
+#-------------------------------------
+#	Quality Tester. May be in the future
+#-------------------------------------
+#process.qTester = cms.EDAnalyzer(
+#	"QualityTester",
+#	prescaleFactor = cms.untracked.int32(1),
+#	qtList = cms.untracked.FileInPath(
+#		"DQM/HcalMonitorClient/data/hcal_qualitytest_config.xml"),
+#	getQualityTestsFromFile = cms.untracked.bool(True),
+#	qtestOnEndLumi = cms.untracked.bool(True),
+#	qtestOnEndRun = cms.untracked.bool(True)
 #)
-
-#-------------------------------------
-#	Quality Tester
-#-------------------------------------
-process.qTester = cms.EDAnalyzer(
-	"QualityTester",
-	prescaleFactor = cms.untracked.int32(1),
-	qtList = cms.untracked.FileInPath(
-		"DQM/HcalMonitorClient/data/hcal_qualitytest_config.xml"),
-	getQualityTestsFromFile = cms.untracked.bool(True),
-	qtestOnEndLumi = cms.untracked.bool(True),
-	qtestOnEndRun = cms.untracked.bool(True)
-)
 
 #-------------------------------------
 #	Paths/Sequences Definitions
@@ -212,7 +201,6 @@ process.p = cms.Path(
 		process.preRecoSequence
 		*process.recoSequence
 		*process.tasksSequence
-#		*process.clientsSequence
 		*process.qTester
 		*process.dqmSequence
 )

@@ -43,6 +43,10 @@ namespace hcaldqm
 
 		protected:
 			//	Member variables	
+			//	@name - module's name
+			//	@ptype - Processing Type
+			//	@mtype - Module Type
+			//	@ctype - Calibration Type of the Module. All we want is 0 or 1 
 			std::string				_name;
 			ModuleType				_mtype;
 			ProcessingType			_ptype;

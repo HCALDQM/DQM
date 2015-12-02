@@ -103,10 +103,7 @@ process.hbhereco = process.hbheprereco.clone()
 #	Hcal DQM Tasks and Clients import
 #	New Style
 #-------------------------------------
-process.load("DQM.HcalTasks.RecHitTask")
-process.load("DQM.HcalTasks.DigiTask")
-process.load('DQM.HcalTasks.TPTask')
-process.load('DQM.HcalTasks.RawTask')
+process.load("DQM.HcalTasks.OfflineSequence")
 
 #-------------------------------------
 #	To force using uTCA
@@ -145,38 +142,17 @@ if useMap:
 oldsubsystem = subsystem
 
 #-------------------------------------
-#	Hcal DQM Tasks/Clients Sequences Definition
+#	Quality Tester. May be in the future
 #-------------------------------------
-process.tasksSequence = cms.Sequence(
-		process.recHitTask
-		+process.rawTask
-		+process.digiTask
-		+process.tpTask
-#		process.hcalDigiTask
-#		+process.hcalRawTask
-#		+process.hcalRecHitTask
-#		+process.hcalTPTask
-#		+process.hcalTimingTask
-#		+process.hcalMonitor
-#		+process.hcalMonitorTasksOnlineSequence
-)
-
-#process.clientsSequence = cms.Sequence(
-#	process.hcalClient
+#process.qTester = cms.EDAnalyzer(
+#	"QualityTester",
+#	prescaleFactor = cms.untracked.int32(1),
+#	qtList = cms.untracked.FileInPath(
+#		"DQM/HcalMonitorClient/data/hcal_qualitytest_config.xml"),
+#	getQualityTestsFromFile = cms.untracked.bool(True),
+#	qtestOnEndLumi = cms.untracked.bool(True),
+#	qtestOnEndRun = cms.untracked.bool(True)
 #)
-
-#-------------------------------------
-#	Quality Tester
-#-------------------------------------
-process.qTester = cms.EDAnalyzer(
-	"QualityTester",
-	prescaleFactor = cms.untracked.int32(1),
-	qtList = cms.untracked.FileInPath(
-		"DQM/HcalMonitorClient/data/hcal_qualitytest_config.xml"),
-	getQualityTestsFromFile = cms.untracked.bool(True),
-	qtestOnEndLumi = cms.untracked.bool(True),
-	qtestOnEndRun = cms.untracked.bool(True)
-)
 
 #-------------------------------------
 #	Paths/Sequences Definitions
@@ -201,13 +177,10 @@ process.dqmSequence = cms.Sequence(
 process.p = cms.Path(
 		process.preRecoSequence
 		*process.recoSequence
-		*process.tasksSequence
-#		*process.clientsSequence
+		*process.hcalOfflineSequence
 		*process.qTester
 		*process.dqmSequence
 )
-
-#process.schedule = cms.Schedule(process.p)
 
 #-------------------------------------
 #	Scheduling and Process Customizations
