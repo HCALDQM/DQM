@@ -201,7 +201,6 @@ process.p = cms.Path(
 		process.preRecoSequence
 		*process.recoSequence
 		*process.tasksSequence
-		*process.qTester
 		*process.dqmSequence
 )
 

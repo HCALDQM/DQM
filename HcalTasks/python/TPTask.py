@@ -5,12 +5,11 @@ tpTask = cms.EDAnalyzer(
 	
 	#	standard parameters
 	name = cms.untracked.string("TPTask"),
-	debug = cms.untracked.int32(10),
+	debug = cms.untracked.int32(0),
 	runkeyVal = cms.untracked.int32(0),
 	runkeyName = cms.untracked.string("pp_run"),
 	ptype = cms.untracked.int32(0),
-	mtype = cms.untracked.bool(1),
-	ctype = cms.untracked.bool(0),
+	mtype = cms.untracked.bool(True),
 	subsystem = cms.untracked.string("HcalCalib"),
 
 	#	tags

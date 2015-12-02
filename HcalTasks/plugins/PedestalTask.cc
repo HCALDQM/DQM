@@ -6,7 +6,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	DQTask(ps)
 {
 	//	Containers
-	_cPedestalMeans_SubDet.initialize(_name+"/PedestalMeans/SubDet", 
+	_cPedestalMeans_SubDet.initialize(_name+"/Means/SubDet", 
 		"PedestalMeans",
 		mapper::fSubDet, 
 		new axis::ValueAxis(axis::fXaxis, axis::fADC_15),
@@ -58,9 +58,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cPedestalRMSs_SubDet.reset();
 	_cPedestalMeans_depth.reset();
 	_cPedestalRMSs_depth.reset();
-	_cPedestals.dump(&_cPedestalMeans_SubDet, true, -1);
+	_cPedestals.dump(&_cPedestalMeans_SubDet, true);
 	_cPedestals.dump(&_cPedestalRMSs_SubDet, false);
-	_cPedestals.dump(&_cPedestalMeans_depth, true, -1);
+	_cPedestals.dump(&_cPedestalMeans_depth, true);
 	_cPedestals.dump(&_cPedestalRMSs_depth, false);
 }
 

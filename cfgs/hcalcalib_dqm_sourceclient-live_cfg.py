@@ -47,11 +47,6 @@ referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
 
-#	Note, runType is obtained after importing DQM-related modules
-#	=> DQM-dependent
-runType			= process.runType.getRunType()
-print debugstr, "Running with run type= ", runType
-
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
 #-------------------------------------
@@ -88,7 +83,6 @@ process.essourceSev = cms.ESSource(
 		firstValid		= cms.vuint32(1),
 		iovIsRunNotTime	= cms.bool(True)
 )
-process.hcalRecalgos.DropChannelStatusBits = cms.vstring('')
 process.emulTPDigis = \
 		process.simHcalTriggerPrimitiveDigis.clone()
 process.emulTPDigis.inputLabel = \

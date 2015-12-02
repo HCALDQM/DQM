@@ -9,7 +9,7 @@ pedestalTask = cms.EDAnalyzer(
 	runkeyVal = cms.untracked.int32(0),
 	runkeyName = cms.untracked.string("pp_run"),
 	ptype = cms.untracked.int32(0),
-	mtype = cms.untracked.bool(1),
+	mtype = cms.untracked.bool(True),
 	subsystem = cms.untracked.string('HcalCalib'),
 
 	#	tags

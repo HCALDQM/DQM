@@ -23,8 +23,7 @@ namespace hcaldqm
 		_data[isubdet][iiphi][iieta][idepth]._entries++;
 	}
 
-	/* virtual */ void ContainerCompact::dump(Container1D* c, bool q, 
-		double delta /* =0 */)
+	/* virtual */ void ContainerCompact::dump(Container1D* c, bool q)
 	{
 		for (int idet=0; idet<SUBDET_NUM; idet++)
 		{
@@ -53,7 +52,6 @@ namespace hcaldqm
 						double mean= tmp._sum/tmp._entries;
 						double rms = sqrt(tmp._sum2/tmp._entries - 
 							mean*mean);
-						mean += delta;
 						if (q)
 							c->fill(did, mean);
 						else
