@@ -58,19 +58,26 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 	{
 		HcalDetId did = (*cqie10)[i].detid();
 
+		std::cout << "#digis=" << cqie10->size() << std::endl;
 		for (unsigned int ii=0; ii<_cDetIds.size(); ii++)
 			if (did==_cDetIds[i])
 			{
-//				std::cout << did.iphi() << " " << did.ieta() << " " << did.depth()
-//				<< std::endl;
+				std::cout << "Matched" << std::endl;
+				std::cout << did.iphi() << " " << did.ieta() << " " << did.depth()
+				<< std::endl;
 				for (int j=0; j<(*cqie10)[i].samples(); j++)
 				{
 					_vcShape[i].fill(j, adc2fC[(*cqie10)[i][j].adc()]);	
-//					std::cout << (*cqie10)[i][j].adc() << "  ";
+					std::cout << (*cqie10)[i][j].adc() << "  ";
 				}
+				std::cout << std::endl;
 			}
 			else 
+			{
 				std::cout << "Didn't match" << std::endl;
+				std::cout << did.iphi() << " " << did.ieta() << " "
+					<< did.depth() << std::endl;
+			}
 	}
 }
 

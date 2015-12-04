@@ -19,7 +19,8 @@ warnstr			= "### HcalDQM::cfg::WARN: "
 errorstr		= "### HcalDQM::cfg::ERROR:"
 useOfflineGT	= False
 useFileInput	= False
-useMap		= False
+useMap		= True
+dbMap		= False
 
 #-------------------------------------
 #	Central DQM Stuff imports
@@ -108,12 +109,13 @@ process.load("DQM.HcalTasks.RecHitTask")
 process.load("DQM.HcalTasks.DigiTask")
 process.load('DQM.HcalTasks.TPTask')
 process.load('DQM.HcalTasks.RawTask')
+process.load('DQM.Specific.QIE10TestTask')
 
 #-------------------------------------
 #	To force using uTCA
 #	Will not be here for Online DQM
 #-------------------------------------
-if useMap:
+if useMap==True and dbMap==True:
 	process.es_pool = cms.ESSource("PoolDBESSource",
 			process.CondDBSetup,
 			timetype = cms.string('runnumber'),
@@ -132,11 +134,29 @@ if useMap:
 			authenticationMethod = cms.untracked.uint32(0)
 	)	
 	process.es_prefer_es_pool = cms.ESPrefer('PoolDBESSource', 'es_pool')
+elif useMap==True and dbMap==False:
+	process.es_ascii = cms.ESSource(
+		'HcalTextCalibrations',
+		input = cms.VPSet(
+			cms.PSet(
+				object	= cms.string('ElectronicsMap'),
+				file	= cms.FileInPath('version_qie10.txt') 
+			)
+		)
+	)
+	process.es_prefer = cms.ESPrefer('HcalTextCalibrations', 'es_ascii')
 
 #-------------------------------------
 #	For Debugginb
 #-------------------------------------
 #process.hcalDigiTask.moduleParameters.debug = 10
+
+#-------------------------------------
+#	Define the QIE10 unpacker
+#-------------------------------------
+process.qie10Digis = process.hcalDigis.clone()
+process.qie10Digis.InputLabel = rawTag
+process.qie10Digis.FEDs = cms.untracked.vint32(1132)
 
 #-------------------------------------
 #	Some Settings before Finishing up
@@ -157,10 +177,11 @@ process.tpTask.runkeyName = runTypeName
 #	Hcal DQM Tasks/Clients Sequences Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
-		process.recHitTask
-		+process.rawTask
-		+process.digiTask
-		+process.tpTask
+#		process.recHitTask
+#		+process.rawTask
+#		+process.digiTask
+#		+process.tpTask
+	process.qie10TestTask	
 )
 
 #-------------------------------------
@@ -180,8 +201,9 @@ process.tasksSequence = cms.Sequence(
 #	Paths/Sequences Definitions
 #-------------------------------------
 process.preRecoSequence = cms.Sequence(
-		process.hcalDigis
-		*process.l1GtUnpack
+#		process.hcalDigis
+	process.qie10Digis
+	*process.l1GtUnpack
 )
 
 process.recoSequence = cms.Sequence(
@@ -198,7 +220,7 @@ process.dqmSequence = cms.Sequence(
 
 process.p = cms.Path(
 		process.preRecoSequence
-		*process.recoSequence
+#		*process.recoSequence
 		*process.tasksSequence
 		*process.dqmSequence
 )
