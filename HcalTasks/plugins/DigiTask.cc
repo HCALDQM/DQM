@@ -157,8 +157,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF",
 		edm::InputTag("hcalDigis"));
 	_tokHBHE = consumes<HBHEDigiCollection>(_tagHBHE);
-	_tokHO = consumes<HBHEDigiCollection>(_tagHO);
-	_tokHF = consumes<HBHEDigiCollection>(_tagHF);
+	_tokHO = consumes<HODigiCollection>(_tagHO);
+	_tokHF = consumes<HFDigiCollection>(_tagHF);
 
 	// cuts
 	_cutSumQ_HBHE = ps.getUntrackedParameter<double>("cutSumQ_HBHE", 20);
@@ -279,7 +279,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	if (!e.getByToken(_tokHBHE, chbhe))
 		_logger.dqmthrow("Collection HBHEDigiCollection isn't available"
 			+ _tagHBHE.label() + " " + _tagHBHE.instance());
-	if (!e.getByToek(_tokHO, cho))
+	if (!e.getByToken(_tokHO, cho))
 		_logger.dqmthrow("Collection HODigiCollection isn't available"
 			+ _tagHO.label() + " " + _tagHO.instance());
 	if (!e.getByToken(_tokHF, chf))

@@ -59,7 +59,7 @@ namespace hcaldqm
 
 			//	Tags and corresponding Tokens
 			edm::InputTag		_tagRaw;
-			edm::EDGetTotenT<FEDRawDataCollection> _tokRaw;
+			edm::EDGetTokenT<FEDRawDataCollection> _tokRaw;
 	};
 }
 

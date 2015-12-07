@@ -50,9 +50,9 @@ class DigiTask : public DQTask
 		edm::InputTag	_tagHBHE;
 		edm::InputTag	_tagHO;
 		edm::InputTag	_tagHF;
-		edm::EDGettokenT<HBHEDigiCollection> _tokHBHE;
-		edm::EDGettokenT<HODigiCollection> _tokHO;
-		edm::EDGettokenT<HFDigiCollection> _tokHF;
+		edm::EDGetTokenT<HBHEDigiCollection> _tokHBHE;
+		edm::EDGetTokenT<HODigiCollection> _tokHO;
+		edm::EDGetTokenT<HFDigiCollection> _tokHF;
 
 		//	Flag Names
 		std::vector<std::string> _fNames;

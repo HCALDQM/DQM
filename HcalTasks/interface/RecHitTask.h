@@ -45,9 +45,9 @@
 			edm::InputTag	_tagHBHE;
 			edm::InputTag	_tagHO;
 			edm::InputTag	_tagHF;
-			edm::EDGetTokenT<HBHEDigiCollection> _tokHBHE;
-			edm::EDGetTokenT<HODigiCollection> _tokHO;
-			edm::EDGetTokenT<HFDigiCollection> _tokHF;
+			edm::EDGetTokenT<HBHERecHitCollection> _tokHBHE;
+			edm::EDGetTokenT<HORecHitCollection> _tokHO;
+			edm::EDGetTokenT<HFRecHitCollection> _tokHF;
 
 			//	counters
 			int		_nRecHits[constants::SUBDET_NUM];

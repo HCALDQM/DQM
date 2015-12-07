@@ -129,9 +129,9 @@
 			edm::InputTag("horeco"));
 		_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF",
 			edm::InputTag("hfreco"));
-		_tokHBHE = consumes<HBHEDigiCollection>(_tagHBHE);
-		_tokHO = consumes<HODigiCollection>(_tagHO);
-		_tokHF = consumes<HFDigiCollection>(_tagHF);
+		_tokHBHE = consumes<HBHERecHitCollection>(_tagHBHE);
+		_tokHO = consumes<HORecHitCollection>(_tagHO);
+		_tokHF = consumes<HFRecHitCollection>(_tagHF);
 
 		//	cuts
 		_cutE_HBHE = ps.getUntrackedParameter<double>("cutE_HBHE", 5);
