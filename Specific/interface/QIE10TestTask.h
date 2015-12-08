@@ -14,6 +14,7 @@
 #include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingle1D.h"
+#include "DQM/HcalCommon/interface/ContainerSingle2D.h"
 
 double adc2fC[256] = {
 	1.58, 4.73, 7.88, 11.0, 14.2, 17.3, 20.5, 23.6, 
@@ -75,6 +76,8 @@ class QIE10TestTask : public DQTask
 
 		//	Containers
 		std::vector<ContainerSingle1D>		_vcShape;
+		std::vector<ContainerSingle2D>		_vcLETDCvsADC[10];
+		std::vector<ContainerSingle2D>		_vcTETDCvsADC[10];
 };
 
 #endif
