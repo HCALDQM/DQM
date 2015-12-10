@@ -13,18 +13,23 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 	_tokHBHE1 = consumes<HBHEDigiCollection>(_tagHBHE1);
 	_tokHBHE2 = consumes<HBHEDigiCollection>(_tagHBHE2);
 
+	char aux[20];
 	for  (unsigned int i=0; i<10; i++)
-		_cADC_SubDet[i].initialize(_name+"/ADC/SubDet", "ADC",
+	{
+		sprintf(aux, "_TS%d", i);
+		_cADC_SubDet[i].initialize(_name+"/ADC/SubDet", 
+			"ADC" + std::string(aux),
 			mapper::fSubDet, 
 			new axis::ValueAxis(axis::fXaxis, axis::fADC),
 			new axis::ValueAxis(axis::fYaxis, axis::fADC));
+	}
 	_cMsm_depth.initialize(_name+"/Mismatches/depth",
-		"Mismatched", fdepth,
+		"Mismatched", mapper::fdepth,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fEntries));
 	_cMsn_depth.initialize(_name+"/Missing/depth",
-		"Missing", fdepth,
+		"Missing", mapper::fdepth,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fEntries));
@@ -35,12 +40,8 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 {
 	DQTask::bookHistograms(ib, r, es);
 	
-	char aux[20];
 	for (unsigned int i=0; i<10; i++)
-	{
-		sprintf(aux, "_TS%d", i);
-		_cADC_SubDet[i].book(ib, _subsystem, std::string(aux));
-	}
+		_cADC_SubDet[i].book(ib, _subsystem);
 	_cMsm_depth.book(ib);
 	_cMsn_depth.book(ib);
 }
@@ -63,18 +64,20 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		_logger.dqmthrow("Collection HBHEDigiCollection isn't available"
 			+ _tagHBHE2.label() + " " + _tagHBHE2.instance());
 
+	std::cout << "1111111111" << std::endl;
 	for (HBHEDigiCollection::const_iterator it1=chbhe1->begin();
 		it1!=chbhe1->end(); ++it1)
 	{
 		HcalDetId did = it1->id();
+		std::cout << did.iphi() << "  " << did.ieta() << std::endl;
 		HBHEDigiCollection::const_iterator it2 = chbhe2->find(did);
 		if (it2==chbhe2->end())
 			_cMsn_depth.fill(did);
 		else
 			for (int i=0; i<it1->size(); i++)
 			{
-				_cADC_SubDet[i].fill(did, it1->sample(i).adc(),
-					it2->sample(i).adc());
+				_cADC_SubDet[i].fill(did, double(it1->sample(i).adc()),
+					double(it2->sample(i).adc()));
 				if (it1->sample(i).adc()!=it2->sample(i).adc())
 					_cMsm_depth.fill(did);
 			}
@@ -88,5 +91,5 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 	DQTask::endLuminosityBlock(lb, es);
 }
 
-DEFINE_FWK_MODULE(DigiComparisonTask)
+DEFINE_FWK_MODULE(DigiComparisonTask);
 

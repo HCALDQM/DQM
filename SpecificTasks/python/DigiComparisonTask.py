@@ -9,5 +9,5 @@ digiComparisonTask = cms.EDAnalyzer(
 	runkeyName = cms.untracked.string("pp_run"),
 
 	tagHBHE1 = cms.untracked.InputTag("hcalDigis"),
-	tagHBHE2 = cms.untracked.InputTag("utcaDigis")
+	tagHBHE2 = cms.untracked.InputTag("uHBHEDigis")
 )

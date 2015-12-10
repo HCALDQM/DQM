@@ -9,5 +9,8 @@ tpComparisonTask = cms.EDAnalyzer(
 	runkeyName = cms.untracked.string("pp_run"),
 
 	tag1 = cms.untracked.InputTag("hcalDigis"),
-	tag2 = cms.untracked.InputTag("utcaDigis")
+	tag2 = cms.untracked.InputTag("uHBHEDigis"),
+
+	#	tmp
+	_skip1x1 = cms.untracked.bool(True)
 )

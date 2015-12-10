@@ -46,7 +46,7 @@ class DigiComparisonTask : public DQTask
 		Container2D			_cADC_SubDet[10];
 
 		//	Mismatched
-		Cotainer2D			_cMsm_depth;
+		Container2D			_cMsm_depth;
 
 		//	Missing Completely
 		Container2D			_cMsn_depth;

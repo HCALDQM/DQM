@@ -38,6 +38,9 @@ class TPComparisonTask : public DQTask
 		edm::EDGetTokenT<HcalTrigPrimDigiCollection>	_tok1;
 		edm::EDGetTokenT<HcalTrigPrimDigiCollection>	_tok2;
 
+		//	tmp flags
+		bool _skip1x1;
+
 		/**
 		 *	Containers
 		 */
@@ -52,7 +55,7 @@ class TPComparisonTask : public DQTask
 		Container2D			_cMsn_depth;
 
 		//	mismatches
-		Conatiner2D			_cEtMsm_depth;
+		Container2D			_cEtMsm_depth;
 		Container2D			_cFGMsm_depth;
 };
 

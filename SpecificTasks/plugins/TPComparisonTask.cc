@@ -10,16 +10,19 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		edm::InputTag("hcalDigis"));
 	_tag2 = ps.getUntrackedParameter<edm::InputTag>("tag2",
 		edm::InputTag("utcaDigis"));
-	_tok1 = consumes<HBHEDigiCollection>(_tag1);
-	_tok2 = consumes<HBHEDigiCollection>(_tag2);
+	_tok1 = consumes<HcalTrigPrimDigiCollection>(_tag1);
+	_tok2 = consumes<HcalTrigPrimDigiCollection>(_tag2);
+
+	//	tmp flags
+	_skip1x1 = ps.getUntrackedParameter<bool>("skip1x1", true);
 
 	//	initialize COntainers
 	for (unsigned int i=0; i<4; i++)
 	{
 		_cEt_TPSubDet[i].initialize(_name+"/Et/TPSubDet", "Et",
-			mapper::fTPSubdet,
-			new axis::ValueAxis(axis::fXaxis, axis::fEt256),
-			new axis::ValueAxis(axis::fYaxis, axis::fEt256));
+			mapper::fTPSubDet,
+			new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
+			new axis::ValueAxis(axis::fYaxis, axis::fEt_256));
 		_cFG_TPSubDet[i].initialize(_name+"/FG/TPSubDet", "FG",
 			mapper::fTPSubDet,
 			new axis::ValueAxis(axis::fXaxis, axis::fFG),
@@ -79,10 +82,6 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 			"Collection HcalTrigPrimDigiCollection isn't available" + 
 			_tag2.label() + " " + _tag2.instance());
 
-	//	tmp
-	bool useD1 = false;
-	//	\tmp
-	
 	for (HcalTrigPrimDigiCollection::const_iterator it1=coll1->begin();
 		it1!=coll1->end(); ++it1)
 	{
@@ -94,21 +93,21 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 
 		HcalTrigTowerDetId tid = it1->id();
 		HcalTrigPrimDigiCollection::const_iterator it2=coll2->find(
-			tid.ieta(), tid.iphi(), 0);
+			HcalTrigTowerDetId(tid.ieta(), tid.iphi(), 0));
 
 		if (it2==coll2->end())
 			_cMsn_depth.fill(tid);
 		else
 			for (int i=0; i<it1->size(); i++)
 			{
-				_cEt_TPSubDet.fill(tid, 
+				_cEt_TPSubDet[i].fill(tid, 
 					it1->sample(i).compressedEt(), 
 					it2->sample(i).compressedEt());
-				_cFG_TPSubDet.fill(tid,
+				_cFG_TPSubDet[i].fill(tid,
 					it1->sample(i).fineGrain(),
 					it2->sample(i).fineGrain());
 				if (it1->sample(i).compressedEt()!=
-					it2->sample(i).compreseedEt())
+					it2->sample(i).compressedEt())
 					_cEtMsm_depth.fill(tid);
 				if (it1->sample(i).fineGrain()!=
 					it2->sample(i).fineGrain())
@@ -124,5 +123,5 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	DQTask::endLuminosityBlock(lb, es);
 }
 
-DEFINE_FWK_MODULE(TPComparisonTask)
+DEFINE_FWK_MODULE(TPComparisonTask);
 
