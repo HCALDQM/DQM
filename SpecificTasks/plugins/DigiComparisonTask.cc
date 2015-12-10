@@ -64,12 +64,10 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		_logger.dqmthrow("Collection HBHEDigiCollection isn't available"
 			+ _tagHBHE2.label() + " " + _tagHBHE2.instance());
 
-	std::cout << "1111111111" << std::endl;
 	for (HBHEDigiCollection::const_iterator it1=chbhe1->begin();
 		it1!=chbhe1->end(); ++it1)
 	{
 		HcalDetId did = it1->id();
-		std::cout << did.iphi() << "  " << did.ieta() << std::endl;
 		HBHEDigiCollection::const_iterator it2 = chbhe2->find(did);
 		if (it2==chbhe2->end())
 			_cMsn_depth.fill(did);
