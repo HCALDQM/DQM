@@ -33,7 +33,10 @@ Reside just in the root folder of the repo. Here they are:
 
 ## HowTo
 master-80X is the branch to be used for 2016 Online/Offline Production
+DQM_master-80X_v0 is the tag that reflects most up-to-date master-80X branch
+
 dev-master is the branch being **master** development
+Several tags for dev-master are also available
 
 1. cmsrel CMSSW greater or equal than 74X and setup the environment
 2. git cms-addpkg DQM/Integration
