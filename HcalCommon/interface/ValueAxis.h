@@ -51,7 +51,7 @@ namespace hcaldqm
 			fQIE10ADC256 = 26,
 			fQIE10TDC64 = 27,
 
-			nValueType = 27
+			nValueType = 28
 		};
 
 		std::string const vtitle[nValueType] = {
