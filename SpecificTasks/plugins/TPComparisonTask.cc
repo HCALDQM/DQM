@@ -17,13 +17,15 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	_skip1x1 = ps.getUntrackedParameter<bool>("skip1x1", true);
 
 	//	initialize COntainers
+	char aux[20];
 	for (unsigned int i=0; i<4; i++)
 	{
-		_cEt_TPSubDet[i].initialize(_name+"/Et/TPSubDet", "Et",
+		sprintf(aux, "_TS%d", i);
+		_cEt_TPSubDet[i].initialize(_name+"/Et/TPSubDet", "Et"+std::string(aux),
 			mapper::fTPSubDet,
 			new axis::ValueAxis(axis::fXaxis, axis::fEt_256),
 			new axis::ValueAxis(axis::fYaxis, axis::fEt_256));
-		_cFG_TPSubDet[i].initialize(_name+"/FG/TPSubDet", "FG",
+		_cFG_TPSubDet[i].initialize(_name+"/FG/TPSubDet", "FG"+std::string(aux),
 			mapper::fTPSubDet,
 			new axis::ValueAxis(axis::fXaxis, axis::fFG),
 			new axis::ValueAxis(axis::fYaxis, axis::fFG));
@@ -50,12 +52,10 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 {
 	DQTask::bookHistograms(ib, r, es);
 
-	char aux[20];
 	for (unsigned int i=0; i<4; i++)
 	{
-		sprintf(aux, "_TS%d", i);
-		_cEt_TPSubDet[i].book(ib, _subsystem, aux);
-		_cFG_TPSubDet[i].book(ib, _subsystem, aux);
+		_cEt_TPSubDet[i].book(ib, _subsystem);
+		_cFG_TPSubDet[i].book(ib, _subsystem);
 	}
 	_cMsn_depth.book(ib);
 	_cEtMsm_depth.book(ib);
