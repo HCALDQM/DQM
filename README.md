@@ -46,7 +46,7 @@ Reside just in the root folder of the repo. Here they are:
 6. Build CMSSW: scram b -j 8 from the src dir of the CMSSW
 7. To Run `.py` on lxplus, you have to set OfflineGT to True,
 useFileInput to True and put the right tag in(However, current tag should be reasonable).
-8. In DQM/Integration/python/test there is a file `fileinputsource_cfi.py`, which 
+8. In DQM/Integration/python/config there is a file `fileinputsource_cfi.py`, which 
 contains the definition for the Pool Source. Put in there the filenames you want to run over. This step is exactly the same as for any analysis - you have to 
 provide the input files...
 
