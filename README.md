@@ -6,7 +6,7 @@
 
 **See HowTo Section for the usage.**
 
-## HCAL DQM Plugins/Sources
+## HCAL DQM Plugins/Sources for Production
 A list of available tasks(in DQM/HcalTasks):
 * Raw
 * Digi
@@ -16,6 +16,11 @@ A list of available tasks(in DQM/HcalTasks):
 * Laser
 * Pedestal
 * RadDam
+
+## HCAL DQM Plugins/Sources for Testing/Playback
+* QIE10Test
+* DigiComparison
+* TPComparison
 
 ## HCAL DQM Clients/Harvesters
 Currently this functionality isn't being used.
@@ -27,6 +32,7 @@ Reside just in the root folder of the repo. Here they are:
 * `hcal_dqm_sourceclient-offline_cfg.py`
 
 ## HowTo
+master-80X is the branch to be used for 2016 Online/Offline Production
 dev-master is the branch being **master** development
 
 1. cmsrel CMSSW greater or equal than 74X and setup the environment
