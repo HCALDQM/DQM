@@ -78,6 +78,7 @@ class QIE10TestTask : public DQTask
 		std::vector<ContainerSingle1D>		_vcShape;
 		std::vector<ContainerSingle2D>		_vcLETDCvsADC[10];
 		std::vector<ContainerSingle2D>		_vcTETDCvsADC[10];
+		std::vector<ContainerSingle1D>		_vcLETDC[10];
 };
 
 #endif

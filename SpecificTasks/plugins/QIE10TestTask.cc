@@ -36,6 +36,10 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 				new axis::ValueAxis(axis::fXaxis, axis::fQIE10ADC256),
 				new axis::ValueAxis(axis::fYaxis, axis::fQIE10TDC64),
 				new axis::ValueAxis(axis::fZaxis, axis::fEntries)));
+			_vcLETDC[j].push_back(ContainerSingle1D(_name+"/LETDC",
+				"LETDC"+std::string(name)+std::string(aux),
+				new axis::ValueAxis(axis::fXaxis, axis::fQIE10TDC64),
+				new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)));
 		}
 	}
 
@@ -56,6 +60,7 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 		{
 			_vcLETDCvsADC[j][i].book(ib, _subsystem);
 			_vcTETDCvsADC[j][i].book(ib, _subsystem);
+			_vcLETDC[j][i].book(ib, _subsystem);
 		}
 	}
 }
@@ -103,6 +108,7 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 						(*cqie10)[i][j].le_tdc());
 					_vcTETDCvsADC[j][i].fill((*cqie10)[i][j].adc(), 
 						(*cqie10)[i][j].te_tdc());
+					_vcLETDC[j][i].fill((*cqie10)[i][j].le_tdc());
 				}
 				std::cout << std::endl;
 			}
