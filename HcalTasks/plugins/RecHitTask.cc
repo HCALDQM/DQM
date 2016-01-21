@@ -275,7 +275,6 @@
 			const HcalDetId did = rh.id();
 
 			_cEnergy_SubDet.fill(did, energy);
-			_cEnergy_SubDet_ieta.fill(did, energy);
 			_cEnergyvsieta_SubDet.fill(did, energy);
 			_cEnergyvsiphi_SubDet.fill(did, energy);
 			_cEnergy_depth.fill(did, energy);
