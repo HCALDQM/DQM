@@ -23,10 +23,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new axis::CoordinateAxis(axis::fXaxis, axis::fieta),
 		new axis::CoordinateAxis(axis::fYaxis, axis::fiphi),
 		new axis::ValueAxis(axis::fZaxis, axis::fNomFC));
-	_cSumQvsLS_SubDetPM_iphi.initialize(_name+"/Signal/vsLS_SubDetPM_iphi", "SumQvsLS",
-		mapper::fSubDetPM_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fLS),
-		new axis::ValueAxis(axis::fYaxis, axis::fNomFC));
 
 	//	Shape
 	_cShape_SubDetPM_iphi.initialize(_name+"/Shape/SubDetPM_iphi", "Shape",
@@ -55,10 +51,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cTimingCutvsiphi_SubDet_ieta.initialize(_name+"/Timing/vsiphi_SubDet_ieta",
 		"Timingvsiphi", mapper::fSubDet_ieta,
 		new axis::CoordinateAxis(axis::fXaxis, axis::fiphi),
-		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS_200));
-	_cTimingCutvsLS_SubDetPM_iphi.initialize(_name+"/Timing/vsLS_SubDetPM_iphi",
-		"Timing", mapper::fSubDetPM_iphi,
-		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::ValueAxis(axis::fYaxis, axis::fTimeTS_200));
 	_cTimingCut_depth.initialize(_name+"/Timing/depth", "Timing",
 		mapper::fdepth,
@@ -149,6 +141,21 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new axis::ValueAxis(axis::fXaxis, axis::fLS),
 		new axis::FlagAxis(axis::fYaxis, "Flag", int(nDigiFlag)));
 
+	//	Initialize what should be present only for Online or Playback, not for 
+	//	Offline
+	if (this->_ptype!=fOffline)
+	{
+		_cSumQvsLS_SubDetPM_iphi.initialize(_name+"/Signal/vsLS_SubDetPM_iphi", "SumQvsLS",
+			mapper::fSubDetPM_iphi,
+			new axis::ValueAxis(axis::fXaxis, axis::fLS),
+			new axis::ValueAxis(axis::fYaxis, axis::fNomFC));
+		_cTimingCutvsLS_SubDetPM_iphi.initialize(_name+"/Timing/vsLS_SubDetPM_iphi",
+			"Timing", mapper::fSubDetPM_iphi,
+			new axis::ValueAxis(axis::fXaxis, axis::fLS),
+			new axis::ValueAxis(axis::fYaxis, axis::fTimeTS_200));
+
+	}
+
 	//	tags and tokens
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 		edm::InputTag("hcalDigis"));
@@ -189,7 +196,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cfCperTS_SubDet.book(ib);
 	_cSumQ_SubDetPM_iphi.book(ib);
 	_cSumQ_depth.book(ib);
-	_cSumQvsLS_SubDetPM_iphi.book(ib);
 
 	_cShape_SubDetPM_iphi.book(ib);
 	_cShapeCut_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
@@ -200,7 +206,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cTimingCutvsieta_SubDet_iphi.book(ib, _subsystem, 
 		std::string(cutstr));
 	_cTimingCutvsiphi_SubDet_ieta.book(ib, _subsystem, std::string(cutstr));
-	_cTimingCutvsLS_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
 	_cQ2Q12CutvsLS_HFPM_iphi.book(ib, _subsystem, std::string(cutstr2));
 	_cQ2Q12CutvsLS_p3e41d2.book(ib, _subsystem, std::string(cutstr2));
 	_cQ2Q12CutvsLS_p3em41d2.book(ib, _subsystem, std::string(cutstr2));
@@ -224,6 +229,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cSummary.book(ib);
 	_cSummaryvsLS_SubDet.book(ib);
 
+	if (this->_ptype!=fOffline)
+	{
+		_cSumQvsLS_SubDetPM_iphi.book(ib);
+		_cTimingCutvsLS_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
+	}
 }
 
 /* virtual */ void DigiTask::_resetMonitors(UpdateFreq uf)
@@ -303,13 +313,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cOccupancyvsiphi_SubDetPM.fill(did);
 		_cSumQ_SubDetPM_iphi.fill(did, sumQ);
 		_cSumQ_depth.fill(did, sumQ);
-		_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
 		_numDigis[did.subdet()-1]++;
 		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
 		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_error_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = 
 			utilities::isError<HBHEDataFrame>(digi);
+		if (this->_ptype!=fOffline)
+		{
+			_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
+		}
 		if (_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==false)
 		{
 			_cOccupancyOnce_depth.fill(did);
@@ -322,13 +335,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cTimingCut_SubDetPM_iphi.fill(did, timing);
 			_cTimingCutvsieta_SubDet_iphi.fill(did, timing);
 			_cTimingCutvsiphi_SubDet_ieta.fill(did,	timing);
-			_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, timing);
 			_cTimingCut_depth.fill(did, timing);
 			_cOccupancyCutvsiphi_SubDetPM.fill(did);
 			_cOccupancyCut_depth.fill(did);
 //			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
 
 			_numDigisCut[digi.id().subdet()-1]++;
+			if (this->_ptype!=fOffline)
+			{
+				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, timing);
+			}
 		}
 		
 		//	per TS
@@ -364,13 +380,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cOccupancyvsiphi_SubDetPM.fill(did);
 		_cSumQ_SubDetPM_iphi.fill(did, sumQ);
 		_cSumQ_depth.fill(did, sumQ);
-		_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
 		_numDigis[did.subdet()-1]++;
 		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
 		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_error_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = 
 			utilities::isError<HODataFrame>(digi);
+		if (this->_ptype!=fOffline)
+		{
+			_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
+		}
 		if (_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==false)
 		{
 			_cOccupancyOnce_depth.fill(did);
@@ -383,13 +402,17 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cTimingCut_SubDetPM_iphi.fill(did, timing);
 			_cTimingCutvsieta_SubDet_iphi.fill(did, timing);
 			_cTimingCutvsiphi_SubDet_ieta.fill(did,	timing);
-			_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, timing);
 			_cTimingCut_depth.fill(did, timing);
 			_cOccupancyCutvsiphi_SubDetPM.fill(did);
 			_cOccupancyCut_depth.fill(did);
 //			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
 		
 			_numDigisCut[digi.id().subdet()-1]++;
+
+			if (this->_ptype!=fOffline)
+			{
+				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, timing);
+			}
 		}
 		
 		//	per TS
@@ -425,13 +448,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cOccupancyvsiphi_SubDetPM.fill(did);
 		_cSumQ_SubDetPM_iphi.fill(did, sumQ);
 		_cSumQ_depth.fill(did, sumQ);
-		_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
 		_numDigis[digi.id().subdet()-1]++;
 		_cDigiSizevsLS_SubDet.fill(did, _currentLS, digi.size());
 		_occ_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_occ_10LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = true;
 		_error_1LS[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1] = 
 			utilities::isError<HFDataFrame>(digi);
+		if (this->_ptype!=fOffline)
+		{
+			_cSumQvsLS_SubDetPM_iphi.fill(did, _currentLS, sumQ);
+		}
 		if (_occ_Always[did.subdet()-1][did.iphi()-1][iieta][did.depth()-1]==false)
 		{
 			_cOccupancyOnce_depth.fill(did);
@@ -445,7 +471,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cTimingCutvsieta_SubDet_iphi.fill(did, timing);
 			_cTimingCutvsiphi_SubDet_ieta.fill(did,	timing);
 			_cTimingCut_depth.fill(did, timing);
-			_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, timing);
 			_cOccupancyCutvsiphi_SubDetPM.fill(did);
 			_cOccupancyCut_depth.fill(did);
 		
@@ -461,6 +486,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 //			_cOccupancyCutiphivsLS_SubDet.fill(did, _currentLS);
 		
 			_numDigisCut[digi.id().subdet()-1]++;
+			
+			if (this->_ptype!=fOffline)
+			{
+				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, timing);
+			}
 		}
 		
 		//	per TS
