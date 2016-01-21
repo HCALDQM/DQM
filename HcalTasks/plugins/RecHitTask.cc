@@ -108,12 +108,19 @@
 			new axis::ValueAxis(axis::fYaxis, axis::fEntries), _debug);
 
 		//	Energy vs Timing
-		_cTimingvsEnergyCut_SubDetPM_iphi.initialize(
-			_name+"/TimingvsEnergy/SubDetPM_iphi", 
-			"TimingvsEnergy", mapper::fSubDetPM_iphi, 
-			new axis::ValueAxis(axis::fXaxis, axis::fEnergy), 
-			new axis::ValueAxis(axis::fYaxis, axis::fTime), 
-			new axis::ValueAxis(axis::fZaxis, axis::fEntries), _debug);
+		if (this->_ptype!=fOffline)
+		{
+			//	these plots are too consuming and will only show up for 
+			//	Online/Playback processing
+			_cTimingvsEnergyCut_SubDetPM_iphi.initialize(
+				_name+"/TimingvsEnergy/SubDetPM_iphi", 
+				"TimingvsEnergy", mapper::fSubDetPM_iphi, 
+				new axis::ValueAxis(axis::fXaxis, axis::fEnergy), 
+				new axis::ValueAxis(axis::fYaxis, axis::fTime), 
+				new axis::ValueAxis(axis::fZaxis, axis::fEntries), _debug);
+		}
+
+		//	Summary
 		_cSummary.initialize(_name+"/Summary", "Summary",
 			new axis::CoordinateAxis(axis::fXaxis, axis::fSubDet),
 			new axis::FlagAxis(axis::fYaxis, "Flag", int(nRecHitFlag)));
@@ -181,7 +188,12 @@
 		_cOccupancyvsiphi_SubDetPM.book(ib);
 		_cOccupancyCutvsiphi_SubDetPM.book(ib, _subsystem, std::string(cutstr));
 
-		_cTimingvsEnergyCut_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
+		if (this->_ptype!=fOffline)
+		{
+			//	Book the following histograms only when you are running not 
+			//	Offline
+			_cTimingvsEnergyCut_SubDetPM_iphi.book(ib, _subsystem, std::string(cutstr));
+		}
 
 		_cSummary.book(ib);
 		_cSummaryvsLS_SubDet.book(ib);
@@ -238,10 +250,16 @@
 				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, time);
 				_cTimingCut_depth.fill(did, time);
 				_cOccupancyCut_depth.fill(did);
-				_cTimingvsEnergyCut_SubDetPM_iphi.fill(did, energy, time);
 				_cOccupancyCutvsiphi_SubDetPM.fill(did);
 				_nRecHitsCut[did.subdet()-1]++;
 				_cTimingCut_HBHEPrt.fill(did, time);
+
+				if (this->_ptype!=fOffline)
+				{
+					//	fill the following plots only when we aren't in Offline
+					//
+					_cTimingvsEnergyCut_SubDetPM_iphi.fill(did, energy, time);
+				}
 			}
 		}
 		for (HORecHitCollection::const_iterator it=cho->begin();
@@ -277,9 +295,15 @@
 				_cTimingCut_depth.fill(did, time);
 				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, time);
 				_cOccupancyCut_depth.fill(did);
-				_cTimingvsEnergyCut_SubDetPM_iphi.fill(did, energy, time);
 				_cOccupancyCutvsiphi_SubDetPM.fill(did);
 				_nRecHitsCut[did.subdet()-1]++;
+
+				if (this->_ptype!=fOffline)
+				{
+					//	Fill the following plots only when you are running not 
+					//	Offline
+					_cTimingvsEnergyCut_SubDetPM_iphi.fill(did, energy, time);
+				}
 			}
 		}
 		for (HFRecHitCollection::const_iterator it=chf->begin();
@@ -315,9 +339,15 @@
 				_cTimingCut_depth.fill(did, time);
 				_cTimingCutvsLS_SubDetPM_iphi.fill(did, _currentLS, time);
 				_cOccupancyCut_depth.fill(did);
-				_cTimingvsEnergyCut_SubDetPM_iphi.fill(did, energy, time);
 				_cOccupancyCutvsiphi_SubDetPM.fill(did);
 				_nRecHitsCut[did.subdet()-1]++;
+
+				if (this->_ptype!=fOffline)
+				{
+					//	Fill the following plots only when processing not 
+					//	Offline
+					_cTimingvsEnergyCut_SubDetPM_iphi.fill(did, energy, time);
+				}
 			}
 		}
 
