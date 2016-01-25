@@ -62,11 +62,11 @@ namespace hcaldqm
 				DetectorQuantity(DetectorQuantityType type, bool isLog=false) :
 					Quantity(name_did[type], isLog), _type(type)
 				{}
-				virtual ~DetectorQuantity();
+				virtual ~DetectorQuantity() {}
 
 				virtual int getValue(HcalDetId const& did) 
 				{return getValue_functions_did[_type](did);}
-				virtual int getBin(HcalDetId const& did)
+				virtual uint32_t getBin(HcalDetId const& did)
 				{return getBin_functions_did[_type](did);}
 				virtual QuantityType type() 
 				{return fDetectorQuantity;}

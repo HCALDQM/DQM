@@ -8,8 +8,8 @@
  */
 
 #include "DQM/HcalCommon/interface/DQModule.h"
-#include "DQM/HcalCommon/interface/ContainerI.h"
-#include "DQM/HcalCommon/interface/ContainerS.h"
+//#include "DQM/HcalCommon/interface/ContainerI.h"
+//#include "DQM/HcalCommon/interface/ContainerS.h"
 
 namespace hcaldqm
 {
@@ -48,11 +48,11 @@ namespace hcaldqm
 			virtual int _getCalibType(edm::Event const&);
 
 			//	protected vars
-			ContainerI _cEvsTotal;
-			ContainerI _cEvsPerLS;
-			ContainerI _cRunKeyVal;
-			ContainerS _cRunKeyName;
-			ContainerS _cProcessingTypeName;
+//			ContainerI _cEvsTotal;
+//			ContainerI _cEvsPerLS;
+//			ContainerI _cRunKeyVal;
+//			ContainerS _cRunKeyName;
+//			ContainerS _cProcessingTypeName;
 
 			//	counters
 			int			_procLSs;

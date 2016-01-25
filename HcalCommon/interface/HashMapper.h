@@ -27,19 +27,19 @@ namespace hcaldqm
 				virtual ~HashMapper() {}
 
 				//	initialize
-				virtual void initialize(HashType htype) {_htype = htype}
+				virtual void initialize(HashType htype) {_htype = htype;}
 
 				//	get hash
 				virtual uint32_t getHash(HcalDetId const& did)
-				{return hash_function_did[_htype](did);}
+				{return hash_did[_htype](did);}
 
 				//	get name of the hashed element
 				virtual std::string getName(HcalDetId const &did)
-				{return name_function_did[_htype](did);}
+				{return name_did[_htype](did);}
 
 				//	get the Hash Type Name
 				virtual std::string getHashTypeName()
-				{return hash_names[this->getLinearHashType(_type)];}
+				{return hash_names[this->getLinearHashType(_htype)];}
 
 				//	determine the type of the hash
 				virtual bool isDHash() 
@@ -65,6 +65,7 @@ namespace hcaldqm
 						l = htype - 1;
 					else
 						l = htype - 2;
+					return l;
 				}
 
 			protected:

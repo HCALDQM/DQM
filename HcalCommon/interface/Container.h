@@ -35,7 +35,7 @@ namespace hcaldqm
 			{
 				_folder = folder;
 				_qname = qname;
-				_logger.set(_name, debug);
+				_logger.set(_qname, debug);
 			}
 
 		protected:

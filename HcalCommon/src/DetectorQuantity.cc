@@ -12,7 +12,7 @@ namespace hcaldqm
 
 		int getValue_ieta(HcalDetId const& did)
 		{
-			x = did.ieta();
+			int x = did.ieta();
 			if (x<0)
 				x = did.subdet()==HcalForward ? x+41 : x+42;
 			else
@@ -36,29 +36,29 @@ namespace hcaldqm
 				2*(did.subdet()-1)+1;
 		}
 
-		int getBin_iphi(HcalDetId const& did)
+		uint32_t getBin_iphi(HcalDetId const& did)
 		{
-			return did.iphi();
+			return (uint32_t)(did.iphi());
 		}
 
-		int getBin_ieta(HcalDetId const& did)
+		uint32_t getBin_ieta(HcalDetId const& did)
 		{
-			return getValue_ieta(did)+1;
+			return (uint32_t)(getValue_ieta(did)+1);
 		}
 
-		int getBin_depth(HcalDetId const& did)
+		uint32_t getBin_depth(HcalDetId const& did)
 		{
-			return did.depth();
+			return (uint32_t)(did.depth());
 		}
 
-		int getBin_Subdet(HcalDetId const& did)
+		uint32_t getBin_Subdet(HcalDetId const& did)
 		{
-			return did.subdet();
+			return (uint32_t)(did.subdet());
 		}
 
-		int getBin_SubdetPM(HcalDetId const& did)
+		uint32_t getBin_SubdetPM(HcalDetId const& did)
 		{
-			return getVaalue_SubdetPM(did)+1;
+			return ( uint32_t)(getValue_SubdetPM(did)+1);
 		}
 	}
 }

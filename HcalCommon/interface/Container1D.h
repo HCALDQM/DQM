@@ -8,7 +8,6 @@
  *	Description:
  *		1D Container
  */
-
 #include "DQM/HcalCommon/interface/DetectorQuantity.h"
 #include "DQM/HcalCommon/interface/Container.h"
 #include "DQM/HcalCommon/interface/HashMapper.h"
@@ -16,7 +15,9 @@
 
 #include <vector>
 //#include <unordered_map>
-#include "boost/ptr_container/ptr_map.hpp"
+//#include "boost/ptr_container/ptr_map.hpp"
+#include "boost/unordered_map.hpp"
+#include "boost/foreach.hpp"
 #include <string>
 
 namespace hcaldqm
@@ -35,7 +36,7 @@ namespace hcaldqm
 			Container1D(std::string const& folder,
 				hashfunctions::HashType, 
 				Quantity*,
-				Quantity *qy = DetectorQuantity(quantity::fiphi));
+				Quantity *qy =  new DetectorQuantity(quantity::fiphi));
 			virtual ~Container1D() {}
 
 			//	Initialize Container
@@ -44,7 +45,7 @@ namespace hcaldqm
 			//	@nametitle - namebase of the name and of the title
 			//
 			virtual void initialize(std::string const& folder, 
-				hashfunctions::HashType,  Quantity*
+				hashfunctions::HashType,  Quantity*,
 				Quantity *qy = new DetectorQuantity(quantity::fiphi), 
 				int debug=0);
 
@@ -60,7 +61,7 @@ namespace hcaldqm
 			//	@aux - typically a cut or anything else
 			//	@subsystem - subsystem under which to save
 			//
-			virtual void book(DQMStore::IBooker&, HcalElectronicsMap const&,
+			virtual void book(DQMStore::IBooker&, HcalElectronicsMap const*,
 				std::string subsystem="Hcal",
 				std::string aux="");
 			virtual void reset();

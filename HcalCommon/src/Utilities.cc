@@ -93,6 +93,11 @@ namespace hcaldqm
 				id = FED_VME_NUM + (fed-FED_uTCA_MIN)/FED_uTCA_DELTA;
 			return id;
 		}
+
+		uint32_t hash(HcalDetId const& did)
+		{
+			return did.rawId();
+		}
 	}
 }
 

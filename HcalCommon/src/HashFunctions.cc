@@ -4,7 +4,6 @@
 namespace hcaldqm
 {
 	using namespace constants;
-	using namespace utilities;
 	namespace hashfunctions
 	{
 		/**
@@ -22,7 +21,7 @@ namespace hcaldqm
 
 		uint32_t hash_Subdetieta(HcalDetId const& did)
 		{
-			return utlities::hash(HcalDetId(did.subdet(), did.ieta(),
+			return utilities::hash(HcalDetId(did.subdet(), did.ieta(),
 				1, 1));
 		}
 
@@ -46,7 +45,7 @@ namespace hcaldqm
 
 		uint32_t hash_iphi(HcalDetId const& did)
 		{
-			return utlities::hash(HcalDetId(HcalBarrel,
+			return utilities::hash(HcalDetId(HcalBarrel,
 				1, did.iphi(), 1));
 		}
 
@@ -120,12 +119,12 @@ namespace hcaldqm
 		{
 			char name[20];
 			sprintf(name, "%sdepth%d", 
-				constans::SUBDET_NAME[did.subdet()-1].c_str(),
+				constants::SUBDET_NAME[did.subdet()-1].c_str(),
 				did.depth());
 			return std::string(name);
 		}
 
-		std::string name_SubdetPMiphi(HcalDetId const&)
+		std::string name_SubdetPMiphi(HcalDetId const& did)
 		{
 			char name[20];
 			sprintf(name, "%s%siphi%d", 
@@ -166,14 +165,14 @@ namespace hcaldqm
 		std::string name_HBHEPartition(HcalDetId const& did)
 		{
 			char c;
-			if (did.iphi()>=3 && did.iphi<=26)
-				c = "a";
+			if (did.iphi()>=3 && did.iphi()<=26)
+				c = 'a';
 			else if (did.iphi()>=27 && did.iphi()<=50)
-				c = "b";
+				c = 'b';
 			else
-				c = "c";
+				c = 'c';
 			char name[10];
-			sprintf(name, "HBHE%s", c);
+			sprintf(name, "HBHE%c", c);
 			return std::string(name);
 		}
 	}

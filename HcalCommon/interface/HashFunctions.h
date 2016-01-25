@@ -1,5 +1,5 @@
-#ifndef Utilities_h
-#define Utilities_h
+#ifndef HashFunctions_h
+#define HashFunctions_h
 
 /**
  *	file:			HashFunctions.h
@@ -65,24 +65,24 @@ namespace hcaldqm
 		typedef uint32_t (*hash_function_did)(HcalDetId const&);
 		typedef std::string (*name_function_did)(HcalDetId const&);
 		hash_function_did const hash_did[nHashType_did] = {
-			hash_Subdet, hashSubdetiphi, hash_Subdetieta, 
+			hash_Subdet, hash_Subdetiphi, hash_Subdetieta, 
 			hash_Subdetdepth, hash_SubdetPM, hash_SubdetPMiphi,
 			hash_iphi, hash_ieta, hash_depth, hash_HFPMiphi, 
 			hash_HBHEPartition
 		};
-		name_function_did const hash_did[nHashType_did] = {
-			hash_Subdet, hashSubdetiphi, hash_Subdetieta, 
-			hash_Subdetdepth, hash_SubdetPM, hash_SubdetPMiphi,
-			hash_iphi, hash_ieta, hash_depth, hash_HFPMiphi, 
-			hash_HBHEPartition
+		name_function_did const name_did[nHashType_did] = {
+			name_Subdet, name_Subdetiphi, name_Subdetieta, 
+			name_Subdetdepth, name_SubdetPM, name_SubdetPMiphi,
+			name_iphi, name_ieta, name_depth, name_HFPMiphi, 
+			name_HBHEPartition
 		};
 		int const nhashes = nHashType_did + (nHashType_eid-nHashType_did-1) + 
 			(nHashType_tid-nHashType_eid-1);
-		std::string const hash_names[nHashType] = {
+		std::string const hash_names[nhashes] = {
 			"Subdet", "Subdetiphi", "Subdetieta", "Subdetdepth",
 			"SubdetPM", "SubdetPMiphi", "iphi", "ieta", "depth",
 			"HFPMiphi", "HBHEPartition"
-		}
+		};
 
 		/**
 		 *	by HcalElectronics Id
@@ -108,4 +108,4 @@ namespace hcaldqm
 	}
 }
 
-#define
+#endif

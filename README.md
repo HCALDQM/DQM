@@ -1,8 +1,10 @@
 # Description of HCAL DQM CMSSW related Components
 * DQM/HcalCommon - Core Components of the HCAL DQM CMSSW. Contains declarations and definitions of Containers, Mappers, Axis Classes. Utilities are also implemented in this package. Base Processing Classes (DQModule, DQTask, DQHarvester) reside there as well.
 * DQM/HcalTasks - DQMEDAnalyzers - all the main monitoring tasks are here
-* DQM/HcalClients - clients, at the moment client functionality isn't being used
+* DQM/HcalClients - clients, at the moment client functionality is not being used
 * DQM/cfgs - contain all the cmsRun configuration files
+* DQM/TestTasks - all the Test Tasks are residing here
+* DQM/SpeicalTaks - tasks to be executed on demand: VME vs uTCA comparison. QIE10, etc...
 
 **See HowTo Section for the usage.**
 
@@ -16,6 +18,7 @@ A list of available tasks(in DQM/HcalTasks):
 * Laser
 * Pedestal
 * RadDam
+* + TestTasks + SpecialTasks
 
 ## HCAL DQM Plugins/Sources for Testing/Playback
 * QIE10Test
@@ -35,7 +38,8 @@ Reside just in the root folder of the repo. Here they are:
 * master-80X is the branch to be used for 2016 Online/Offline Production.
 * DQM_master-80X_v0 is the tag that reflects most up-to-date master-80X branch
 
-* dev-master is the branch being **master** development
+* dev-80X is the branch being **master** development
+* master-80X is being propogated into the CMSSW Official Release currently.
 * Several tags for dev-master are also available
 
 1. cmsrel CMSSW greater or equal than 74X and setup the environment

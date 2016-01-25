@@ -4,7 +4,6 @@
 namespace hcaldqm
 {
 	using namespace mapper;
-	using namespace axis;
 	using namespace constants;
 
 	Container1D::Container1D()
@@ -12,18 +11,26 @@ namespace hcaldqm
 
 	Container1D::Container1D(std::string const& folder,
 		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy) :
-		Container(folder, qy.name()+"vs"+qx.name()), _hashmap(hashtype),
+		Container(folder, qy->name()+"vs"+qx->name()), _hashmap(hashtype),
 		_qx(qx), _qy(qy)
 	{}
 
 	/* virtuial */ void Container1D::initialize(std::string const& folder, 
-		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy /* = ... */
+		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy/* = ... */,
 		int debug /* =0 */)
 	{
-		Container::initialize(folder, qy.name()+"vs"+qx.name(), debug);
+		Container::initialize(folder, qy->name()+"vs"+qx->name(), debug);
 		_hashmap.initialize(hashtype);
 		_qx = qx;
 		_qy = qy;
+	}
+
+	/* virtual */ void Container1D::reset()
+	{
+		BOOST_FOREACH(MEMap::value_type &pair, _mes)
+		{
+			_mes[pair.first]->Reset();
+		}
 	}
 
 	/* virtual */ void Container1D::fill(HcalDetId const& did)
@@ -81,26 +88,31 @@ namespace hcaldqm
 	}
 
 	/* virtual */ void Container1D::book(DQMStore::IBooker& ib, 
-		HcalElectronicsMap const& emap,
+		HcalElectronicsMap const *emap,
 		std::string subsystem, std::string aux)
 	{
 
 		//	full path to where all the plots are living
 		//	subsystem/taskname/QxvsQy/HashType
-		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+qy.name()+
-			"vs"qx.name()+"/"_hashmap.getHashTypeName());
+		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qy->name()+
+			"vs"+_qx->name()+"/"+_hashmap.getHashTypeName());
 		if (_hashmap.isDHash())
 		{
 			//	for Detector Hashes
-			std::vector<HcalGenericDetId> dids = emap.allPrecisionId();
+			std::vector<HcalGenericDetId> dids = emap->allPrecisionId();
 			for (std::vector<HcalGenericDetId>::const_iterator it=
 				dids.begin(); it!=dids.end(); ++it)
 			{
+				//	skip trigger towers and calibration
+				if (!it->isHcalDetId())
+					continue;
+
 				HcalDetId did = HcalDetId(it->rawId());
 				uint32_t hash = _hashmap.getHash(did);
-				std::pair<MEMap::iterator, bool> r = _mes.insert(hash,
-					ib.book1D(_hashmap.getName(did),
-					_hashmap.getName(did), qx->nbins(), qx->min(), qx->max()));
+				_mes.insert(
+					std::make_pair(hash, ib.book1D(_hashmap.getName(did),
+					_hashmap.getName(did), _qx->nbins(), _qx->min(), 
+					_qx->max())));
 
 			}
 		}

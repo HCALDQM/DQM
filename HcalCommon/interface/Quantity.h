@@ -19,14 +19,14 @@ namespace hcaldqm
 			fTrigTowerQuantity = 2,
 			fValue = 3,
 			fFlag = 4,
-			fNone = 5
+			fNone = 5,
 			nQuantityType = 6
 		};
 
 		class Quantity
 		{
 			public:
-				Quanitity() : _name("Quantity"), _isLog(false)
+				Quantity() : _name("Quantity"), _isLog(false)
 				{}
 				Quantity(std::string const& name, bool isLog) : 
 					_name(name), _isLog(isLog)
