@@ -8,243 +8,134 @@ namespace hcaldqm
 	using namespace constants;
 
 	Container1D::Container1D()
-	{
-		_xaxis = NULL;
-		_yaxis = NULL;
-	}
+	{}
 
-	Container1D::Container1D(std::string const& folder, 
-		std::string const& nametitle, mapper::MapperType mt, axis::Axis *xaxis,
-		axis::Axis *yaxis):
-		Container(folder, nametitle), _mapper(mt), _xaxis(xaxis), _yaxis(yaxis)
+	Container1D::Container1D(std::string const& folder,
+		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy) :
+		Container(folder, qy.name()+"vs"+qx.name()), _hashmap(hashtype),
+		_qx(qx), _qy(qy)
 	{}
 
 	/* virtuial */ void Container1D::initialize(std::string const& folder, 
-		std::string const& nametitle, mapper::MapperType mt, axis::Axis *xaxis,
-		axis::Axis *yaxis, int debug /* =0 */)
+		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy /* = ... */
+		int debug /* =0 */)
 	{
-		Container::initialize(folder, nametitle, debug);
-		_mapper.initialize(mt, debug);
-		_xaxis = xaxis;
-		_yaxis = yaxis;
-	}
-
-	/* virtual */ void Container1D::fill(int id, int x)
-	{
-		_mes[_mapper.index(id)]->Fill(_xaxis->get(x));
-	}
-	/* virtual */ void Container1D::fill(int id, double x)
-	{
-		_mes[_mapper.index(id)]->Fill(_xaxis->get(x));
-	}
-	/* virtual */ void Container1D::fill(int id, int x, double y)
-	{
-		_mes[_mapper.index(id)]->Fill(_xaxis->get(x), _yaxis->get(y));
-	}
-	/* virtual */ void Container1D::fill(int id, double x, double y)
-	{
-		_mes[_mapper.index(id)]->Fill(_xaxis->get(x), _yaxis->get(y));
-	}
-
-	/* virtual */ void Container1D::fill(int id, int x, int y, double z)
-	{
-		_mes[_mapper.index(id)]->Fill(_xaxis->get(x), _yaxis->get(y), z);
-	}
-
-	/* virtual */ void Container1D::fill(int id, int x, double y, double z)
-	{
-		_mes[_mapper.index(id)]->Fill(_xaxis->get(x), _yaxis->get(y), z);
-	}
-
-	/* virtual */ void Container1D::fill(int id, double x, double y, double z)
-	{
-		_mes[_mapper.index(id)]->Fill(_xaxis->get(x), _yaxis->get(y), z);
+		Container::initialize(folder, qy.name()+"vs"+qx.name(), debug);
+		_hashmap.initialize(hashtype);
+		_qx = qx;
+		_qy = qy;
 	}
 
 	/* virtual */ void Container1D::fill(HcalDetId const& did)
 	{
-		_mes[_mapper.index(did)]->Fill(_xaxis->get(did));
+		_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did));
 	}
 	/* virtual */ void Container1D::fill(HcalDetId const& did, int x)
 	{
-		AxisQType act = _xaxis->getType();
-		if (act==fValue || act==fFlag)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(x));
-		else if (act==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), _yaxis->get(x));
+		QuantityType qtype = _qx->type();
+		if (qtype==fValue || qtype==fFlag)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x));
 	}
 	/* virtual */ void Container1D::fill(HcalDetId const& did, double x)
 	{
-		AxisQType act = _xaxis->getType();
-		if (act==fValue || act==fFlag)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(x));
-		else if (act==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), _yaxis->get(x));
+		QuantityType qtype = _qx->type();
+		if (qtype==fValue || qtype==fFlag)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+					_qy->getValue(x));
 	}
 	/* virtual */ void Container1D::fill(HcalDetId const& did, int x, double y)
 	{
-		AxisQType act = _xaxis->getType();
-		if (act==fValue || act==fFlag)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(x), _yaxis->get(y));
-		else if (act==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), _yaxis->get(x), y);
+		QuantityType qtype = _qx->type();
+		if (qtype==fValue || qtype==fFlag)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
+			_qy->getValue(y));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x), y);
 	}
 	/* virtual */ void Container1D::fill(HcalDetId const& did, int x, int y)
 	{
-		AxisQType act = _xaxis->getType();
-		if (act==fValue || act==fFlag)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(x), _yaxis->get(y));
-		else if (act==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), _yaxis->get(x), y);
+		QuantityType qtype = _qx->type();
+		if (qtype==fValue || qtype==fFlag)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
+			_qy->getValue(y));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x), y);
 	}
 	/* virtual */ void Container1D::fill(HcalDetId const& did, double x , 
 			double y)
 	{
-		AxisQType act = _xaxis->getType();
-		if (act==fValue || act==fFlag)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(x), _yaxis->get(y));
-		else if (act==fCoordinate)
-			_mes[_mapper.index(did)]->Fill(_xaxis->get(did), _yaxis->get(x), y);
-	}
-
-	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid)
-	{
-		_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid));
-	}
-	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid, int x)
-	{
-		AxisQType act = _xaxis->getType();
-		if (act==fValue || act==fFlag)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x));
-		else if (act==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), _yaxis->get(x));
-	}
-	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid, double x)
-	{
-		AxisQType act = _xaxis->getType();
-		if (act==fValue || act==fFlag)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x));
-		else if (act==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), _yaxis->get(x));
-	}
-	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid, 
-		int x, double y)
-	{
-		AxisQType act = _xaxis->getType();
-		if (act==fValue || act==fFlag)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x), _yaxis->get(y));
-		else if (act==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), _yaxis->get(x), y);
-	}
-	/* virtual */ void Container1D::fill(HcalElectronicsId const& eid, 
-		double x, double y)
-	{
-		AxisQType act = _xaxis->getType();
-		if (act==fValue || act==fFlag)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(x), _yaxis->get(y));
-		else if (act==fCoordinate)
-			_mes[_mapper.index(eid)]->Fill(_xaxis->get(eid), _yaxis->get(x), y);
-	}
-
-	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid)
-	{
-		_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid));
-	}
-
-	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid, int x)
-	{
-		AxisQType act = _xaxis->getType();
-		if (act==fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), _yaxis->get(x));
-		else
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x));
-	}
-
-	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid, double x)
-	{
-		AxisQType act = _xaxis->getType();
-		if (act==fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), _yaxis->get(x));
-		else
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x));
-	}
-
-	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid, int x,
-		int y)
-	{
-		AxisQType act = _xaxis->getType();
-		if (act==fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), _yaxis->get(x), y);
-		else
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(y));
-	}
-
-	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& tid, int x,
-		double y)
-	{
-		AxisQType act = _xaxis->getType();
-		if (act==fCoordinate)
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(tid), _yaxis->get(x), y);
-		else
-			_mes[_mapper.index(tid)]->Fill(_xaxis->get(x), _yaxis->get(y));
+		QuantityType qtype = _qx->type();
+		if (qtype==fValue || qtype==fFlag)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
+			_qy->getValue(y));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x), y);
 	}
 
 	/* virtual */ void Container1D::book(DQMStore::IBooker& ib, 
+		HcalElectronicsMap const& emap,
 		std::string subsystem, std::string aux)
 	{
 
-		unsigned int size = _mapper.getSize();
-		ib.setCurrentFolder(subsystem+"/"+_folder+aux);
-		for (unsigned int i=0; i<size; i++)
+		//	full path to where all the plots are living
+		//	subsystem/taskname/QxvsQy/HashType
+		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+qy.name()+
+			"vs"qx.name()+"/"_hashmap.getHashTypeName());
+		if (_hashmap.isDHash())
 		{
-//			utilities::log(_name);			
-			std::string hname = _mapper.buildName(i);
-			MonitorElement *me = ib.book1D(_name+"_"+hname, _name +" "+hname,
-				_xaxis->_nbins, _xaxis->_min, _xaxis->_max);
-			TObject *o = me->getRootObject();
-			_xaxis->setLog(o);
-			_yaxis->setLog(o);
-			_xaxis->setBitAxisLS(o);
-			_yaxis->setBitAxisLS(o);
-			_xaxis->setBitAxisFlag(o);
-			_yaxis->setBitAxisFlag(o);
-			me->setAxisTitle(_xaxis->_title, 1);
-			me->setAxisTitle(_yaxis->_title, 2);
-			for (unsigned int i=0; i<_xaxis->_labels.size(); i++)
-				me->setBinLabel(i+1, _xaxis->_labels[i]);
-			_mes.push_back(me);
+			//	for Detector Hashes
+			std::vector<HcalGenericDetId> dids = emap.allPrecisionId();
+			for (std::vector<HcalGenericDetId>::const_iterator it=
+				dids.begin(); it!=dids.end(); ++it)
+			{
+				HcalDetId did = HcalDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(did);
+				std::pair<MEMap::iterator, bool> r = _mes.insert(hash,
+					ib.book1D(_hashmap.getName(did),
+					_hashmap.getName(did), qx->nbins(), qx->min(), qx->max()));
+
+			}
 		}
-	}
-
-	/* virtual */ double Container1D::getBinContent(unsigned int id, int x)
-	{
-		return _mes[id]->getBinContent(_xaxis->getBin(x));
-	}
-
-	/* virtual */ void Container1D::reset()
-	{
-		for (MEVector::const_iterator it=_mes.begin(); it!=_mes.end(); ++it)
-			(*it)->Reset();
-	}
-
-	/* virtual */ MonitorElement* Container1D::at(unsigned int i)
-	{
-		return _mes[i];
-	}
-
-	/* virtual */ MonitorElement* Container1D::at(HcalDetId const& did)
-	{
-		return _mes[_mapper.index(did)];
-	}
-
-	/* virtual */ MonitorElement* Container1D::at(HcalElectronicsId const& eid)
-	{
-		return _mes[_mapper.index(eid)];
-	}
-
-	/* virtual */ MonitorElement* Container1D::at(HcalTrigTowerDetId const& tid)
-	{
-		return _mes[_mapper.index(tid)];
+		/*
+		else if (_hashmap.isEHash())
+		{
+			//	for Electronics Hashes
+			std::vector<HcalElectronicsId> eids = 
+				emap.allElectronicsIdPrecision();
+			for (std::vector<HcalElectronicsId>::const_iterator it=
+				eids.begin(); it!=eids.end(); ++it)
+			{
+				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
+				uint32_t hash = _hashmap.getHash(eid);
+				std::pair<MEMap::iterator, bool> r = _mes.insert(hash,
+					ib.book1D(_hashmap.getName(eid),
+					_hashmap.getName(eid), qx->nbins(), qx->min(), qx->max()));
+			}
+		}
+		else if (_hashmap.isTHash())
+		{
+			//	for TrigTower Hashes
+			std::vector<HcalTrigTowerDetId> tids = 
+				emap.allTriggerId();
+			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
+				tids.begin(); it!=tids.end(); ++it)
+			{
+				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(tid);
+				std::pair<MEMap::iterator, bool> r = mes.insert(hash,
+					ib.book1D(_hashmap.getName(tid), _hashmap.getName(tid),
+					qx->nbins(), qx->min(), qx->max()));
+			}
+		}
+		*/
 	}
 }
 

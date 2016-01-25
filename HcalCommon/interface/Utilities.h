@@ -126,6 +126,7 @@ namespace hcaldqm
 		int getTPSubDetPM(HcalTrigTowerDetId const&);
 		int getFEDById(int);
 		int getIdByFED(int);
+		uint32_t hash(HcalDetId const&);
 	}
 }
 
