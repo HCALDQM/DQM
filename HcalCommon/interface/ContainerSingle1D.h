@@ -10,8 +10,7 @@
  */
 
 #include "DQM/HcalCommon/interface/Container.h"
-#include "DQM/HcalCommon/interface/ValueAxis.h"
-#include "DQM/HcalCommon/interface/CoordinateAxis.h"
+#include "DQM/HcalCommon/interface/Quantity.h"
 
 #include <string>
 
@@ -27,6 +26,12 @@ namespace hcaldqm
 			virtual ~ContainerSingle1D() {}
 			
 			virtual void initialize(std::string const& folder, 
+				Quantity*,
+				Quantity *qy = new ValueQuantity(quantity::fN)
+				int debug=0);
+
+			virtual void initialize(std::string const& folder, 
+				std::string const&, 
 				Quantity*,
 				Quantity *qy = new ValueQuantity(quantity::fN)
 				int debug=0);
@@ -51,7 +56,12 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, double);
 			virtual void fill(HcalElectronicsId const&, double, double);
 
+			virtual void fill(HcalTrigTowerDetId const&);
+			virtual void fill(HcalTrigTowerDetId const&, double);
+			virtual void fill(HcalTrigTowerDetId const&, double, double);
+
 			virtual void reset() {_me->Reset();}
+			virtual void print() {std::cout << _qname << std::endl;}
 
 		protected:
 			MonitorElement				*_me;
