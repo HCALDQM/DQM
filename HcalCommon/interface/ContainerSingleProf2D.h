@@ -9,7 +9,7 @@
  *		Container to hold a single ME - for convenience of initialization
  */
 
-#include "DQM/HcalCommon/interface/Container.h"
+#include "DQM/HcalCommon/interface/ContainerSingle2D.h"
 
 #include <string>
 

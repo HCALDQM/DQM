@@ -4,8 +4,6 @@
 
 namespace hcaldqm
 {
-	using namespace axis;
-
 	ContainerSingle2D::ContainerSingle2D()
 	{
 		_qx = NULL;
@@ -17,7 +15,11 @@ namespace hcaldqm
 		Quantity *qx, Quantity *qy, Quantity *qz):
 		Container(folder, qz->name()+"vs"+qy->name()+"vs"+qx->name()),
 		_qx(qx), _qy(qy), _qz(qz)
-	{}
+	{
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
+	}
 
 	/* virtual */ void ContainerSingle2D::initialize(std::string const& folder,
 		Quantity *qx, Quantity *qy, Quantity *qz, int debug/*=0*/)
@@ -27,6 +29,9 @@ namespace hcaldqm
 		_qx = qx;
 		_qy = qy;
 		_qz = qz;
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
 	}
 
 	/* virtual */ void ContainerSingle2D::initialize(std::string const& folder,
@@ -37,6 +42,9 @@ namespace hcaldqm
 		_qx = qx;
 		_qy = qy;
 		_qz = qz;
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
 	}
 	
 	/* virtual */ void ContainerSingle2D::book(DQMStore::IBooker &ib,
@@ -46,6 +54,26 @@ namespace hcaldqm
 		_me = ib.book2D(_qname, _qname,
 			_qx->nbins(), _qx->min(), _qx->max(),
 			_qy->nbins(), _qy->min(), _qy->max());
+		customize();
+	}
+
+	/* virtual */ void ContainerSingle2D::customize()
+	{
+		_me->setAxisTitle(_qx->name(), 1);
+		_me->setAxisTitle(_qy->name(), 2);
+		_me->setAxisTitle(_qz->name(), 3);
+
+		TObject *o = _me->getRootObject();
+		_qx->setBits(o);
+		_qy->setBits(o);
+		_qz->setBits(o);
+
+		std::vector<std::string> xlabels = _qx->getLabels();
+		std::vector<std::string> ylabels = _qy->getLabels();
+		for (unsigned int i=0; i<xlabels.size(); i++)
+			_me->setBinLabel(i+1, xlabels[i], 1);
+		for (unsigned int i=0; i<ylabels.size(); i++)
+			_me->setBinLabel(i+1, ylabels[i], 2);
 	}
 
 	/* virtual */ void ContainerSingle2D::fill(int x, int y)
@@ -274,7 +302,7 @@ namespace hcaldqm
 	/* virtual */ void ContainerSingle2D::fill(HcalDetId const& did,
 		HcalElectronicsId const& eid)
 	{
-		if (_qx->type()==DetectorQuantity)
+		if (_qx->type()==fDetectorQuantity)
 			_me->Fill(_qx->getValue(did), _qy->getValue(eid));
 		else
 			_me->Fill(_qx->getValue(eid), _qy->getValue(did));
@@ -283,7 +311,7 @@ namespace hcaldqm
 	/* virtual */ void ContainerSingle2D::fill(HcalDetId const& did,
 		HcalElectronicsId const& eid, double x)
 	{
-		if (_qx->type()==DetectorQuantity)
+		if (_qx->type()==fDetectorQuantity)
 			_me->Fill(_qx->getValue(did), _qy->getValue(eid), x);
 		else
 			_me->Fill(_qx->getValue(eid), _qy->getValue(did), x);

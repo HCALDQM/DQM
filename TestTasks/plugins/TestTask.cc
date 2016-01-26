@@ -37,10 +37,10 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 */
 	_cEnergy_Subdet.initialize(_name, hashfunctions::fSubdet,
 		new quantity::ValueQuantity(quantity::fEnergy),
-		new quantity::ValueQuantity(quantity::fN));
+		new quantity::ValueQuantity(quantity::fN, true));
 	_cTiming_SubdetPMiphi.initialize(_name, hashfunctions::fSubdetPMiphi,
 		new quantity::ValueQuantity(quantity::fTiming_ns),
-		new quantity::ValueQuantity(quantity::fN));
+		new quantity::ValueQuantity(quantity::fN, true));
 	_cEnergyvsiphi_Subdetieta.initialize(_name, hashfunctions::fSubdetieta,
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fEnergy));
@@ -70,6 +70,13 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	_cEt_TTSubdetieta.initialize(_name, hashfunctions::fTTSubdetieta,
 		new quantity::ValueQuantity(quantity::fEt_256),
 		new quantity::ValueQuantity(quantity::fN), 10);
+	_cSummary.initialize(_name, "Summary",
+		new quantity::ElectronicsQuantity(quantity::fFED),
+		new quantity::ValueQuantity(quantity::fN),
+		new quantity::ValueQuantity(quantity::fN));
+	_cPerformance.initialize(_name, "Performance",
+		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::ValueQuantity(quantity::fEvents));
 
 	//	tags
 	_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF",
@@ -96,6 +103,8 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	_cEt_TTSubdetPM.book(ib, _emap);
 	_cEt_TTSubdetPMiphi.book(ib, _emap);
 	_cEt_TTSubdetieta.book(ib, _emap);
+	_cSummary.book(ib);
+	_cPerformance.book(ib);
 
 /*
 	for (unsigned int i=0; i<_cDetIds.size(); i++)
@@ -114,6 +123,7 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 /* virtual */ void TestTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
+	_cPerformance.fill(_currentLS, _evsPerLS);
 
 	//	finish
 	DQTask::endLuminosityBlock(lb, es);
@@ -128,8 +138,9 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 
 }
 
-/* virtual */ void TestTask::_resetMonitors(UpdateFreq)
+/* virtual */ void TestTask::_resetMonitors(UpdateFreq uf)
 {
+	DQTask::_resetMonitors(uf);
 }
 
 DEFINE_FWK_MODULE(TestTask);

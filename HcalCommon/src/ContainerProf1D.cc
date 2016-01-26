@@ -18,7 +18,10 @@ namespace hcaldqm
 		hashfunctions::HashType hashtype, 
 		Quantity* qx, Quantity* qy) :
 		Container1D(folder, hashtype, qx, qy)
-	{}
+	{
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+	}
 
 	/* virtual */ void ContainerProf1D::initialize(std::string const& folder,
 		hashfunctions::HashType hashtype, 
@@ -26,6 +29,8 @@ namespace hcaldqm
 		int debug/*=0*/)
 	{
 		Container1D::initialize(folder, hashtype, qx, qy, debug);
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
 	}
 
 	/* virtual */ void ContainerProf1D::initialize(std::string const& folder,
@@ -35,6 +40,8 @@ namespace hcaldqm
 		int debug/*=0*/)
 	{
 		Container1D::initialize(folder, qname, hashtype, qx, qy, debug);
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
 	}
 
 	/* virtual */ void ContainerProf1D::book(DQMStore::IBooker &ib,
@@ -66,6 +73,7 @@ namespace hcaldqm
 					std::make_pair(hash, ib.bookProfile(_hashmap.getName(did),
 					_hashmap.getName(did), _qx->nbins(), _qx->min(),
 					_qx->max(), _qy->min(), _qy->max())));
+				customize(_mes[hash]);
 			}
 		}
 		else if (_hashmap.isEHash())
@@ -86,6 +94,7 @@ namespace hcaldqm
 					std::make_pair(hash, ib.bookProfile(_hashmap.getName(eid),
 					_hashmap.getName(eid), _qx->nbins(), _qx->min(),
 					_qx->max(), _qy->min(), _qy->max())));
+				customize(_mes[hash]);
 			}
 		}
 		else if (_hashmap.isTHash())
@@ -106,6 +115,7 @@ namespace hcaldqm
 					std::make_pair(hash, ib.bookProfile(_hashmap.getName(tid),
 					_hashmap.getName(tid), _qx->nbins(), _qx->min(),
 					_qx->max(), _qy->min(), _qy->max())));
+				customize(_mes[hash]);
 			}
 		}
 	}

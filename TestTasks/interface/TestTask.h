@@ -13,6 +13,8 @@
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
+#include "DQM/HcalCommon/interface/ContainerSingle2D.h"
+#include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 
 using namespace hcaldqm;
 class TestTask : public DQTask
@@ -48,6 +50,8 @@ class TestTask : public DQTask
 		Container1D		_cEt_TTSubdetPM;
 		Container1D		_cEt_TTSubdetPMiphi;
 		Container1D		_cEt_TTSubdetieta;
+		ContainerSingle2D _cSummary;
+		ContainerSingleProf1D _cPerformance;
 
 //		ContainerProf1D	_cTiming_fCrateSlot;
 //		ContainerProf1D	_cEt_TTSubdetPMiphi;

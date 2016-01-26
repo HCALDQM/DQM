@@ -1,6 +1,8 @@
 #ifndef ValueQuantity_h
 #define ValueQuantity_h
 
+#include "DQM/HcalCommon/interface/Quantity.h"
+
 namespace hcaldqm
 {
 	namespace quantity
@@ -77,6 +79,14 @@ namespace hcaldqm
 				virtual int nbins() {return nbins_value[_type];}
 				virtual double min() {return min_value[_type];}
 				virtual double max() {return max_value[_type];}
+
+				virtual void setBits(TObject* o)
+				{Quantity::setBits(o);setLS(o);}
+				virtual void setLS(TObject* o)
+				{
+					if (_type==fLS)
+						o->SetBit(BIT(BIT_OFFSET+BIT_AXIS_LS));
+				}
 
 			protected:
 				ValueQuantityType _type;

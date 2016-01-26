@@ -7,6 +7,8 @@
  */
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
+#include "DQM/HcalCommon/interface/Constants.h"
+#include "DQM/HcalCommon/interface/Utilities.h"
 
 namespace hcaldqm
 {
@@ -23,6 +25,14 @@ namespace hcaldqm
 			nQuantityType = 6
 		};
 
+		enum AxisType
+		{
+			fXAxis = 0,
+			fYAxis = 1,
+			fZAxis = 2,
+			nAxisType = 3
+		};
+
 		class Quantity
 		{
 			public:
@@ -33,9 +43,10 @@ namespace hcaldqm
 				{}
 				virtual ~Quantity() {}
 
-				virtual QuantityType type() {return fNone;}
-				std::string name() {return _name;}
-				bool		isLog() {return _isLog;}
+				virtual QuantityType	type() {return fNone;}
+				virtual std::string		name() {return _name;}
+				virtual bool			isLog() {return _isLog;}
+				virtual	void			setAxisType(AxisType at) {_axistype=at;}
 
 				virtual uint32_t getBin(HcalDetId const&) {return 1;}
 				virtual uint32_t getBin(HcalElectronicsId const&) {return 1;}
@@ -49,14 +60,25 @@ namespace hcaldqm
 				virtual int getValue(int x) {return x;}
 				virtual double getValue(double x) {return x;}
 
+				virtual void setBits(TObject* o)
+				{setLog(o);}
+				virtual void setLog(TObject* o) 
+				{
+					if (_isLog)
+						o->SetBit(BIT(BIT_OFFSET+_axistype));
+				}
+
 				virtual int nbins() {return 1;}
 				virtual double min() {return 0;}
 				virtual double max() {return 1;}
 				virtual bool isCoordinate() {return false;}
+				virtual std::vector<std::string> getLabels() 
+				{return std::vector<std::string>();}
 
 			protected:
 				std::string		_name;
 				bool			_isLog;
+				AxisType		_axistype;
 		};
 	}
 }

@@ -39,11 +39,11 @@ namespace hcaldqm
 
 				//	get name of the hashed element
 				virtual std::string getName(HcalDetId const &did)
-				{return name_did[_htype](did);}
+				{return hashfunctions::name_did[_htype](did);}
 				virtual std::string getName(HcalElectronicsId const& eid)
-				{return name_eid[_htype-nHashType_did-1](eid);}
+				{return hashfunctions::name_eid[_htype-nHashType_did-1](eid);}
 				virtual std::string getName(HcalTrigTowerDetId const& tid)
-				{return name_tid[_htype-nHashType_eid-1](tid);}
+				{return hashfunctions::name_tid[_htype-nHashType_eid-1](tid);}
 
 				//	get the Hash Type Name
 				virtual std::string getHashTypeName()

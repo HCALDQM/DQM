@@ -10,11 +10,14 @@
  */
 
 #include "DQM/HcalCommon/interface/Container.h"
+#include "DQM/HcalCommon/interface/Quantity.h"
+#include "DQM/HcalCommon/interface/ValueQuantity.h"
 
 #include <string>
 
 namespace hcaldqm
 {
+	using namespace quantity;
 	class ContainerSingle2D : public Container
 	{
 		public:
@@ -82,6 +85,8 @@ namespace hcaldqm
 			Quantity						*_qx;
 			Quantity						*_qy;
 			Quantity						*_qz;
+
+			virtual void customize();
 	};
 }
 

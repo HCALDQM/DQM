@@ -13,7 +13,10 @@ namespace hcaldqm
 	ContainerSingle1D::ContainerSingle1D(std::string const& folder,
 		Quantity *qx, Quantity *qy):
 		Container(folder, qy->name()+"vs"+qx->name()), _qx(qx), _qy(qy)
-	{}
+	{
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+	}
 
 	/* virtual */ void ContainerSingle1D::initialize(std::string const& folder,
 		Quantity *qx, Quantity *qy, int debug/*=0*/)
@@ -21,6 +24,8 @@ namespace hcaldqm
 		Container::initialize(folder, qy->name()+"vs"+qx->name(), debug);
 		_qx = qx;
 		_qy = qy;
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
 	}
 
 	/* virtual */ void ContainerSingle1D::initialize(std::string const& folder,
@@ -30,6 +35,8 @@ namespace hcaldqm
 		Container::initialize(folder, qname, debug);
 		_qx = qx;
 		_qy = qy;
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
 	}
 
 	/* virtual */ void ContainerSingle1D::book(DQMStore::IBooker &ib,
@@ -38,6 +45,21 @@ namespace hcaldqm
 		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qname+aux);
 		_me = ib.book1D(_qname, _qname,
 			_qx->nbins(), _qx->min(), _qx->max());
+		customize();
+	}
+
+	/* virtual */ void ContainerSingle1D::customize()
+	{
+		_me->setAxisTitle(_qx->name(), 1);
+		_me->setAxisTitle(_qy->name(), 2);
+
+		TObject *o = _me->getRootObject();
+		_qx->setBits(o);
+		_qy->setBits(o);
+
+		std::vector<std::string> xlabels = _qx->getLabels();
+		for (unsigned int i=0; i<xlabels.size(); i++)
+			_me->setBinLabel(i+1, xlabels[i], 1);
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(int x)

@@ -70,6 +70,8 @@ namespace hcaldqm
 
 		protected:
 			Quantity	*_qz;
+
+			virtual void customize(MonitorElement*);
 	};
 }
 

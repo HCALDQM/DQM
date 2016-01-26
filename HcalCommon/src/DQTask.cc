@@ -6,11 +6,11 @@ namespace hcaldqm
 	using namespace constants;
 	DQTask::DQTask(edm::ParameterSet const& ps):
 		DQModule(ps),
-//		_cEvsTotal(_name, "EventsTotal"),
-//		_cEvsPerLS(_name, "EventssPerLS"),
-//		_cRunKeyVal(_name, "RunKeyValue"),
-//		_cRunKeyName(_name, "RunKeyName"),
-//		_cProcessingTypeName(_name, "ProcessingType"),
+		_cEvsTotal(_name, "EventsTotal"),
+		_cEvsPerLS(_name, "EventsPerLS"),
+		_cRunKeyVal(_name, "RunKeyValue"),
+		_cRunKeyName(_name, "RunKeyName"),
+		_cProcessingTypeName(_name, "ProcessingType"),
 		_procLSs(0)
 	{
 		//	tags and Tokens
@@ -33,8 +33,8 @@ namespace hcaldqm
 			if (!this->_isApplicable(e))
 				return;
 
-			_evsTotal++; //_cEvsTotal.fill(_evsTotal);
-			_evsPerLS++; //_cEvsPerLS.fill(_evsPerLS);
+			_evsTotal++; _cEvsTotal.fill(_evsTotal);
+			_evsPerLS++; _cEvsPerLS.fill(_evsPerLS);
 			_currentLS = e.luminosityBlock();
 			this->_process(e, es);
 		}
@@ -58,26 +58,26 @@ namespace hcaldqm
 		edm::Run const& r,
 		edm::EventSetup const& es)
 	{
-//		_cEvsTotal.book(ib);
-//		_cEvsPerLS.book(ib);
-//		_cRunKeyVal.book(ib);
-//		_cRunKeyName.book(ib);
-//		_cProcessingTypeName.book(ib);
+		_cEvsTotal.book(ib);
+		_cEvsPerLS.book(ib);
+		_cRunKeyVal.book(ib);
+		_cRunKeyName.book(ib);
+		_cProcessingTypeName.book(ib);
 
 		//	fill what you can now
-//		_cRunKeyVal.fill(_runkeyVal);
-//		_cRunKeyName.fill(_runkeyName);
-//		_cProcessingTypeName.fill(pTypeNames[_ptype]);
+		_cRunKeyVal.fill(_runkeyVal);
+		_cRunKeyName.fill(_runkeyName);
+		_cProcessingTypeName.fill(pTypeNames[_ptype]);
 	}
 
 	/* virtual */ void DQTask::dqmBeginRun(edm::Run const& r,
 		edm::EventSetup const& es)
 	{
-//		this->_resetMonitors(fEvent);
-//		this->_resetMonitors(fLS);
-//		this->_resetMonitors(f10LS);
-//		this->_resetMonitors(f50LS);
-//		this->_resetMonitors(f100LS);
+		this->_resetMonitors(fEvent);
+		this->_resetMonitors(fLS);
+		this->_resetMonitors(f10LS);
+		this->_resetMonitors(f50LS);
+		this->_resetMonitors(f100LS);
 	}
 
 	/* virtual */ void DQTask::beginLuminosityBlock(
@@ -85,14 +85,14 @@ namespace hcaldqm
 		edm::EventSetup const& es)
 	{
 		this->_resetMonitors(fLS);
-		/*
+		
 		if (_procLSs%10==0)
 			this->_resetMonitors(f10LS);
 		if (_procLSs%50==0)
 			this->_resetMonitors(f50LS);
 		if (_procLSs%100==0)
 			this->_resetMonitors(f100LS);
-			*/
+			
 	}
 
 	/* virtual */ void DQTask::endLuminosityBlock(

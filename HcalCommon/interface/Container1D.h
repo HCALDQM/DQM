@@ -98,6 +98,8 @@ namespace hcaldqm
 			virtual void print();
 
 		protected:
+			virtual void customize(MonitorElement*);
+
 			typedef boost::unordered_map<uint32_t, MonitorElement*> MEMap;
 			MEMap									_mes;
 			mapper::HashMapper						_hashmap;

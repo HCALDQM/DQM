@@ -13,7 +13,10 @@ namespace hcaldqm
 		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy) :
 		Container(folder, qy->name()+"vs"+qx->name()), _hashmap(hashtype),
 		_qx(qx), _qy(qy)
-	{}
+	{
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+	}
 
 	/* virtuial */ void Container1D::initialize(std::string const& folder, 
 		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy/* = ... */,
@@ -23,6 +26,8 @@ namespace hcaldqm
 		_hashmap.initialize(hashtype);
 		_qx = qx;
 		_qy = qy;
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
 	}
 
 	/* virtuial */ void Container1D::initialize(std::string const& folder, 
@@ -34,6 +39,8 @@ namespace hcaldqm
 		_hashmap.initialize(hashtype);
 		_qx = qx;
 		_qy = qy;
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
 	}
 
 	/* virtual */ void Container1D::reset()
@@ -255,7 +262,9 @@ namespace hcaldqm
 					std::make_pair(hash, ib.book1D(_hashmap.getName(did),
 					_hashmap.getName(did), _qx->nbins(), _qx->min(), 
 					_qx->max())));
-
+				
+				//	customize
+				customize(_mes[hash]);
 			}
 		}
 		
@@ -279,6 +288,9 @@ namespace hcaldqm
 					ib.book1D(_hashmap.getName(eid),
 					_hashmap.getName(eid), 
 					_qx->nbins(), _qx->min(), _qx->max())));
+
+				//	customize
+				customize(_mes[hash]);
 			}
 		}
 		else if (_hashmap.isTHash())
@@ -301,8 +313,27 @@ namespace hcaldqm
 					ib.book1D(_hashmap.getName(tid),
 					_hashmap.getName(tid), 
 					_qx->nbins(), _qx->min(), _qx->max())));
+				//	customize
+				customize(_mes[hash]);
 			}
 		}
+	}
+
+	/* virtual */ void Container1D::customize(MonitorElement* me)
+	{
+		//	set labels
+		me->setAxisTitle(_qx->name(), 1);
+		me->setAxisTitle(_qy->name(), 2);
+
+		//	set bits
+		TObject *o = me->getRootObject();	
+		_qx->setBits(o);
+		_qy->setBits(o);
+
+		//	set labels
+		std::vector<std::string> xlabels = _qx->getLabels();
+		for (unsigned int i=0; i<xlabels.size(); i++)
+			me->setBinLabel(i+1, xlabels[i], 1);
 	}
 }
 

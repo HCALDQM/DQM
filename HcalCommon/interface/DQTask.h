@@ -8,8 +8,8 @@
  */
 
 #include "DQM/HcalCommon/interface/DQModule.h"
-//#include "DQM/HcalCommon/interface/ContainerI.h"
-//#include "DQM/HcalCommon/interface/ContainerS.h"
+#include "DQM/HcalCommon/interface/ContainerI.h"
+#include "DQM/HcalCommon/interface/ContainerS.h"
 
 namespace hcaldqm
 {
@@ -20,13 +20,13 @@ namespace hcaldqm
 		f10LS = 2,
 		f50LS = 3,
 		f100LS = 4,
-
 		nUpdateFreq = 5
 	};
-
 	class DQTask : public DQMEDAnalyzer, public DQModule
 	{
 		public:
+
+			//	constructor
 			DQTask(edm::ParameterSet const&);
 			virtual ~DQTask(){}
 
@@ -48,11 +48,11 @@ namespace hcaldqm
 			virtual int _getCalibType(edm::Event const&);
 
 			//	protected vars
-//			ContainerI _cEvsTotal;
-//			ContainerI _cEvsPerLS;
-//			ContainerI _cRunKeyVal;
-//			ContainerS _cRunKeyName;
-//			ContainerS _cProcessingTypeName;
+			ContainerI _cEvsTotal;
+			ContainerI _cEvsPerLS;
+			ContainerI _cRunKeyVal;
+			ContainerS _cRunKeyName;
+			ContainerS _cProcessingTypeName;
 
 			//	counters
 			int			_procLSs;

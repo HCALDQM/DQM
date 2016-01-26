@@ -19,15 +19,24 @@ namespace hcaldqm
 		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy,
 		Quantity *qz) :
 		Container1D(folder, hashtype, qx, qy), _qz(qz)
-	{}
+	{
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
+	}
 	
 	/* virtual */ void Container2D::initialize(std::string const& folder, 
 		hashfunctions::HashType hashtype,
 		Quantity *qx, Quantity *qy, Quantity *qz,
 		int debug/*=0*/)
 	{
-		Container1D::initialize(folder, hashtype, qx, qy, debug);
+		Container1D::initialize(folder, 
+			qz->name()+"vs"+qy->name()+"vs"+qx->name(), 
+			hashtype, qx, qy, debug);
 		_qz = qz;
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
 	}
 
 	/* virtual */ void Container2D::initialize(std::string const& folder, 
@@ -38,6 +47,9 @@ namespace hcaldqm
 	{
 		Container1D::initialize(folder, qname, hashtype, qx, qy, debug);
 		_qz = qz;
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
 	}
 
 	/* virtual */ void Container2D::fill(HcalDetId const& did)
@@ -298,6 +310,7 @@ namespace hcaldqm
 					std::make_pair(hash, ib.book2D(_hashmap.getName(did),
 					_hashmap.getName(did), _qx->nbins(), _qx->min(),
 					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
+				customize(_mes[hash]);
 			}
 		}
 		else if (_hashmap.isEHash())
@@ -319,6 +332,7 @@ namespace hcaldqm
 					std::make_pair(hash, ib.book2D(_hashmap.getName(eid),
 					_hashmap.getName(eid), _qx->nbins(), _qx->min(),
 					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
+				customize(_mes[hash]);
 			}
 		}
 		else if (_hashmap.isTHash())
@@ -341,8 +355,29 @@ namespace hcaldqm
 					std::make_pair(hash, ib.book2D(_hashmap.getName(tid),
 					_hashmap.getName(tid), _qx->nbins(), _qx->min(),
 					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
+
+				customize(_mes[hash]);
 			}
 		}
+	}
+
+	/* virtual */ void Container2D::customize(MonitorElement* me)
+	{
+		me->setAxisTitle(_qx->name(), 1);		
+		me->setAxisTitle(_qy->name(), 2);		
+		me->setAxisTitle(_qz->name(), 3);		
+
+		TObject *o = me->getRootObject();
+		_qx->setBits(o);
+		_qy->setBits(o);
+		_qz->setBits(o);
+
+		std::vector<std::string> xlabels = _qx->getLabels();
+		std::vector<std::string> ylabels = _qy->getLabels();
+		for (unsigned int i=0; i<xlabels.size(); i++)
+			me->setBinLabel(i+1, xlabels[i], 1);
+		for (unsigned int i=0; i<ylabels.size(); i++)
+			me->setBinLabel(i+1, ylabels[i], 2);
 	}
 }
 

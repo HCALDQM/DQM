@@ -18,15 +18,21 @@ namespace hcaldqm
 		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy,
 		Quantity *qz) :
 		Container2D(folder, hashtype, qx, qy, qz)
-	{}
+	{
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
+	}
 	
 	/* virtual */ void ContainerProf2D::initialize(std::string const& folder,
 		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy,
 		Quantity *qz,
 		int debug/*=0*/)
 	{
-		Container2D::initialize(folder, hashtype, qx, qy, qz, 
-			debug);
+		Container2D::initialize(folder, hashtype, qx, qy, qz,debug);
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
 	}
 
 	/* virtual */ void ContainerProf2D::initialize(std::string const& folder,
@@ -37,6 +43,9 @@ namespace hcaldqm
 	{
 		Container2D::initialize(folder, qname, hashtype, qx, qy, qz, 
 			debug);
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
 	}
 
 	/* virtual */ void ContainerProf2D::book(DQMStore::IBooker &ib,
@@ -71,6 +80,7 @@ namespace hcaldqm
 					_qx->nbins(), _qx->min(), _qx->max(),
 					_qy->nbins(), _qy->min(), _qy->max(),
 					_qz->min(), _qz->max())));
+				customize(_mes[hash]);
 			}
 		}
 		else if (_hashmap.isEHash())
@@ -94,6 +104,7 @@ namespace hcaldqm
 					_qx->nbins(), _qx->min(), _qx->max(),
 					_qy->nbins(), _qy->min(), _qy->max(),
 					_qz->min(), _qz->max())));
+				customize(_mes[hash]);
 			}
 		}
 		else if (_hashmap.isTHash())
@@ -117,17 +128,8 @@ namespace hcaldqm
 					_qx->nbins(), _qx->min(), _qx->max(),
 					_qy->nbins(), _qy->min(), _qy->max(),
 					_qz->min(), _qz->max())));
+				customize(_mes[hash]);
 			}
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
