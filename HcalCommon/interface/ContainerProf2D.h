@@ -34,6 +34,13 @@ namespace hcaldqm
 				Quantity *qz = new ValueQuantity(quantity::fEnergy),
 				int debug=0);
 
+			virtual void initialize(std::string const& folder, 
+				std::string const& qname,
+				hashfunctions::HashType,
+				Quantity*, Quantity*,
+				Quantity *qz = new ValueQuantity(quantity::fEnergy),
+				int debug=0);
+
 			virtual void book(DQMStore::IBooker&,
 				HcalElectronicsMap const*,
 				std::string subsystem="Hcal", std::string aux="");

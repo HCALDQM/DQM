@@ -25,11 +25,22 @@ namespace hcaldqm
 		_qy = qy;
 	}
 
+	/* virtuial */ void Container1D::initialize(std::string const& folder, 
+		std::string const& qname,
+		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy/* = ... */,
+		int debug /* =0 */)
+	{
+		Container::initialize(folder, qname, debug);
+		_hashmap.initialize(hashtype);
+		_qx = qx;
+		_qy = qy;
+	}
+
 	/* virtual */ void Container1D::reset()
 	{
 		BOOST_FOREACH(MEMap::value_type &pair, _mes)
 		{
-			_mes[pair.first]->Reset();
+			pair.second->Reset();
 		}
 	}
 
@@ -210,9 +221,8 @@ namespace hcaldqm
 	{
 		//	full path to where all the plots are living
 		//	subsystem/taskname/QxvsQy_auxilary/HashType
-		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qy->name()+
-			"vs"+_qx->name()+(aux==""?aux:"_"+aux)+
-			"/"+_hashmap.getHashTypeName());
+		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qname+
+			(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName());
 		_logger.debug(_hashmap.getHashTypeName());
 		if (_hashmap.isDHash())
 		{

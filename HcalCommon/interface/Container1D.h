@@ -52,6 +52,13 @@ namespace hcaldqm
 				Quantity *qy = new ValueQuantity(quantity::fN), 
 				int debug=0);
 
+			//	@qname - to replace the QyvsQx naming
+			virtual void initialize(std::string const& folder, 
+				std::string const &qname,
+				hashfunctions::HashType,  Quantity*,
+				Quantity *qy = new ValueQuantity(quantity::fN), 
+				int debug=0);
+
 			//	using DetId as mapper
 			virtual void fill(HcalDetId const&);
 			virtual void fill(HcalDetId const&, int);

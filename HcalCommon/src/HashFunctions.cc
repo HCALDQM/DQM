@@ -84,6 +84,11 @@ namespace hcaldqm
 			return hash;
 		}
 
+		uint32-t hash_Channel(HcalDetId const& did)
+		{
+			return utilities::hash(did);
+		}
+
 		std::string name_Subdet(HcalDetId const& did)
 		{
 			return constants::SUBDET_NAME[did.subdet()-1];
@@ -174,6 +179,14 @@ namespace hcaldqm
 			char name[10];
 			sprintf(name, "HBHE%c", c);
 			return std::string(name);
+		}
+
+		std::string name_Channel(HcalDetId const& did)
+		{
+			char name[40];
+			sprintf(name, "%sieta%diphi%dd%d",
+				constants::SUBDET_NAME[did.subdet()-1], did.ieta(), did.iphi(),
+				did.depth());
 		}
 
 		/**

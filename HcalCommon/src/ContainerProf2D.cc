@@ -29,15 +29,24 @@ namespace hcaldqm
 			debug);
 	}
 
+	/* virtual */ void ContainerProf2D::initialize(std::string const& folder,
+		std::string const& qname,
+		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy,
+		Quantity *qz,
+		int debug/*=0*/)
+	{
+		Container2D::initialize(folder, qname, hashtype, qx, qy, qz, 
+			debug);
+	}
+
 	/* virtual */ void ContainerProf2D::book(DQMStore::IBooker &ib,
 		HcalElectronicsMap const *emap,
 		std::string subsystem, std::string aux)
 	{
 		//	full path as in Container1D.cc
 		//
-		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qz->name()+"vs"+
-			_qy->name()+"vs"+_qx->name()+(aux==""?aux:"_"+aux)+
-			"/"+_hashmap.getHashTypeName());
+		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qname
+			+(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName());
 		if (_hashmap.isDHash())
 		{
 			//	for Detector Hashes

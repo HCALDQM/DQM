@@ -33,6 +33,13 @@ namespace hcaldqm
 					hashfunctions::HashType, Quantity*, Quantity*,
 					Quantity *qz = new ValueQuantity(quantity::fN),
 					int debug=0);
+			
+			//	@qname - quantity name replacer
+			virtual void initialize(std::string const& folder, 
+				std::string const& qname,
+				hashfunctions::HashType, Quantity*, Quantity*,
+				Quantity *qz = new ValueQuantity(quantity::fN),
+				int debug=0);
 
 			//	redeclare what to override
 			virtual void fill(HcalDetId const&);

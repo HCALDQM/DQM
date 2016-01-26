@@ -34,6 +34,12 @@ namespace hcaldqm
 				Quantity*, Quantity*,
 				int debug=0);
 
+			virtual void initialize(std::string const& folder, 
+				std::string const& qname,
+				hashfunctions::HashType, 
+				Quantity*, Quantity*,
+				int debug=0);
+
 			//	booking
 			virtual void book(DQMStore::IBooker&,
 				HcalElectronicsMap const*,

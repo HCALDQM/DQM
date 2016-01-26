@@ -14,6 +14,7 @@
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
 #include "DQM/HcalCommon/interface/ContainerCompact.h"
+#include "DQM/HcalCommon/interface/ContainerXXX.h"
 
 using namespace hcaldqm;
 class PedestalTask : public DQTask
@@ -48,7 +49,8 @@ class PedestalTask : public DQTask
 		//	emap
 		HcalElectronicsMap const* _emap;
 
-		ContainerCompact _cPedestals;
+		ContainerCompact	_cPedestals;
+		ContainerXXX		_cPeds;
 
 		//	1D
 		Container1D		_cPedestalMeans_Subdet;

@@ -28,15 +28,23 @@ namespace hcaldqm
 		Container1D::initialize(folder, hashtype, qx, qy, debug);
 	}
 
+	/* virtual */ void ContainerProf1D::initialize(std::string const& folder,
+		std::string const& qname,
+		hashfunctions::HashType hashtype, 
+		Quantity *qx, Quantity *qy,
+		int debug/*=0*/)
+	{
+		Container1D::initialize(folder, qname, hashtype, qx, qy, debug);
+	}
+
 	/* virtual */ void ContainerProf1D::book(DQMStore::IBooker &ib,
 		HcalElectronicsMap const *emap,
 		std::string subsystem, std::string aux)
 	{
 		//	check Container1D.cc for the format
 		//
-		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qy->name()+
-			"vs"+_qx->name()+(aux==""?aux:"_"+aux)+"/"+
-			_hashmap.getHashTypeName());
+		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qname
+			+(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName());
 		if (_hashmap.isDHash())
 		{
 			std::vector<HcalGenericDetId> dids = emap->allPrecisionId();

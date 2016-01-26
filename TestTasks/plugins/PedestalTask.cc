@@ -20,6 +20,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		new quantity::DetectorQuantity(quantity::fieta), 
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fADC_5));
+	_cPeds.initialize(hashfunctions::fChannel);
 
 	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
@@ -49,6 +50,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cPedestalRMSs_Subdet.book(ib, _emap);
 	_cPedestalMeans_depth.book(ib, _emap);
 	_cPedestalRMSs_depth.book(ib, _emap);
+	_cPeds.book(_emap);
 }
 
 /* virtual */ void PedestalTask::_resetMonitors(UpdateFreq uf)
@@ -89,28 +91,40 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		it!=chbhe->end(); ++it)
 	{
 		const HBHEDataFrame digi = (const HBHEDataFrame)(*it);
+		HcalDetId did = digi.id();
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
-			_cPedestals.fill(digi.id(), it->sample(i).adc());
+		{
+			_cPedestals.fill(did, it->sample(i).adc());
+			_cPeds.fill(did, it->sample(i).adc());
+		}
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
 		it!=cho->end(); ++it)
 	{
 		const HODataFrame digi = (const HODataFrame)(*it);
+		HcalDetId did = digi.id();
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
-			_cPedestals.fill(digi.id(), it->sample(i).adc());
+		{
+			_cPedestals.fill(did, it->sample(i).adc());
+			_cPeds.fill(did, it->sample(i).adc());
+		}
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
 		it!=chf->end(); ++it)
 	{
 		const HFDataFrame digi = (const HFDataFrame)(*it);
+		HcalDetId did = digi.id();
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
-			_cPedestals.fill(digi.id(), it->sample(i).adc());
+		{
+			_cPedestals.fill(did, it->sample(i).adc());
+			_cPeds.fill(did, it->sample(i).adc());
+		}
 	}
 
 	if (_ptype==fOnline && _evsTotal>0 && 

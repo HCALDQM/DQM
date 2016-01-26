@@ -31,6 +31,7 @@ namespace hcaldqm
 		uint32_t hash_depth(HcalDetId const&);
 		uint32_t hash_HFPMiphi(HcalDetId const&);
 		uint32_t hash_HBHEPartition(HcalDetId const&);
+		uint32_t hash_Channel(HcalDetId const&);
 
 		/**
 		 *	by ElectronicsId
@@ -65,6 +66,7 @@ namespace hcaldqm
 		std::string name_depth(HcalDetId const&);
 		std::string name_HFPMiphi(HcalDetId const&);
 		std::string name_HBHEPartition(HcalDetId const&);
+		std::string name_Channel(HcalDetId const&);
 
 		std::string name_FED(HcalElectronicsId const&);
 		std::string name_FEDSpigot(HcalElectronicsId const&);
@@ -95,24 +97,25 @@ namespace hcaldqm
 			fdepth = 8,
 			fHFPMiphi = 9,
 			fHBHEPartition = 10,
-			nHashType_did = 11,
-			fFED = 12,
-			fFEDSpigot = 13,
-			fFEDSlot = 14,
-			fCrate = 15,
-			fCrateSpigot = 16,
-			fCrateSlot = 17,
-			fFiber = 18,
-			fFiberFiberCh = 19,
-			fFiberCh = 20,
-			nHashType_eid = 21,
-			fTTSubdet = 22,
-			fTTSubdetPM = 23,
-			fTTSubdetPMiphi = 24,
-			fTTSubdetieta = 25,
-			fTTdepth = 26,
-			nHashType_tid = 27,
-			nHashType = 28
+			fChannel = 11
+			nHashType_did = 12,
+			fFED = 13,
+			fFEDSpigot = 14,
+			fFEDSlot = 15,
+			fCrate = 16,
+			fCrateSpigot = 17,
+			fCrateSlot = 18,
+			fFiber = 19,
+			fFiberFiberCh = 20,
+			fFiberCh = 21,
+			nHashType_eid = 22,
+			fTTSubdet = 23,
+			fTTSubdetPM = 24,
+			fTTSubdetPMiphi = 25,
+			fTTSubdetieta = 26,
+			fTTdepth = 27,
+			nHashType_tid = 28,
+			nHashType = 29
 		};
 		typedef uint32_t (*hash_function_did)(HcalDetId const&);
 		typedef uint32_t (*hash_function_eid)(HcalElectronicsId const&);
@@ -124,7 +127,7 @@ namespace hcaldqm
 			hash_Subdet, hash_Subdetiphi, hash_Subdetieta, 
 			hash_Subdetdepth, hash_SubdetPM, hash_SubdetPMiphi,
 			hash_iphi, hash_ieta, hash_depth, hash_HFPMiphi, 
-			hash_HBHEPartition
+			hash_HBHEPartition, hash_Channel
 		};
 		hash_function_eid const hash_eid[nHashType_eid-nHashType_did-1] = {
 			hash_FED, hash_FEDSpigot, hash_FEDSlot, 
@@ -139,7 +142,7 @@ namespace hcaldqm
 			name_Subdet, name_Subdetiphi, name_Subdetieta, 
 			name_Subdetdepth, name_SubdetPM, name_SubdetPMiphi,
 			name_iphi, name_ieta, name_depth, name_HFPMiphi, 
-			name_HBHEPartition
+			name_HBHEPartition, name_Channel
 		};
 		name_function_eid const name_eid[nHashType_eid-nHashType_did-1] = {
 			name_FED, name_FEDSpigot, name_FEDSlot,
@@ -155,7 +158,7 @@ namespace hcaldqm
 		std::string const hash_names[nhashes] = {
 			"Subdet", "Subdetiphi", "Subdetieta", "Subdetdepth",
 			"SubdetPM", "SubdetPMiphi", "iphi", "ieta", "depth",
-			"HFPMiphi", "HBHEPartition",
+			"HFPMiphi", "HBHEPartition", "Channel"
 
 			"FED", "FEDSpigot", "FEDSlot",
 			"Crate", "CrateSpigot", "CrateSlot",
