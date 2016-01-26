@@ -32,10 +32,18 @@ namespace hcaldqm
 				//	get hash
 				virtual uint32_t getHash(HcalDetId const& did)
 				{return hash_did[_htype](did);}
+				virtual uint32_t getHash(HcalElectronicsId const& eid)
+				{return hash_eid[_htype](eid);}
+				virtual uint32_t getHash(HcalTrigTowerDetId const& tid)
+				{return hash_tid[_htype](tid);}
 
 				//	get name of the hashed element
 				virtual std::string getName(HcalDetId const &did)
 				{return name_did[_htype](did);}
+				virtual std::string getName(HcalElectronicsId const& eid)
+				{return name_eid[_htype](eid);}
+				virtual std::string getName(HcalTrigTowerDetId const& tid)
+				{return name_tid[_htype](tid);}
 
 				//	get the Hash Type Name
 				virtual std::string getHashTypeName()

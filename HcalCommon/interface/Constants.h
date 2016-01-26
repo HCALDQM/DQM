@@ -23,15 +23,15 @@ namespace hcaldqm
 		 */
 
 		//	FEDs
-		int const FED_VME_MIN = 700;
-		int const FED_VME_MAX = 731;
+		int const FED_VME_MIN = FEDNumbering::MINHCALFEDID;
+		int const FED_VME_MAX = FEDNumbering::MAXHCALFEDID;
 		int const FED_VME_DELTA = 1;
 		int const FED_VME_NUM = FED_VME_MAX-FED_VME_MIN+1;
 
-		int const FED_uTCA_MIN = 1100;
-		int const FED_uTCA_MAX = 1122;
-		int const FED_uTCA_NUM = 12;
-		int const FED_uTCA_DELTA = 2;
+		int const FED_uTCA_MIN = FEDNumbering::MINHCALuTCAFEDID;
+		int const FED_uTCA_MAX = FEDNumbering::MAXHCALuTCAFEDID;
+		int const FED_uTCA_NUM = FED_uTCA_MAX - FED_uTCA_MAX + 1;
+		int const FED_uTCA_DELTA = 1;
 		int const FED_TOTAL_NUM = FED_VME_NUM+FED_uTCA_NUM;
 		
 		//	Crates
@@ -44,6 +44,7 @@ namespace hcaldqm
 		int const CRATE_uTCA_MAX = 37;
 		int const CRATE_uTCA_DELTA = 1;
 		int const CRATE_uTCA_NUM = CRATE_uTCA_MAX-CRATE_uTCA_MIN+1;
+		int const CRATE_TOTAL_NUM = CRATE_VME_NUM + CRATE_uTCA_NUM;
 
 		//	Slots
 		int const SLOT_uTCA_MIN = 1;
@@ -51,12 +52,12 @@ namespace hcaldqm
 		int const SLOT_uTCA_DELTA = 1;
 		int const SLOT_uTCA_NUM = SLOT_uTCA_MAX-SLOT_uTCA_MIN+1;
 
-		int const SLOT_VME_MIN = 2;
-		int const SLOT_VME_MIN1 = 7;
+		int const SLOT_VME_MIN1 = 2;
+		int const SLOT_VME_MAX1 = 7;
 		int const SLOT_VME_MIN2 = 13;
-		int const SLOT_VME_MAX = 18;
-		int const SLOT_VME_NUM1 = SLOT_VME_MIN1-SLOT_VME_MIN+1;
-		int const SLOT_VME_NUM2 = SLOT_VME_MAX-SLOT_VME_MIN2+1;
+		int const SLOT_VME_MAX2 = 18;
+		int const SLOT_VME_NUM1 = SLOT_VME_MAX1-SLOT_VME_MIN1+1;
+		int const SLOT_VME_NUM2 = SLOT_VME_MAX2-SLOT_VME_MIN2+1;
 		int const SLOT_VME_NUM = SLOT_VME_NUM1+SLOT_VME_NUM2;
 
 		int const SPIGOT_MIN = 0;
@@ -67,9 +68,12 @@ namespace hcaldqm
 		int const FIBER_VME_MIN = 1;
 		int const FIBER_VME_MAX = 8;
 		int const FIBER_VME_NUM = FIBER_VME_MAX-FIBER_VME_MIN+1;
-		int const FIBER_uTCA_MIN = 2;
-		int const FIBER_uTCA_MAX = 21;
-		int const FIBER_uTCA_NUM = FIBER_uTCA_MAX-FIBER_uTCA_MIN+1;
+		int const FIBER_uTCA_MIN1 = 2;
+		int const FIBER_uTCA_MAX1 = 9;
+		int const FIBER_uTCA_MIN2 = 14;
+		int const FIBER_uTCA_MAX2 = 21;
+		int const FIBER_uTCA_NUM = FIBER_uTCA_MAX1-FIBER_uTCA_MIN1+1 + 
+			FIBER_uTCA_MAX2-FIBER_uTCA_MIN2+1;
 
 		int const FIBERCH_MIN = 0;
 		int const FIBERCH_MAX = 2;

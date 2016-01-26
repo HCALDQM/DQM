@@ -74,6 +74,7 @@ namespace hcaldqm
 				virtual int nbins() {return nbins_did[_type];}
 				virtual double min() {return min_did[_type];}
 				virtual double max() {return max_did[_type];}
+				virtual bool isCoordinate() {return true;}
 
 			protected:
 				DetectorQuantityType	_type;

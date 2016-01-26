@@ -3,8 +3,6 @@
 
 namespace hcaldqm
 {
-	using namespace mapper;
-	using namespace axis;
 	using namespace constants;
 
 	/* virtual */ void ContainerCompact::fill(HcalDetId const& did, double x)

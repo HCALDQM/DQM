@@ -127,6 +127,8 @@ namespace hcaldqm
 		int getFEDById(int);
 		int getIdByFED(int);
 		uint32_t hash(HcalDetId const&);
+		uint32_t hash(HcalElectronicsId const&);
+		uint32_t hash(HcalTrigTowerDetId const&);
 	}
 }
 

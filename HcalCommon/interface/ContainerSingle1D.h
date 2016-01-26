@@ -17,21 +17,18 @@
 
 namespace hcaldqm
 {
-	using namespace axis;
 	class ContainerSingle1D : public Container
 	{
 		public:
 			ContainerSingle1D();
 			ContainerSingle1D(std::string const& folder, 
-				std::string const& nametitle, 
-				axis::Axis *xaxis,
-				axis::Axis *yaxis = new ValueAxis(fYaxis, axis::fEntries));
+				Quantity*,
+				Quantity *qy = new ValueQuantity(quantity::fN));
 			virtual ~ContainerSingle1D() {}
 			
 			virtual void initialize(std::string const& folder, 
-				std::string const& nametitle, 
-				axis::Axis *xaxis,
-				axis::Axis *yaxis = new ValueAxis(fYaxis, axis::fEntries),
+				Quantity*,
+				Quantity *qy = new ValueQuantity(quantity::fN)
 				int debug=0);
 
 			//	booking
@@ -52,11 +49,14 @@ namespace hcaldqm
 
 			virtual void fill(HcalElectronicsId const&);
 			virtual void fill(HcalElectronicsId const&, double);
+			virtual void fill(HcalElectronicsId const&, double, double);
+
+			virtual void reset() {_me->Reset();}
 
 		protected:
 			MonitorElement				*_me;
-			Axis						*_xaxis;
-			Axis						*_yaxis;
+			Quantity					*_qx;
+			Quantity					*_qy;
 	};
 }
 

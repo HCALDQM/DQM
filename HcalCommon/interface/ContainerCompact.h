@@ -13,8 +13,6 @@
 
 namespace hcaldqm
 {
-	using namespace axis;
-	using namespace mapper;
 	using namespace constants;
 	
 	struct Compact

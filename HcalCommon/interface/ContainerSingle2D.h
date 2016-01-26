@@ -10,30 +10,23 @@
  */
 
 #include "DQM/HcalCommon/interface/Container.h"
-#include "DQM/HcalCommon/interface/ValueAxis.h"
-#include "DQM/HcalCommon/interface/CoordinateAxis.h"
 
 #include <string>
 
 namespace hcaldqm
 {
-	using namespace axis;
 	class ContainerSingle2D : public Container
 	{
 		public:
 			ContainerSingle2D();
 			ContainerSingle2D(std::string const& folder, 
-				std::string const& nametitle, 
-				axis::Axis *xaxis,
-				axis::Axis *yaxis = new CoordinateAxis(fYaxis, axis::fiphi), 
-				axis::Axis *zaxis = new ValueAxis(fZaxis, fEntries));
+				Quantity*, Quantity*,
+				Quantity *qz = new ValueQuantity(quantity::fN));
 			virtual ~ContainerSingle2D() {}
 
 			virtual void initialize(std::string const& folder, 
-				std::string const& nametitle, 
-				axis::Axis *xaxis,
-				axis::Axis *yaxis = new CoordinateAxis(fYaxis, axis::fiphi), 
-				axis::Axis *zaxis = new ValueAxis(fZaxis, fEntries), 
+				Quantity*, Quantity*,
+				Quantity *qz = new ValueQuantity(quantity::fN),
 				int debug=0);
 
 			//	booking
@@ -53,9 +46,9 @@ namespace hcaldqm
 			//	any of the following 3 funcs must only be used with FEDs as
 			//	X-axis and whatever coordinate as Yaxis
 			//	there are no checks done on the axis!
-			virtual void fill(int, HcalElectronicsId const&);
-			virtual void fill(int, HcalElectronicsId const&, int);
-			virtual void fill(int, HcalElectronicsId const&, double);
+//			virtual void fill(int, HcalElectronicsId const&);
+//			virtual void fill(int, HcalElectronicsId const&, int);
+//			virtual void fill(int, HcalElectronicsId const&, double);
 
 			virtual void fill(HcalDetId const&);
 			virtual void fill(HcalDetId const&, double);

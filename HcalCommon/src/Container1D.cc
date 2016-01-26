@@ -93,9 +93,10 @@ namespace hcaldqm
 	{
 
 		//	full path to where all the plots are living
-		//	subsystem/taskname/QxvsQy/HashType
+		//	subsystem/taskname/QxvsQy_auxilary/HashType
 		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qy->name()+
-			"vs"+_qx->name()+"/"+_hashmap.getHashTypeName());
+			"vs"+_qx->name()+(aux==""?aux:"_"+aux)+
+			"/"+_hashmap.getHashTypeName());
 		if (_hashmap.isDHash())
 		{
 			//	for Detector Hashes

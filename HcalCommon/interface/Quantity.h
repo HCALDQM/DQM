@@ -17,8 +17,8 @@ namespace hcaldqm
 			fDetectorQuantity = 0,
 			fElectronicsQuantity = 1,
 			fTrigTowerQuantity = 2,
-			fValue = 3,
-			fFlag = 4,
+			fValueQuantity = 3,
+			fFlagQuantity = 4,
 			fNone = 5,
 			nQuantityType = 6
 		};
@@ -52,6 +52,7 @@ namespace hcaldqm
 				virtual int nbins() {return 1;}
 				virtual double min() {return 0;}
 				virtual double max() {return 1;}
+				virtual bool isCoordinate() {return false;}
 
 			protected:
 				std::string		_name;

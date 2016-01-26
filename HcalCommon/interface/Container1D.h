@@ -9,6 +9,9 @@
  *		1D Container
  */
 #include "DQM/HcalCommon/interface/DetectorQuantity.h"
+#include "DQM/HcalCommon/interface/ElectronicsQuantity.h"
+#include "DQM/HcalCommon/interface/TrigTowerQuantity.h"
+#include "DQM/HcalCommon/interface/ValueQuantity.h"
 #include "DQM/HcalCommon/interface/Container.h"
 #include "DQM/HcalCommon/interface/HashMapper.h"
 #include "DQM/HcalCommon/interface/Utilities.h"
@@ -36,7 +39,7 @@ namespace hcaldqm
 			Container1D(std::string const& folder,
 				hashfunctions::HashType, 
 				Quantity*,
-				Quantity *qy =  new DetectorQuantity(quantity::fiphi));
+				Quantity *qy =  new ValueQuantity(quantity::fN));
 			virtual ~Container1D() {}
 
 			//	Initialize Container
@@ -46,7 +49,7 @@ namespace hcaldqm
 			//
 			virtual void initialize(std::string const& folder, 
 				hashfunctions::HashType,  Quantity*,
-				Quantity *qy = new DetectorQuantity(quantity::fiphi), 
+				Quantity *qy = new ValueQuantity(quantity::fN), 
 				int debug=0);
 
 			//	using DetId as mapper
@@ -56,6 +59,22 @@ namespace hcaldqm
 			virtual void fill(HcalDetId const&, int, double);
 			virtual void fill(HcalDetId const&, int, int);
 			virtual void fill(HcalDetId const&, double, double);
+
+			//	using ElectronicsId 
+			virtual void fill(HcalElectronicsId const&);
+			virtual void fill(HcalElectronicsId const&, int);
+			virtual void fill(HcalElectronicsId const&, double);
+			virtual void fill(HcalElectronicsId const&, int, double);
+			virtual void fill(HcalElectronicsId const&, int, int);
+			virtual void fill(HcalElectronicsId const&, double, double);
+
+			//	using DetId as mapper
+			virtual void fill(HcalTrigTowerDetId const&);
+			virtual void fill(HcalTrigTowerDetId const&, int);
+			virtual void fill(HcalTrigTowerDetId const&, double);
+			virtual void fill(HcalTrigTowerDetId const&, int, double);
+			virtual void fill(HcalTrigTowerDetId const&, int, int);
+			virtual void fill(HcalTrigTowerDetId const&, double, double);
 
 			//	booking
 			//	@aux - typically a cut or anything else

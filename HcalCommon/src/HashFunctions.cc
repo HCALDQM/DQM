@@ -175,5 +175,214 @@ namespace hcaldqm
 			sprintf(name, "HBHE%c", c);
 			return std::string(name);
 		}
+
+		/**
+		 *	by ElectronicsId
+		 */
+		uint32_t hash_FED(HcalElectronicsId const& eid)
+		{
+			return eid.isVMEid() ?
+				utilities::hash(HcalElectronicsId(
+					FIBERCH_MIN, FIBER_VME_MIN, SPIGOT_MIN, eid.dccid())) :
+				utilities::hash(HcalElectronicsId(eid.crateId(),
+					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false));
+		}
+
+		uint32_t hash_FEDSpigot(HcalElectronicsId const& eid)
+		{
+			//	note that hashing of uTCA is done by FED-Slot...
+			return eid.isVMEid() ?
+				utilities::hash(HcalElectronicsId(
+					FIBERCH_MIN, FIBER_VME_MIN, eid.spigot(), eid.dccid())) : 
+				utilities::hash(HcalElectronicsId(eid.crateId(),
+					eid.slot(), FIBER_uTCA_MIN1, FIBERCH_MIN, false));
+		}
+
+		uint32_t hash_FEDSlot(HcalElectronicsId const& eid)
+		{
+			//	note that hashing of VME is done with 
+			return eid.isVMEid() ? 
+				utilities::hash(HcalElectronicsId(FIBERCH_MIN,
+					FIBER_VME_MIN, eid.spigot(), eid.dccid())) :
+				utilities::hash(HcalElectronicsId(eid.crateId(),
+					eid.slot(), FIBER_uTCA_MIN1, FIBERCH_MIN, false));
+		}
+
+		uint32_t hash_Crate(HcalElectronicsId const& eid)
+		{
+			//	note hashing of VME is done with dccId
+			return eid.isVMEid() ? 
+				utilities::hash(HcalElectronicsId(FIBERCH_MIN,
+					FIBER_VME_MIN, SPIGOT_MIN, eid.dccid())) :
+				utilities::hash(HcalElectronicsId(eid.crateId(),
+					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false));
+		}
+
+		uint32_t hash_CrateSpigot(HcalElectronicsId const& eid)
+		{
+			//	note hashing of VME is done with dccid and
+			//	uTCA with Slots
+			return eid.isVMEid() ?
+				utilities::hash(HcalElectronicsId(FIBERCH_MIN,
+					FIBER_VME_MIN, eid.spigot(), eid.dccid())) :
+				utilities::hash(HcalElectronicsId(eid.crateId(),
+					eid.slot(), FIBER_uTCA_MIN1, FIBERCH_MIN, false));
+		}
+
+		uint32_t hash_CrateSlot(HcalElectronicsId const& eid)
+		{
+			return eid.isVMEid() ? 
+				utilities::hash(HcalElectronicsId(FIBERCH_MIN,
+					FIBER_VME_MIN, eid.spigot(), eid.dccid())) :
+				utilities::hash(HcalElectronicsId(eid.crateId(),
+					eid.slot(), FIBER_uTCA_MIN1, FIBERCH_MIN, false));
+		}
+
+		uint32_t hash_Fiber(HcalElectronicsId const&)
+		{
+			return 0;
+		}
+
+		uint32_t hash_FiberFiberCh(HcalElectronicsId const&)
+		{
+			return 0;
+		}
+
+		uint32_t hash_FiberCh(HcalElectronicsId const& eid)
+		{
+			return 0;
+		}
+
+		std::string name_FED(HcalElectronicsId const& eid)
+		{
+			char name[10];
+			sprinf(name, "FED%d", eid.isVMEid() ? eid.dccid()+700 :
+				eid.crateId());
+			return std::string(name);
+		}
+
+		std::string name_FEDSpigot(HcalElectronicsId const& eid)
+		{
+			char name[20];
+			sprintf(name, "FED%dS%d",
+				eid.isVMEid()?eid.dccid()+700:eid.crateId(),
+				eid.isVMEid()?eid.spigot():eid.slot());
+			return std::string(name);
+		}
+
+		std::string name_FEDSlot(HcalElectronicsId const& eid)
+		{
+			char name[20];
+			sprinftf(name, "FED%dS%d",
+				eid.isVMEid()?eid.dccid()+700:eid.crateId(),
+				eid.isVMEid()?eid.spigot():eid.slot());
+			return std:;string(name);
+		}
+
+		std::string name_Crate(HcalElectronicsId const& eid)
+		{
+			char name[10];
+			sprintf(name, "Crate%d", eid.isVMEid()?eid.dccid():eid.crateId());
+			return std::string(name);
+		}
+
+		std::string name_CrateSpigot(HcalElectronicsId const& eid)
+		{
+			char name[20];
+			sprintf(name, "Crate%dS%d",
+				eid.isVMEid()?eid.dccid():eid.crateId(),
+				eid.isVMEid()?eid.spigot():eid.slot());
+			return std::string(name);
+		}
+
+		std::string name_CrateSlot(HcalElectronicsId const& eid)
+		{
+			char name[20];
+			sprinft(name, "Crate%dS%d",
+				eid.isVMEid()?eid.dccid():eid.crateId(),
+				eid.isVMEid()?eid.spigot():eid.slot());
+			return std::string(name);
+		}
+
+		std::string name_Fiber(HcalElectronicsId const&)
+		{
+			return "None";
+		}
+
+		std::string name_FiberFiberCh(HcalElectronicsId const&)
+		{
+			return "None";
+		}
+
+		std::string name_FiberCh(HcalElectronicsId const&)
+		{
+			return "None"
+		}
+
+		/**
+		 *	by TrigTowerDetId
+		 */
+		uint32_t hash_TTSubdet(HcalTrigTowerDetId const& tid)
+		{
+			return utilities::hash(HcalTrigTowerDetId(
+				tid.ietaAbs()>=29?29:1, 1));
+		}
+
+		uint32_t hash_TTSubdetPM(HcalTrigTowerDetId const& tid)
+		{
+			return utilities::hash(HcalTrigTowerDetId(
+				tid.ietaAbs()<29? (tid.ieta()<0 ? -1 : 1) : 
+				(tid.ieta()<0?-29:29),
+				1));
+		}
+
+		uint32_t hash_TTSubdetPMiphi(HcalTrigTowerDetId const& tid)
+		{
+			return utilities::hash(HcalTrigTowerDetId(
+				tid.ietaAbs()<29? (tid.ieta()<0 ? 0 : 1) : (tid.ieta()<0?2:3),
+				tid.iphi()));
+		}
+
+		uint32_t hash_TTSubdetieta(HcalTrigTowerDetId const& tid)
+		{
+			return 0;
+		}
+
+		uint32_t hash_TTdepth(HcalTrigTowerDetId const& tid)
+		{
+			return utilities::hash(HcalTrigTowerDetId(
+				1, 1, tid.depth()));
+		}
+
+		std::string name_TTSubdet(HcalTrigTowerDetId const& tid)
+		{
+			return constants::TPSUBDET_NAME[tid.ietaAbs()<29?0:1];
+		}
+
+		std::string name_TTSubdetPM(HcalTrigTowerDetId const& tid)
+		{
+			return constants::TPSUBDETPM_NAME[
+				tid.ietaAbs()<29?(tid.ieta()<0?0:1):(tid.ieta()<0?2:3)];
+		}
+
+		std::string name_TTSubdetPMiphi(HcalTrigTowerDetId const& tid)
+		{
+			char name[10];
+			sprintf(name, "%siphi%d", name_TTSubdetPM(tid).c_str(),
+				tid.iphi());
+			return std::string(name);
+		}
+
+		std::string name_TTSubdetieta(HcalTrigTowerDetId const& tid)
+		{
+			return "None";
+		}
+
+		std::string name_TTdepth(HcalTrigTowerDetId const& tid)
+		{
+			char name[10];
+			sprintf(name, "depth%d", tid.depth());
+			return std::string(name);
+		}
 	}
 }

@@ -98,6 +98,14 @@ namespace hcaldqm
 		{
 			return did.rawId();
 		}
+		uint32_t hash(HcalElectronicsId const& eid)
+		{
+			eid.rawId();
+		}
+		uint32_t hash(HcalTrigTowerDetId const& tid)
+		{
+			return tid.rawId();
+		}
 	}
 }
 
