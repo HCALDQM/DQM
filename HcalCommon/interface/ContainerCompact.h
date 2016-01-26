@@ -15,10 +15,19 @@ namespace hcaldqm
 {
 	using namespace constants;
 	
-	struct Compact
+	struct CompactX
 	{
 		double _sum;
 		double _sum2;
+		unsigned int _entries;
+	};
+
+	struct CompactXX
+	{
+		double _xsum;
+		double _xsum2;
+		double _ysum;
+		double _ysum2;
 		unsigned int _entries;
 	};
 
@@ -33,7 +42,7 @@ namespace hcaldqm
 			virtual void dump(Container1D*, bool);
 
 		protected:
-			Compact		_data[SUBDET_NUM][IPHI_NUM][IETA_NUM][DEPTH_NUM];
+			CompactX		_data[SUBDET_NUM][IPHI_NUM][IETA_NUM][DEPTH_NUM];
 	};
 }
 

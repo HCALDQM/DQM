@@ -22,8 +22,8 @@ namespace hcaldqm
 					continue;
 
 				HcalDetId did = HcalDetId(it->rawId());
-				_mes.insert(
-					std::make_pair(_hashmap.getHash(did), Compact()));
+				_cmap.insert(
+					std::make_pair(_hashmap.getHash(did), CompactX()));
 			}
 		}
 	}
@@ -33,7 +33,7 @@ namespace hcaldqm
 		if (x==GARBAGE_VALUE)
 			return;
 
-		Compact &c = _cmap[_hashmap.getHash(did)];
+		CompactX &c = _cmap[_hashmap.getHash(did)];
 		c._sum += x;
 		c._sum2 += x*x;
 		c._entries++;
@@ -41,9 +41,9 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerXXX::dump(Container1D* c, bool q)
 	{
-		BOOST_FOREACH(MEMap::value_type &p, _cmap)
+		BOOST_FOREACH(CompactMap::value_type &p, _cmap)
 		{
-			Compact &x = _cmap[p.first];
+			CompactX &x = p.second;
 			if (x._entries<=0)
 				continue;
 
@@ -51,6 +51,15 @@ namespace hcaldqm
 			double rms = sqrt(x._sum2/x._entries - mean*mean);
 			q ? c->fill(HcalDetId(p.first), mean) : 
 				c->fill(HcalDetId(p.first), rms);
+		}
+	}
+
+	/* virtual */ void ContainerXXX::print()
+	{
+		std::cout << "Container by " << _hashmap.getHashTypeName() << std::endl;
+		BOOST_FOREACH(CompactMap::value_type &p, _cmap)
+		{
+			std::cout << HcalDetId(p.first) << std::endl;
 		}
 	}
 }

@@ -90,7 +90,12 @@ namespace hcaldqm
 			virtual void book(DQMStore::IBooker&, HcalElectronicsMap const*,
 				std::string subsystem="Hcal",
 				std::string aux="");
+
+			//	reset all the elements
 			virtual void reset();
+
+			//	print all the elements
+			virtual void print();
 
 		protected:
 			typedef boost::unordered_map<uint32_t, MonitorElement*> MEMap;

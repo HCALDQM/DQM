@@ -97,7 +97,7 @@ namespace hcaldqm
 			fdepth = 8,
 			fHFPMiphi = 9,
 			fHBHEPartition = 10,
-			fChannel = 11
+			fChannel = 11,
 			nHashType_did = 12,
 			fFED = 13,
 			fFEDSpigot = 14,
@@ -158,7 +158,7 @@ namespace hcaldqm
 		std::string const hash_names[nhashes] = {
 			"Subdet", "Subdetiphi", "Subdetieta", "Subdetdepth",
 			"SubdetPM", "SubdetPMiphi", "iphi", "ieta", "depth",
-			"HFPMiphi", "HBHEPartition", "Channel"
+			"HFPMiphi", "HBHEPartition", "Channel", 
 
 			"FED", "FEDSpigot", "FEDSlot",
 			"Crate", "CrateSpigot", "CrateSlot",

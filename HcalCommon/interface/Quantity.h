@@ -33,7 +33,7 @@ namespace hcaldqm
 				{}
 				virtual ~Quantity() {}
 
-				QuantityType type() {return fNone;}
+				virtual QuantityType type() {return fNone;}
 				std::string name() {return _name;}
 				bool		isLog() {return _isLog;}
 

@@ -6,17 +6,17 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	DQTask(ps)
 {
 	//	Containers
-	_cPedestalMeans_Subdet.initialize(_name, hashfunctions::fSubdet, 
+	_cPedestalMeans_Subdet.initialize(_name, "Mean",hashfunctions::fSubdet, 
 		new quantity::ValueQuantity(quantity::fADC_15),
 		new quantity::ValueQuantity(quantity::fN));
-	_cPedestalRMSs_Subdet.initialize(_name, hashfunctions::fSubdet, 
+	_cPedestalRMSs_Subdet.initialize(_name, "RMS", hashfunctions::fSubdet, 
 		new quantity::ValueQuantity(quantity::fADC_5),
 		new quantity::ValueQuantity(quantity::fN));
-	_cPedestalMeans_depth.initialize(_name, hashfunctions::fdepth, 
+	_cPedestalMeans_depth.initialize(_name, "Mean", hashfunctions::fdepth, 
 		new quantity::DetectorQuantity(quantity::fieta), 
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fADC_15));
-	_cPedestalRMSs_depth.initialize(_name, hashfunctions::fdepth, 
+	_cPedestalRMSs_depth.initialize(_name, "RMS", hashfunctions::fdepth, 
 		new quantity::DetectorQuantity(quantity::fieta), 
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fADC_5));
@@ -51,6 +51,13 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cPedestalMeans_depth.book(ib, _emap);
 	_cPedestalRMSs_depth.book(ib, _emap);
 	_cPeds.book(_emap);
+
+	//	for testing purposes....
+	_cPedestalMeans_Subdet.print();
+	_cPedestalRMSs_Subdet.print();
+	_cPedestalMeans_depth.print();
+	_cPedestalRMSs_depth.print();
+	_cPeds.print();
 }
 
 /* virtual */ void PedestalTask::_resetMonitors(UpdateFreq uf)
@@ -64,10 +71,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cPedestalRMSs_Subdet.reset();
 	_cPedestalMeans_depth.reset();
 	_cPedestalRMSs_depth.reset();
-	_cPedestals.dump(&_cPedestalMeans_Subdet, true);
-	_cPedestals.dump(&_cPedestalRMSs_Subdet, false);
-	_cPedestals.dump(&_cPedestalMeans_depth, true);
-	_cPedestals.dump(&_cPedestalRMSs_depth, false);
+	_cPeds.dump(&_cPedestalMeans_Subdet, true);
+	_cPeds.dump(&_cPedestalRMSs_Subdet, false);
+	_cPeds.dump(&_cPedestalMeans_depth, true);
+	_cPeds.dump(&_cPedestalRMSs_depth, false);
 }
 
 /* virtual */ void PedestalTask::_process(edm::Event const& e,
@@ -96,7 +103,6 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
-			_cPedestals.fill(did, it->sample(i).adc());
 			_cPeds.fill(did, it->sample(i).adc());
 		}
 	}
@@ -109,7 +115,6 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
-			_cPedestals.fill(did, it->sample(i).adc());
 			_cPeds.fill(did, it->sample(i).adc());
 		}
 	}
@@ -122,7 +127,6 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
-			_cPedestals.fill(did, it->sample(i).adc());
 			_cPeds.fill(did, it->sample(i).adc());
 		}
 	}

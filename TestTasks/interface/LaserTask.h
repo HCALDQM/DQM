@@ -1,27 +1,27 @@
-#ifndef PedestalTask_h
-#define PedestalTask_h
+#ifndef LaserTask_h
+#define LaserTask_h
 
 /*
- *	file:			PedestalTask.h
+ *	file:			LaserTask.h
  *	Author:			Viktor Khristenko
  *	Date:			16.10.2015
  */
 
 #include "DQM/HcalCommon/interface/DQTask.h"
 #include "DQM/HcalCommon/interface/Utilities.h"
+#include "DQM/HcalCommon/interface/ContainerCompact.h"
+#include "DQM/HcalCommon/interface/ContainerXXX.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
-#include "DQM/HcalCommon/interface/ContainerCompact.h"
-#include "DQM/HcalCommon/interface/ContainerXXX.h"
 
 using namespace hcaldqm;
-class PedestalTask : public DQTask
+class LaserTask : public DQTask
 {
 	public:
-		PedestalTask(edm::ParameterSet const&);
-		virtual ~PedestalTask()
+		LaserTask(edm::ParameterSet const&);
+		virtual ~LaserTask()
 		{}
 
 		virtual void bookHistograms(DQMStore::IBooker&,
@@ -49,15 +49,29 @@ class PedestalTask : public DQTask
 		//	emap
 		HcalElectronicsMap const* _emap;
 
-		ContainerXXX		_cPeds;
+		//	Cuts
+		double _lowHBHE;
+		double _lowHO;
+		double _lowHF;
+
+		//	Compact
+		ContainerXXX _cSignals;
+		ContainerXXX _cTiming;
 
 		//	1D
-		Container1D		_cPedestalMeans_Subdet;
-		Container1D		_cPedestalRMSs_Subdet;
+		Container1D		_cSignalMean_Subdet;
+		Container1D		_cSignalRMS_Subdet;
+		Container1D		_cTimingMean_Subdet;
+		Container1D		_cTimingRMS_Subdet;
+
+		//	Prof1D
+		ContainerProf1D	_cShapeCut_SubdetPMiphi;
 
 		//	2D
-		Container2D		_cPedestalMeans_depth;
-		Container2D		_cPedestalRMSs_depth;
+		Container2D		_cSignalMean_depth;
+		Container2D		_cSignalRMS_depth;
+		Container2D		_cTimingMean_depth;
+		Container2D		_cTimingRMS_depth;
 };
 
 #endif

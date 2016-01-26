@@ -119,13 +119,11 @@ namespace hcaldqm
 				{return getValue_functions_eid[_type](eid);}
 				virtual uint32_t getBin(HcalElectronicsId const& eid)
 				{return getBin_functions_eid[_type](eid);}
-				virtual QuantityType type()
-				{return fElectronicsQuantity;}
 
+				virtual QuantityType type() {return fElectronicsQuantity;}
 				virtual int nbins() {return nbins_eid[_type];}
 				virtual double min() {return min_eid[_type];}
 				virtual double max() {return max_eid[_type];}
-
 				virtual bool isCoordinate() {return true;}
 
 			protected:

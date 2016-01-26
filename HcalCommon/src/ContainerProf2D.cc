@@ -60,6 +60,11 @@ namespace hcaldqm
 
 				HcalDetId did = HcalDetId(it->rawId());
 				uint32_t hash = _hashmap.getHash(did);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(did));
 				_mes.insert(
 					std::make_pair(hash, ib.bookProfile2D(
 					_hashmap.getName(did), _hashmap.getName(did),
@@ -78,6 +83,11 @@ namespace hcaldqm
 			{
 				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
 				uint32_t hash = _hashmap.getHash(eid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(eid));
 				_mes.insert(
 					std::make_pair(hash, ib.bookProfile2D(
 					_hashmap.getName(eid), _hashmap.getName(eid),
@@ -96,6 +106,11 @@ namespace hcaldqm
 			{
 				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
 				uint32_t hash = _hashmap.getHash(tid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(tid));
 				_mes.insert(
 					std::make_pair(hash, ib.bookProfile2D(
 					_hashmap.getName(tid), _hashmap.getName(tid),

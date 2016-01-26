@@ -10,21 +10,16 @@
  */
 
 #include "DQM/HcalCommon/interface/Container1D.h"
+#include "DQM/HcalCommon/interface/ContainerCompact.h"
 
 namespace hcaldqm
 {
 	using namespace constants;
 	
-	struct Compact
-	{
-		double _sum;
-		double _sum2;
-		unsigned int _entries;
-	};
-
 	class ContainerXXX
 	{
 		public:
+			ContainerXXX() {}
 			ContainerXXX(hashfunctions::HashType){}
 			virtual ~ContainerXXX() {_cmap.clear();}
 
@@ -38,8 +33,11 @@ namespace hcaldqm
 			virtual void fill(HcalDetId const&, double);
 			virtual void dump(Container1D*, bool);
 
+			//	print
+			virtual void print();
+
 		protected:
-			typedef boost::unordered_map<uint32_t, Compact> CompactMap;
+			typedef boost::unordered_map<uint32_t, CompactX> CompactMap;
 			CompactMap				_cmap;
 			mapper::HashMapper		_hashmap;
 	};

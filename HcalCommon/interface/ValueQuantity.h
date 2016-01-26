@@ -66,11 +66,14 @@ namespace hcaldqm
 				{}
 				virtual ~ValueQuantity() {}
 
+				//	get Value to be overriden
 				virtual int getValue(int x)
 				{return x;}
 				virtual double getValue(double x)
 				{return x;}
 
+				//	standard properties
+				virtual QuantityType type() {return fValueQuantity;}
 				virtual int nbins() {return nbins_value[_type];}
 				virtual double min() {return min_value[_type];}
 				virtual double max() {return max_value[_type];}

@@ -70,13 +70,11 @@ namespace hcaldqm
 				{return getValue_functions_tid[_type](tid);}
 				virtual uint32_t getBin(HcalTrigTowerDetId const& tid)
 				{return getBin_functions_tid[_type](tid);}
-				virtual QuantityType type()
-				{return fTrigTowerQuantity;}
 
+				virtual QuantityType type() {return fTrigTowerQuantity;}
 				virtual int nbins() {return nbins_tid[_type];}
 				virtual double min() {return min_tid[_type];}
 				virtual double max() {return max_tid[_type];}
-
 				virtual bool isCoordinate() {return true;}
 
 			protected:

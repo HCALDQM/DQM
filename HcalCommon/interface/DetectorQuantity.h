@@ -68,9 +68,8 @@ namespace hcaldqm
 				{return getValue_functions_did[_type](did);}
 				virtual uint32_t getBin(HcalDetId const& did)
 				{return getBin_functions_did[_type](did);}
-				virtual QuantityType type() 
-				{return fDetectorQuantity;}
 
+				virtual QuantityType type() {return fDetectorQuantity;}
 				virtual int nbins() {return nbins_did[_type];}
 				virtual double min() {return min_did[_type];}
 				virtual double max() {return max_did[_type];}

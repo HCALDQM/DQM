@@ -44,6 +44,15 @@ namespace hcaldqm
 		}
 	}
 
+	/* virtual */ void Container1D::print()
+	{	
+		std::cout << "Container by " << _hashmap.getHashTypeName() << std::endl;
+		BOOST_FOREACH(MEMap::value_type &pair, _mes)
+		{
+			std::cout << HcalDetId(pair.first) << std::endl;
+		}
+	}
+
 	//	by HcalDetId
 	/* virtual */ void Container1D::fill(HcalDetId const& did)
 	{
@@ -236,8 +245,12 @@ namespace hcaldqm
 					continue;
 
 				HcalDetId did = HcalDetId(it->rawId());
-				_logger.debug(_hashmap.getName(did));
 				uint32_t hash = _hashmap.getHash(did);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(did));
 				_mes.insert(
 					std::make_pair(hash, ib.book1D(_hashmap.getName(did),
 					_hashmap.getName(did), _qx->nbins(), _qx->min(), 
@@ -255,8 +268,12 @@ namespace hcaldqm
 				eids.begin(); it!=eids.end(); ++it)
 			{
 				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
-				_logger.debug(_hashmap.getName(eid));
 				uint32_t hash = _hashmap.getHash(eid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(eid));
 				_mes.insert(
 					std::make_pair(hash,
 					ib.book1D(_hashmap.getName(eid),
@@ -273,8 +290,12 @@ namespace hcaldqm
 				tids.begin(); it!=tids.end(); ++it)
 			{
 				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
-				_logger.debug(_hashmap.getName(tid));
 				uint32_t hash = _hashmap.getHash(tid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(tid));
 				_mes.insert(
 					std::make_pair(hash,
 					ib.book1D(_hashmap.getName(tid),
