@@ -10,6 +10,7 @@
 
 namespace hcaldqm
 {
+	using namespace constants;
 	namespace quantity
 	{
 		enum ElectronicsQuantityType
@@ -22,7 +23,7 @@ namespace hcaldqm
 			fCrateVME = 5,
 			fSlotuTCA = 6,
 			fSlotVME = 7,
-			fSpigot = 8
+			fSpigot = 8,
 			fFiberuTCA = 9,
 			fFiberVME = 10,
 			fFiberCh = 11,
@@ -68,7 +69,7 @@ namespace hcaldqm
 			getBin_FED, getBin_FEDuTCA, getBin_FEDVME,
 			getBin_Crate, getBin_CrateuTCA, getBin_CrateVME,
 			getBin_SlotuTCA, getBin_SlotVME, 
-			getValue_Spigot,
+			getBin_Spigot,
 			getBin_FiberuTCA, getBin_FiberVME, getBin_FiberCh
 		};
 		std::string const name_eid[nElectronicsQuantityType] = {
@@ -104,10 +105,10 @@ namespace hcaldqm
 			FIBERCH_NUM
 		};
 
-		class ElectronicsQuantity : public
+		class ElectronicsQuantity : public Quantity
 		{
 			public:
-				ElectronicQuantity() {}
+				ElectronicsQuantity() {}
 				ElectronicsQuantity(ElectronicsQuantityType type, 
 					bool isLog=false) : 
 					Quantity(name_eid[type], isLog), _type(type)

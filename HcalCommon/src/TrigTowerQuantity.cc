@@ -32,7 +32,7 @@ namespace hcaldqm
 
 		uint32_t getBin_TTiphi(HcalTrigTowerDetId const& tid)
 		{
-			return (uint32_t)(getValue_TTIphi(tid));
+			return (uint32_t)(getValue_TTiphi(tid));
 		}
 
 		uint32_t getBin_TTieta(HcalTrigTowerDetId const& tid)
@@ -42,7 +42,7 @@ namespace hcaldqm
 
 		uint32_t getBin_TTdepth(HcalTrigTowerDetId const& tid)
 		{
-			return (uint32_t)(getValue_TTdepth(eid)+1);
+			return (uint32_t)(getValue_TTdepth(tid)+1);
 		}
 
 		uint32_t getBin_TTSubdet(HcalTrigTowerDetId const& tid)

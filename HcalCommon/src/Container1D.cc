@@ -33,6 +33,7 @@ namespace hcaldqm
 		}
 	}
 
+	//	by HcalDetId
 	/* virtual */ void Container1D::fill(HcalDetId const& did)
 	{
 		_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did));
@@ -40,7 +41,7 @@ namespace hcaldqm
 	/* virtual */ void Container1D::fill(HcalDetId const& did, int x)
 	{
 		QuantityType qtype = _qx->type();
-		if (qtype==fValue || qtype==fFlag)
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x));
 		else 
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
@@ -49,7 +50,7 @@ namespace hcaldqm
 	/* virtual */ void Container1D::fill(HcalDetId const& did, double x)
 	{
 		QuantityType qtype = _qx->type();
-		if (qtype==fValue || qtype==fFlag)
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x));
 		else 
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
@@ -58,7 +59,7 @@ namespace hcaldqm
 	/* virtual */ void Container1D::fill(HcalDetId const& did, int x, double y)
 	{
 		QuantityType qtype = _qx->type();
-		if (qtype==fValue || qtype==fFlag)
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
 			_qy->getValue(y));
 		else 
@@ -68,7 +69,7 @@ namespace hcaldqm
 	/* virtual */ void Container1D::fill(HcalDetId const& did, int x, int y)
 	{
 		QuantityType qtype = _qx->type();
-		if (qtype==fValue || qtype==fFlag)
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
 			_qy->getValue(y));
 		else 
@@ -79,7 +80,7 @@ namespace hcaldqm
 			double y)
 	{
 		QuantityType qtype = _qx->type();
-		if (qtype==fValue || qtype==fFlag)
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
 			_qy->getValue(y));
 		else 
@@ -87,16 +88,132 @@ namespace hcaldqm
 				_qy->getValue(x), y);
 	}
 
+	//	by HcalElectronicsId
+	/* virtual */ void Container1D::fill(HcalElectronicsId const& did)
+	{
+		_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did));
+	}
+	/* virtual */ void Container1D::fill(HcalElectronicsId const& did, int x)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x));
+	}
+	/* virtual */ void Container1D::fill(HcalElectronicsId const& did, double x)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+					_qy->getValue(x));
+	}
+	/* virtual */ void Container1D::fill(HcalElectronicsId const& did, 
+		int x, double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
+			_qy->getValue(y));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x), y);
+	}
+	/* virtual */ void Container1D::fill(HcalElectronicsId const& did, 
+		int x, int y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
+			_qy->getValue(y));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x), y);
+	}
+	/* virtual */ void Container1D::fill(HcalElectronicsId const& did, 
+		double x , double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
+			_qy->getValue(y));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x), y);
+	}
+
+	//	by HcalDetId
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& did)
+	{
+		_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did));
+	}
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& did, int x)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x));
+	}
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& did, 
+		double x)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+					_qy->getValue(x));
+	}
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& did, 
+		int x, double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
+			_qy->getValue(y));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x), y);
+	}
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& did, 
+		int x, int y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
+			_qy->getValue(y));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x), y);
+	}
+	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& did, 
+		double x, double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
+			_qy->getValue(y));
+		else 
+			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
+				_qy->getValue(x), y);
+	}
+
+	//	Book
 	/* virtual */ void Container1D::book(DQMStore::IBooker& ib, 
 		HcalElectronicsMap const *emap,
 		std::string subsystem, std::string aux)
 	{
-
 		//	full path to where all the plots are living
 		//	subsystem/taskname/QxvsQy_auxilary/HashType
 		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qy->name()+
 			"vs"+_qx->name()+(aux==""?aux:"_"+aux)+
 			"/"+_hashmap.getHashTypeName());
+		_logger.debug(_hashmap.getHashTypeName());
 		if (_hashmap.isDHash())
 		{
 			//	for Detector Hashes
@@ -109,6 +226,7 @@ namespace hcaldqm
 					continue;
 
 				HcalDetId did = HcalDetId(it->rawId());
+				_logger.debug(_hashmap.getName(did));
 				uint32_t hash = _hashmap.getHash(did);
 				_mes.insert(
 					std::make_pair(hash, ib.book1D(_hashmap.getName(did),
@@ -117,38 +235,43 @@ namespace hcaldqm
 
 			}
 		}
-		/*
+		
 		else if (_hashmap.isEHash())
 		{
 			//	for Electronics Hashes
 			std::vector<HcalElectronicsId> eids = 
-				emap.allElectronicsIdPrecision();
+				emap->allElectronicsIdPrecision();
 			for (std::vector<HcalElectronicsId>::const_iterator it=
 				eids.begin(); it!=eids.end(); ++it)
 			{
 				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
+				_logger.debug(_hashmap.getName(eid));
 				uint32_t hash = _hashmap.getHash(eid);
-				std::pair<MEMap::iterator, bool> r = _mes.insert(hash,
+				_mes.insert(
+					std::make_pair(hash,
 					ib.book1D(_hashmap.getName(eid),
-					_hashmap.getName(eid), qx->nbins(), qx->min(), qx->max()));
+					_hashmap.getName(eid), 
+					_qx->nbins(), _qx->min(), _qx->max())));
 			}
 		}
 		else if (_hashmap.isTHash())
 		{
 			//	for TrigTower Hashes
 			std::vector<HcalTrigTowerDetId> tids = 
-				emap.allTriggerId();
+				emap->allTriggerId();
 			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
 				tids.begin(); it!=tids.end(); ++it)
 			{
 				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
+				_logger.debug(_hashmap.getName(tid));
 				uint32_t hash = _hashmap.getHash(tid);
-				std::pair<MEMap::iterator, bool> r = mes.insert(hash,
-					ib.book1D(_hashmap.getName(tid), _hashmap.getName(tid),
-					qx->nbins(), qx->min(), qx->max()));
+				_mes.insert(
+					std::make_pair(hash,
+					ib.book1D(_hashmap.getName(tid),
+					_hashmap.getName(tid), 
+					_qx->nbins(), _qx->min(), _qx->max())));
 			}
 		}
-		*/
 	}
 }
 

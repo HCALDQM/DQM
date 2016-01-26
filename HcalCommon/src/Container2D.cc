@@ -125,7 +125,7 @@ namespace hcaldqm
 				_qy->getValue(did));
 	}
 
-	/* virtual */ void Container2D::fill(HcalEletronicsId const& did, double x)
+	/* virtual */ void Container2D::fill(HcalElectronicsId const& did, double x)
 	{
 		if (_qx->isCoordinate() && _qy->isCoordinate())
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did),
@@ -266,7 +266,7 @@ namespace hcaldqm
 		//
 		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qz->name()+"vs"+
 			_qy->name()+"vs"+_qx->name()+(aux==""?aux:"_"+aux)+
-			"/"_hashmap.getHashTypeName());
+			"/"+_hashmap.getHashTypeName());
 		if (_hashmap.isDHash())
 		{
 			//	for Detector Hashes
@@ -283,6 +283,40 @@ namespace hcaldqm
 				_mes.insert(
 					std::make_pair(hash, ib.book2D(_hashmap.getName(did),
 					_hashmap.getName(did), _qx->nbins(), _qx->min(),
+					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
+			}
+		}
+		else if (_hashmap.isEHash())
+		{
+			//	for Electronics hashes
+			std::vector<HcalElectronicsId> eids = 
+				emap->allElectronicsIdPrecision();
+			for (std::vector<HcalElectronicsId>::const_iterator it=
+				eids.begin(); it!=eids.end(); ++it)
+			{
+				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
+				_logger.debug(_hashmap.getName(eid));
+				uint32_t hash = _hashmap.getHash(eid);
+				_mes.insert(
+					std::make_pair(hash, ib.book2D(_hashmap.getName(eid),
+					_hashmap.getName(eid), _qx->nbins(), _qx->min(),
+					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
+			}
+		}
+		else if (_hashmap.isTHash())
+		{
+			//	for TrigTower hashes
+			std::vector<HcalTrigTowerDetId> tids = 
+				emap->allTriggerId();
+			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
+				tids.begin(); it!=tids.end(); ++it)
+			{
+				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
+				_logger.debug(_hashmap.getName(tid));
+				uint32_t hash = _hashmap.getHash(tid);
+				_mes.insert(
+					std::make_pair(hash, ib.book2D(_hashmap.getName(tid),
+					_hashmap.getName(tid), _qx->nbins(), _qx->min(),
 					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
 			}
 		}

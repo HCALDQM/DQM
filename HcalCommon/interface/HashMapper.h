@@ -33,17 +33,17 @@ namespace hcaldqm
 				virtual uint32_t getHash(HcalDetId const& did)
 				{return hash_did[_htype](did);}
 				virtual uint32_t getHash(HcalElectronicsId const& eid)
-				{return hash_eid[_htype](eid);}
+				{return hash_eid[_htype-nHashType_did-1](eid);}
 				virtual uint32_t getHash(HcalTrigTowerDetId const& tid)
-				{return hash_tid[_htype](tid);}
+				{return hash_tid[_htype-nHashType_eid-1](tid);}
 
 				//	get name of the hashed element
 				virtual std::string getName(HcalDetId const &did)
 				{return name_did[_htype](did);}
 				virtual std::string getName(HcalElectronicsId const& eid)
-				{return name_eid[_htype](eid);}
+				{return name_eid[_htype-nHashType_did-1](eid);}
 				virtual std::string getName(HcalTrigTowerDetId const& tid)
-				{return name_tid[_htype](tid);}
+				{return name_tid[_htype-nHashType_eid-1](tid);}
 
 				//	get the Hash Type Name
 				virtual std::string getHashTypeName()
@@ -54,13 +54,13 @@ namespace hcaldqm
 				{return _htype<nHashType_did ? true : false;}
 				virtual bool isEHash()
 				{
-					return _htype>nHashType_did && _htype<nHashType_eid ? true :
-						false;
+					return (_htype>nHashType_did && _htype<nHashType_eid) ? 
+						true : false;
 				}
 				virtual bool isTHash()
 				{
-					return _htype>nHashType_eid && _htype<nHashType_tid ? true :
-						false;
+					return (_htype>nHashType_eid && _htype<nHashType_tid) ? 
+						true : false;
 				}
 
 				//	get the Linear Hash Type

@@ -37,11 +37,11 @@ namespace hcaldqm
 		typedef uint32_t (*getBinType_tid)(HcalTrigTowerDetId const&);
 		getValueType_tid const getValue_functions_tid[nTrigTowerQuantityType]= 
 		{
-			getValue_TTphi, getValue_TTieta, getValue_TTdepth,
+			getValue_TTiphi, getValue_TTieta, getValue_TTdepth,
 			getValue_TTSubdet, getValue_TTSubdetPM
 		};
 		getBinType_tid const getBin_functions_tid[nTrigTowerQuantityType] = {
-			getBin_TTphi, getBin_TTieta, getBin_TTdepth,
+			getBin_TTiphi, getBin_TTieta, getBin_TTdepth,
 			getBin_TTSubdet, getBin_TTSubdetPM
 		};
 		std::string const name_tid[nTrigTowerQuantityType] = {

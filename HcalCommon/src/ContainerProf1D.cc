@@ -22,7 +22,7 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerProf1D::initialize(std::string const& folder,
 		hashfunctions::HashType hashtype, 
-		Quantity *qx, Quantity *qy
+		Quantity *qx, Quantity *qy,
 		int debug/*=0*/)
 	{
 		Container1D::initialize(folder, hashtype, qx, qy, debug);
@@ -51,7 +51,37 @@ namespace hcaldqm
 				uint32_t hash = _hashmap.getHash(did);
 				_mes.insert(
 					std::make_pair(hash, ib.bookProfile(_hashmap.getName(did),
-					_hashmap.getName(did), _qx->nbins() _qx->min(),
+					_hashmap.getName(did), _qx->nbins(), _qx->min(),
+					_qx->max(), _qy->min(), _qy->max())));
+			}
+		}
+		else if (_hashmap.isEHash())
+		{
+			std::vector<HcalElectronicsId> eids = 
+				emap->allElectronicsIdPrecision();
+			for (std::vector<HcalElectronicsId>::const_iterator it=
+			    eids.begin(); it!=eids.end(); ++it)
+			{
+				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
+				uint32_t hash = _hashmap.getHash(eid);
+				_mes.insert(
+					std::make_pair(hash, ib.bookProfile(_hashmap.getName(eid),
+					_hashmap.getName(eid), _qx->nbins(), _qx->min(),
+					_qx->max(), _qy->min(), _qy->max())));
+			}
+		}
+		else if (_hashmap.isTHash())
+		{	
+			std::vector<HcalTrigTowerDetId> tids = 
+				emap->allTriggerId();
+			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
+			    tids.begin(); it!=tids.end(); ++it)
+			{
+				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(tid);
+				_mes.insert(
+					std::make_pair(hash, ib.bookProfile(_hashmap.getName(tid),
+					_hashmap.getName(tid), _qx->nbins(), _qx->min(),
 					_qx->max(), _qy->min(), _qy->max())));
 			}
 		}

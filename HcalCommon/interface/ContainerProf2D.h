@@ -17,7 +17,7 @@
 
 namespace hcaldqm
 {
-	using namespace axis;
+	using namespace quantity;
 	class ContainerProf2D : public Container2D
 	{
 		public:

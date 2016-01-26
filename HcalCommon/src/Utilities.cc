@@ -100,7 +100,7 @@ namespace hcaldqm
 		}
 		uint32_t hash(HcalElectronicsId const& eid)
 		{
-			eid.rawId();
+			return eid.rawId();
 		}
 		uint32_t hash(HcalTrigTowerDetId const& tid)
 		{

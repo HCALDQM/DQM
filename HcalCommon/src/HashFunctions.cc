@@ -256,7 +256,7 @@ namespace hcaldqm
 		std::string name_FED(HcalElectronicsId const& eid)
 		{
 			char name[10];
-			sprinf(name, "FED%d", eid.isVMEid() ? eid.dccid()+700 :
+			sprintf(name, "FED%d", eid.isVMEid() ? eid.dccid()+700 :
 				eid.crateId());
 			return std::string(name);
 		}
@@ -273,10 +273,10 @@ namespace hcaldqm
 		std::string name_FEDSlot(HcalElectronicsId const& eid)
 		{
 			char name[20];
-			sprinftf(name, "FED%dS%d",
+			sprintf(name, "FED%dS%d",
 				eid.isVMEid()?eid.dccid()+700:eid.crateId(),
 				eid.isVMEid()?eid.spigot():eid.slot());
-			return std:;string(name);
+			return std::string(name);
 		}
 
 		std::string name_Crate(HcalElectronicsId const& eid)
@@ -298,7 +298,7 @@ namespace hcaldqm
 		std::string name_CrateSlot(HcalElectronicsId const& eid)
 		{
 			char name[20];
-			sprinft(name, "Crate%dS%d",
+			sprintf(name, "Crate%dS%d",
 				eid.isVMEid()?eid.dccid():eid.crateId(),
 				eid.isVMEid()?eid.spigot():eid.slot());
 			return std::string(name);
@@ -316,7 +316,7 @@ namespace hcaldqm
 
 		std::string name_FiberCh(HcalElectronicsId const&)
 		{
-			return "None"
+			return "None";
 		}
 
 		/**

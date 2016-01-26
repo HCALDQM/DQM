@@ -66,21 +66,21 @@ namespace hcaldqm
 		std::string name_HFPMiphi(HcalDetId const&);
 		std::string name_HBHEPartition(HcalDetId const&);
 
-		std::string hash_FED(HcalElectronicsId const&);
-		std::string hash_FEDSpigot(HcalElectronicsId const&);
-		std::string hash_FEDSlot(HcalElectronicsId const&);
-		std::string hash_Crate(HcalElectronicsId const&);
-		std::string hash_CrateSpigot(HcalElectronicsId const&);
-		std::string hash_CrateSlot(HcalElectronicsId const&);
-		std::string hash_Fiber(HcalElectronicsId const&);
-		std::string hash_FiberFiberCh(HcalElectronicsId const&);
-		std::string hash_FiberCh(HcalElectronicsId const&);
+		std::string name_FED(HcalElectronicsId const&);
+		std::string name_FEDSpigot(HcalElectronicsId const&);
+		std::string name_FEDSlot(HcalElectronicsId const&);
+		std::string name_Crate(HcalElectronicsId const&);
+		std::string name_CrateSpigot(HcalElectronicsId const&);
+		std::string name_CrateSlot(HcalElectronicsId const&);
+		std::string name_Fiber(HcalElectronicsId const&);
+		std::string name_FiberFiberCh(HcalElectronicsId const&);
+		std::string name_FiberCh(HcalElectronicsId const&);
 
-		std::string hash_TTSubdet(HcalTrigTowerDetId const&);
-		std::string hash_TTSubdetPM(HcalTrigTowerDetId const&);
-		std::string hash_TTSubdetPMiphi(HcalTrigTowerDetId const&);
-		std::string hash_TTSubdetieta(HcalTrigTowerDetId const&);
-		std::string hash_TTdepth(HcalTrigTowerDetId const&);
+		std::string name_TTSubdet(HcalTrigTowerDetId const&);
+		std::string name_TTSubdetPM(HcalTrigTowerDetId const&);
+		std::string name_TTSubdetPMiphi(HcalTrigTowerDetId const&);
+		std::string name_TTSubdetieta(HcalTrigTowerDetId const&);
+		std::string name_TTdepth(HcalTrigTowerDetId const&);
 
 		enum HashType
 		{
@@ -131,7 +131,7 @@ namespace hcaldqm
 			hash_Crate, hash_CrateSpigot, hash_CrateSlot,
 			hash_Fiber, hash_FiberFiberCh, hash_FiberCh
 		};
-		hash_function_tid const hash_tid[nHahsType_tid-nHashType_eid-1] = {
+		hash_function_tid const hash_tid[nHashType_tid-nHashType_eid-1] = {
 			hash_TTSubdet, hash_TTSubdetPM, hash_TTSubdetPMiphi, 
 			hash_TTSubdetieta, hash_TTdepth
 		};

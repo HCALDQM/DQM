@@ -31,7 +31,7 @@ namespace hcaldqm
 
 			virtual void initialize(std::string const& folder, 
 				hashfunctions::HashType, 
-				Quantity*, Quantity*
+				Quantity*, Quantity*,
 				int debug=0);
 
 			//	booking
