@@ -238,7 +238,7 @@ namespace hcaldqm
 		//	subsystem/taskname/QxvsQy_auxilary/HashType
 		_logger.debug(_hashmap.getHashTypeName());
 		std::string path = subsystem+"/"+_folder+"/"+_qname+
-			(aux==""?aux:"_"+aux)+"/"_hashmap.getHashTypeName();
+			(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName();
 		if (_hashmap.isDHash())
 		{
 			//	for Detector Hashes
