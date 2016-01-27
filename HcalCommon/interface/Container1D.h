@@ -83,13 +83,19 @@ namespace hcaldqm
 			virtual void fill(HcalTrigTowerDetId const&, int, int);
 			virtual void fill(HcalTrigTowerDetId const&, double, double);
 
-			//	booking
+			//	booking using IBooker
 			//	@aux - typically a cut or anything else
 			//	@subsystem - subsystem under which to save
 			//
 			virtual void book(DQMStore::IBooker&, HcalElectronicsMap const*,
 				std::string subsystem="Hcal",
 				std::string aux="");
+
+			//	loading using DQMStore
+			//	@DQMStore
+			//	@emap
+			virtual void load(DQMStore*, HcalElectronicsMap const*,
+				std::string subsystem="Hcal", std::string aux="");
 
 			//	reset all the elements
 			virtual void reset();
