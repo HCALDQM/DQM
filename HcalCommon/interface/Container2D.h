@@ -49,6 +49,13 @@ namespace hcaldqm
 			virtual void fill(HcalDetId const&, int, int);
 			virtual void fill(HcalDetId const&, double, double);
 
+			virtual double getBinContent(HcalDetId const&);
+			virtual double getBinContent(HcalDetId const&, int);
+			virtual double getBinContent(HcalDetId const&, double);
+			virtual double getBinContent(HcalDetId const&, int, int);
+			virtual double getBinContent(HcalDetId const&, int, double);
+			virtual double getBinContent(HcalDetId const&, double, double);
+
 			virtual void fill(HcalElectronicsId const&);
 			virtual void fill(HcalElectronicsId const&, int);
 			virtual void fill(HcalElectronicsId const&, double);
@@ -56,12 +63,28 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, int, int);
 			virtual void fill(HcalElectronicsId const&, double, double);
 
+			virtual double getBinContent(HcalElectronicsId const&);
+			virtual double getBinContent(HcalElectronicsId const&, int);
+			virtual double getBinContent(HcalElectronicsId const&, double);
+			virtual double getBinContent(HcalElectronicsId const&, int, int);
+			virtual double getBinContent(HcalElectronicsId const&, int, double);
+			virtual double getBinContent(HcalElectronicsId const&, double, 
+				double);
+
 			virtual void fill(HcalTrigTowerDetId const&);
 			virtual void fill(HcalTrigTowerDetId const&, int);
 			virtual void fill(HcalTrigTowerDetId const&, double);
 			virtual void fill(HcalTrigTowerDetId const&, int, int);
 			virtual void fill(HcalTrigTowerDetId const&, int, double);
 			virtual void fill(HcalTrigTowerDetId const&, double, double);
+
+			virtual double getBinContent(HcalTrigTowerDetId const&);
+			virtual double  getBinContent(HcalTrigTowerDetId const&, int);
+			virtual double getBinContent(HcalTrigTowerDetId const&, double);
+			virtual double getBinContent(HcalTrigTowerDetId const&, int, int);
+			virtual double getBinContent(HcalTrigTowerDetId const&, int, double);
+			virtual double getBinContent(HcalTrigTowerDetId const&, 
+				double, double);
 
 			//	booking. see Container1D.h
 			virtual void book(DQMStore::IBooker&,

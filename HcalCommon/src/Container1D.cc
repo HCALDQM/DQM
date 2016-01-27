@@ -115,6 +115,29 @@ namespace hcaldqm
 				_qy->getValue(x), y);
 	}
 
+	/* virtual */ double Container1D::getBinContent(HcalDetId const& 
+		tid)
+	{
+		return _mes[_hashmap.getHash(tid)]->getBinContent(_qx->getBin(tid));
+	}
+
+	/* virtual */ double Container1D::getBinContent(HcalDetId const& 
+		tid, int x)
+	{
+		return _mes[_hashmap.getHash(tid)]->getBinContent(_qx->getBin(x));
+	}
+
+	/* virtual */ double Container1D::getBinContent(HcalDetId const& 
+		tid, double x)
+	{
+		return _mes[_hashmap.getHash(tid)]->getBinContent(_qx->getBin(x));
+	}
+
+	/* virtual */ double Container1D::getMean(HcalDetId const& tid, int axis)
+	{
+		return _mes[_hashmap.getHash(tid)]->getMean(axis);
+	}
+
 	//	by HcalElectronicsId
 	/* virtual */ void Container1D::fill(HcalElectronicsId const& did)
 	{
@@ -172,7 +195,31 @@ namespace hcaldqm
 				_qy->getValue(x), y);
 	}
 
-	//	by HcalDetId
+	/* virtual */ double Container1D::getBinContent(HcalElectronicsId const& 
+		tid)
+	{
+		return _mes[_hashmap.getHash(tid)]->getBinContent(_qx->getBin(tid));
+	}
+
+	/* virtual */ double Container1D::getBinContent(HcalElectronicsId const& 
+		tid, int x)
+	{
+		return _mes[_hashmap.getHash(tid)]->getBinContent(_qx->getBin(x));
+	}
+
+	/* virtual */ double Container1D::getBinContent(HcalElectronicsId const& 
+		tid, double x)
+	{
+		return _mes[_hashmap.getHash(tid)]->getBinContent(_qx->getBin(x));
+	}
+
+	/* virtual */ double Container1D::getMean(HcalElectronicsId const& tid,
+		int axis)
+	{
+		return _mes[_hashmap.getHash(tid)]->getMean(axis);
+	}
+
+	//	by HcaTrigTowerlDetId
 	/* virtual */ void Container1D::fill(HcalTrigTowerDetId const& did)
 	{
 		_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did));
@@ -228,6 +275,30 @@ namespace hcaldqm
 		else 
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(did), 
 				_qy->getValue(x), y);
+	}
+
+	/* virtual */ double Container1D::getBinContent(HcalTrigTowerDetId const& 
+		tid)
+	{
+		return _mes[_hashmap.getHash(tid)]->getBinContent(_qx->getBin(tid));
+	}
+
+	/* virtual */ double Container1D::getBinContent(HcalTrigTowerDetId const& 
+		tid, int x)
+	{
+		return _mes[_hashmap.getHash(tid)]->getBinContent(_qx->getBin(x));
+	}
+
+	/* virtual */ double Container1D::getBinContent(HcalTrigTowerDetId const& 
+		tid, double x)
+	{
+		return _mes[_hashmap.getHash(tid)]->getBinContent(_qx->getBin(x));
+	}
+
+	/* virtual */ double Container1D::getMean(HcalTrigTowerDetId const& tid,
+		int axis)
+	{
+		return _mes[_hashmap.getHash(tid)]->getMean(axis);
 	}
 
 	/* virtual */ void Container1D::load(DQMStore *store,

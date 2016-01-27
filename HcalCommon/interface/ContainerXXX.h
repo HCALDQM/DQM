@@ -31,7 +31,15 @@ namespace hcaldqm
 
 			//	fills
 			virtual void fill(HcalDetId const&, double);
+
+			//	dump all the contents into the Container
 			virtual void dump(Container1D*, bool);
+
+			//	get all the contents from the Container
+			virtual void load(Container1D*);
+
+			//	compare 2 sets of data
+			virtual void compare(ContainerXXX const&, Container1D*);
 
 			//	print
 			virtual void print();

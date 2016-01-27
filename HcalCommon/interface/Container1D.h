@@ -67,6 +67,17 @@ namespace hcaldqm
 			virtual void fill(HcalDetId const&, int, int);
 			virtual void fill(HcalDetId const&, double, double);
 
+			virtual double getBinContent(HcalDetId const&);
+			virtual double getBinContent(HcalDetId const&, int);
+			virtual double getBinContent(HcalDetId const&, double);
+			virtual double getBinContent(HcalDetId const& did, int x, int)
+			{return getBinContent(did, x);}
+			virtual double getBinContent(HcalDetId const& did, int x, double)
+			{return getBinContent(did, x);}
+			virtual double getBinContent(HcalDetId const& did, double x, double)
+			{return getBinContent(did, x);}
+			virtual double getMean(HcalDetId const&, int axis=1);
+
 			//	using ElectronicsId 
 			virtual void fill(HcalElectronicsId const&);
 			virtual void fill(HcalElectronicsId const&, int);
@@ -75,6 +86,20 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, int, int);
 			virtual void fill(HcalElectronicsId const&, double, double);
 
+			virtual double getBinContent(HcalElectronicsId const&);
+			virtual double getBinContent(HcalElectronicsId const&, int);
+			virtual double getBinContent(HcalElectronicsId const&, double);
+			virtual double getBinContent(HcalElectronicsId const& eid, 
+				int x, int)
+			{return getBinContent(eid, x);}
+			virtual double getBinContent(HcalElectronicsId const& eid, 
+				int x, double)
+			{return getBinContent(eid, x);}
+			virtual double getBinContent(HcalElectronicsId const& eid, 
+				double x, double)
+			{return getBinContent(eid, x);}
+			virtual double getMean(HcalElectronicsId const&, int axis=1);
+
 			//	using DetId as mapper
 			virtual void fill(HcalTrigTowerDetId const&);
 			virtual void fill(HcalTrigTowerDetId const&, int);
@@ -82,6 +107,20 @@ namespace hcaldqm
 			virtual void fill(HcalTrigTowerDetId const&, int, double);
 			virtual void fill(HcalTrigTowerDetId const&, int, int);
 			virtual void fill(HcalTrigTowerDetId const&, double, double);
+
+			virtual double getBinContent(HcalTrigTowerDetId const&);
+			virtual double getBinContent(HcalTrigTowerDetId const&, int);
+			virtual double getBinContent(HcalTrigTowerDetId const&, double);
+			virtual double getBinContent(HcalTrigTowerDetId const& tid, 
+				int x, int)
+			{return getBinContent(tid, x);}
+			virtual double getBinContent(HcalTrigTowerDetId const& tid, 
+				int x, double)
+			{return getBinContent(tid, x);}
+			virtual double getBinContent(HcalTrigTowerDetId const& tid, 
+				double x, double)
+			{return getBinContent(tid, x);}
+			virtual double getMean(HcalTrigTowerDetId const&, int axis=1);
 
 			//	booking using IBooker
 			//	@aux - typically a cut or anything else
