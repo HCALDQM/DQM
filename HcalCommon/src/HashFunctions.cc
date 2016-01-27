@@ -271,7 +271,7 @@ namespace hcaldqm
 		{
 			char name[10];
 			sprintf(name, "FED%d", eid.isVMEid() ? eid.dccid()+700 :
-				eid.crateId());
+				utilities::crate2fed(eid.crateId()));
 			return std::string(name);
 		}
 
@@ -279,7 +279,8 @@ namespace hcaldqm
 		{
 			char name[20];
 			sprintf(name, "FED%dS%d",
-				eid.isVMEid()?eid.dccid()+700:eid.crateId(),
+				eid.isVMEid()?eid.dccid()+700:
+				utilities::crate2fed(eid.crateId()),
 				eid.isVMEid()?eid.spigot():eid.slot());
 			return std::string(name);
 		}
@@ -288,7 +289,8 @@ namespace hcaldqm
 		{
 			char name[20];
 			sprintf(name, "FED%dS%d",
-				eid.isVMEid()?eid.dccid()+700:eid.crateId(),
+				eid.isVMEid()?eid.dccid()+700:
+				utilities::crate2fed(eid.crateId()),
 				eid.isVMEid()?eid.spigot():eid.slot());
 			return std::string(name);
 		}

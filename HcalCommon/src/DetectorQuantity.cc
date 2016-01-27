@@ -74,17 +74,17 @@ namespace hcaldqm
 
 		HcalDetId getDid_depth(int v)
 		{
-			HcalDetId(HcalBarrel, 1, 1 v);
+			return HcalDetId(HcalBarrel, 1, 1, v);
 		}
 
 		HcalDetId getDid_Subdet(int v)
 		{
-			HcalDetId((HcalSubdetector)(v+1)v, 1, 1, 1);
+			return HcalDetId((HcalSubdetector)(v+1), 1, 1, 1);
 		}
 
 		HcalDetId getDid_SubdetPM(int v)
 		{
-			HcalDetId((HcalSubdetector)(v/2+1), v%2==0?1:-1, 1 1);
+			return HcalDetId((HcalSubdetector)(v/2+1), v%2==0?1:-1, 1, 1);
 		}
 
 		std::vector<std::string> getLabels_iphi()
@@ -95,10 +95,10 @@ namespace hcaldqm
 		std::vector<std::string> getLabels_ieta()
 		{
 			std::vector<std::string> labels;
-			charn name[10];
+			char name[10];
 			for (int i=0; i<84; i++)
 			{
-				sprintf(name, "ieta%d", getDid_ieta(i).ieta());
+				sprintf(name, "%d", getDid_ieta(i).ieta());
 				labels.push_back(std::string(name));
 			}
 			return labels;

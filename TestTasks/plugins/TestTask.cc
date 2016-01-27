@@ -35,16 +35,18 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 		}
 	}
 */
-	_cEnergy_Subdet.initialize(_name, hashfunctions::fSubdet,
+	_cEnergy_Subdet.initialize(_name, "Energy",hashfunctions::fSubdet,
 		new quantity::ValueQuantity(quantity::fEnergy),
 		new quantity::ValueQuantity(quantity::fN, true));
-	_cTiming_SubdetPMiphi.initialize(_name, hashfunctions::fSubdetPMiphi,
+	_cTiming_SubdetPMiphi.initialize(_name, "Timing",
+		hashfunctions::fSubdetPMiphi,
 		new quantity::ValueQuantity(quantity::fTiming_ns),
 		new quantity::ValueQuantity(quantity::fN, true));
-	_cEnergyvsiphi_Subdetieta.initialize(_name, hashfunctions::fSubdetieta,
+	_cEnergyvsiphi_Subdetieta.initialize(_name, "Energy", 
+		hashfunctions::fSubdetieta,
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fEnergy));
-	_cEnergy_depth.initialize(_name, hashfunctions::fdepth,
+	_cEnergy_depth.initialize(_name, "Energy", hashfunctions::fdepth,
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fEnergy));
@@ -61,18 +63,18 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	_cEnergy_FED.initialize(_name, hashfunctions::fFED,
 		new quantity::ValueQuantity(quantity::fEnergy),
 		new quantity::ValueQuantity(quantity::fN), 10);
-	_cEt_TTSubdetPM.initialize(_name, hashfunctions::fTTSubdetPM,
+	_cEt_TTSubdetPM.initialize(_name,"Et", hashfunctions::fTTSubdetPM,
 		new quantity::ValueQuantity(quantity::fEt_256),
 		new quantity::ValueQuantity(quantity::fN), 10);
-	_cEt_TTSubdetPMiphi.initialize(_name, hashfunctions::fTTSubdetPMiphi,
+	_cEt_TTSubdetPMiphi.initialize(_name, "Et", hashfunctions::fTTSubdetPMiphi,
 		new quantity::ValueQuantity(quantity::fEt_256),
 		new quantity::ValueQuantity(quantity::fN), 10);
-	_cEt_TTSubdetieta.initialize(_name, hashfunctions::fTTSubdetieta,
+	_cEt_TTSubdetieta.initialize(_name,"Et", hashfunctions::fTTSubdetieta,
 		new quantity::ValueQuantity(quantity::fEt_256),
 		new quantity::ValueQuantity(quantity::fN), 10);
 	_cSummary.initialize(_name, "Summary",
 		new quantity::ElectronicsQuantity(quantity::fFED),
-		new quantity::ValueQuantity(quantity::fN),
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ValueQuantity(quantity::fN));
 	_cPerformance.initialize(_name, "Performance",
 		new quantity::ValueQuantity(quantity::fLS),

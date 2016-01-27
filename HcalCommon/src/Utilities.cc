@@ -79,17 +79,20 @@ namespace hcaldqm
 			fed-=1100;
 			if (fed>=constants::FED_uTCA_MAX_REAL)
 				throw cms::Exception("HCALDQM")
-					<< "fed2crate::fed index is out of range";
+					<< "fed2crate::fed index is out of range " 
+					<< fed;
 
-			return constants::FED2CRATE(fed-1100);
+			return constants::FED2CRATE[fed];
 		}
 
 		uint16_t crate2fed(int crate)
 		{
-			if (crate>=constants::FED_uTCA_REAL)
-				return constants::CRATE2FED(crate);
+			if (crate>=constants::FED_uTCA_MAX_REAL)
+				throw cms::Exception("HCALDQM")
+					<< "crate2fed::crate index is out of range "
+					<< crate;
 
-			return constants::CRATE2FED(crate);
+			return constants::CRATE2FED[crate];
 		}
 
 		uint32_t hash(HcalDetId const& did)

@@ -56,6 +56,14 @@ namespace hcaldqm
 			getBin_TTiphi, getBin_TTieta, getBin_TTdepth,
 			getBin_TTSubdet, getBin_TTSubdetPM
 		};
+		getTid_tid const getTid_functions_tid[nTrigTowerQuantityType] = {
+			getTid_TTiphi, getTid_TTieta, getTid_TTdepth,
+			getTid_TTSubdet, getTid_TTSubdetPM
+		};
+		getLabels_tid const getLabels_functions_tid[nTrigTowerQuantityType] = {
+			getLabels_TTiphi, getLabels_TTieta, getLabels_TTdepth,
+			getLabels_TTSubdet, getLabels_TTSubdetPM
+		};
 		std::string const name_tid[nTrigTowerQuantityType] = {
 			"TTiphi", "TTieta", "TTdepth", "TTSubdet", "TTSubdetPM"
 		};
@@ -89,7 +97,7 @@ namespace hcaldqm
 				virtual double max() {return max_tid[_type];}
 				virtual bool isCoordinate() {return true;}
 				virtual std::vector<std::string> getLabels() 
-				{return getLabes_functions_tid[_type]();}
+				{return getLabels_functions_tid[_type]();}
 
 			protected:
 				TrigTowerQuantityType _type;

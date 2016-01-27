@@ -81,7 +81,7 @@ namespace hcaldqm
 
 		typedef int(*getValueType_eid)(HcalElectronicsId const&);
 		typedef uint32_t (*getBinType_eid)(HcalElectronicsId const&);
-		typedef HcalDetId (*getEid_eid)(int);
+		typedef HcalElectronicsId (*getEid_eid)(int);
 		typedef std::vector<std::string> (*getLabels_eid)();
 		getValueType_eid const getValue_functions_eid[nElectronicsQuantityType]
 			= {
@@ -112,7 +112,7 @@ namespace hcaldqm
 			getLabels_SlotuTCA, getLabels_SlotVME, 
 			getLabels_Spigot,
 			getLabels_FiberuTCA, getLabels_FiberVME, getLabels_FiberCh
-		}
+		};
 		std::string const name_eid[nElectronicsQuantityType] = {
 			"FED", "FEDuTCA", "FEDVME", 
 			"Crate", "CrateuTCA", "CrateVME",

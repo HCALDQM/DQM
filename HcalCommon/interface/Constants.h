@@ -21,31 +21,6 @@ namespace hcaldqm
 		/*
 		 *	Electronics Constants
 		 */
-
-		//	FEDs
-		int const FED_VME_MIN = FEDNumbering::MINHCALFEDID;
-		int const FED_VME_MAX = FEDNumbering::MAXHCALFEDID;
-		int const FED_VME_DELTA = 1;
-		int const FED_VME_NUM = FED_VME_MAX-FED_VME_MIN+1;
-
-		int const FED_uTCA_MIN = FEDNumbering::MINHCALuTCAFEDID;
-		int const FED_uTCA_MAX = FEDNumbering::MAXHCALuTCAFEDID;
-		int const FED_uTCA_NUM = FED_uTCA_MAX - FED_uTCA_MIN + 1;
-		int const FED_uTCA_DELTA = 1;
-		int const FED_TOTAL_NUM = FED_VME_NUM+FED_uTCA_NUM;
-		
-		//	Crates
-		int const CRATE_VME_MIN = 0;
-		int const CRATE_VME_MAX = 18;
-		int const CRATE_VME_DELTA = 1;
-		int const CRATE_VME_NUM = CRATE_VME_MAX-CRATE_VME_MIN+1;
-
-		int const CRATE_uTCA_MIN = 20;
-		int const CRATE_uTCA_MAX = 37;
-		int const CRATE_uTCA_DELTA = 1;
-		int const CRATE_uTCA_NUM = CRATE_uTCA_MAX-CRATE_uTCA_MIN+1;
-		int const CRATE_TOTAL_NUM = CRATE_VME_NUM + CRATE_uTCA_NUM;
-
 		//	FED2Crate array and CRATE2FED array
 		//	use conversion functions in Utilities.h
 		//	For fast look up
@@ -65,6 +40,31 @@ namespace hcaldqm
 			1116, 1108, 1122, 0, 1114, 1110, 1132, 1112, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 		};
+
+		//	FEDs use the first 50 uTCA FED numbers only everywhere
+		int const FED_VME_MIN = FEDNumbering::MINHCALFEDID;
+		int const FED_VME_MAX = FEDNumbering::MAXHCALFEDID;
+		int const FED_VME_DELTA = 1;
+		int const FED_VME_NUM = FED_VME_MAX-FED_VME_MIN+1;
+
+		int const FED_uTCA_MIN = FEDNumbering::MINHCALuTCAFEDID;
+//		int const FED_uTCA_MAX = FEDNumbering::MAXHCALuTCAFEDID;
+		int const FED_uTCA_MAX = FED_uTCA_MIN + FED_uTCA_MAX_REAL-1;
+		int const FED_uTCA_NUM = FED_uTCA_MAX - FED_uTCA_MIN + 1;
+		int const FED_uTCA_DELTA = 1;
+		int const FED_TOTAL_NUM = FED_VME_NUM+FED_uTCA_NUM;
+		
+		//	Crates
+		int const CRATE_VME_MIN = 0;
+		int const CRATE_VME_MAX = 18;
+		int const CRATE_VME_DELTA = 1;
+		int const CRATE_VME_NUM = CRATE_VME_MAX-CRATE_VME_MIN+1;
+
+		int const CRATE_uTCA_MIN = 20;
+		int const CRATE_uTCA_MAX = 37;
+		int const CRATE_uTCA_DELTA = 1;
+		int const CRATE_uTCA_NUM = CRATE_uTCA_MAX-CRATE_uTCA_MIN+1;
+		int const CRATE_TOTAL_NUM = CRATE_VME_NUM + CRATE_uTCA_NUM;
 
 		//	Slots
 		int const SLOT_uTCA_MIN = 1;

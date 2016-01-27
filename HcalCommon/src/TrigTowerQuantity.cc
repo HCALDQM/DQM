@@ -121,6 +121,7 @@ namespace hcaldqm
 					tid.ieta()>0?x+1:x]);
 				return labels;
 			}
+			return labels;
 		}
 	}
 }

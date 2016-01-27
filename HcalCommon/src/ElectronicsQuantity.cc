@@ -150,7 +150,7 @@ namespace hcaldqm
 				FIBER_VME_MIN, SPIGOT_MIN, v) :
 				HcalElectronicsId(utilities::fed2crate(v-FED_VME_NUM+1100),
 				SLOT_uTCA_MIN, FIBER_uTCA_MIN1,
-				FIBERCH_MIN, false)
+				FIBERCH_MIN, false);
 		}
 
 		HcalElectronicsId getEid_FEDVME(int v)
@@ -196,7 +196,7 @@ namespace hcaldqm
 		{
 			return 
 				HcalElectronicsId(FIBERCH_MIN, FIBER_VME_MIN, 
-					SPIGOT_MIN, CRATE_VME_MIN) : 
+					SPIGOT_MIN, CRATE_VME_MIN);
 		}
 
 		HcalElectronicsId getEid_Spigot(int v)
@@ -222,7 +222,7 @@ namespace hcaldqm
 
 		HcalElectronicsId getEid_FiberCh(int v)
 		{
-			return HcalElectronicsId(CRATE_uTCA_MIN, SLOG_uTCA_MIN,
+			return HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
 				FIBER_uTCA_MIN1, v, false);
 		}
 
