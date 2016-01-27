@@ -39,7 +39,14 @@ namespace hcaldqm
 			virtual void load(Container1D*);
 
 			//	compare 2 sets of data
-			virtual void compare(ContainerXXX const&, Container1D*);
+			virtual void compare(ContainerXXX const&, Container1D*,
+				bool q=true);
+
+			//	reset
+			virtual void reset();
+
+			//	size
+			virtual uint32_t size();
 
 			//	print
 			virtual void print();

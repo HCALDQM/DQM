@@ -48,8 +48,8 @@ namespace hcaldqm
 				//	get the Hash Type Name
 				virtual std::string getHashTypeName()
 				{return hash_names[this->getLinearHashType(_htype)];}
-				virtual HashType getHashType()
-				{return _type;}
+				virtual HashType getHashType() const
+				{return _htype;}
 
 				//	determine the type of the hash
 				virtual bool isDHash() 

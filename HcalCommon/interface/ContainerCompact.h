@@ -17,10 +17,16 @@ namespace hcaldqm
 	
 	struct CompactX
 	{
+		CompactX() {_sum=0; _sum2=0; _entries=0;}
+		void reset() {_sum=0; _sum2=0; _entries=0;}
+
 		double _sum;
 		double _sum2;
 		unsigned int _entries;
+
 	};
+
+	std::ostream& operator<<(std::ostream&, CompactX const&);
 
 	struct CompactXX
 	{

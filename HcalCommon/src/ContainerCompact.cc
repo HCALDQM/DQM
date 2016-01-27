@@ -5,6 +5,11 @@ namespace hcaldqm
 {
 	using namespace constants;
 
+	std::ostream& operator<<(std::ostream& o, CompactX const& x)
+	{
+		return o << x._sum << "  " << x._sum2 << "  " << x._entries;
+	}
+
 	/* virtual */ void ContainerCompact::fill(HcalDetId const& did, double x)
 	{
 		if (x==GARBAGE_VALUE)

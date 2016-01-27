@@ -21,7 +21,12 @@ namespace hcaldqm
 				if (!it->isHcalDetId())
 					continue;
 
-				HcalDetId did = HcalDetId(it->rawId());
+				uint32_t hash = it->rawId();
+				HcalDetId did = HcalDetId(hash);
+				CompactMap::iterator mit = _cmap.find(hash);
+				if (mit!=_cmap.end())
+					continue;
+
 				_cmap.insert(
 					std::make_pair(_hashmap.getHash(did), CompactX()));
 			}
@@ -30,13 +35,15 @@ namespace hcaldqm
 
 	/* virtual */ void ContainerXXX::fill(HcalDetId const& did, double x)
 	{
-		if (x==GARBAGE_VALUE)
-			return;
-
 		CompactX &c = _cmap[_hashmap.getHash(did)];
 		c._sum += x;
 		c._sum2 += x*x;
 		c._entries++;
+	}
+
+	/* virtual */ uint32_t ContainerXXX::size()
+	{
+		return (uint32_t)(_cmap.size());
 	}
 
 	/* virtual */ void ContainerXXX::dump(Container1D* c, bool q)
@@ -59,7 +66,15 @@ namespace hcaldqm
 		std::cout << "Container by " << _hashmap.getHashTypeName() << std::endl;
 		BOOST_FOREACH(CompactMap::value_type &p, _cmap)
 		{
-			std::cout << HcalDetId(p.first) << std::endl;
+			std::cout << HcalDetId(p.first) << p.second << std::endl;
+		}
+	}
+
+	/* virtual */ void ContainerXXX::reset()
+	{
+		BOOST_FOREACH(CompactMap::value_type &p, _cmap)
+		{
+			p.second.reset();
 		}
 	}
 
@@ -81,23 +96,28 @@ namespace hcaldqm
 	/* virtual */ void ContainerXXX::compare(ContainerXXX const& cx, 
 		Container1D* cc, bool q)
 	{
-		if (_hashmap.getHashType()!=cx.getHashType())
+		if (_hashmap.getHashType()!=cx._hashmap.getHashType())
 			return;
 
 		BOOST_FOREACH(CompactMap::value_type &p, _cmap)
 		{
 			CompactX &x = p.second;
 			uint32_t hash = p.first;
-			CompactMap::iterator y = cx._cmap.find(hash);
-			if (y==cx._cmap.end())
+			CompactMap::const_iterator it = cx._cmap.find(hash);
+
+			if (x._entries<=0)
 				continue;
+			if (it==cx._cmap.end())
+				continue;
+
+			CompactX y = it->second;
 			HcalDetId did(hash);
 
 			double meanX = x._sum/x._entries;
 			double rmsX = sqrt(x._sum2/x._entries - meanX*meanX);
-			double meanY = x->_sum/y->_entries;
-			double rmsY = sqrt(y->_sum2/y->_entries - meanY*meanY);
-			q ? cc->fill(did, meanX-meanY) : cc->fill(rmsX-rmsY);
+			double meanY = y._sum/y._entries;
+			double rmsY = sqrt(y._sum2/y._entries - meanY*meanY);
+			q ? cc->fill(did, meanX-meanY) : cc->fill(did, rmsX-rmsY);
 		}
 	}
 }

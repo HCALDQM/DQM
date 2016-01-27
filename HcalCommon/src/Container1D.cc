@@ -330,7 +330,7 @@ namespace hcaldqm
 				_logger.debug(_hashmap.getName(did));
 				_mes.insert(
 					std::make_pair(hash, 
-						store->get(path+_hashmap.getName(did))));
+						store->get(path+"/"+_hashmap.getName(did))));
 			}
 		}
 		
@@ -351,7 +351,7 @@ namespace hcaldqm
 				_logger.debug(_hashmap.getName(eid));
 				_mes.insert(
 					std::make_pair(hash, 
-						store->get(path+_hashmap.getName(eid))));
+						store->get(path+"/"+_hashmap.getName(eid))));
 			}
 		}
 		else if (_hashmap.isTHash())
@@ -371,7 +371,7 @@ namespace hcaldqm
 				_logger.debug(_hashmap.getName(tid));
 				_mes.insert(
 					std::make_pair(hash, 
-						store->get(path+_hashmap.getName(tid))));
+						store->get(path+"/"+_hashmap.getName(tid))));
 			}
 		}
 	}
