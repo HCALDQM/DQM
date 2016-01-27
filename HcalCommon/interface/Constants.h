@@ -46,6 +46,26 @@ namespace hcaldqm
 		int const CRATE_uTCA_NUM = CRATE_uTCA_MAX-CRATE_uTCA_MIN+1;
 		int const CRATE_TOTAL_NUM = CRATE_VME_NUM + CRATE_uTCA_NUM;
 
+		//	FED2Crate array and CRATE2FED array
+		//	use conversion functions in Utilities.h
+		//	For fast look up
+		//	This is for uTCA Crates/FEDs only - no other way...
+		int const FED_uTCA_MAX_REAL = 50;
+		uint16_t const FED2CRATE[FED_uTCA_MAX_REAL] = {
+			24, 0, 20, 0, 21, 0, 25, 0, 31, 0,
+			35, 0, 37, 0, 34, 0, 30, 0, 22, 0,
+			29, 0, 32, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 36, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+		};
+		uint16_t const CRATE2FED[50] = {
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			1102, 1104, 1118, 0, 1100, 1106, 0, 0, 0, 1120,
+			1116, 1108, 1122, 0, 1114, 1110, 1132, 1112, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+		};
+
 		//	Slots
 		int const SLOT_uTCA_MIN = 1;
 		int const SLOT_uTCA_MAX = 12;

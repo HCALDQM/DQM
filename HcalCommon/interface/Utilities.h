@@ -118,14 +118,20 @@ namespace hcaldqm
 		}
 
 		/*
-		 *	Useful Detector Functions. For Fast Detector Validity Check
+		 *	Useful Detector/Electronics/TrigTower Functions. 
+		 *	For Fast Detector Validity Check
 		 */
 		bool validDetId(HcalSubdetector, int , int, int );
 		bool validDetId(HcalDetId const&);
 		int getTPSubDet(HcalTrigTowerDetId const&);
 		int getTPSubDetPM(HcalTrigTowerDetId const&);
-		int getFEDById(int);
-		int getIdByFED(int);
+
+		uint16_t fed2crate(int fed);
+		uint16_t crate2fed(int crate);
+
+		/**
+		 *	This is wrap around in case hashing scheme changes in the future
+		 */
 		uint32_t hash(HcalDetId const&);
 		uint32_t hash(HcalElectronicsId const&);
 		uint32_t hash(HcalTrigTowerDetId const&);

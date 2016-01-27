@@ -54,9 +54,35 @@ namespace hcaldqm
 		uint32_t getBin_FiberuTCA(HcalElectronicsId const&);
 		uint32_t getBin_FiberVME(HcalElectronicsId const&);
 		uint32_t getBin_FiberCh(HcalElectronicsId const&);
+		HcalElectronicsId getEid_FED(int);
+		HcalElectronicsId getEid_FEDuTCA(int);
+		HcalElectronicsId getEid_FEDVME(int);
+		HcalElectronicsId getEid_Crate(int);
+		HcalElectronicsId getEid_CrateuTCA(int);
+		HcalElectronicsId getEid_CrateVME(int);
+		HcalElectronicsId getEid_SlotuTCA(int);
+		HcalElectronicsId getEid_SlotVME(int);
+		HcalElectronicsId getEid_Spigot(int);
+		HcalElectronicsId getEid_FiberuTCA(int);
+		HcalElectronicsId getEid_FiberVME(int);
+		HcalElectronicsId getEid_FiberCh(int);
+		std::vector<std::string> getLabels_FED();
+		std::vector<std::string> getLabels_FEDuTCA();
+		std::vector<std::string> getLabels_FEDVME();
+		std::vector<std::string> getLabels_Crate();
+		std::vector<std::string> getLabels_CrateuTCA();
+		std::vector<std::string> getLabels_CrateVME();
+		std::vector<std::string> getLabels_SlotuTCA();
+		std::vector<std::string> getLabels_SlotVME();
+		std::vector<std::string> getLabels_Spigot();
+		std::vector<std::string> getLabels_FiberuTCA();
+		std::vector<std::string> getLabels_FiberVME();
+		std::vector<std::string> getLabels_FiberCh();
 
 		typedef int(*getValueType_eid)(HcalElectronicsId const&);
 		typedef uint32_t (*getBinType_eid)(HcalElectronicsId const&);
+		typedef HcalDetId (*getEid_eid)(int);
+		typedef std::vector<std::string> (*getLabels_eid)();
 		getValueType_eid const getValue_functions_eid[nElectronicsQuantityType]
 			= {
 			getValue_FED, getValue_FEDuTCA, getValue_FEDVME,
@@ -72,6 +98,21 @@ namespace hcaldqm
 			getBin_Spigot,
 			getBin_FiberuTCA, getBin_FiberVME, getBin_FiberCh
 		};
+		getEid_eid const getEid_functions_eid[nElectronicsQuantityType] = {
+			getEid_FED, getEid_FEDuTCA, getEid_FEDVME,
+			getEid_Crate, getEid_CrateuTCA, getEid_CrateVME,
+			getEid_SlotuTCA, getEid_SlotVME, 
+			getEid_Spigot,
+			getEid_FiberuTCA, getEid_FiberVME, getEid_FiberCh
+		};
+		getLabels_eid const getLabels_functions_eid[nElectronicsQuantityType] = 
+		{
+			getLabels_FED, getLabels_FEDuTCA, getLabels_FEDVME,
+			getLabels_Crate, getLabels_CrateuTCA, getLabels_CrateVME,
+			getLabels_SlotuTCA, getLabels_SlotVME, 
+			getLabels_Spigot,
+			getLabels_FiberuTCA, getLabels_FiberVME, getLabels_FiberCh
+		}
 		std::string const name_eid[nElectronicsQuantityType] = {
 			"FED", "FEDuTCA", "FEDVME", 
 			"Crate", "CrateuTCA", "CrateVME",
@@ -125,6 +166,8 @@ namespace hcaldqm
 				virtual double min() {return min_eid[_type];}
 				virtual double max() {return max_eid[_type];}
 				virtual bool isCoordinate() {return true;}
+				virtual std::vector<std::string> getLabels()
+				{return getLabels_functions_eid[_type]();}
 
 			protected:
 				ElectronicsQuantityType _type;

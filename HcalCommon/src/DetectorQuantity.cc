@@ -60,5 +60,69 @@ namespace hcaldqm
 		{
 			return ( uint32_t)(getValue_SubdetPM(did)+1);
 		}
+
+		HcalDetId getDid_iphi(int v)
+		{
+			return HcalDetId(HcalBarrel, v, 1, 1);
+		}
+
+		HcalDetId getDid_ieta(int v)
+		{
+			return HcalDetId(HcalBarrel,
+				v<=41?(v<=12?v-41:v-42):(v>=71?v-42:v-41), 1, 1);
+		}
+
+		HcalDetId getDid_depth(int v)
+		{
+			HcalDetId(HcalBarrel, 1, 1 v);
+		}
+
+		HcalDetId getDid_Subdet(int v)
+		{
+			HcalDetId((HcalSubdetector)(v+1)v, 1, 1, 1);
+		}
+
+		HcalDetId getDid_SubdetPM(int v)
+		{
+			HcalDetId((HcalSubdetector)(v/2+1), v%2==0?1:-1, 1 1);
+		}
+
+		std::vector<std::string> getLabels_iphi()
+		{
+			return std::vector<std::string>();
+		}
+
+		std::vector<std::string> getLabels_ieta()
+		{
+			std::vector<std::string> labels;
+			charn name[10];
+			for (int i=0; i<84; i++)
+			{
+				sprintf(name, "ieta%d", getDid_ieta(i).ieta());
+				labels.push_back(std::string(name));
+			}
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_depth()
+		{
+			return std::vector<std::string>();
+		}
+
+		std::vector<std::string> getLabels_Subdet()
+		{
+			std::vector<std::string> labels;
+			for (int i=0; i<4; i++)
+				labels.push_back(constants::SUBDET_NAME[i]);
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_SubdetPM()
+		{
+			std::vector<std::string> labels;
+			for (int i=0; i<8; i++)
+				labels.push_back(constants::SUBDETPM_NAME[i]);
+			return labels;
+		}
 	}
 }

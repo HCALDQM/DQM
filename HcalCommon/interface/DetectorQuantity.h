@@ -31,9 +31,21 @@ namespace hcaldqm
 		uint32_t getBin_depth(HcalDetId const&);
 		uint32_t getBin_Subdet(HcalDetId const&);
 		uint32_t getBin_SubdetPM(HcalDetId const&);
+		HcalDetId getDid_iphi(int);
+		HcalDetId getDid_ieta(int);
+		HcalDetId getDid_depth(int);
+		HcalDetId getDid_Subdet(int);
+		HcalDetId getDid_SubdetPM(int);
+		std::vector<std::string> getLabels_iphi();
+		std::vector<std::string> getLabels_ieta();
+		std::vector<std::string> getLabels_depth();
+		std::vector<std::string> getLabels_Subdet();
+		std::vector<std::string> getLabels_SubdetPM();
 
 		typedef int (*getValueType_did)(HcalDetId const&);
 		typedef uint32_t (*getBinType_did)(HcalDetId const&);
+		typedef HcalDetId (*getDid_did)(int);
+		typedef std::vector<std::string> (*getLabels_did)();
 		getValueType_did const getValue_functions_did[nDetectorQuantityType] = {
 			getValue_iphi, getValue_ieta, getValue_depth,
 			getValue_Subdet, getValue_SubdetPM
@@ -41,6 +53,14 @@ namespace hcaldqm
 		getBinType_did const getBin_functions_did[nDetectorQuantityType] = {
 			getBin_iphi, getBin_ieta, getBin_depth,
 			getBin_Subdet, getBin_SubdetPM
+		};
+		getDid_did const getDid_functions_did[nDetectorQuantityType] = {
+			getDid_iphi, getDid_ieta, getDid_depth, 
+			getDid_Subdet, getDid_SubdetPM
+		};
+		getLabels_did const getLabels_functions_did[nDetectorQuantityType] = {
+			getLabels_iphi, getLabels_ieta, getLabels_depth,
+			getLabels_Subdet, getLabels_SubdetPM
 		};
 		std::string const name_did[nDetectorQuantityType] = {
 			"iphi", "ieta", "depth", "Subdet", "SubdetPM"
@@ -74,6 +94,8 @@ namespace hcaldqm
 				virtual double min() {return min_did[_type];}
 				virtual double max() {return max_did[_type];}
 				virtual bool isCoordinate() {return true;}
+				virtual std::vector<std::string> getLabels()
+				{return getLabels_functions_did[_type]();}
 
 			protected:
 				DetectorQuantityType	_type;

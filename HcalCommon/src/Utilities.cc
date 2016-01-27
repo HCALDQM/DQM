@@ -74,24 +74,22 @@ namespace hcaldqm
 			return 0;
 		}
 
-		int getFEDById(int id)
+		uint16_t fed2crate(int fed)
 		{
-			int fed = 700;
-			if (id>=FED_VME_NUM)
-				fed = FED_uTCA_MIN + FED_uTCA_DELTA*(id-FED_VME_NUM);
-			else 
-				fed = FED_VME_MIN + id;
-			return fed;
+			fed-=1100;
+			if (fed>=constants::FED_uTCA_MAX_REAL)
+				throw cms::Exception("HCALDQM")
+					<< "fed2crate::fed index is out of range";
+
+			return constants::FED2CRATE(fed-1100);
 		}
-		
-		int getIdByFED(int fed)
+
+		uint16_t crate2fed(int crate)
 		{
-			int id = 0;
-			if (fed>=FED_VME_MIN && fed<=FED_VME_MAX)
-				id = fed-FED_VME_MIN;
-			else if (fed>=FED_uTCA_MIN && fed<=FED_uTCA_MAX)
-				id = FED_VME_NUM + (fed-FED_uTCA_MIN)/FED_uTCA_DELTA;
-			return id;
+			if (crate>=constants::FED_uTCA_REAL)
+				return constants::CRATE2FED(crate);
+
+			return constants::CRATE2FED(crate);
 		}
 
 		uint32_t hash(HcalDetId const& did)

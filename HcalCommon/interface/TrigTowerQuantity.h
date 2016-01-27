@@ -32,9 +32,21 @@ namespace hcaldqm
 		uint32_t getBin_TTdepth(HcalTrigTowerDetId const&);
 		uint32_t getBin_TTSubdet(HcalTrigTowerDetId const&);
 		uint32_t getBin_TTSubdetPM(HcalTrigTowerDetId const&);
+		HcalTrigTowerDetId getTid_TTiphi(int);
+		HcalTrigTowerDetId getTid_TTieta(int);
+		HcalTrigTowerDetId getTid_TTdepth(int);
+		HcalTrigTowerDetId getTid_TTSubdet(int);
+		HcalTrigTowerDetId getTid_TTSubdetPM(int);
+		std::vector<std::string> getLabels_TTiphi();
+		std::vector<std::string> getLabels_TTieta();
+		std::vector<std::string> getLabels_TTdepth();
+		std::vector<std::string> getLabels_TTSubdet();
+		std::vector<std::string> getLabels_TTSubdetPM();
 
 		typedef int (*getValueType_tid)(HcalTrigTowerDetId const&);
 		typedef uint32_t (*getBinType_tid)(HcalTrigTowerDetId const&);
+		typedef HcalTrigTowerDetId (*getTid_tid)(int);
+		typedef std::vector<std::string> (*getLabels_tid)();
 		getValueType_tid const getValue_functions_tid[nTrigTowerQuantityType]= 
 		{
 			getValue_TTiphi, getValue_TTieta, getValue_TTdepth,
@@ -76,6 +88,8 @@ namespace hcaldqm
 				virtual double min() {return min_tid[_type];}
 				virtual double max() {return max_tid[_type];}
 				virtual bool isCoordinate() {return true;}
+				virtual std::vector<std::string> getLabels() 
+				{return getLabes_functions_tid[_type]();}
 
 			protected:
 				TrigTowerQuantityType _type;
