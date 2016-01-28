@@ -60,6 +60,66 @@ namespace hcaldqm
 		}
 	}
 
+	/* virtual */ void Container1D::fill(uint32_t hash)
+	{
+		if (_hashmap.isDHash())
+			this->fill(HcalDetId(hash));
+		else if (_hashmap.isEHash())
+			this->fill(HcalElectronicsId(hash));
+		else if (_hashmap.isTHash())
+			this->fill(HcalTrigTowerDetId(hash));
+	}
+
+	/* virtual */ void Container1D::fill(uint32_t hash, int x)
+	{
+		if (_hashmap.isDHash())
+			this->fill(HcalDetId(hash), x);
+		else if (_hashmap.isEHash())
+			this->fill(HcalElectronicsId(hash), x);
+		else if (_hashmap.isTHash())
+			this->fill(HcalTrigTowerDetId(hash), x);
+	}
+
+	/* virtual */ void Container1D::fill(uint32_t hash, double x)
+	{
+		if (_hashmap.isDHash())
+			this->fill(HcalDetId(hash), x);
+		else if (_hashmap.isEHash())
+			this->fill(HcalElectronicsId(hash), x);
+		else if (_hashmap.isTHash())
+			this->fill(HcalTrigTowerDetId(hash), x);
+	}
+
+	/* virtual */ void Container1D::fill(uint32_t hash, int x, double y)
+	{
+		if (_hashmap.isDHash())
+			this->fill(HcalDetId(hash), x, y);
+		else if (_hashmap.isEHash())
+			this->fill(HcalElectronicsId(hash), x, y);
+		else if (_hashmap.isTHash())
+			this->fill(HcalTrigTowerDetId(hash), x, y);
+	}
+
+	/* virtual */ void Container1D::fill(uint32_t hash, int x, int y)
+	{
+		if (_hashmap.isDHash())
+			this->fill(HcalDetId(hash), x, y);
+		else if (_hashmap.isEHash())
+			this->fill(HcalElectronicsId(hash), x, y);
+		else if (_hashmap.isTHash())
+			this->fill(HcalTrigTowerDetId(hash), x, y);
+	}
+
+	/* virtual */ void Container1D::fill(uint32_t hash, double x, double y)
+	{
+		if (_hashmap.isDHash())
+			this->fill(HcalDetId(hash), x, y);
+		else if (_hashmap.isEHash())
+			this->fill(HcalElectronicsId(hash), x, y);
+		else if (_hashmap.isTHash())
+			this->fill(HcalTrigTowerDetId(hash), x, y);
+	}
+
 	//	by HcalDetId
 	/* virtual */ void Container1D::fill(HcalDetId const& did)
 	{

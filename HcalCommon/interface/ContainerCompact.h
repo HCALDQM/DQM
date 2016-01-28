@@ -6,41 +6,21 @@
  *	Author:			Viktor Khristenko
  *
  *	Description:
- *		1D Compact Container
+ *		No Type Usage adjustment - only use in histo-like mode
  */
 
 #include "DQM/HcalCommon/interface/Container1D.h"
+#include "DQM/HcalCommon/interface/Compact.h"
 
 namespace hcaldqm
 {
 	using namespace constants;
-	
-	struct CompactX
-	{
-		CompactX() {_sum=0; _sum2=0; _entries=0;}
-		void reset() {_sum=0; _sum2=0; _entries=0;}
-
-		double _sum;
-		double _sum2;
-		unsigned int _entries;
-
-	};
-
-	std::ostream& operator<<(std::ostream&, CompactX const&);
-
-	struct CompactXX
-	{
-		double _xsum;
-		double _xsum2;
-		double _ysum;
-		double _ysum2;
-		unsigned int _entries;
-	};
-
+	using namespace compact;	
 	class ContainerCompact
 	{
 		public:
-			ContainerCompact(){}
+			ContainerCompact()
+			{}
 			virtual ~ContainerCompact() {}
 
 			//	fills
@@ -48,7 +28,7 @@ namespace hcaldqm
 			virtual void dump(Container1D*, bool);
 
 		protected:
-			CompactX		_data[SUBDET_NUM][IPHI_NUM][IETA_NUM][DEPTH_NUM];
+			Compact			_data[SUBDET_NUM][IPHI_NUM][IETA_NUM][DEPTH_NUM];
 	};
 }
 

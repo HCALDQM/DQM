@@ -59,6 +59,14 @@ namespace hcaldqm
 				Quantity *qy = new ValueQuantity(quantity::fN), 
 				int debug=0);
 
+			//	filling by hash
+			virtual void fill(uint32_t);
+			virtual void fill(uint32_t, int);
+			virtual void fill(uint32_t, double);
+			virtual void fill(uint32_t, int, double);
+			virtual void fill(uint32_t, int, int);
+			virtual void fill(uint32_t, double, double);
+
 			//	using DetId as mapper
 			virtual void fill(HcalDetId const&);
 			virtual void fill(HcalDetId const&, int);
