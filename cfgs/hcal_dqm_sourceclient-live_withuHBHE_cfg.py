@@ -19,8 +19,8 @@ cmssw			= os.getenv("CMSSW_VERSION").split("_")
 debugstr		= "### HcalDQM::cfg::DEBUG: "
 warnstr			= "### HcalDQM::cfg::WARN: "
 errorstr		= "### HcalDQM::cfg::ERROR:"
-useOfflineGT	= True
-useFileInput	= True
+useOfflineGT	= False
+useFileInput	= False
 useMapDB		= False
 useMapText		= True
 
@@ -80,8 +80,16 @@ process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
 runType			= process.runType.getRunType()
+runTypeName		= process.runType.getRunTypeName()
+isCosmicRun     = runTypeName=="cosmic_run" or runTypeName=="cosmic_run_stage1"
+isHeavyIon      = runTypeName=="hi_run"
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
 rawTag			= cms.InputTag("rawDataCollector")
+rawTagUntracked	= cms.untracked.InputTag("rawDataCollector")
+if isHeavyIon:
+	rawTag			= cms.InputTag("rawDataRepacker")
+	rawTagUntracked	= cms.untracked.InputTag("rawDataRepacker")
+
 process.essourceSev = cms.ESSource(
 		"EmptyESSource",
 		recordName		= cms.string("HcalSeverityLevelComputerRcd"),
@@ -100,14 +108,18 @@ process.emulTPDigis.FG_threshold = cms.uint32(2)
 process.emulTPDigis.InputTagFEDRaw = rawTag
 process.l1GtUnpack.DaqGtInputTag = rawTag
 process.hbhereco = process.hbheprereco.clone()
+process.hcalDigis.InputLabel = rawTag
 
 #-------------------------------------
 #	Hcal DQM Tasks and Clients import
 #	New Style
 #-------------------------------------
+process.load("DQM.HcalTasks.RawTask")
 process.load("DQM.HcalTasks.RecHitTask")
 process.load("DQM.HcalTasks.DigiTask")
 process.load('DQM.HcalTasks.TPTask')
+process.load('DQM.SpecificTasks.DigiComparisonTask')
+process.load('DQM.SpecificTasks.TPComparisonTask')
 
 #-------------------------------------
 #	To force using uTCA
@@ -138,7 +150,7 @@ if useMapText:
 		input = cms.VPSet(
 			cms.PSet(
 				object = cms.string('ElectronicsMap'),
-				file = cms.FileInPath('version_G_emap_HBHEuHTR.txt')
+				file = cms.FileInPath('version_G_emap_all.txt')
 			)
 		)
 	)
@@ -153,15 +165,16 @@ if useMapText:
 #	Some Settings before Finishing up
 #	New Style Modules
 #-------------------------------------
-#process.hcalDigiTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-#process.hcalRawTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-#process.hcalRecHitTask.moduleParameters.subsystem = cms.untracked.string(
-#		subsystem)
-#process.hcalTPTask.moduleParameters.subsystem = cms.untracked.string(subsystem)
-#process.hcalTimingTask.moduleParameters.subsystem = cms.untracked.string(
-#		subsystem)
-
 oldsubsystem = subsystem
+process.rawTask.tagFEDs = rawTagUntracked
+process.digiTask.runkeyVal = runType
+process.digiTask.runkeyName = runTypeName
+process.rawTask.runkeyVal = runType
+process.rawTask.runkeyName = runTypeName
+process.recHitTask.runkeyVal = runType
+process.recHitTask.runkeyName = runTypeName
+process.tpTask.runkeyVal = runType
+process.tpTask.runkeyName = runTypeName
 
 #-------------------------------------
 #	Prep uHBHE FEDs
@@ -169,6 +182,8 @@ oldsubsystem = subsystem
 #	then clone the analyzers
 #-------------------------------------
 process.uHBHEDigis = process.hcalDigis.clone()
+process.uHBHEDigis.InputLabel = rawTag
+
 process.uHBHEDigis.FEDs = cms.untracked.vint32(1100, 1102, 1104, 1106, 1108,
 	1110, 1112, 1114, 1116)
 process.uHBHEdigiTask = process.digiTask.clone()
@@ -190,6 +205,8 @@ process.tasksSequence = cms.Sequence(
 		+process.tpTask
 		+process.uHBHEdigiTask
 		+process.uHBHEtpTask
+		+process.digiComparisonTask
+		+process.tpComparisonTask
 #		process.hcalDigiTask
 #		+process.hcalRawTask
 #		+process.hcalRecHitTask
