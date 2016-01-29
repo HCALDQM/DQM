@@ -11,19 +11,20 @@
 
 #include "DQM/HcalCommon/interface/Container1D.h"
 #include "DQM/HcalCommon/interface/Compact.h"
+#include "DQM/HcalCommon/interface/Logger.h"
 
 namespace hcaldqm
 {
 	using namespace constants;
 	using namespace compact;
 
+	typedef double (*comparison_function)(double, double);
+	typedef bool (*quality_function)(double);
 	double ratio(double, double);
 	double diff(double, double);
 	bool pedestal_quality(double); // diff to be  provided typically
 	bool led_quality(double); // ratio 
 	bool laser_quality(double); // ratio
-	typedef double (*comparison_function)(double, double);
-	typedef bool (*quality_function)(double);
 
 	class ContainerXXX
 	{
@@ -37,20 +38,20 @@ namespace hcaldqm
 
 			//	initializer
 			virtual void initialize(hashfunctions::HashType,
-				CompactUsageType=fHistogram);
+				CompactUsageType=fHistogram, int debug=0);
 
 			//	book
 			virtual void book(HcalElectronicsMap const*);
 
 			//	fills - only in histo mode
 			virtual void fill(HcalDetId const&, double);
-			virtual void fill(HcalElectronics const&, double);
-			virtual void fill(HcalTrigTowerDetid const&, double);
+			virtual void fill(HcalElectronicsId const&, double);
+			virtual void fill(HcalTrigTowerDetId const&, double);
 
 			//	sets - only in non-histo mode
 			virtual void set(HcalDetId const&, double);
-			virtual void set(HcalElectronics const&, double);
-			virtual void set(HcalTrigTowerDetid const&, double);
+			virtual void set(HcalElectronicsId const&, double);
+			virtual void set(HcalTrigTowerDetId const&, double);
 
 			//	get the number of entries
 			virtual uint32_t getEntries(HcalDetId const&);
@@ -93,6 +94,7 @@ namespace hcaldqm
 			CompactMap				_cmap;
 			mapper::HashMapper		_hashmap;
 			CompactUsageType		_usetype;
+			Logger					_logger;
 	};
 }
 

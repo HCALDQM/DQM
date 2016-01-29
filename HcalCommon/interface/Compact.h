@@ -40,9 +40,9 @@ namespace hcaldqm
 			{
 				std::pair<double, double> p;
 				if (utype==fHistogram)
-					p = std::make_pair<double, double>(mean(), rms);
+					p = std::make_pair<double, double>(mean(), rms());
 				else
-					p = std::make_pair<double, double>(_x, _x2);
+					p = std::make_pair<double, double>((double)_x, (double)_x2);
 
 				return p;
 			}
@@ -51,9 +51,8 @@ namespace hcaldqm
 			double		_x2;
 			uint32_t	_n;
 		};
+		std::ostream& operator<<(std::ostream&, Compact const&);
 	}
-
-	std::ostream& operator<<(std::ostream&, Compact, const&);
 }
 
 #endif

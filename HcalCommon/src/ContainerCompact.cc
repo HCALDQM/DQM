@@ -38,7 +38,7 @@ namespace hcaldqm
 				for (int iieta=0; iieta<IETA_NUM; iieta++)
 					for (int id=0; id<DEPTH_NUM; id++)
 					{
-						CompactX tmp(_data[idet][iiphi][iieta][id]);
+						Compact tmp(_data[idet][iiphi][iieta][id]);
 						if (tmp._n<=0)
 							continue;
 

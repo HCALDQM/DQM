@@ -14,10 +14,11 @@ namespace hcaldqm
 	bool laser_quality(double r) {return r>0.8&&r<1.2 ? true:false;}
 
 	/* virtual */ void ContainerXXX::initialize(hashfunctions::HashType ht,
-		CompactUsageType ut)
+		CompactUsageType ut, int debug)
 	{
 		_hashmap.initialize(ht);
 		_usetype = ut;
+		_logger.set("XXX", debug);
 	}
 
 	/* virtual */ void ContainerXXX::book(HcalElectronicsMap const* emap)
@@ -33,15 +34,16 @@ namespace hcaldqm
 
 				uint32_t hash = it->rawId();
 				HcalDetId did = HcalDetId(hash);
+				_logger.debug(_hashmap.getName(did));
 				CompactMap::iterator mit = _cmap.find(hash);
 				if (mit!=_cmap.end())
 					continue;
 
 				_cmap.insert(
-					std::make_pair(_hashmap.getHash(did), Compact()));
+					std::make_pair(hash, Compact()));
 			}
 		}
-		if (_hashmap.isEHash())
+		else if (_hashmap.isEHash())
 		{
 			std::vector<HcalElectronicsId> eids = 
 				emap->allElectronicsIdPrecision();
@@ -50,15 +52,16 @@ namespace hcaldqm
 			{
 				uint32_t hash = it->rawId();
 				HcalElectronicsId eid = HcalElectronicsId(hash);
+				_logger.debug(_hashmap.getName(eid));
 				CompactMap::iterator mit = _cmap.find(hash);
 				if (mit!=_cmap.end())
 					continue;
 
 				_cmap.insert(
-					std::make_pair(_hashmap.getHash(eid), Compact()));
+					std::make_pair(hash, Compact()));
 			}
 		}
-		if (_hashmap.isDHash())
+		else if (_hashmap.isTHash())
 		{
 			std::vector<HcalTrigTowerDetId> tids = emap->allTriggerId();
 			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
@@ -66,12 +69,13 @@ namespace hcaldqm
 			{
 				uint32_t hash = it->rawId();
 				HcalTrigTowerDetId tid = HcalTrigTowerDetId(hash);
+				_logger.debug(_hashmap.getName(tid));
 				CompactMap::iterator mit = _cmap.find(hash);
 				if (mit!=_cmap.end())
 					continue;
 
 				_cmap.insert(
-					std::make_pair(_hashmap.getHash(tid), Compact()));
+					std::make_pair(hash, Compact()));
 			}
 		}
 	}
@@ -146,18 +150,18 @@ namespace hcaldqm
 		c._n=1;
 	}
 
-	/* virtual */ uint32_t ContainerXXX::getEntries(HcalDetid const& did)
+	/* virtual */ uint32_t ContainerXXX::getEntries(HcalDetId const& did)
 	{
 		return _cmap[_hashmap.getHash(did)]._n;
 	}
 
-	/* virtual */ uint32_t ContainerXXX::getEntries(HcalElectronicsid const& 
+	/* virtual */ uint32_t ContainerXXX::getEntries(HcalElectronicsId const& 
 		did)
 	{
 		return _cmap[_hashmap.getHash(did)]._n;
 	}
 
-	/* virtual */ uint32_t ContainerXXX::getEntries(HcalTrigTowerDetid const& 
+	/* virtual */ uint32_t ContainerXXX::getEntries(HcalTrigTowerDetId const& 
 		did)
 	{
 		return _cmap[_hashmap.getHash(did)]._n;
@@ -258,7 +262,7 @@ namespace hcaldqm
 			Compact &x = p.second;
 			uint32_t hash = p.first;
 
-			double value;
+			double value=0;
 			if (_hashmap.isDHash())
 				value = cont->getBinContent(HcalDetId(hash));
 			else if (_hashmap.isEHash())
@@ -283,7 +287,7 @@ namespace hcaldqm
 			Compact &x = p.second;
 			uint32_t hash = p.first;
 
-			double m; double rms;
+			double m=0; double rms=0;
 			if (_hashmap.isDHash())
 			{
 				m = c1->getBinContent(HcalDetId(hash));
@@ -311,7 +315,7 @@ namespace hcaldqm
 		comparison_function cfunc, quality_function qfunc, bool q)
 	{
 		//	cannot compare sets with different hashtypes
-		if (_hashmap.getHashType()!=cx._hashmap.getHashType())
+		if (_hashmap.getHashType()!=ctarget._hashmap.getHashType())
 			return;
 
 		BOOST_FOREACH(CompactMap::value_type &p, _cmap)
@@ -325,34 +329,37 @@ namespace hcaldqm
 				continue;
 
 			//	if this channel is absent or didn't have entries - fill
-			if (it==cx._cmap.end() || it->second._n==0)
+			if (it==ctarget._cmap.end() || it->second._n==0)
 			{
 				cnonpres->fill(hash);
 				continue;
 			}
 
 			//	both channels exist and do have entries
-			Compact &y = it->second;
+			Compact y = it->second;
 			std::pair<double, double> p1 = x.getValues(_usetype);
 			std::pair<double, double> p2 = y.getValues(ctarget._usetype);
 
 			//	get the comparison value
-			double ccc = q?cfunc(p1.first, p2.first):cfunc(p.second,p.second);
+			double ccc = q?(*cfunc)(p2.first, p1.first):
+				(*cfunc)(p2.second,p1.second);
+			std::cout << "11111" << ccc << "  " << p2.first << "  " << p1.first 
+				<< std::endl;
 
 			//	check quality and fill the container for comparison
-			if (!qfunc(ccc) || ccc==GARBAGE_VALUE)
+			if (!((*qfunc)(ccc)) || ccc==GARBAGE_VALUE)
 				cbad->fill(hash);
 			cdump->fill(hash, ccc);
 		}
 	}
 
 	/* virtual */ void ContainerXXX::compare(ContainerXXX const& ctarget, 
-		std::vector<Container1D*> vcdump, 
+		std::vector<Container1D*> const &vcdump, 
 		Container1D* cnonpres, Container1D *cbad,
 		comparison_function cfunc, quality_function qfunc, bool q)
 	{
 		//	cannot compare sets with different hashtypes
-		if (_hashmap.getHashType()!=cx._hashmap.getHashType())
+		if (_hashmap.getHashType()!=ctarget._hashmap.getHashType())
 			return;
 
 		BOOST_FOREACH(CompactMap::value_type &p, _cmap)
@@ -366,22 +373,23 @@ namespace hcaldqm
 				continue;
 
 			//	if this channel is absent or didn't have entries - fill
-			if (it==cx._cmap.end() || it->second._n==0)
+			if (it==ctarget._cmap.end() || it->second._n==0)
 			{
 				cnonpres->fill(hash);
 				continue;
 			}
 
 			//	both channels exist and do have entries
-			Compact &y = it->second;
+			Compact y = it->second;
 			std::pair<double, double> p1 = x.getValues(_usetype);
 			std::pair<double, double> p2 = y.getValues(ctarget._usetype);
 
 			//	get the comparison value
-			double ccc = q?cfunc(p1.first, p2.first):cfunc(p.second,p.second);
+			double ccc = q?(*cfunc)(p2.first, p1.first):
+				(*cfunc)(p2.second,p1.second);
 
 			//	check quality and fill the container for comparison
-			if (!qfunc(ccc) || ccc==GARBAGE_VALUE)
+			if (!((*qfunc)(ccc)) || ccc==GARBAGE_VALUE)
 				cbad->fill(hash);
 			for (std::vector<Container1D*>::const_iterator it=vcdump.begin();
 				it!=vcdump.end(); ++it)

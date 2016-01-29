@@ -26,8 +26,7 @@ class PedestalTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
-		virtual void endRun(edm::Run const&, edm::EventSetup const&)
-		{this->_dump();}
+		virtual void endRun(edm::Run const&, edm::EventSetup const&);
 
 	protected:
 		//	funcs
@@ -50,14 +49,24 @@ class PedestalTask : public DQTask
 		HcalElectronicsMap const* _emap;
 
 		ContainerXXX		_cPeds;
+		ContainerXXX		_cPedRef;
 
 		//	1D
 		Container1D		_cPedestalMeans_Subdet;
 		Container1D		_cPedestalRMSs_Subdet;
 
+		Container1D		_cMeanRef_Subdet;
+		Container1D		_cRMSRef_Subdet;
+
 		//	2D
 		Container2D		_cPedestalMeans_depth;
 		Container2D		_cPedestalRMSs_depth;
+		
+		ContainerProf2D		_cMeanRef_depth;
+		ContainerProf2D		_cRMSRef_depth;
+
+		Container2D		_cAbsent_depth;
+		Container2D		_cBad_depth;
 };
 
 #endif
