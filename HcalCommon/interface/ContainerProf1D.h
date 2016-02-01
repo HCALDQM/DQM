@@ -27,7 +27,7 @@ namespace hcaldqm
 				axis::Axis *xaxis, 
 				axis::Axis *yaxis = new axis::ValueAxis(axis::fYaxis, 
 				axis::fEntries));
-			virtual ~ContainerProf1D() {}
+			virtual ~ContainerProf1D();
 
 			virtual void initialize(std::string const& folder, 
 				std::string const& nametitle, mapper::MapperType mt, 
