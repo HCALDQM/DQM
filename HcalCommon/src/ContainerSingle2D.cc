@@ -13,7 +13,7 @@ namespace hcaldqm
 		_zaxis = NULL;
 	}
 
-	/* virtual */ ContainerSingle2D::ContainerSingle2D()
+	/* virtual */ ContainerSingle2D::~ContainerSingle2D()
 	{
 		delete _xaxis; _xaxis=NULL;
 		delete _yaxis; _yaxis=NULL;
