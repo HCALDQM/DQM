@@ -83,6 +83,10 @@ namespace hcaldqm
 			//	for mean bool=true
 			virtual void dump(Container1D*, bool q=true);
 			virtual void dump(std::vector<Container1D*> const&, bool q=true);
+			//	dump the results + dump if absent
+			virtual void dump(Container1D*, Container1D *, bool q=true);
+			virtual void dump(std::vector<Container1D*> const&, 
+				Container1D*, bool q=true);
 			//virtual void dump(HcalElectronicsMap const*, Container1D*,
 //				bool q=true);
 			//virtual void dump(HcalElectronicsMap const*, ContainerSingle1D*,

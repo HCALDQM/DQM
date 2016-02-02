@@ -94,6 +94,23 @@ namespace hcaldqm
 			protected:
 				ValueQuantityType _type;
 		};
+
+		class EventNumber : public ValueQuantity
+		{
+			public:
+				EventNumber() {}
+				EventNumber(int nevents) :
+					ValueQuantity(fN), _nevents(nevents)
+				{}
+				virtual ~EventNumber() {}
+
+				virtual int nbins() {return _nevents;}
+				virtual double min() {return 0.5;}
+				virtual double max() {return _nevents+0.5;}
+
+			protected:
+				int _nevents;
+		};
 	}
 }
 

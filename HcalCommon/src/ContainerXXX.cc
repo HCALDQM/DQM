@@ -290,6 +290,46 @@ namespace hcaldqm
 		}
 	}
 
+	/* virtual */ void ContainerXXX::dump(std::vector<Container1D*> const &vc, 
+		Container1D* cmissing, bool q)
+	{
+		BOOST_FOREACH(CompactMap::value_type &p, _cmap)
+		{
+			Compact &x = p.second;
+			uint32_t hash = p.first;
+			if (x._n<=0)
+			{
+				cmissing->fill(hash);
+				continue;
+			}
+
+			std::pair<double, double> xpair = x.getValues(_usetype);
+			for (std::vector<Container1D*>::const_iterator it=vc.begin();
+				it!=vc.end(); ++it)
+				q ? (*it)->fill(hash, xpair.first) : 
+					(*it)->fill(hash, xpair.second);
+		}
+	}
+
+	/* virtual */ void ContainerXXX::dump(Container1D* c, 
+		Container1D *cmissing, bool q)
+	{
+		BOOST_FOREACH(CompactMap::value_type &p, _cmap)
+		{
+			Compact &x = p.second;
+			uint32_t hash = p.first;
+			if (x._n<=0)
+			{
+				cmissing->fill(hash);
+				continue;
+			}
+
+			std::pair<double, double> xpair = x.getValues(_usetype);
+			q ? c->fill(hash, xpair.first) : 
+				c->fill(hash, xpair.second);
+		}
+	}
+
 	/* virtual */ void ContainerXXX::print()
 	{
 		std::cout << "Container by " << _hashmap.getHashTypeName() << std::endl;

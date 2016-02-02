@@ -84,6 +84,34 @@ namespace hcaldqm
 			return eid.fiberChanId();
 		}
 
+		int getValue_FEDuTCASlot(HcalElectronicsId const& eid)
+		{
+			int ifed = getValue_FEDuTCA(eid);
+			int islot = getValue_SlotuTCA(eid);
+			return ifed*SLOT_uTCA_NUM+islot;
+		}
+
+		int getValue_FEDVMESpigot(HcalElectronicsId const& eid)
+		{
+			int ifed = getValue_FEDVME(eid);
+			int ispigot = getValue_Spigot(eid);
+			return ifed*SPIGOT_NUM+ispigot;
+		}
+
+		int getValue_FiberuTCAFiberCh(HcalElectronicsId const &eid)
+		{
+			int ifiber = getValue_FiberuTCA(eid);
+			int ifch = getValue_FiberCh(eid);
+			return ifiber*FIBERCH_NUM+ifch;
+		}
+
+		int getValue_FiberVMEFiberCh(HcalElectronicsId const &eid)
+		{
+			int ifiber = getValue_FiberVME(eid);
+			int ifch = getValue_FiberCh(eid);
+			return ifiber*FIBERCH_NUM+ifch;
+		}
+
 		uint32_t getBin_FED(HcalElectronicsId const& eid)
 		{
 			return (uint32_t)(getValue_FED(eid)+1);
@@ -142,6 +170,26 @@ namespace hcaldqm
 		uint32_t getBin_FiberCh(HcalElectronicsId const& eid)
 		{
 			return (uint32_t)(getValue_FiberCh(eid)+1);
+		}
+
+		uint32_t getBin_FEDuTCASlot(HcalElectronicsId const& eid)
+		{
+			return (uint32_t)(getValue_FEDuTCASlot(eid)+1);
+		}
+
+		uint32_t getBin_FEDVMESpigot(HcalElectronicsId const& eid)
+		{
+			return (uint32_t)(getValue_FEDVMESpigot(eid)+1);
+		}
+
+		uint32_t getBin_FiberuTCAFiberCh(HcalElectronicsId const& eid)
+		{
+			return (uint32_t)(getValue_FiberuTCAFiberCh(eid)+1);
+		}
+
+		uint32_t getBin_FiberVMEFiberCh(HcalElectronicsId const& eid)
+		{
+			return (uint32_t)(getValue_FiberVMEFiberCh(eid)+1);
 		}
 
 		HcalElectronicsId getEid_FED(int v)
@@ -224,6 +272,39 @@ namespace hcaldqm
 		{
 			return HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
 				FIBER_uTCA_MIN1, v, false);
+		}
+
+		HcalElectronicsId getEid_FEDuTCASlot(int v)
+		{
+			HcalElectronicsId fedeid = getEid_FEDuTCA(v/SLOT_uTCA_NUM);
+			HcalElectronicsId sloteid = getEid_SlotuTCA(v%SLOT_uTCA_NUM);
+			return HcalElectronicsId(
+				fedeid.crateId(), sloteid.slot(), FIBER_uTCA_MIN1,
+				FIBERCH_MIN, false);
+		}
+
+		HcalElectronicsId getEid_FEDVMESpigot(int v)
+		{
+			HcalElectronicsId fedeid = getEid_FEDVME(v/SPIGOT_NUM);
+			HcalElectronicsId spid = getEid_Spigot(v%SPIGOT_NUM);
+			return HcalElectronicsId(FIBERCH_MIN, FIBER_VME_MIN,
+				spid.spigot(), fedeid.dccid());
+		}
+
+		HcalElectronicsId getEid_FiberuTCAFiberCh(int v)
+		{
+			HcalElectronicsId fibereid = getEid_FiberuTCA(v/FIBERCH_NUM);
+			HcalElectronicsId fcheid = getEid_FiberCh(v%FIBERCH_NUM);
+			return HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
+				fibereid.fiberIndex(), fcheid.fiberChanId());
+		}
+
+		HcalElectronicsId getEid_FiberVMEFiberCh(int v)
+		{
+			HcalElectronicsId fibereid = getEid_FiberVME(v/FIBERCH_NUM);
+			HcalElectronicsId fcheid = getEid_FiberCh(v%FIBERCH_NUM);
+			return HcalElectronicsId(fcheid.fiberChanId(),
+				fibereid.fiberIndex(), SPIGOT_MIN, CRATE_VME_MIN);
 		}
 
 		std::vector<std::string> getLabels_FED()
@@ -331,16 +412,18 @@ namespace hcaldqm
 
 		std::vector<std::string> getLabels_Spigot()
 		{
-			std::vector<std::string> labels;
+			return std::vector<std::string>();
+/*			std::vector<std::string> labels;
 			char name[10];
 			for (int i=0; i<SPIGOT_NUM; i++)
 			{
-				HcalElectronicsId eid = getEid_SlotVME(i);
+				HcalElectronicsId eid = getEid_Spigot(i);
 				sprintf(name, "%d",
 					eid.spigot());
 				labels.push_back(std::string(name));
 			}
 			return labels;
+	*/
 		}
 
 		std::vector<std::string> getLabels_FiberuTCA()
@@ -382,6 +465,93 @@ namespace hcaldqm
 					eid.fiberChanId());
 				labels.push_back(std::string(name));
 			}
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_FEDuTCASlot()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<FED_uTCA_NUM; i++)
+				for (int j=0; j<SLOT_uTCA_NUM; j++)
+				{
+					if (j>0)
+					{
+						labels.push_back(std::string(""));
+						continue;
+					}
+					HcalElectronicsId eid = getEid_FEDuTCASlot(
+						i*SLOT_uTCA_NUM+j);
+					sprintf(name, "%d-%d", 
+						utilities::crate2fed(eid.crateId()),
+						eid.slot());
+					labels.push_back(std::string(name));
+				}
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_FEDVMESpigot()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<FED_VME_NUM; i++)
+				for (int j=0; j<SPIGOT_NUM; j++)
+				{
+					if (j>0)
+					{
+						labels.push_back(std::string(""));
+						continue;
+					}
+
+					HcalElectronicsId eid = getEid_FEDVMESpigot(
+						i*SPIGOT_NUM+j);
+					sprintf(name, "%d-%d",
+						eid.dccid()+FED_VME_MIN, eid.spigot());
+					labels.push_back(std::string(name));
+				}
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_FiberuTCAFiberCh()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<FIBER_uTCA_NUM; i++)
+				for (int j=0; j<FIBERCH_NUM; j++)
+				{
+					if (j>0)
+					{
+						labels.push_back(std::string(""));
+						continue;
+					}
+
+					HcalElectronicsId eid = getEid_FiberuTCAFiberCh(
+						i*FIBERCH_NUM+j);
+					sprintf(name, "%d-%d", eid.fiberIndex(),
+						eid.fiberChanId());
+					labels.push_back(std::string(name));
+				}
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_FiberVMEFiberCh()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<FIBER_VME_NUM; i++)
+				for (int j=0; j<FIBERCH_NUM; j++)
+				{
+					if (j>0)
+					{
+						labels.push_back(std::string(""));
+						continue;
+					}
+					HcalElectronicsId eid = getEid_FiberVMEFiberCh(
+						i*FIBERCH_NUM+j);
+					sprintf(name, "%d-%d", eid.fiberIndex(),
+						eid.fiberChanId());
+					labels.push_back(std::string(name));
+				}
 			return labels;
 		}
 	}

@@ -9,6 +9,7 @@
 
 #include "DQM/HcalCommon/interface/DQTask.h"
 #include "DQM/HcalCommon/interface/Utilities.h"
+#include "DQM/HcalCommon/interface/ElectronicsMap.h"
 #include "DQM/HcalCommon/interface/ContainerCompact.h"
 #include "DQM/HcalCommon/interface/ContainerXXX.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
@@ -19,6 +20,7 @@
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
 
 using namespace hcaldqm;
+
 class LEDTask : public DQTask
 {
 	public:
@@ -50,6 +52,7 @@ class LEDTask : public DQTask
 
 		//	emap
 		HcalElectronicsMap const* _emap;
+		electronicsmap::ElectronicsMap _emaphash;
 
 		//	Cuts
 		double _lowHBHE;
@@ -67,7 +70,9 @@ class LEDTask : public DQTask
 		Container1D		_cTimingRMS_Subdet;
 
 		//	Prof1D
-		ContainerProf1D	_cShapeCut_SubdetPMiphi;
+		ContainerProf1D	_cShapeCut_FEDSlot;
+		ContainerProf1D _cTimingvsEvent_FEDSlot;
+		ContainerProf1D _cSignalvsEvent_FEDSlot;
 
 		//	2D timing/signals
 		Container2D		_cSignalMean_depth;
@@ -77,14 +82,15 @@ class LEDTask : public DQTask
 
 		ContainerSingleProf2D _cTimingVME;
 		ContainerSingleProf2D _cSignalVME;
+		ContainerSingle2D _cOccupancyVME;
 		ContainerSingleProf2D _cTiminguTCA;
 		ContainerSingleProf2D _cSignaluTCA;
-		ContainerSingle2D _cOccupancyVME;
 		ContainerSingle2D _cOccupancyuTCA;
 
+		ContainerSingleProf2D _cTimingTestVME;
+		ContainerSingleProf2D _cTimingTestuTCA;
+
 		//	Bad Quality and Missing Channels
-		Container2D		_cSignalBad_depth;
-		Container2D		_cTimingBad_depth;
 		Container2D		_cMissing_depth;
 };
 

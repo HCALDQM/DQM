@@ -45,6 +45,7 @@ namespace hcaldqm
 		uint32_t hash_Fiber(HcalElectronicsId const&);
 		uint32_t hash_FiberFiberCh(HcalElectronicsId const&);
 		uint32_t hash_FiberCh(HcalElectronicsId const&);
+		uint32_t hash_Electronics(HcalElectronicsId const&);
 
 		/**
 		 *	by TrigTowerDetId
@@ -77,6 +78,7 @@ namespace hcaldqm
 		std::string name_Fiber(HcalElectronicsId const&);
 		std::string name_FiberFiberCh(HcalElectronicsId const&);
 		std::string name_FiberCh(HcalElectronicsId const&);
+		std::string name_Electronics(HcalElectronicsId const&);
 
 		std::string name_TTSubdet(HcalTrigTowerDetId const&);
 		std::string name_TTSubdetPM(HcalTrigTowerDetId const&);
@@ -108,14 +110,15 @@ namespace hcaldqm
 			fFiber = 19,
 			fFiberFiberCh = 20,
 			fFiberCh = 21,
-			nHashType_eid = 22,
-			fTTSubdet = 23,
-			fTTSubdetPM = 24,
-			fTTSubdetPMiphi = 25,
-			fTTSubdetieta = 26,
-			fTTdepth = 27,
-			nHashType_tid = 28,
-			nHashType = 29
+			fElectronics = 22,
+			nHashType_eid = 23,
+			fTTSubdet = 24,
+			fTTSubdetPM = 25,
+			fTTSubdetPMiphi = 26,
+			fTTSubdetieta = 27,
+			fTTdepth = 28,
+			nHashType_tid = 29,
+			nHashType = 30
 		};
 		typedef uint32_t (*hash_function_did)(HcalDetId const&);
 		typedef uint32_t (*hash_function_eid)(HcalElectronicsId const&);
@@ -132,7 +135,8 @@ namespace hcaldqm
 		hash_function_eid const hash_eid[nHashType_eid-nHashType_did-1] = {
 			hash_FED, hash_FEDSpigot, hash_FEDSlot, 
 			hash_Crate, hash_CrateSpigot, hash_CrateSlot,
-			hash_Fiber, hash_FiberFiberCh, hash_FiberCh
+			hash_Fiber, hash_FiberFiberCh, hash_FiberCh,
+			hash_Electronics
 		};
 		hash_function_tid const hash_tid[nHashType_tid-nHashType_eid-1] = {
 			hash_TTSubdet, hash_TTSubdetPM, hash_TTSubdetPMiphi, 
@@ -147,7 +151,8 @@ namespace hcaldqm
 		name_function_eid const name_eid[nHashType_eid-nHashType_did-1] = {
 			name_FED, name_FEDSpigot, name_FEDSlot,
 			name_Crate, name_CrateSpigot, name_CrateSlot,
-			name_Fiber, name_FiberFiberCh, name_FiberCh
+			name_Fiber, name_FiberFiberCh, name_FiberCh,
+			name_Electronics
 		};
 		name_function_tid const name_tid[nHashType_tid-nHashType_eid-1] = {
 			name_TTSubdet, name_TTSubdetPM, name_TTSubdetPMiphi,
@@ -163,6 +168,7 @@ namespace hcaldqm
 			"FED", "FEDSpigot", "FEDSlot",
 			"Crate", "CrateSpigot", "CrateSlot",
 			"Fiber", "FiberFiberCh", "FiberCh",
+			"Electronics",
 
 			"TTSubdet", "TTSubdetPM", "TTSubdetPMiphi",
 			"TTSubdetieta", "TTdepth"

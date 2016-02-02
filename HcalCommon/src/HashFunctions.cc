@@ -267,6 +267,15 @@ namespace hcaldqm
 			return 0;
 		}
 
+		uint32_t hash_Electronics(HcalElectronicsId const& eid)
+		{
+			return eid.isVMEid() ?
+				utilities::hash(HcalElectronicsId(FIBERCH_MIN,
+					FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN)):
+				utilities::hash(HcalElectronicsId(CRATE_uTCA_MIN,
+					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false));
+		}
+
 		std::string name_FED(HcalElectronicsId const& eid)
 		{
 			char name[10];
@@ -333,6 +342,11 @@ namespace hcaldqm
 		std::string name_FiberCh(HcalElectronicsId const&)
 		{
 			return "None";
+		}
+
+		std::string name_Electronics(HcalElectronicsId const& eid)
+		{
+			return eid.isVMEid()?std::string("VME"):std::string("uTCA");
 		}
 
 		/**

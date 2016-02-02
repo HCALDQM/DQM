@@ -25,18 +25,22 @@ namespace hcaldqm
 			nElectronicsMapType = 3
 		};
 
-		class ElectronicsMap()
+		class ElectronicsMap
 		{
 			public:
+				ElectronicsMap() :
+					_emap(NULL)
+				{}
 				//	define how to use upon construction
 				ElectronicsMap(ElectronicsMapType etype) : 
 					_etype(etype), _emap(NULL)
 				{}
 				~ElectronicsMap() {}
 
-				void initialize(HcalElectronicsMap const*);
-				HcalElectronicsId const lookup(DetId const&) const;
-				HcalElectronicsId const lookupTrigger(DetId const&) const;
+				void initialize(HcalElectronicsMap const*, ElectronicsMapType
+					etype=fHcalElectronicsMap);
+				const HcalElectronicsId lookup(DetId const&);
+				const HcalElectronicsId lookupTrigger(DetId const&);
 				
 
 			private:
@@ -50,7 +54,7 @@ namespace hcaldqm
 
 				//	
 				HcalElectronicsMap const* _emap;
-		}
+		};
 	}
 }
 

@@ -27,7 +27,14 @@ namespace hcaldqm
 			fFiberuTCA = 9,
 			fFiberVME = 10,
 			fFiberCh = 11,
-			nElectronicsQuantityType = 12
+
+			//	Complex Quantities
+			fFEDuTCASlot = 12,
+			fFEDVMESpigot = 13,
+			fFiberuTCAFiberCh = 14,
+			fFiberVMEFiberCh = 15,
+
+			nElectronicsQuantityType = 16
 		};
 
 		int getValue_FED(HcalElectronicsId const&);
@@ -42,6 +49,10 @@ namespace hcaldqm
 		int getValue_FiberuTCA(HcalElectronicsId const&);
 		int getValue_FiberVME(HcalElectronicsId const&);
 		int getValue_FiberCh(HcalElectronicsId const&);
+		int getValue_FEDuTCASlot(HcalElectronicsId const&);
+		int getValue_FEDVMESpigot(HcalElectronicsId const&);
+		int getValue_FiberuTCAFiberCh(HcalElectronicsId const&);
+		int getValue_FiberVMEFiberCh(HcalElectronicsId const&);
 		uint32_t getBin_FED(HcalElectronicsId const&);
 		uint32_t getBin_FEDuTCA(HcalElectronicsId const&);
 		uint32_t getBin_FEDVME(HcalElectronicsId const&);
@@ -54,6 +65,10 @@ namespace hcaldqm
 		uint32_t getBin_FiberuTCA(HcalElectronicsId const&);
 		uint32_t getBin_FiberVME(HcalElectronicsId const&);
 		uint32_t getBin_FiberCh(HcalElectronicsId const&);
+		uint32_t getBin_FEDuTCASlot(HcalElectronicsId const&);
+		uint32_t getBin_FEDVMESpigot(HcalElectronicsId const&);
+		uint32_t getBin_FiberuTCAFiberCh(HcalElectronicsId const&);
+		uint32_t getBin_FiberVMEFiberCh(HcalElectronicsId const&);
 		HcalElectronicsId getEid_FED(int);
 		HcalElectronicsId getEid_FEDuTCA(int);
 		HcalElectronicsId getEid_FEDVME(int);
@@ -66,6 +81,10 @@ namespace hcaldqm
 		HcalElectronicsId getEid_FiberuTCA(int);
 		HcalElectronicsId getEid_FiberVME(int);
 		HcalElectronicsId getEid_FiberCh(int);
+		HcalElectronicsId getEid_FEDuTCASlot(int);
+		HcalElectronicsId getEid_FEDVMESpigot(int);
+		HcalElectronicsId getEid_FiberuTCAFiberCh(int);
+		HcalElectronicsId getEid_FiberVMEFiberCh(int);
 		std::vector<std::string> getLabels_FED();
 		std::vector<std::string> getLabels_FEDuTCA();
 		std::vector<std::string> getLabels_FEDVME();
@@ -78,6 +97,10 @@ namespace hcaldqm
 		std::vector<std::string> getLabels_FiberuTCA();
 		std::vector<std::string> getLabels_FiberVME();
 		std::vector<std::string> getLabels_FiberCh();
+		std::vector<std::string> getLabels_FEDuTCASlot();
+		std::vector<std::string> getLabels_FEDVMESpigot();
+		std::vector<std::string> getLabels_FiberuTCAFiberCh();
+		std::vector<std::string> getLabels_FiberVMEFiberCh();
 
 		typedef int(*getValueType_eid)(HcalElectronicsId const&);
 		typedef uint32_t (*getBinType_eid)(HcalElectronicsId const&);
@@ -89,21 +112,27 @@ namespace hcaldqm
 			getValue_Crate, getValue_CrateuTCA, getValue_CrateVME,
 			getValue_SlotuTCA, getValue_SlotVME,
 			getValue_Spigot,
-			getValue_FiberuTCA, getValue_FiberVME, getValue_FiberCh
+			getValue_FiberuTCA, getValue_FiberVME, getValue_FiberCh,
+			getValue_FEDuTCASlot, getValue_FEDVMESpigot,
+			getValue_FiberuTCAFiberCh, getValue_FiberVMEFiberCh
 		};
 		getBinType_eid const getBin_functions_eid[nElectronicsQuantityType] = {
 			getBin_FED, getBin_FEDuTCA, getBin_FEDVME,
 			getBin_Crate, getBin_CrateuTCA, getBin_CrateVME,
 			getBin_SlotuTCA, getBin_SlotVME, 
 			getBin_Spigot,
-			getBin_FiberuTCA, getBin_FiberVME, getBin_FiberCh
+			getBin_FiberuTCA, getBin_FiberVME, getBin_FiberCh,
+			getBin_FEDuTCASlot, getBin_FEDVMESpigot,
+			getBin_FiberuTCAFiberCh, getBin_FiberVMEFiberCh
 		};
 		getEid_eid const getEid_functions_eid[nElectronicsQuantityType] = {
 			getEid_FED, getEid_FEDuTCA, getEid_FEDVME,
 			getEid_Crate, getEid_CrateuTCA, getEid_CrateVME,
 			getEid_SlotuTCA, getEid_SlotVME, 
 			getEid_Spigot,
-			getEid_FiberuTCA, getEid_FiberVME, getEid_FiberCh
+			getEid_FiberuTCA, getEid_FiberVME, getEid_FiberCh,
+			getEid_FEDuTCASlot, getEid_FEDVMESpigot,
+			getEid_FiberuTCAFiberCh, getEid_FiberVMEFiberCh
 		};
 		getLabels_eid const getLabels_functions_eid[nElectronicsQuantityType] = 
 		{
@@ -111,15 +140,19 @@ namespace hcaldqm
 			getLabels_Crate, getLabels_CrateuTCA, getLabels_CrateVME,
 			getLabels_SlotuTCA, getLabels_SlotVME, 
 			getLabels_Spigot,
-			getLabels_FiberuTCA, getLabels_FiberVME, getLabels_FiberCh
+			getLabels_FiberuTCA, getLabels_FiberVME, getLabels_FiberCh,
+			getLabels_FEDuTCASlot, getLabels_FEDVMESpigot,
+			getLabels_FiberuTCAFiberCh, getLabels_FiberVMEFiberCh
 		};
 		std::string const name_eid[nElectronicsQuantityType] = {
 			"FED", "FEDuTCA", "FEDVME", 
 			"Crate", "CrateuTCA", "CrateVME",
 			"SlotuTCA", "SlotVME", 
-			"Spigot"
+			"Spigot",
 			"FiberuTCA", "FiberVME", 
-			"FiberCh"
+			"FiberCh",
+			"FEDuTCASlot", "FEDVMESpigot",
+			"FiberuTCAFiberCh", "FiberVMEFiberCh"
 		};
 		double const min_eid[nElectronicsQuantityType] = {
 			0, 0, 0, 
@@ -127,7 +160,9 @@ namespace hcaldqm
 			0, 0,
 			0,
 			0, 0,
-			0
+			0,
+			0, 0,
+			0, 0
 		};
 		double const max_eid[nElectronicsQuantityType] = {
 			FED_TOTAL_NUM, FED_uTCA_NUM, FED_VME_NUM,
@@ -135,7 +170,9 @@ namespace hcaldqm
 			SLOT_uTCA_NUM, SLOT_VME_NUM,
 			SPIGOT_NUM,
 			FIBER_uTCA_NUM, FIBER_VME_NUM,
-			FIBERCH_NUM
+			FIBERCH_NUM,
+			FED_uTCA_NUM*SLOT_uTCA_NUM, FED_VME_NUM*SPIGOT_NUM,
+			FIBER_uTCA_NUM*FIBERCH_NUM, FIBER_uTCA_NUM*FIBERCH_NUM
 		};
 		int const nbins_eid[nElectronicsQuantityType] = {
 			FED_TOTAL_NUM, FED_uTCA_NUM, FED_VME_NUM,
@@ -143,7 +180,9 @@ namespace hcaldqm
 			SLOT_uTCA_NUM, SLOT_VME_NUM,
 			SPIGOT_NUM,
 			FIBER_uTCA_NUM, FIBER_VME_NUM,
-			FIBERCH_NUM
+			FIBERCH_NUM,
+			FED_uTCA_NUM*SLOT_uTCA_NUM, FED_VME_NUM*SPIGOT_NUM,
+			FIBER_uTCA_NUM*FIBERCH_NUM, FIBER_VME_NUM*FIBERCH_NUM
 		};
 
 		class ElectronicsQuantity : public Quantity
