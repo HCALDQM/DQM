@@ -340,7 +340,7 @@ namespace hcaldqm
 		{
 			std::vector<std::string> labels;
 			char name[10];
-			for (int i=0; i<FED_VME_MIN; i++)
+			for (int i=0; i<FED_VME_NUM; i++)
 			{
 				sprintf(name, "%d",
 					getEid_FEDVME(i).dccid()+700);
