@@ -42,8 +42,9 @@ namespace hcaldqm
 	/* virtual */ void ContainerSingleProf2D::book(DQMStore::IBooker& ib,
 		std::string subsystem, std::string aux)
 	{
-		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qname+aux);
-		_me = ib.bookProfile2D(_qname, _qname,
+		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qname);
+		_me = ib.bookProfile2D(_qname+(aux==""?aux:"_"+aux), 
+			_qname+(aux==""?aux:" "+aux),
 			_qx->nbins(), _qx->min(), _qx->max(),
 			_qy->nbins(), _qy->min(), _qy->max(),
 			_qz->min(), _qz->max());

@@ -5,8 +5,6 @@ using namespace hcaldqm;
 LEDTask::LEDTask(edm::ParameterSet const& ps):
 	DQTask(ps)
 {
-	int nevents = ps.getUntrackedParameter<int>("nevents", 2000);
-
 	//	Containers
 	_cSignalMean_Subdet.initialize(_name, "SignalMean",
 		hashfunctions::fSubdet, 
@@ -28,14 +26,6 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	_cShapeCut_FEDSlot.initialize(_name, "Shape", 
 		hashfunctions::fFEDSlot,
 		new quantity::ValueQuantity(quantity::fTiming_TS),
-		new quantity::ValueQuantity(quantity::ffC_3000));
-	_cTimingvsEvent_FEDSlot.initialize(_name, "TimingvsEvent",
-		hashfunctions::fFEDSlot,
-		new quantity::EventNumber(nevents),
-		new quantity::ValueQuantity(quantity::fTiming_TS200));
-	_cSignalvsEvent_FEDSlot.initialize(_name, "SignalvsEvent",
-		hashfunctions::fFEDSlot,
-		new quantity::EventNumber(nevents),
 		new quantity::ValueQuantity(quantity::ffC_3000));
 
 	_cSignalMean_depth.initialize(_name, "SignalMean",
@@ -75,15 +65,6 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fFEDuTCA),
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ValueQuantity(quantity::ffC_3000));
-
-	_cTimingTestVME.initialize(_name, "TimingMeanTest",
-		new quantity::ElectronicsQuantity(quantity::fFEDVMESpigot),
-		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
-		new quantity::ValueQuantity(quantity::fTiming_TS200));
-	_cTimingTestuTCA.initialize(_name, "TimingMeanTest",
-		new quantity::ElectronicsQuantity(quantity::fFEDuTCASlot),
-		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
-		new quantity::ValueQuantity(quantity::fTiming_TS200));
 
 	_cOccupancyVME.initialize(_name, "Occupancy",
 		new quantity::ElectronicsQuantity(quantity::fFEDVME),
@@ -157,21 +138,12 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 
 	_cShapeCut_FEDSlot.book(ib, _emap);
 
-	if (_ptype==fLocal)
-	{
-//		_cTimingvsEvent_FEDSlot.book(ib, _emap);
-//		_cSignalvsEvent_FEDSlot.book(ib, _emap);
-	}
-
 	_cTimingVME.book(ib, _subsystem, std::string("VME"));
 	_cSignalVME.book(ib, _subsystem, std::string("VME"));
 	_cTiminguTCA.book(ib, _subsystem, std::string("uTCA"));
 	_cSignaluTCA.book(ib, _subsystem, std::string("uTCA"));
 	_cOccupancyVME.book(ib, _subsystem, std::string("VME"));
 	_cOccupancyuTCA.book(ib, _subsystem, std::string("uTCA"));
-
-//	_cTimingTestVME.book(ib, _subsystem, std::string("VME"));
-//	_cTimingTestuTCA.book(ib, _subsystem, std::string("uTCA"));
 
 	_cMissing_depth.book(ib, _emap);
 
@@ -243,26 +215,17 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		_cSignals_Channel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
 		_cTiming_Channel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
 
-		//	 only for local processing
-		if (_ptype==fLocal)
-		{
-//			_cTimingvsEvent_FEDSlot.fill(eid, currentEvent, aveTS);
-//			_cSignalvsEvent_FEDSlot.fill(eid, currentEvent, sumQ);
-		}
-
 		if (eid.isVMEid())
 		{
 			_cTimingVME.fill(eid, aveTS);
 			_cSignalVME.fill(eid, sumQ);
 			_cOccupancyVME.fill(eid);
-//			_cTimingTestVME.fill(eid, aveTS);
 		}
 		else
 		{
 			_cTiminguTCA.fill(eid, aveTS);
 			_cSignaluTCA.fill(eid, sumQ);
 			_cOccupancyuTCA.fill(eid);
-//			_cTimingTestuTCA.fill(eid, aveTS);
 		}
 
 		for (int i=0; i<digi.size(); i++)
@@ -285,27 +248,17 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		_cSignals_Channel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
 		_cTiming_Channel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
 
-		//	 only for local processing
-		if (_ptype==fLocal)
-		{
-//			_cTimingvsEvent_FEDSlot.fill(eid, currentEvent, aveTS);
-//			_cSignalvsEvent_FEDSlot.fill(eid, currentEvent, sumQ);
-		}
-
-
 		if (eid.isVMEid())
 		{
 			_cTimingVME.fill(eid, aveTS);
 			_cSignalVME.fill(eid, sumQ);
 			_cOccupancyVME.fill(eid);
-//			_cTimingTestVME.fill(eid, aveTS);
 		}
 		else
 		{
 			_cTiminguTCA.fill(eid, aveTS);
 			_cSignaluTCA.fill(eid, sumQ);
 			_cOccupancyuTCA.fill(eid);
-//			_cTimingTestuTCA.fill(eid, aveTS);
 		}
 
 		for (int i=0; i<digi.size(); i++)
@@ -328,27 +281,17 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		_cSignals_Channel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
 		_cTiming_Channel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
 
-		//	 only for local processing
-		if (_ptype==fLocal)
-		{
-//			_cTimingvsEvent_FEDSlot.fill(eid, currentEvent, aveTS);
-//			_cSignalvsEvent_FEDSlot.fill(eid, currentEvent, sumQ);
-		}
-		else
-
 		if (eid.isVMEid())
 		{
 			_cTimingVME.fill(eid, aveTS);
 			_cSignalVME.fill(eid, sumQ);
 			_cOccupancyVME.fill(eid);
-//			_cTimingTestVME.fill(eid, aveTS);
 		}
 		else
 		{
 			_cTiminguTCA.fill(eid, aveTS);
 			_cSignaluTCA.fill(eid, sumQ);
 			_cOccupancyuTCA.fill(eid);
-//			_cTimingTestuTCA.fill(eid, aveTS);
 		}
 
 		for (int i=0; i<digi.size(); i++)

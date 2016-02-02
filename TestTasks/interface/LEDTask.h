@@ -71,8 +71,6 @@ class LEDTask : public DQTask
 
 		//	Prof1D
 		ContainerProf1D	_cShapeCut_FEDSlot;
-		ContainerProf1D _cTimingvsEvent_FEDSlot;
-		ContainerProf1D _cSignalvsEvent_FEDSlot;
 
 		//	2D timing/signals
 		Container2D		_cSignalMean_depth;
@@ -86,9 +84,6 @@ class LEDTask : public DQTask
 		ContainerSingleProf2D _cTiminguTCA;
 		ContainerSingleProf2D _cSignaluTCA;
 		ContainerSingle2D _cOccupancyuTCA;
-
-		ContainerSingleProf2D _cTimingTestVME;
-		ContainerSingleProf2D _cTimingTestuTCA;
 
 		//	Bad Quality and Missing Channels
 		Container2D		_cMissing_depth;

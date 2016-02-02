@@ -71,10 +71,10 @@ class LaserTask : public DQTask
 
 		//	Prof1D
 		ContainerProf1D	_cShapeCut_FEDSlot;
-		ContainerProf1D _cTimingvsEvent_FEDSlot;
-		ContainerProf1D _cSignalvsEvent_FEDSlot;
-		ContainerProf1D _cTimingvsLS_FEDSlot;
-		ContainerProf1D _cSignalvsLS_FEDSlot;
+		ContainerProf1D _cTimingvsEvent_SubdetPM;
+		ContainerProf1D _cSignalvsEvent_SubdetPM;
+		ContainerProf1D _cTimingvsLS_SubdetPM;
+		ContainerProf1D _cSignalvsLS_SubdetPM;
 
 		//	2D timing/signals
 		Container2D		_cSignalMean_depth;
@@ -88,9 +88,6 @@ class LaserTask : public DQTask
 		ContainerSingleProf2D _cTiminguTCA;
 		ContainerSingleProf2D _cSignaluTCA;
 		ContainerSingle2D _cOccupancyuTCA;
-
-		ContainerSingleProf2D _cTimingTestVME;
-		ContainerSingleProf2D _cTimingTestuTCA;
 
 		//	Bad Quality and Missing Channels
 		Container2D		_cMissing_depth;
