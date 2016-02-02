@@ -293,12 +293,12 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		if (_ptype==fLocal)
 		{
 			_cTimingvsEvent_SubdetPM.fill(eid, currentEvent, aveTS);
-			_cSignalvsEvent_FEDSlot.fill(eid, currentEvent, sumQ);
+			_cSignalvsEvent_SubdetPM.fill(eid, currentEvent, sumQ);
 		}
 		else
 		{
 			_cTimingvsLS_SubdetPM.fill(eid, _currentLS, aveTS);
-			_cSignalvsLS_FEDSlot.fill(eid, _currentLS, sumQ);
+			_cSignalvsLS_SubdetPM.fill(eid, _currentLS, sumQ);
 		}
 
 

@@ -1,5 +1,5 @@
 	
-#include "DQM/HcalTasks/interface/RadDamTask.h"
+#include "DQM/TestTasks/interface/RadDamTask.h"
 
 using namespace hcaldqm;
 RadDamTask::RadDamTask(edm::ParameterSet const& ps):
@@ -65,7 +65,6 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	_vDetIds.push_back(HcalDetId(HcalForward, 41, 71, 2));
 
 	//	Initialize all the Single Containers
-	char aux[200];
 	for (std::vector<HcalDetId>::const_iterator it=_vDetIds.begin();
 		it!=_vDetIds.end(); ++it)
 	{
@@ -88,7 +87,8 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	char aux[200];
 	for (unsigned int i=0; i<_vDetIds.size(); i++)
 	{
-		sprintf(aux, "ieta%diphi%dd%d", it->ieta(), it->iphi(), it->depth());
+		sprintf(aux, "ieta%diphi%dd%d", _vDetIds[i].ieta(), 
+			_vDetIds[i].iphi(), _vDetIds[i].depth());
 		_vcShape[i].book(ib, _subsystem, aux);
 	}
 }

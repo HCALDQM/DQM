@@ -18,6 +18,15 @@ namespace hcaldqm
 		_qy->setAxisType(quantity::fYAxis);
 	}
 
+	ContainerSingle1D::ContainerSingle1D(std::string const& folder,
+		std::string const& qname,
+		Quantity *qx, Quantity *qy):
+		Container(folder, qname), _qx(qx), _qy(qy)
+	{
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+	}
+
 	/* virtual */ void ContainerSingle1D::initialize(std::string const& folder,
 		Quantity *qx, Quantity *qy, int debug/*=0*/)
 	{
