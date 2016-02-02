@@ -46,27 +46,32 @@ class PedestalTask : public DQTask
 		edm::EDGetTokenT<HcalTBTriggerData> _tokTrigger;
 
 		//	emap
-		HcalElectronicsMap const* _emap;
+		HcalElectronicsMap const*	_emap;
+		HcalPedestal const*			_condPeds;
 
-		ContainerXXX		_cPeds;
+		ContainerXXX		_cPed;
 		ContainerXXX		_cPedRef;
 
-		//	1D
-		Container1D		_cPedestalMeans_Subdet;
-		Container1D		_cPedestalRMSs_Subdet;
+		//	1D Means/RMSs
+		Container1D		_cMean_Subdet;
+		Container1D		_cRMS_Subdet;
 
-		Container1D		_cMeanRef_Subdet;
-		Container1D		_cRMSRef_Subdet;
+		//	1D Means/RMSs Conditions DB comparison
+		Container1D		_cMeanDBRef_Subdet;
+		Container1D		_cRMSDBRef_Subdet;
 
 		//	2D
-		Container2D		_cPedestalMeans_depth;
-		Container2D		_cPedestalRMSs_depth;
+		Container2D		_cMean_depth;
+		Container2D		_cRMS_depth;
 		
-		ContainerProf2D		_cMeanRef_depth;
-		ContainerProf2D		_cRMSRef_depth;
+		//	with DB Conditions comparison
+		ContainerProf2D		_cMeanDBRef_depth;
+		ContainerProf2D		_cRMSDBRef_depth;
 
-		Container2D		_cAbsent_depth;
-		Container2D		_cBad_depth;
+		//	Missing + Bad Quality
+		Container2D		_cMissing_depth;
+		Container2D		_cMeanBad_depth;
+		Container2D		_cRMSBad_depth;
 };
 
 #endif

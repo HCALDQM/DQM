@@ -15,19 +15,18 @@ namespace hcaldqm
 	{
 		enum CompactUsageType
 		{
-			fHistogram = 0,
-			f1 = 1, // just load 1 value from 1 hist
-			fMeanRMS1 = 2, // load mean/rms from 1 histo - not being used
-			fMeanRMS2 = 3, // load mean rms from 2 histos - 1 for each
-			nCompactUsageType = 4
+			fHistogram = 0, //	always fill and sum only (for mean/rms usage)
+			fSingleValued = 1, // use only 1 value with set
+			fDoubleValued = 2, // use both values with set
+			nCompactUsageType = 3
 		};
 
 		struct Compact 
 		{
-			Compact(){_x=0; _x2=0; _n=0;}
-			void reset() {_x=0; _x2=0; _n=0;}
+			Compact(){_x1=0; _x2=0; _n=0;}
+			void reset() {_x1=0; _x2=0; _n=0;}
 			
-			double mean() {return _n>0?_x/_n:constants::GARBAGE_VALUE;}
+			double mean() {return _n>0?_x1/_n:constants::GARBAGE_VALUE;}
 			double rms() 
 			{
 				if (mean()==constants::GARBAGE_VALUE)
@@ -42,12 +41,12 @@ namespace hcaldqm
 				if (utype==fHistogram)
 					p = std::make_pair<double, double>(mean(), rms());
 				else
-					p = std::make_pair<double, double>((double)_x, (double)_x2);
+					p = std::make_pair<double, double>((double)_x1, (double)_x2);
 
 				return p;
 			}
 
-			double		_x;
+			double		_x1;
 			double		_x2;
 			uint32_t	_n;
 		};

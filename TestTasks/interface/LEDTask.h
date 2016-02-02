@@ -13,6 +13,8 @@
 #include "DQM/HcalCommon/interface/ContainerXXX.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
+#include "DQM/HcalCommon/interface/ContainerSingle2D.h"
+#include "DQM/HcalCommon/interface/ContainerSingleProf2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
 
@@ -55,8 +57,8 @@ class LEDTask : public DQTask
 		double _lowHF;
 
 		//	Compact
-		ContainerXXX _cSignals;
-		ContainerXXX _cTiming;
+		ContainerXXX _cSignals_Channel;
+		ContainerXXX _cTiming_Channel;
 
 		//	1D
 		Container1D		_cSignalMean_Subdet;
@@ -67,11 +69,23 @@ class LEDTask : public DQTask
 		//	Prof1D
 		ContainerProf1D	_cShapeCut_SubdetPMiphi;
 
-		//	2D
+		//	2D timing/signals
 		Container2D		_cSignalMean_depth;
 		Container2D		_cSignalRMS_depth;
 		Container2D		_cTimingMean_depth;
 		Container2D		_cTimingRMS_depth;
+
+		ContainerSingleProf2D _cTimingVME;
+		ContainerSingleProf2D _cSignalVME;
+		ContainerSingleProf2D _cTiminguTCA;
+		ContainerSingleProf2D _cSignaluTCA;
+		ContainerSingle2D _cOccupancyVME;
+		ContainerSingle2D _cOccupancyuTCA;
+
+		//	Bad Quality and Missing Channels
+		Container2D		_cSignalBad_depth;
+		Container2D		_cTimingBad_depth;
+		Container2D		_cMissing_depth;
 };
 
 #endif

@@ -6,7 +6,7 @@ namespace hcaldqm
 	{
 		std::ostream& operator<<(std::ostream& o, Compact const& x)
 		{
-			return o << "sum="<< x._x << "  sum2" 
+			return o << "sum="<< x._x1 << "  sum2=" 
 				<< x._x2 << "  N=" << x._n;
 		}
 	}

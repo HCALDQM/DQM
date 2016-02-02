@@ -362,14 +362,21 @@ namespace hcaldqm
 	}
 
 	/* virtual */ void Container1D::load(DQMStore *store,
-		HcalElectronicsMap const* emap, std::string subsystem,
-		std::string aux)
+		HcalElectronicsMap const* emap, std::string const &subsystem,
+		std::string const& aux, std::string const& prepend,
+		DQMStore::OpenRunDirs mode)
 	{
 		//	full path to where all the plots are living
-		//	subsystem/taskname/QxvsQy_auxilary/HashType
+		//	prepend/subsystem/taskname/QxvsQy_auxilary/HashType
+		//	if loaded and not stripped, then 
+		//	prepend/subsystem/Run summary/taskname/...
 		_logger.debug(_hashmap.getHashTypeName());
-		std::string path = subsystem+"/"+_folder+"/"+_qname+
+		std::string path = (prepend==""?prepend:prepend+"/")+
+			subsystem+"/"+(mode==DQMStore::KeepRunDirs?"Run summary/":"")
+			+_folder+"/"+_qname+
 			(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName();
+		_logger.debug("FULLPATH::"+path);
+
 		if (_hashmap.isDHash())
 		{
 			//	for Detector Hashes

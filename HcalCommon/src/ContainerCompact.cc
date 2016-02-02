@@ -16,7 +16,7 @@ namespace hcaldqm
 			did.ieta()-IETA_MIN+IETA_NUM/2;
 		int idepth = did.depth()-1;
 
-		_data[isubdet][iiphi][iieta][idepth]._x += x;
+		_data[isubdet][iiphi][iieta][idepth]._x1 += x;
 		_data[isubdet][iiphi][iieta][idepth]._x2 += x*x;
 		_data[isubdet][iiphi][iieta][idepth]._n++;
 	}
@@ -47,7 +47,7 @@ namespace hcaldqm
 							iieta-IETA_NUM/2+IETA_MIN;
 						int d = id+1;
 						HcalDetId did(subd, ieta, iphi, d);
-						double mean= tmp._x/tmp._n;
+						double mean= tmp._x1/tmp._n;
 						double rms = sqrt(tmp._x2/tmp._n - 
 							mean*mean);
 						if (q)

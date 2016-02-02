@@ -141,8 +141,17 @@ namespace hcaldqm
 			//	loading using DQMStore
 			//	@DQMStore
 			//	@emap
+			//	@prepend - name to prepend to /<subsystem> - used when load
+			//	a file to DQMStore without stripping and in case a name is 
+			//	appended 
+			//	@mode - if StripRunDirs - then there will be no Run Summary
+			//	otherwise there is Run Summary folde. Used for retrieving 
+			//	MEs which were loaded into the DQM store from a file
 			virtual void load(DQMStore*, HcalElectronicsMap const*,
-				std::string subsystem="Hcal", std::string aux="");
+				std::string const& subsystem="Hcal", 
+				std::string const& aux="",
+				std::string const& prepend="", DQMStore::OpenRunDirs
+				mode=DQMStore::StripRunDirs);
 
 			//	reset all the elements
 			virtual void reset();

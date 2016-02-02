@@ -6,41 +6,45 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	DQTask(ps)
 {
 	//	Containers
-	_cPedestalMeans_Subdet.initialize(_name, "Mean",hashfunctions::fSubdet, 
+	_cMean_Subdet.initialize(_name, "Mean",hashfunctions::fSubdet, 
 		new quantity::ValueQuantity(quantity::fADC_15),
-		new quantity::ValueQuantity(quantity::fN));
-	_cPedestalRMSs_Subdet.initialize(_name, "RMS", hashfunctions::fSubdet, 
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cRMS_Subdet.initialize(_name, "RMS", hashfunctions::fSubdet, 
 		new quantity::ValueQuantity(quantity::fADC_5),
-		new quantity::ValueQuantity(quantity::fN));
-	_cPedestalMeans_depth.initialize(_name, "Mean", hashfunctions::fdepth, 
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cMean_depth.initialize(_name, "Mean", hashfunctions::fdepth, 
 		new quantity::DetectorQuantity(quantity::fieta), 
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fADC_15));
-	_cPedestalRMSs_depth.initialize(_name, "RMS", hashfunctions::fdepth, 
+	_cRMS_depth.initialize(_name, "RMS", hashfunctions::fdepth, 
 		new quantity::DetectorQuantity(quantity::fieta), 
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fADC_5));
-	_cPeds.initialize(hashfunctions::fChannel);
-	_cPedRef.initialize(hashfunctions::fChannel, compact::fMeanRMS2, 10);
-	_cMeanRef_Subdet.initialize(_name, "MeanRef", hashfunctions::fSubdet,
+	_cPed.initialize(hashfunctions::fChannel);
+	_cPedRef.initialize(hashfunctions::fChannel, compact::fDoubleValued);
+	_cMeanDBRef_Subdet.initialize(_name, "MeanDBRef", hashfunctions::fSubdet,
 		new quantity::ValueQuantity(quantity::fAroundZero),
-		new quantity::ValueQuantity(quantity::fN));
-	_cRMSRef_Subdet.initialize(_name, "RMSRef", hashfunctions::fSubdet,
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cRMSDBRef_Subdet.initialize(_name, "RMSDBRef", hashfunctions::fSubdet,
 		new quantity::ValueQuantity(quantity::fAroundZero),
-		new quantity::ValueQuantity(quantity::fN));
-	_cMeanRef_depth.initialize(_name, "MeanRef", hashfunctions::fdepth,
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cMeanDBRef_depth.initialize(_name, "MeanDBRef", hashfunctions::fdepth,
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fAroundZero));
-	_cRMSRef_depth.initialize(_name, "RMSRef", hashfunctions::fdepth,
+	_cRMSDBRef_depth.initialize(_name, "RMSDBRef", hashfunctions::fdepth,
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fAroundZero));
-	_cAbsent_depth.initialize(_name, "Absent", hashfunctions::fdepth,
+	_cMissing_depth.initialize(_name, "Missing", hashfunctions::fdepth,
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fN));
-	_cBad_depth.initialize(_name, "Bad", hashfunctions::fdepth,
+	_cMeanBad_depth.initialize(_name, "MeanBad", hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cRMSBad_depth.initialize(_name, "RMSBad", hashfunctions::fdepth,
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fN));
@@ -64,33 +68,32 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 /* virtual */ void PedestalTask::bookHistograms(DQMStore::IBooker &ib,
 	edm::Run const& r, edm::EventSetup const& es)
 {
-	std::cout << "RUN NUMBER: " << r.runAuxiliary().run() << std::endl;
-	if (r.runAuxiliary().run()==1)
-		return;
+	if (_ptype==fLocal)
+		if (r.runAuxiliary().run()==1)
+			return;
 	DQTask::bookHistograms(ib, r, es);
 
 	edm::ESHandle<HcalDbService> dbService;
 	es.get<HcalDbRecord>().get(dbService);
 	_emap = dbService->getHcalMapping();
 
-	_cPedestalMeans_Subdet.book(ib, _emap);
-	_cPedestalRMSs_Subdet.book(ib, _emap);
-	_cPedestalMeans_depth.book(ib, _emap);
-	_cPedestalRMSs_depth.book(ib, _emap);
-	_cPeds.book(_emap);
+	//	book plots
+	_cMean_Subdet.book(ib, _emap);
+	_cRMS_Subdet.book(ib, _emap);
+	_cMean_depth.book(ib, _emap);
+	_cRMS_depth.book(ib, _emap);
+	_cMeanDBRef_Subdet.book(ib, _emap);
+	_cRMSDBRef_Subdet.book(ib, _emap);
+	_cMeanDBRef_depth.book(ib, _emap);
+	_cRMSDBRef_depth.book(ib, _emap);
+	_cMissing_depth.book(ib, _emap);
+	_cMeanBad_depth.book(ib, _emap);
+	_cRMSBad_depth.book(ib, _emap);
+	
+	//	book compact containers and load conditions pedestals
+	_cPed.book(_emap);
 	_cPedRef.book(_emap);
-	_cMeanRef_Subdet.book(ib, _emap);
-	_cRMSRef_Subdet.book(ib, _emap);
-	_cMeanRef_depth.book(ib, _emap);
-	_cRMSRef_depth.book(ib, _emap);
-	_cAbsent_depth.book(ib, _emap);
-	_cBad_depth.book(ib, _emap);
-
-	//	for testing purposes....
-	_cPedestalMeans_Subdet.print();
-	_cPedestalRMSs_Subdet.print();
-	_cPedestalMeans_depth.print();
-	_cPedestalRMSs_depth.print();
+	_cPedRef.load(dbService);
 }
 
 /* virtual */ void PedestalTask::_resetMonitors(UpdateFreq uf)
@@ -101,63 +104,110 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 /* virtual */ void PedestalTask::endRun(edm::Run const& r, 
 	edm::EventSetup const&)
 {	
-	if (r.runAuxiliary().run()==1)
-		return;
+	if (_ptype==fLocal)
+		if (r.runAuxiliary().run()==1)
+			return;
 
 	this->_dump();
-
+/*
 	/////////
-	DQMStore *store = edm::Service<DQMStore>().operator->();
-	store->showDirStructure();
-	std::cout <<"CURRENT DIRECTORY: "<< store->pwd() << std::endl;
-	store->open("DQM_V0001_Hcal_R000262665.root",
-		false, "", "HCAL", DQMStore::StripRunDirs);
+//	DQMStore *store = edm::Service<DQMStore>().operator->();
+//	store->showDirStructure();
+//	std::cout <<"CURRENT DIRECTORY: "<< store->pwd() << std::endl;
+//	store->open("DQM_V0001_Hcal_R000262665.root",
+//		false, "", "HCAL", DQMStore::KeepRunDirs);
 //	store->load("DQM_V0001_Hcal_R000262665.root");
 //	store->setCurrentFolder("./Run 262665");
-	store->showDirStructure();
+//	store->showDirStructure();
 //	store->cd("Run ");
-	std::cout <<"11111111 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
+//	std::cout <<"11111111 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
 //	store->cd("../");
-	std::cout <<"2222222 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
+//	std::cout <<"2222222 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
+//	store->goUp();
+//	std::cout <<"3333333 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
+
 //	sprintf(cutstr, "_sumQHBHE%dHO%dHF%d", int(20),
 //		int(20), int(20));
-	Container2D	cMeans;
-	Container2D cRMSs;
-	cMeans.initialize(_name, "Mean", hashfunctions::fdepth, 
-		new quantity::DetectorQuantity(quantity::fieta), 
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fADC_15));
-	cRMSs.initialize(_name, "RMS", hashfunctions::fdepth, 
-		new quantity::DetectorQuantity(quantity::fieta), 
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fADC_5));
-	cMeans.load(store, _emap);
-	cRMSs.load(store, _emap);
-	cMeans.print();
-	cRMSs.print();
+//	Container2D	cMeans;
+//	Container2D cRMSs;
+//	cMeans.initialize(_name, "Mean", hashfunctions::fdepth, 
+//		new quantity::DetectorQuantity(quantity::fieta), 
+//		new quantity::DetectorQuantity(quantity::fiphi),
+//		new quantity::ValueQuantity(quantity::fADC_15), 10);
+//	cRMSs.initialize(_name, "RMS", hashfunctions::fdepth, 
+//		new quantity::DetectorQuantity(quantity::fieta), 
+//		new quantity::DetectorQuantity(quantity::fiphi),
+//		new quantity::ValueQuantity(quantity::fADC_5));
+//	cMeans.load(store, _emap, _subsystem, std::string(""),
+//		std::string("HCAL/Run 262665"), 
+//		DQMStore::KeepRunDirs);
+//	cRMSs.load(store, _emap, _subsystem, std::string(""),
+//		std::string("HCAL/Run 262665"),
+//		DQMStore::KeepRunDirs);
+//	cMeans.print();
+//	cRMSs.print();
+//
+//
 	std::cout << "SIZE=" << _cPedRef.size() << std::endl;
 	_cPedRef.print();
-	_cPedRef.load(&cMeans);
+//	_cPedRef.load(&cMeans, &cRMSs);
 	_cPedRef.print();
+	hcaldqm::QualityWrapper qwrap(&hcaldqm::pedestal_quality2, 0.1);
 	_cPedRef.compare(_cPeds, &_cMeanRef_Subdet, &_cAbsent_depth,
-		&_cBad_depth, &hcaldqm::diff, &hcaldqm::pedestal_quality);
+		&_cBad_depth, &hcaldqm::diff, qwrap);
 	_cPedRef.compare(_cPeds, &_cMeanRef_depth, &_cAbsent_depth,
-		&_cBad_depth, &hcaldqm::diff, &hcaldqm::pedestal_quality);
+		&_cBad_depth, &hcaldqm::diff, qwrap);
+	_cPedRef.compare(_cPeds, &_cRMSRef_Subdet, &_cAbsent_depth,
+		&_cBad_depth, &hcaldqm::diff, qwrap, false);
+	_cPedRef.compare(_cPeds, &_cRMSRef_depth, &_cAbsent_depth,
+		&_cBad_depth, &hcaldqm::diff, qwrap, false);
 //	_cPeds.compare(_cPedRef, &_cMeanRef_Subdet);
 //	_cPeds.compare(_cPedRef, &_cMeanRef_depth);
 	_cPedRef.print();
+	store->cd();
+	std::cout <<"44444444 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
+	store->cd("Hcal");
+	std::cout <<"55555555 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
+	store->cd("");
+	store->cd("HCAL/Run 262665");
+	std::cout <<"666666666 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
+	store->rmdir(store->pwd());
+	
+	store->showDirStructure();
+	*/
 }
 
 /* virtual */ void PedestalTask::_dump()
 {
-	_cPedestalMeans_Subdet.reset();
-	_cPedestalRMSs_Subdet.reset();
-	_cPedestalMeans_depth.reset();
-	_cPedestalRMSs_depth.reset();
-	_cPeds.dump(&_cPedestalMeans_Subdet, true);
-	_cPeds.dump(&_cPedestalRMSs_Subdet, false);
-	_cPeds.dump(&_cPedestalMeans_depth, true);
-	_cPeds.dump(&_cPedestalRMSs_depth, false);
+	//	dump the pedestals first
+	_cMean_Subdet.reset();
+	_cRMS_Subdet.reset();
+	_cMean_depth.reset();
+	_cRMS_depth.reset();
+	_cPed.dump(&_cMean_Subdet, true);
+	_cPed.dump(&_cRMS_Subdet, false);
+	_cPed.dump(&_cMean_depth, true);
+	_cPed.dump(&_cRMS_depth, false);
+
+	//	compare with Conditions Pedestals and dump
+	_cMeanDBRef_Subdet.reset();
+	_cMeanDBRef_depth.reset();
+	_cRMSDBRef_Subdet.reset();
+	_cRMSDBRef_depth.reset();
+	_cMissing_depth.reset();
+	_cMeanBad_depth.reset();
+	_cRMSBad_depth.reset();
+	hcaldqm::QualityWrapper qwrap(&hcaldqm::pedestal_quality2, 0.2);
+	std::vector<Container1D*> vMean;
+	std::vector<Container1D*> vRMS;
+	vMean.push_back(&_cMeanDBRef_Subdet);
+	vMean.push_back(&_cMeanDBRef_depth);
+	vRMS.push_back(&_cRMSDBRef_Subdet);
+	vRMS.push_back(&_cRMSDBRef_depth);
+	_cPedRef.compare(_cPed, vMean, &_cMissing_depth,
+		&_cMeanBad_depth, &hcaldqm::diff, qwrap); //	means
+	_cPedRef.compare(_cPed, vRMS, &_cMissing_depth,
+		&_cRMSBad_depth, &hcaldqm::diff, qwrap, false); //	rmss
 }
 
 /* virtual */ void PedestalTask::_process(edm::Event const& e,
@@ -186,7 +236,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
-			_cPeds.fill(did, it->sample(i).adc());
+			_cPed.fill(did, it->sample(i).adc());
 		}
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
@@ -198,7 +248,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
-			_cPeds.fill(did, it->sample(i).adc());
+			_cPed.fill(did, it->sample(i).adc());
 		}
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
@@ -210,7 +260,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
-			_cPeds.fill(did, it->sample(i).adc());
+			_cPed.fill(did, it->sample(i).adc());
 		}
 	}
 
