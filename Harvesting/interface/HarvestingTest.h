@@ -8,31 +8,24 @@
  */
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
-#include "DQM/HcalCommon/interface/DQHarvester.h"
+#include "DQM/HcalCommon/interface/DQModule.h"
 
 using namespace hcaldqm;
 
-class HarvestingTest : public hcaldqm::DQHarvester
+class HarvestingTest : public DQMEDHarvester, public DQModule
 {
 	public:
 		HarvestingTest(edm::ParameterSet const&);
 		virtual ~HarvestingTest(){}
 
-		virtual void endRun(edm::Run const&, edm::EventSetup const& es)
-		{
-			edm::ESHandle<HcalDbService> dbs;
-			es.get<HcalDbRecord>().get(dbs);
-			HcalElectronicsMap const* emap = dbs->getHcalMapping();
-
-			std::vector<HcalGenericDetId> dids = emap->allPrecisionId();
-			for (std::vector<HcalGenericDetId>::const_iterator it=
-				dids.begin(); it!=dids.end(); ++it)
-			{
-				std::cout << *it << std::endl;
-			}
-		}
+		virtual void endRun(edm::Run const&, edm::EventSetup const& es);
 
 	protected:
+		//	electronicsmap
+		HcalElectronicsMap const* _emap;
+
+		//	ROOT files to be processed
+		std::vector<std::string> _vfiles;
 };
 
 #endif
