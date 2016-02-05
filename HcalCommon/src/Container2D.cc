@@ -127,6 +127,56 @@ namespace hcaldqm
 				_qy->getValue(y));
 	}
 
+	/* virtual */ double Container2D::getBinEntries(HcalDetId const&
+		id)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(id)+_qy->getBin(id)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalDetId const&
+		id, int x)
+	{
+		if (_qx->isCoordinate())
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(id)+_qy->getBin(x)*_qx->wofnbins());
+		else
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(x)+_qy->getBin(id)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalDetId const&
+		id, double x)
+	{
+		if (_qx->isCoordinate())
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(id)+ _qy->getBin(x)*_qx->wofnbins());
+		else
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(x)+_qy->getBin(id)*_qx->wofnbins());
+	}
+	
+	/* virtual */ double Container2D::getBinEntries(HcalDetId const&
+		id, int x, int y)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(x)+ _qy->getBin(y)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalDetId const&
+		id, int x, double y)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(x)+_qy->getBin(y)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalDetId const&
+		id, double x, double y)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(x)+ _qy->getBin(y)*_qx->wofnbins());
+	}
+
 	/* virtual */ double Container2D::getBinContent(HcalDetId const&
 		id)
 	{
@@ -250,6 +300,57 @@ namespace hcaldqm
 		else if (!_qx->isCoordinate() && !_qy->isCoordinate())
 			_mes[_hashmap.getHash(did)]->Fill(_qx->getValue(x), 
 				_qy->getValue(y));
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalElectronicsId const&
+		id)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(id)+_qy->getBin(id)*_qx->wofnbins());
+
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalElectronicsId const&
+		id, int x)
+	{
+		if (_qx->isCoordinate())
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(id)+_qy->getBin(x)*_qx->wofnbins());
+		else
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(x)+_qy->getBin(id)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalElectronicsId const&
+		id, double x)
+	{
+		if (_qx->isCoordinate())
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(id)+ _qy->getBin(x)*_qx->wofnbins());
+		else
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(x)+_qy->getBin(id)*_qx->wofnbins());
+	}
+	
+	/* virtual */ double Container2D::getBinEntries(HcalElectronicsId const&
+		id, int x, int y)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(x)+ _qy->getBin(y)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalElectronicsId const&
+		id, int x, double y)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(x)+_qy->getBin(y)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalElectronicsId const&
+		id, double x, double y)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(x)+ _qy->getBin(y)*_qx->wofnbins());
 	}
 
 	/* virtual */ double Container2D::getBinContent(HcalElectronicsId const&
@@ -379,6 +480,56 @@ namespace hcaldqm
 				_qy->getValue(y));
 	}
 
+	/* virtual */ double Container2D::getBinEntries(HcalTrigTowerDetId const&
+		id)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(id)+_qy->getBin(id)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalTrigTowerDetId const&
+		id, int x)
+	{
+		if (_qx->isCoordinate())
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(id)+_qy->getBin(x)*_qx->wofnbins());
+		else
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(x)+_qy->getBin(id)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalTrigTowerDetId const&
+		id, double x)
+	{
+		if (_qx->isCoordinate())
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(id)+ _qy->getBin(x)*_qx->wofnbins());
+		else
+			return _mes[_hashmap.getHash(id)]->getBinEntries(
+				_qx->getBin(x)+_qy->getBin(id)*_qx->wofnbins());
+	}
+	
+	/* virtual */ double Container2D::getBinEntries(HcalTrigTowerDetId const&
+		id, int x, int y)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(x)+ _qy->getBin(y)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalTrigTowerDetId const&
+		id, int x, double y)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(x)+_qy->getBin(y)*_qx->wofnbins());
+	}
+
+	/* virtual */ double Container2D::getBinEntries(HcalTrigTowerDetId const&
+		id, double x, double y)
+	{
+		return _mes[_hashmap.getHash(id)]->getBinEntries(
+			_qx->getBin(x)+ _qy->getBin(y)*_qx->wofnbins());
+	}
+
 	/* virtual */ double Container2D::getBinContent(HcalTrigTowerDetId const&
 		id)
 	{
@@ -503,6 +654,88 @@ namespace hcaldqm
 				_logger.debug(_hashmap.getName(tid));
 				_mes.insert(
 					std::make_pair(hash, ib.book2D(_hashmap.getName(tid),
+					_hashmap.getName(tid), _qx->nbins(), _qx->min(),
+					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
+
+				customize(_mes[hash]);
+			}
+		}
+	}
+
+	/* virtual */ void Container2D::book(DQMStore *store, 
+		HcalElectronicsMap const *emap,
+		std::string subsystem, std::string aux)
+	{
+
+		//	full path as in Container1D.cc
+		//
+		store->setCurrentFolder(subsystem+"/"+_folder+"/"+_qname+
+			(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName());
+		if (_hashmap.isDHash())
+		{
+			//	for Detector Hashes
+			std::vector<HcalGenericDetId> dids = emap->allPrecisionId();
+			for (std::vector<HcalGenericDetId>::const_iterator it=
+				dids.begin(); it!=dids.end(); ++it)
+			{
+				//	skip trigger towers and calib
+				if (!it->isHcalDetId())
+					continue;
+
+				HcalDetId did = HcalDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(did);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(did));
+				_mes.insert(
+					std::make_pair(hash, store->book2D(_hashmap.getName(did),
+					_hashmap.getName(did), _qx->nbins(), _qx->min(),
+					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
+				customize(_mes[hash]);
+			}
+		}
+		else if (_hashmap.isEHash())
+		{
+			//	for Electronics hashes
+			std::vector<HcalElectronicsId> eids = 
+				emap->allElectronicsIdPrecision();
+			for (std::vector<HcalElectronicsId>::const_iterator it=
+				eids.begin(); it!=eids.end(); ++it)
+			{
+				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
+				uint32_t hash = _hashmap.getHash(eid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(eid));
+				_mes.insert(
+					std::make_pair(hash, store->book2D(_hashmap.getName(eid),
+					_hashmap.getName(eid), _qx->nbins(), _qx->min(),
+					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
+				customize(_mes[hash]);
+			}
+		}
+		else if (_hashmap.isTHash())
+		{
+			//	for TrigTower hashes
+			std::vector<HcalTrigTowerDetId> tids = 
+				emap->allTriggerId();
+			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
+				tids.begin(); it!=tids.end(); ++it)
+			{
+				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
+				_logger.debug(_hashmap.getName(tid));
+				uint32_t hash = _hashmap.getHash(tid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(tid));
+				_mes.insert(
+					std::make_pair(hash, store->book2D(_hashmap.getName(tid),
 					_hashmap.getName(tid), _qx->nbins(), _qx->min(),
 					_qx->max(), _qy->nbins(), _qy->min(), _qy->max())));
 

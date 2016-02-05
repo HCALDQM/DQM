@@ -69,6 +69,7 @@ namespace hcaldqm
 				}
 
 				virtual int nbins() {return 1;}
+				virtual int wofnbins() {return nbins()+2;}
 				virtual double min() {return 0;}
 				virtual double max() {return 1;}
 				virtual bool isCoordinate() {return false;}

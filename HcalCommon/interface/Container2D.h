@@ -49,6 +49,13 @@ namespace hcaldqm
 			virtual void fill(HcalDetId const&, int, int);
 			virtual void fill(HcalDetId const&, double, double);
 
+			virtual double getBinEntries(HcalDetId const&);
+			virtual double getBinEntries(HcalDetId const&, int);
+			virtual double getBinEntries(HcalDetId const&, double);
+			virtual double getBinEntries(HcalDetId const&, int, int);
+			virtual double getBinEntries(HcalDetId const&, int, double);
+			virtual double getBinEntries(HcalDetId const&, double, double);
+
 			virtual double getBinContent(HcalDetId const&);
 			virtual double getBinContent(HcalDetId const&, int);
 			virtual double getBinContent(HcalDetId const&, double);
@@ -62,6 +69,14 @@ namespace hcaldqm
 			virtual void fill(HcalElectronicsId const&, int, double);
 			virtual void fill(HcalElectronicsId const&, int, int);
 			virtual void fill(HcalElectronicsId const&, double, double);
+
+			virtual double getBinEntries(HcalElectronicsId const&);
+			virtual double getBinEntries(HcalElectronicsId const&, int);
+			virtual double getBinEntries(HcalElectronicsId const&, double);
+			virtual double getBinEntries(HcalElectronicsId const&, int, int);
+			virtual double getBinEntries(HcalElectronicsId const&, int, double);
+			virtual double getBinEntries(HcalElectronicsId const&, double, 
+				double);
 
 			virtual double getBinContent(HcalElectronicsId const&);
 			virtual double getBinContent(HcalElectronicsId const&, int);
@@ -78,6 +93,15 @@ namespace hcaldqm
 			virtual void fill(HcalTrigTowerDetId const&, int, double);
 			virtual void fill(HcalTrigTowerDetId const&, double, double);
 
+			virtual double getBinEntries(HcalTrigTowerDetId const&);
+			virtual double getBinEntries(HcalTrigTowerDetId const&, int);
+			virtual double getBinEntries(HcalTrigTowerDetId const&, double);
+			virtual double getBinEntries(HcalTrigTowerDetId const&, int, int);
+			virtual double getBinEntries(HcalTrigTowerDetId const&, int, 
+				double);
+			virtual double getBinEntries(HcalTrigTowerDetId const&, 
+				double, double);
+
 			virtual double getBinContent(HcalTrigTowerDetId const&);
 			virtual double  getBinContent(HcalTrigTowerDetId const&, int);
 			virtual double getBinContent(HcalTrigTowerDetId const&, double);
@@ -88,6 +112,9 @@ namespace hcaldqm
 
 			//	booking. see Container1D.h
 			virtual void book(DQMStore::IBooker&,
+				HcalElectronicsMap const*,
+				std::string subsystem="Hcal", std::string aux="");
+			virtual void book(DQMStore*,
 				HcalElectronicsMap const*,
 				std::string subsystem="Hcal", std::string aux="");
 

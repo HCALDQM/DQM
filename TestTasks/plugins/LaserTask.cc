@@ -247,13 +247,13 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		//	 only for local processing
 		if (_ptype==fLocal)
 		{
-			_cTimingvsEvent_SubdetPM.fill(eid, currentEvent, aveTS);
-			_cSignalvsEvent_SubdetPM.fill(eid, currentEvent, sumQ);
+			_cTimingvsEvent_SubdetPM.fill(did, currentEvent, aveTS);
+			_cSignalvsEvent_SubdetPM.fill(did, currentEvent, sumQ);
 		}
 		else
 		{
-			_cTimingvsLS_SubdetPM.fill(eid, _currentLS, aveTS);
-			_cSignalvsLS_SubdetPM.fill(eid, _currentLS, sumQ);
+			_cTimingvsLS_SubdetPM.fill(did, _currentLS, aveTS);
+			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
 		}
 
 		if (eid.isVMEid())
@@ -292,13 +292,13 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		//	 only for local processing
 		if (_ptype==fLocal)
 		{
-			_cTimingvsEvent_SubdetPM.fill(eid, currentEvent, aveTS);
-			_cSignalvsEvent_SubdetPM.fill(eid, currentEvent, sumQ);
+			_cTimingvsEvent_SubdetPM.fill(did, currentEvent, aveTS);
+			_cSignalvsEvent_SubdetPM.fill(did, currentEvent, sumQ);
 		}
 		else
 		{
-			_cTimingvsLS_SubdetPM.fill(eid, _currentLS, aveTS);
-			_cSignalvsLS_SubdetPM.fill(eid, _currentLS, sumQ);
+			_cTimingvsLS_SubdetPM.fill(did, _currentLS, aveTS);
+			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
 		}
 
 
@@ -338,13 +338,13 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		//	 only for local processing
 		if (_ptype==fLocal)
 		{
-			_cTimingvsEvent_SubdetPM.fill(eid, currentEvent, aveTS);
-			_cSignalvsEvent_SubdetPM.fill(eid, currentEvent, sumQ);
+			_cTimingvsEvent_SubdetPM.fill(did, currentEvent, aveTS);
+			_cSignalvsEvent_SubdetPM.fill(did, currentEvent, sumQ);
 		}
 		else
 		{
-			_cTimingvsLS_SubdetPM.fill(eid, _currentLS, aveTS);
-			_cSignalvsLS_SubdetPM.fill(eid, _currentLS, sumQ);
+			_cTimingvsLS_SubdetPM.fill(did, _currentLS, aveTS);
+			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
 		}
 
 

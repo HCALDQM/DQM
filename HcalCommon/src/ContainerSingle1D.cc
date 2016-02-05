@@ -58,6 +58,16 @@ namespace hcaldqm
 		customize();
 	}
 
+	/* virtual */ void ContainerSingle1D::book(DQMStore *store,
+		 std::string subsystem, std::string aux)
+	{
+		store->setCurrentFolder(subsystem+"/"+_folder+"/"+_qname);
+		_me = store->book1D(_qname+(aux==""?aux:"_"+aux), 
+			_qname+(aux==""?aux:" "+aux),
+			_qx->nbins(), _qx->min(), _qx->max());
+		customize();
+	}
+
 	/* virtual */ void ContainerSingle1D::customize()
 	{
 		_me->setAxisTitle(_qx->name(), 1);

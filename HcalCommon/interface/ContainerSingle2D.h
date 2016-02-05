@@ -41,6 +41,9 @@ namespace hcaldqm
 			//	booking
 			virtual void book(DQMStore::IBooker&,
 				std::string subsystem="Hcal", std::string aux="");
+			virtual void book(DQMStore*,
+				std::string subsystem="Hcal", std::string aux="");
+
 
 			//	filling
 			virtual void fill(int, int);

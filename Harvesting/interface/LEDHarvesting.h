@@ -1,5 +1,5 @@
-#ifndef HarvestingTest_h
-#define HarvestingTest_h
+#ifndef LEDHarvesting_h
+#define LEDHarvesting_h
 
 /**
  *	file:		
@@ -17,28 +17,39 @@
 #include "DQM/HcalCommon/interface/ContainerSingle2D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf2D.h"
+#include "DQM/HcalCommon/interface/ElectronicsMap.h"
 
 using namespace hcaldqm;
 
-class HarvestingTest : public DQHarvester
+class LEDHarvesting : public DQHarvester
 {
 	public:
-		HarvestingTest(edm::ParameterSet const&);
-		virtual ~HarvestingTest(){}
+		LEDHarvesting(edm::ParameterSet const&);
+		virtual ~LEDHarvesting(){}
 
 		virtual void endRun(edm::Run const&, edm::EventSetup const&);
 
 	protected:
+		void book(DQMStore*);
+
 		//	electronicsmap
 		HcalElectronicsMap const* _emap;
+		electronicsmap::ElectronicsMap _emaphash;
 
 		//	ROOT files to be processed
+		//	0 is the one with respect to which all ratios are computed
 		std::vector<std::string>	_vfiles;
 		std::vector<int>			_vruns;
 
-		//	Containers
-		Container2D _cTest_Subdet;
+		//	new containers
+		Container2D _cTimingMean_SubdetPM;
+		Container2D _cSignalRatio_SubdetPM;
+		std::vector<Container1D> _vcSignalRatio_SubdetPM;
+		std::vector<ContainerProf2D> _vcSignalRatio_depth;
+
+		//	containers to be loaded
 		std::vector<ContainerProf2D> _vcTimingMean_depth;
+		std::vector<ContainerProf2D> _vcSignalMean_depth;
 };
 
 #endif

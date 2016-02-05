@@ -45,6 +45,17 @@ namespace hcaldqm
 			_qy->min(), _qy->max());
 		customize();
 	}
+
+	/* virtual */ void ContainerSingleProf1D::book(DQMStore *store,
+		std::string subsystem, std::string aux)
+	{
+		store->setCurrentFolder(subsystem+"/"+_folder+"/"+_qname);
+		_me = store->bookProfile(_qname+(aux==""?aux:"_"+aux), 
+			_qname+(aux==""?aux:" "+aux),
+			_qx->nbins(), _qx->min(), _qx->max(),
+			_qy->min(), _qy->max());
+		customize();
+	}
 }
 
 

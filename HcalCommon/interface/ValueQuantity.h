@@ -48,12 +48,12 @@ namespace hcaldqm
 		};
 		double const min_value[nValueQuantityType] = {
 			0, 0, 0, -50, -0.5, -0.5, -0.5, 0, 0, 0, -0.5, 0, .5, 0,
-			0, 0, 0, -0.5, -1, 0, 0, 0, -0.5, -0.5, -0.5, -0.5,
+			0, 0, 0, -0.5, -1, 0.5, 0, 0, -0.5, -0.5, -0.5, -0.5,
 			0, 
 		};
 		double const max_value[nValueQuantityType] = {
 			1000, 1000, 200, 50, 127.5, 5, 15, 10000, 1000, 3000,
-			9.5, 9.5, 4000.5, 255.5, 255.5, 2, 1, 20.5, 1, 1, 
+			9.5, 9.5, 4000.5, 255.5, 255.5, 2, 1, 20.5, 1, 1.5, 
 			1, 1000, 9.5, 255.5, 63.5, 15.5, 1
 		};
 		int const nbins_value[nValueQuantityType] = {
@@ -93,6 +93,55 @@ namespace hcaldqm
 
 			protected:
 				ValueQuantityType _type;
+		};
+
+		class RunNumber : public ValueQuantity
+		{
+			public:
+				RunNumber() {}
+				RunNumber(std::vector<int> runs) :
+					_runs(runs) 
+				{}
+				virtual ~RunNumber() {}
+
+				virtual int nbins() {return _runs.size();}
+				virtual double min() {return 0;}
+				virtual double max() {return _runs.size();}
+				virtual std::vector<std::string> getLabels()
+				{
+					char name[10];
+					std::vector<std::string> labels;
+					for (uint32_t i=0; i<_runs.size(); i++)
+					{
+						sprintf(name, "%d", _runs[i]);
+						labels.push_back(name);
+					}
+					return labels;
+				}
+				virtual int getValue(int run)
+				{
+					int ir = -1;
+					for (uint32_t i=0; i<_runs.size(); i++)
+						if (_runs[i]==run)
+						{
+							ir = (int)i;
+							break;
+						}
+
+					if (ir==-1)
+						throw cms::Exception("HCALDQM")
+							<< "run number doens't exist " << run; 
+
+					return ir;
+				}
+
+				virtual uint32_t getBin(int run)
+				{
+					return (this->getValue(run)+1);
+				}
+
+			protected:
+				std::vector<int> _runs;
 		};
 
 		class EventNumber : public ValueQuantity

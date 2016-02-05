@@ -44,6 +44,9 @@ namespace hcaldqm
 			virtual void book(DQMStore::IBooker&,
 				HcalElectronicsMap const*,
 				std::string subsystem="Hcal", std::string aux="");
+			virtual void book(DQMStore*,
+				HcalElectronicsMap const*,
+				std::string subsystem="Hcal", std::string aux="");
 
 		protected:
 	};

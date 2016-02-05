@@ -73,10 +73,10 @@ class LEDTask : public DQTask
 		ContainerProf1D	_cShapeCut_FEDSlot;
 
 		//	2D timing/signals
-		Container2D		_cSignalMean_depth;
-		Container2D		_cSignalRMS_depth;
-		Container2D		_cTimingMean_depth;
-		Container2D		_cTimingRMS_depth;
+		ContainerProf2D		_cSignalMean_depth;
+		ContainerProf2D		_cSignalRMS_depth;
+		ContainerProf2D		_cTimingMean_depth;
+		ContainerProf2D		_cTimingRMS_depth;
 
 		ContainerSingleProf2D _cTimingVME;
 		ContainerSingleProf2D _cSignalVME;
