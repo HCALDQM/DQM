@@ -79,6 +79,10 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	_cPerformance.initialize(_name, "Performance",
 		new quantity::ValueQuantity(quantity::fLS),
 		new quantity::ValueQuantity(quantity::fEvents));
+	_cTiming.initialize(_name, "Timing",
+		new quantity::ElectronicsQuantity(quantity::fFEDuTCASlot),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fTiming_ns));
 
 	//	tags
 	_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF",
@@ -98,6 +102,7 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	_cTiming_SubdetPMiphi.book(ib, _emap);
 	_cEnergyvsiphi_Subdetieta.book(ib, _emap);
 	_cEnergy_depth.book(ib, _emap);
+	_cTiming_depth.book(ib, _emap);
 	_cTiming_depth.book(ib, _emap);
 	_cTiming_FEDSlot.book(ib, _emap);
 	_cEnergy_CrateSpigot.book(ib, _emap);
