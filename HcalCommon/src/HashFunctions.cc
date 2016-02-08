@@ -84,7 +84,7 @@ namespace hcaldqm
 			return hash;
 		}
 
-		uint32_t hash_Channel(HcalDetId const& did)
+		uint32_t hash_DChannel(HcalDetId const& did)
 		{
 			return utilities::hash(did);
 		}
@@ -181,7 +181,7 @@ namespace hcaldqm
 			return std::string(name);
 		}
 
-		std::string name_Channel(HcalDetId const& did)
+		std::string name_DChannel(HcalDetId const& did)
 		{
 			char name[40];
 			sprintf(name, "%sieta%diphi%dd%d",
@@ -276,6 +276,15 @@ namespace hcaldqm
 					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false));
 		}
 
+		uint32_t hash_EChannel(HcalElectronicsId const& eid)
+		{
+			return eid.isVMEid() ?
+				utilities::hash(HcalElectronicsId(eid.fiberChanId(),
+					eid.fiberIndex(), eid.spigot(), eid.crateId())):
+				utilities::hash(HcalElectronicsId(eid.crateId(),
+					eid.slot(), eid.crateIndex(), eid.fiberChanId(), false));
+		}
+
 		std::string name_FED(HcalElectronicsId const& eid)
 		{
 			char name[10];
@@ -349,6 +358,13 @@ namespace hcaldqm
 			return eid.isVMEid()?std::string("VME"):std::string("uTCA");
 		}
 
+		std::string name_EChannel(HcalElectronicsId const& eid)
+		{
+			std::stringstream stream;
+			stream << eid;
+			return std::string(stream.str());
+		}
+
 		/**
 		 *	by TrigTowerDetId
 		 */
@@ -384,6 +400,12 @@ namespace hcaldqm
 				1, 1, tid.depth()));
 		}
 
+		uint32_t hash_TChannel(HcalTrigTowerDetId const& tid)
+		{
+			return utilities::hash(HcalTrigTowerDetId(
+				tid.ieta(), tid.iphi(), tid.depth()));
+		}
+
 		std::string name_TTSubdet(HcalTrigTowerDetId const& tid)
 		{
 			return constants::TPSUBDET_NAME[tid.ietaAbs()<29?0:1];
@@ -413,6 +435,13 @@ namespace hcaldqm
 			char name[10];
 			sprintf(name, "depth%d", tid.depth());
 			return std::string(name);
+		}
+
+		std::string name_TChannel(HcalTrigTowerDetId const& tid)
+		{
+			std::ostringstream stream;
+			stream << tid;
+			return std::string(stream.str());
 		}
 	}
 }

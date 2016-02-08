@@ -31,7 +31,7 @@ namespace hcaldqm
 		uint32_t hash_depth(HcalDetId const&);
 		uint32_t hash_HFPMiphi(HcalDetId const&);
 		uint32_t hash_HBHEPartition(HcalDetId const&);
-		uint32_t hash_Channel(HcalDetId const&);
+		uint32_t hash_DChannel(HcalDetId const&);
 
 		/**
 		 *	by ElectronicsId
@@ -46,6 +46,7 @@ namespace hcaldqm
 		uint32_t hash_FiberFiberCh(HcalElectronicsId const&);
 		uint32_t hash_FiberCh(HcalElectronicsId const&);
 		uint32_t hash_Electronics(HcalElectronicsId const&);
+		uint32_t hash_EChannel(HcalElectronicsId const&);
 
 		/**
 		 *	by TrigTowerDetId
@@ -55,6 +56,7 @@ namespace hcaldqm
 		uint32_t hash_TTSubdetPMiphi(HcalTrigTowerDetId const&);
 		uint32_t hash_TTSubdetieta(HcalTrigTowerDetId const&);
 		uint32_t hash_TTdepth(HcalTrigTowerDetId const&);
+		uint32_t hash_TChannel(HcalTrigTowerDetId const&);
 
 		std::string name_Subdet(HcalDetId const&);
 		std::string name_Subdetiphi(HcalDetId const&);
@@ -67,7 +69,7 @@ namespace hcaldqm
 		std::string name_depth(HcalDetId const&);
 		std::string name_HFPMiphi(HcalDetId const&);
 		std::string name_HBHEPartition(HcalDetId const&);
-		std::string name_Channel(HcalDetId const&);
+		std::string name_DChannel(HcalDetId const&);
 
 		std::string name_FED(HcalElectronicsId const&);
 		std::string name_FEDSpigot(HcalElectronicsId const&);
@@ -79,12 +81,14 @@ namespace hcaldqm
 		std::string name_FiberFiberCh(HcalElectronicsId const&);
 		std::string name_FiberCh(HcalElectronicsId const&);
 		std::string name_Electronics(HcalElectronicsId const&);
+		std::string name_EChannel(HcalElectronicsId const&);
 
 		std::string name_TTSubdet(HcalTrigTowerDetId const&);
 		std::string name_TTSubdetPM(HcalTrigTowerDetId const&);
 		std::string name_TTSubdetPMiphi(HcalTrigTowerDetId const&);
 		std::string name_TTSubdetieta(HcalTrigTowerDetId const&);
 		std::string name_TTdepth(HcalTrigTowerDetId const&);
+		std::string name_TChannel(HcalTrigTowerDetId const&);
 
 		enum HashType
 		{
@@ -99,7 +103,7 @@ namespace hcaldqm
 			fdepth = 8,
 			fHFPMiphi = 9,
 			fHBHEPartition = 10,
-			fChannel = 11,
+			fDChannel = 11,
 			nHashType_did = 12,
 			fFED = 13,
 			fFEDSpigot = 14,
@@ -111,14 +115,16 @@ namespace hcaldqm
 			fFiberFiberCh = 20,
 			fFiberCh = 21,
 			fElectronics = 22,
-			nHashType_eid = 23,
-			fTTSubdet = 24,
-			fTTSubdetPM = 25,
-			fTTSubdetPMiphi = 26,
-			fTTSubdetieta = 27,
-			fTTdepth = 28,
-			nHashType_tid = 29,
-			nHashType = 30
+			fEChannel = 23, 
+			nHashType_eid = 24,
+			fTTSubdet = 25,
+			fTTSubdetPM = 26,
+			fTTSubdetPMiphi = 27,
+			fTTSubdetieta = 28,
+			fTTdepth = 29,
+			fTChannel = 30,
+			nHashType_tid = 31,
+			nHashType = 32
 		};
 		typedef uint32_t (*hash_function_did)(HcalDetId const&);
 		typedef uint32_t (*hash_function_eid)(HcalElectronicsId const&);
@@ -130,48 +136,48 @@ namespace hcaldqm
 			hash_Subdet, hash_Subdetiphi, hash_Subdetieta, 
 			hash_Subdetdepth, hash_SubdetPM, hash_SubdetPMiphi,
 			hash_iphi, hash_ieta, hash_depth, hash_HFPMiphi, 
-			hash_HBHEPartition, hash_Channel
+			hash_HBHEPartition, hash_DChannel
 		};
 		hash_function_eid const hash_eid[nHashType_eid-nHashType_did-1] = {
 			hash_FED, hash_FEDSpigot, hash_FEDSlot, 
 			hash_Crate, hash_CrateSpigot, hash_CrateSlot,
 			hash_Fiber, hash_FiberFiberCh, hash_FiberCh,
-			hash_Electronics
+			hash_Electronics, hash_EChannel
 		};
 		hash_function_tid const hash_tid[nHashType_tid-nHashType_eid-1] = {
 			hash_TTSubdet, hash_TTSubdetPM, hash_TTSubdetPMiphi, 
-			hash_TTSubdetieta, hash_TTdepth
+			hash_TTSubdetieta, hash_TTdepth, hash_TChannel
 		};
 		name_function_did const name_did[nHashType_did] = {
 			name_Subdet, name_Subdetiphi, name_Subdetieta, 
 			name_Subdetdepth, name_SubdetPM, name_SubdetPMiphi,
 			name_iphi, name_ieta, name_depth, name_HFPMiphi, 
-			name_HBHEPartition, name_Channel
+			name_HBHEPartition, name_DChannel
 		};
 		name_function_eid const name_eid[nHashType_eid-nHashType_did-1] = {
 			name_FED, name_FEDSpigot, name_FEDSlot,
 			name_Crate, name_CrateSpigot, name_CrateSlot,
 			name_Fiber, name_FiberFiberCh, name_FiberCh,
-			name_Electronics
+			name_Electronics, name_EChannel
 		};
 		name_function_tid const name_tid[nHashType_tid-nHashType_eid-1] = {
 			name_TTSubdet, name_TTSubdetPM, name_TTSubdetPMiphi,
-			name_TTSubdetieta, name_TTdepth
+			name_TTSubdetieta, name_TTdepth, name_TChannel
 		};
 		int const nhashes = nHashType_did + (nHashType_eid-nHashType_did-1) + 
 			(nHashType_tid-nHashType_eid-1);
 		std::string const hash_names[nhashes] = {
 			"Subdet", "Subdetiphi", "Subdetieta", "Subdetdepth",
 			"SubdetPM", "SubdetPMiphi", "iphi", "ieta", "depth",
-			"HFPMiphi", "HBHEPartition", "Channel", 
+			"HFPMiphi", "HBHEPartition", "DChannel"
 
 			"FED", "FEDSpigot", "FEDSlot",
 			"Crate", "CrateSpigot", "CrateSlot",
 			"Fiber", "FiberFiberCh", "FiberCh",
-			"Electronics",
+			"Electronics", "EChannel"
 
 			"TTSubdet", "TTSubdetPM", "TTSubdetPMiphi",
-			"TTSubdetieta", "TTdepth"
+			"TTSubdetieta", "TTdepth", "TChannel"
 		};
 	}
 }
