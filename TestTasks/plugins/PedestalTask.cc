@@ -20,8 +20,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		new quantity::DetectorQuantity(quantity::fieta), 
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fADC_5));
-	_cPed.initialize(hashfunctions::fChannel);
-	_cPedRef.initialize(hashfunctions::fChannel, compact::fDoubleValued);
+	_cPed.initialize(hashfunctions::fDChannel);
+	_cPedRef.initialize(hashfunctions::fDChannel, compact::fDoubleValued);
 	_cMeanDBRef_Subdet.initialize(_name, "MeanDBRef", hashfunctions::fSubdet,
 		new quantity::ValueQuantity(quantity::fAroundZero),
 		new quantity::ValueQuantity(quantity::fN, true));

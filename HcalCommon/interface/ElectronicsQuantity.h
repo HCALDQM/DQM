@@ -7,6 +7,8 @@
  */
 
 #include "DQM/HcalCommon/interface/Quantity.h"
+#include "boost/unordered_map.hpp"
+#include "boost/foreach.hpp"
 
 namespace hcaldqm
 {
@@ -210,6 +212,30 @@ namespace hcaldqm
 
 			protected:
 				ElectronicsQuantityType _type;
+		};
+
+		//	sorted list of FEDs you want to have on the axis
+		class FEDQuantity : public ElectronicsQuantity
+		{
+			public:
+				FEDQuantity() {}
+				FEDQuantity(std::vector<int> const& vFEDs) :
+					ElectronicsQuantity(fFED, false)
+				{this->setup(vFEDs);}
+				virtual ~FEDQuantity() {}
+
+				virtual void setup(std::vector<int> const& vFEDs);
+				virtual int getValue(HcalElectronicsId const&);
+				virtual uint32_t getBin(HcalElectronicsId const&);
+
+				virtual int nbins() {return _feds.size();}
+				virtual double min() {return 0;}
+				virtual double max() {return _feds.size();}
+				virtual std::vector<std::string> getLabels();
+
+			protected:
+				typedef boost::unordered_map<int, uint32_t> FEDMap;
+				FEDMap _feds;
 		};
 	}
 }

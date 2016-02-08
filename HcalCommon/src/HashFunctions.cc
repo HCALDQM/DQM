@@ -282,7 +282,7 @@ namespace hcaldqm
 				utilities::hash(HcalElectronicsId(eid.fiberChanId(),
 					eid.fiberIndex(), eid.spigot(), eid.crateId())):
 				utilities::hash(HcalElectronicsId(eid.crateId(),
-					eid.slot(), eid.crateIndex(), eid.fiberChanId(), false));
+					eid.slot(), eid.crateId(), eid.fiberChanId(), false));
 		}
 
 		std::string name_FED(HcalElectronicsId const& eid)

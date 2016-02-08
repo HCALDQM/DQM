@@ -60,8 +60,8 @@ class LEDTask : public DQTask
 		double _lowHF;
 
 		//	Compact
-		ContainerXXX _cSignals_Channel;
-		ContainerXXX _cTiming_Channel;
+		ContainerXXX _cSignals_DChannel;
+		ContainerXXX _cTiming_DChannel;
 
 		//	1D
 		Container1D		_cSignalMean_Subdet;

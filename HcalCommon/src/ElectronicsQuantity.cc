@@ -554,5 +554,36 @@ namespace hcaldqm
 				}
 			return labels;
 		}
+
+		void FEDQuantity::setup(std::vector<int> const& vFEDs)
+		{
+			for (uint32_t i=0; i<vFEDs.size(); i++)
+				_feds.insert(std::make_pair(vFEDs[i], i));
+		}
+
+		int FEDQuantity::getValue(HcalElectronicsId const& eid)
+		{
+			int fed = eid.isVMEid()?eid.dccid()+FED_VME_MIN:
+				utilities::crate2fed(eid.crateId())-FED_uTCA_MIN;
+			return _feds[fed];
+		}
+
+		uint32_t FEDQuantity::getBin(HcalElectronicsId const& eid)
+		{
+			return getValue(eid)+1;
+		}
+
+		std::vector<std::string> FEDQuantity::getLabels()
+		{
+			std::vector<std::string> labels(_feds.size());
+			char name[5];
+			BOOST_FOREACH(FEDMap::value_type &v, _feds)
+			{
+				sprintf(name, "%d", v.first);
+				labels[v.second] = std::string(name);
+			}
+
+			return labels;
+		}
 	}
 }

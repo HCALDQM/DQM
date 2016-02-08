@@ -47,7 +47,8 @@
 #include "DQM/HcalCommon/interface/Constants.h"
 
 #include "boost/lexical_cast.hpp"
-#include <ostringstream>
+#include <sstream>
+#include <algorithm>
 #include <typeinfo>
 
 #endif

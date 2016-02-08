@@ -101,8 +101,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 
 	
 	//	initialize compact containers
-	_cSignals_Channel.initialize(hashfunctions::fChannel);
-	_cTiming_Channel.initialize(hashfunctions::fChannel);
+	_cSignals_DChannel.initialize(hashfunctions::fDChannel);
+	_cTiming_DChannel.initialize(hashfunctions::fDChannel);
 
 	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
@@ -177,8 +177,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_cMissing_depth.book(ib, _emap);
 
 	//	book compact containers
-	_cSignals_Channel.book(_emap);
-	_cTiming_Channel.book(_emap);
+	_cSignals_DChannel.book(_emap);
+	_cTiming_DChannel.book(_emap);
 
 	_emaphash.initialize(_emap, hcaldqm::electronicsmap::fDHashMap);
 }
@@ -199,14 +199,14 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_cTimingMean_depth.reset();
 	_cTimingRMS_depth.reset();
 
-	_cSignals_Channel.dump(&_cSignalMean_Subdet, &_cMissing_depth, true);
-	_cSignals_Channel.dump(&_cSignalRMS_Subdet, &_cMissing_depth,false);
-	_cTiming_Channel.dump(&_cTimingMean_Subdet, &_cMissing_depth,true);
-	_cTiming_Channel.dump(&_cTimingRMS_Subdet, &_cMissing_depth,false);
-	_cSignals_Channel.dump(&_cSignalMean_depth, &_cMissing_depth,true);
-	_cSignals_Channel.dump(&_cSignalRMS_depth, &_cMissing_depth,false);
-	_cTiming_Channel.dump(&_cTimingMean_depth,&_cMissing_depth, true);
-	_cTiming_Channel.dump(&_cTimingRMS_depth,&_cMissing_depth, false);
+	_cSignals_DChannel.dump(&_cSignalMean_Subdet, &_cMissing_depth, true);
+	_cSignals_DChannel.dump(&_cSignalRMS_Subdet, &_cMissing_depth,false);
+	_cTiming_DChannel.dump(&_cTimingMean_Subdet, &_cMissing_depth,true);
+	_cTiming_DChannel.dump(&_cTimingRMS_Subdet, &_cMissing_depth,false);
+	_cSignals_DChannel.dump(&_cSignalMean_depth, &_cMissing_depth,true);
+	_cSignals_DChannel.dump(&_cSignalRMS_depth, &_cMissing_depth,false);
+	_cTiming_DChannel.dump(&_cTimingMean_depth,&_cMissing_depth, true);
+	_cTiming_DChannel.dump(&_cTimingRMS_depth,&_cMissing_depth, false);
 }
 
 /* virtual */ void LaserTask::_process(edm::Event const& e,
@@ -241,8 +241,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 
 		double aveTS = utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
-		_cSignals_Channel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
-		_cTiming_Channel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
+		_cSignals_DChannel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
+		_cTiming_DChannel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		//	 only for local processing
 		if (_ptype==fLocal)
@@ -286,8 +286,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 
 		double aveTS = utilities::aveTS<HODataFrame>(digi, 8.5, 0,
 			digi.size()-1);
-		_cSignals_Channel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
-		_cTiming_Channel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
+		_cSignals_DChannel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
+		_cTiming_DChannel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		//	 only for local processing
 		if (_ptype==fLocal)
@@ -332,8 +332,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 
 		double aveTS = utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
-		_cSignals_Channel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
-		_cTiming_Channel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
+		_cSignals_DChannel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
+		_cTiming_DChannel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
 
 		//	 only for local processing
 		if (_ptype==fLocal)

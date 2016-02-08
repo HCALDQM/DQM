@@ -98,6 +98,10 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	edm::ESHandle<HcalDbService> dbService;
 	es.get<HcalDbRecord>().get(dbService);
 	_emap = dbService->getHcalMapping();
+	std::vector<int> vFEDs = utilities::getFEDList(_emap);
+	for (std::vector<int>::const_iterator it=vFEDs.begin(); it!=vFEDs.end();
+		++it)
+		std::cout << "FED: " << *it << std::endl;
 
 	std::vector<uint32_t> vVME;
 	vVME.push_back(
