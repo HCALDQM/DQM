@@ -495,6 +495,104 @@ namespace hcaldqm
 		}
 	}
 
+	/* virtual */ void Container1D::load(DQMStore *store,
+		HcalElectronicsMap const* emap, filter::HashFilter const& filter,
+		std::string const &subsystem,
+		std::string const& aux, std::string const& prepend,
+		DQMStore::OpenRunDirs mode)
+	{
+		//	full path to where all the plots are living
+		//	prepend/subsystem/taskname/QxvsQy_auxilary/HashType
+		//	if loaded and not stripped, then 
+		//	prepend/subsystem/Run summary/taskname/...
+		_logger.debug(_hashmap.getHashTypeName());
+		std::string path = (prepend==""?prepend:prepend+"/")+
+			subsystem+"/"+(mode==DQMStore::KeepRunDirs?"Run summary/":"")
+			+_folder+"/"+_qname+
+			(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName();
+		_logger.debug("FULLPATH::"+path);
+
+		if (_hashmap.isDHash())
+		{
+			//	for Detector Hashes
+			std::vector<HcalGenericDetId> dids = emap->allPrecisionId();
+			for (std::vector<HcalGenericDetId>::const_iterator it=
+				dids.begin(); it!=dids.end(); ++it)
+			{
+				//	skip trigger towers and calibration
+				if (!it->isHcalDetId())
+					continue;
+
+				HcalDetId did = HcalDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(did);
+				MEMap::iterator mit = _mes.find(hash);
+
+				//	skip this guy, it's already present
+				if (mit!=_mes.end())
+					continue;
+				//	filter out what's not needed
+				if (filter.filter(did))
+					continue;
+
+				_logger.debug(_hashmap.getName(did));
+				_mes.insert(
+					std::make_pair(hash, 
+						store->get(path+"/"+_hashmap.getName(did))));
+			}
+		}
+		
+		else if (_hashmap.isEHash())
+		{
+			//	for Electronics Hashes
+			std::vector<HcalElectronicsId> eids = 
+				emap->allElectronicsIdPrecision();
+			for (std::vector<HcalElectronicsId>::const_iterator it=
+				eids.begin(); it!=eids.end(); ++it)
+			{
+				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
+				uint32_t hash = _hashmap.getHash(eid);
+				MEMap::iterator mit = _mes.find(hash);
+
+				//	skip this guy, it's already present
+				if (mit!=_mes.end())
+					continue;
+				//	filter out
+				if (filter.filter(eid))
+					continue;
+
+				_logger.debug(_hashmap.getName(eid));
+				_mes.insert(
+					std::make_pair(hash, 
+						store->get(path+"/"+_hashmap.getName(eid))));
+			}
+		}
+		else if (_hashmap.isTHash())
+		{
+			//	for TrigTower Hashes
+			std::vector<HcalTrigTowerDetId> tids = 
+				emap->allTriggerId();
+			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
+				tids.begin(); it!=tids.end(); ++it)
+			{
+				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(tid);
+				MEMap::iterator mit = _mes.find(hash);
+
+				//	skip if this guy already exists
+				if (mit!=_mes.end())
+					continue;
+				//	 filter out
+				if (filter.filter(tid))
+					continue;
+
+				_logger.debug(_hashmap.getName(tid));
+				_mes.insert(
+					std::make_pair(hash, 
+						store->get(path+"/"+_hashmap.getName(tid))));
+			}
+		}
+	}
+
 	//	Book
 	/* virtual */ void Container1D::book(DQMStore::IBooker& ib, 
 		HcalElectronicsMap const *emap,
@@ -584,6 +682,101 @@ namespace hcaldqm
 		}
 	}
 
+	//	Book
+	/* virtual */ void Container1D::book(DQMStore::IBooker& ib, 
+		HcalElectronicsMap const *emap, filter::HashFilter const& filter,
+		std::string subsystem, std::string aux)
+	{
+		//	full path to where all the plots are living
+		//	subsystem/taskname/QxvsQy_auxilary/HashType
+		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qname+
+			(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName());
+		_logger.debug(_hashmap.getHashTypeName());
+		if (_hashmap.isDHash())
+		{
+			//	for Detector Hashes
+			std::vector<HcalGenericDetId> dids = emap->allPrecisionId();
+			for (std::vector<HcalGenericDetId>::const_iterator it=
+				dids.begin(); it!=dids.end(); ++it)
+			{
+				//	skip trigger towers and calibration
+				if (!it->isHcalDetId())
+					continue;
+
+				HcalDetId did = HcalDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(did);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+				if (filter.filter(did))
+					continue;
+
+				_logger.debug(_hashmap.getName(did));
+				_mes.insert(
+					std::make_pair(hash, ib.book1D(_hashmap.getName(did),
+					_hashmap.getName(did), _qx->nbins(), _qx->min(), 
+					_qx->max())));
+				
+				//	customize
+				customize(_mes[hash]);
+			}
+		}
+		
+		else if (_hashmap.isEHash())
+		{
+			//	for Electronics Hashes
+			std::vector<HcalElectronicsId> eids = 
+				emap->allElectronicsIdPrecision();
+			for (std::vector<HcalElectronicsId>::const_iterator it=
+				eids.begin(); it!=eids.end(); ++it)
+			{
+				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
+				uint32_t hash = _hashmap.getHash(eid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+				if (filter.filter(eid))
+					continue;
+
+				_logger.debug(_hashmap.getName(eid));
+				_mes.insert(
+					std::make_pair(hash,
+					ib.book1D(_hashmap.getName(eid),
+					_hashmap.getName(eid), 
+					_qx->nbins(), _qx->min(), _qx->max())));
+
+				//	customize
+				customize(_mes[hash]);
+			}
+		}
+		else if (_hashmap.isTHash())
+		{
+			//	for TrigTower Hashes
+			std::vector<HcalTrigTowerDetId> tids = 
+				emap->allTriggerId();
+			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
+				tids.begin(); it!=tids.end(); ++it)
+			{
+				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(tid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+				if (filter.filter(tid))
+					continue;
+
+				_logger.debug(_hashmap.getName(tid));
+				_mes.insert(
+					std::make_pair(hash,
+					ib.book1D(_hashmap.getName(tid),
+					_hashmap.getName(tid), 
+					_qx->nbins(), _qx->min(), _qx->max())));
+				//	customize
+				customize(_mes[hash]);
+			}
+		}
+	}
+
 	/* virtual */ void Container1D::book(DQMStore *store, 
 		HcalElectronicsMap const *emap,
 		std::string subsystem, std::string aux)
@@ -658,6 +851,100 @@ namespace hcaldqm
 				uint32_t hash = _hashmap.getHash(tid);
 				MEMap::iterator mit = _mes.find(hash);
 				if (mit!=_mes.end())
+					continue;
+
+				_logger.debug(_hashmap.getName(tid));
+				_mes.insert(
+					std::make_pair(hash,
+					store->book1D(_hashmap.getName(tid),
+					_hashmap.getName(tid), 
+					_qx->nbins(), _qx->min(), _qx->max())));
+				//	customize
+				customize(_mes[hash]);
+			}
+		}
+	}
+
+	/* virtual */ void Container1D::book(DQMStore *store, 
+		HcalElectronicsMap const *emap, filter::HashFilter const& filter,
+		std::string subsystem, std::string aux)
+	{
+		//	full path to where all the plots are living
+		//	subsystem/taskname/QxvsQy_auxilary/HashType
+		store->setCurrentFolder(subsystem+"/"+_folder+"/"+_qname+
+			(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName());
+		_logger.debug(_hashmap.getHashTypeName());
+		if (_hashmap.isDHash())
+		{
+			//	for Detector Hashes
+			std::vector<HcalGenericDetId> dids = emap->allPrecisionId();
+			for (std::vector<HcalGenericDetId>::const_iterator it=
+				dids.begin(); it!=dids.end(); ++it)
+			{
+				//	skip trigger towers and calibration
+				if (!it->isHcalDetId())
+					continue;
+
+				HcalDetId did = HcalDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(did);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+				if (filter.filter(did))
+					continue;
+
+				_logger.debug(_hashmap.getName(did));
+				_mes.insert(
+					std::make_pair(hash, store->book1D(_hashmap.getName(did),
+					_hashmap.getName(did), _qx->nbins(), _qx->min(), 
+					_qx->max())));
+				
+				//	customize
+				customize(_mes[hash]);
+			}
+		}
+		
+		else if (_hashmap.isEHash())
+		{
+			//	for Electronics Hashes
+			std::vector<HcalElectronicsId> eids = 
+				emap->allElectronicsIdPrecision();
+			for (std::vector<HcalElectronicsId>::const_iterator it=
+				eids.begin(); it!=eids.end(); ++it)
+			{
+				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
+				uint32_t hash = _hashmap.getHash(eid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+				if (filter.filter(eid))
+					continue;
+
+				_logger.debug(_hashmap.getName(eid));
+				_mes.insert(
+					std::make_pair(hash,
+					store->book1D(_hashmap.getName(eid),
+					_hashmap.getName(eid), 
+					_qx->nbins(), _qx->min(), _qx->max())));
+
+				//	customize
+				customize(_mes[hash]);
+			}
+		}
+		else if (_hashmap.isTHash())
+		{
+			//	for TrigTower Hashes
+			std::vector<HcalTrigTowerDetId> tids = 
+				emap->allTriggerId();
+			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
+				tids.begin(); it!=tids.end(); ++it)
+			{
+				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
+				uint32_t hash = _hashmap.getHash(tid);
+				MEMap::iterator mit = _mes.find(hash);
+				if (mit!=_mes.end())
+					continue;
+				if (filter.filter(tid))
 					continue;
 
 				_logger.debug(_hashmap.getName(tid));

@@ -14,6 +14,7 @@
 #include "DQM/HcalCommon/interface/ValueQuantity.h"
 #include "DQM/HcalCommon/interface/Container.h"
 #include "DQM/HcalCommon/interface/HashMapper.h"
+#include "DQM/HcalCommon/interface/HashFilter.h"
 #include "DQM/HcalCommon/interface/Utilities.h"
 
 #include <vector>
@@ -173,9 +174,15 @@ namespace hcaldqm
 			virtual void book(DQMStore::IBooker&, HcalElectronicsMap const*,
 				std::string subsystem="Hcal",
 				std::string aux="");
+			virtual void book(DQMStore::IBooker&, HcalElectronicsMap const*,
+				filter::HashFilter const&, std::string const& subsystem="Hcal",
+				std::string const& aux="");
 			virtual void book(DQMStore*, HcalElectronicsMap const*,
 				std::string subsystem="Hcal",
 				std::string aux="");
+			virtual void book(DQMStore*, HcalElectronicsMap const*,
+				filter::HashFilter const&, std::string const& subsystem="Hcal",
+				std::string const& aux="");
 
 			//	loading using DQMStore
 			//	@DQMStore
@@ -187,6 +194,12 @@ namespace hcaldqm
 			//	otherwise there is Run Summary folde. Used for retrieving 
 			//	MEs which were loaded into the DQM store from a file
 			virtual void load(DQMStore*, HcalElectronicsMap const*,
+				std::string const& subsystem="Hcal", 
+				std::string const& aux="",
+				std::string const& prepend="", DQMStore::OpenRunDirs
+				mode=DQMStore::StripRunDirs);
+			virtual void load(DQMStore*, HcalElectronicsMap const*,
+				filter::HashFilter const&,
 				std::string const& subsystem="Hcal", 
 				std::string const& aux="",
 				std::string const& prepend="", DQMStore::OpenRunDirs
