@@ -296,7 +296,7 @@ namespace hcaldqm
 			HcalElectronicsId fibereid = getEid_FiberuTCA(v/FIBERCH_NUM);
 			HcalElectronicsId fcheid = getEid_FiberCh(v%FIBERCH_NUM);
 			return HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
-				fibereid.fiberIndex(), fcheid.fiberChanId(), false);
+				fibereid.fiberIndex(), fcheid.fiberChanId());
 		}
 
 		HcalElectronicsId getEid_FiberVMEFiberCh(int v)

@@ -79,9 +79,8 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	_cPerformance.initialize(_name, "Performance",
 		new quantity::ValueQuantity(quantity::fLS),
 		new quantity::ValueQuantity(quantity::fEvents));
-	_cTiming_FED.initialize(_name, "Timing", 
-		hashfunctions::fFED,
-		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+	_cTiming.initialize(_name, "Timing",
+		new quantity::ElectronicsQuantity(quantity::fFEDuTCASlot),
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fTiming_ns));
 
@@ -104,7 +103,7 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	_cEnergyvsiphi_Subdetieta.book(ib, _emap);
 	_cEnergy_depth.book(ib, _emap);
 	_cTiming_depth.book(ib, _emap);
-	_cTiming_FED.book(ib, _emap);
+	_cTiming_depth.book(ib, _emap);
 	_cTiming_FEDSlot.book(ib, _emap);
 	_cEnergy_CrateSpigot.book(ib, _emap);
 	_cEnergy_FED.book(ib, _emap);
