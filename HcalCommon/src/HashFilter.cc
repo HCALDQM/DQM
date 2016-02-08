@@ -5,7 +5,7 @@ namespace hcaldqm
 	namespace filter
 	{
 		HashFilter::HashFilter(FilterType ftype, HashType htype) : 
-			HashMapper(htype), _ftype(htype)
+			HashMapper(htype), _ftype(ftype)
 		{}
 
 		HashFilter::HashFilter(FilterType ftype, HashType htype,
@@ -14,9 +14,7 @@ namespace hcaldqm
 		{
 			for (std::vector<uint32_t>::const_iterator it=v.begin();
 				it!=v.end(); ++it)
-			{
 				_ids.insert(*it);		
-			}
 		}
 
 		HashFilter::HashFilter(HashFilter const& hf) :
@@ -29,48 +27,40 @@ namespace hcaldqm
 			HashType htype, std::vector<uint32_t> const& v)
 		{
 			HashMapper::initialize(htype);
-			_ftype = hf._ftype;
-			_ids = hf._ids;
+			_ftype = ftype;
+			for (std::vector<uint32_t>::const_iterator it=v.begin();
+				it!=v.end(); ++it)
+				_ids.insert(*it);		
 		}
 
-		/* virtual */ bool HashFilter::filter(HcalDetId const& did)
+		/* virtual */ bool HashFilter::filter(HcalDetId const& did) const
 		{
 			return _ftype==fFilter?
-				filter(getHash(did)):preserve(getHash(did));
+				skip(getHash(did)):preserve(getHash(did));
 		}
 
-		/* virtual */ bool HashFilter::filter(HcalElectronicsId const& eid)
+		/* virtual */ bool HashFilter::filter(HcalElectronicsId const& eid) 
+			const
 		{
 			return _ftype==fFilter?
-				filter(getHash(eid)):preserve(getHash(eid));
+				skip(getHash(eid)):preserve(getHash(eid));
 		}
 
 		/* virtual */ bool HashFilter::filter(HcalTrigTowerDetId const& tid)
+			const
 		{
 			return _ftype==fFilter?
-				filter(getHash(tid)):preserve(getHash(tid));
+				skip(getHash(tid)):preserve(getHash(tid));
 		}
 
-		/* virtual */ bool HashFilter::filter(uint32_t id)
+		/* virtual */ bool HashFilter::skip(uint32_t id) const
 		{
-			BOOST_FOREACH(FilterMap::value_type &hash, _ids)
-			{
-				if (hash==id)
-					return true;
-			}
-
-			return false;
+			return _ids.find(id)==_ids.end()?false:true;
 		}
 
-		/* virtual */ bool HashFilter::preserve(uint32_t id)
+		/* virtual */ bool HashFilter::preserve(uint32_t id) const
 		{
-			BOOST_FOREACH(FilterMap::value_type &hash, _ids)
-			{
-				if (hash==id)
-					return false;
-			}
-
-			return true;
+			return _ids.find(id)==_ids.end()?true:false;
 		}
 	}
 }

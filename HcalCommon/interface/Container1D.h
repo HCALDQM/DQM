@@ -175,14 +175,14 @@ namespace hcaldqm
 				std::string subsystem="Hcal",
 				std::string aux="");
 			virtual void book(DQMStore::IBooker&, HcalElectronicsMap const*,
-				filter::HashFilter const&, std::string const& subsystem="Hcal",
-				std::string const& aux="");
+				filter::HashFilter const&, std::string subsystem="Hcal",
+				std::string aux="");
 			virtual void book(DQMStore*, HcalElectronicsMap const*,
 				std::string subsystem="Hcal",
 				std::string aux="");
 			virtual void book(DQMStore*, HcalElectronicsMap const*,
-				filter::HashFilter const&, std::string const& subsystem="Hcal",
-				std::string const& aux="");
+				filter::HashFilter const&, std::string subsystem="Hcal",
+				std::string aux="");
 
 			//	loading using DQMStore
 			//	@DQMStore

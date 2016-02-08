@@ -20,7 +20,7 @@ namespace hcaldqm
 	using namespace mapper;
 	namespace filter
 	{
-		FilterType
+		enum FilterType
 		{
 			fFilter = 0,
 			fPreserver = 1,
@@ -47,17 +47,17 @@ namespace hcaldqm
 				//	true if should filter out and false if not
 				//	true => should skip this hash
 				//	false => should keep this hash
-				virtual bool filter(HcalDetId const&);
-				virtual bool filter(HcalElectronicsId const&);
-				virtual bool filter(HcalTrigTowerDetId const&);
+				virtual bool filter(HcalDetId const&) const;
+				virtual bool filter(HcalElectronicsId const&) const;
+				virtual bool filter(HcalTrigTowerDetId const&) const;
 
 			protected:	
 				FilterType						_ftype;
-				typedef boost::unordered_set<uint32_t > FilterMap			
+				typedef boost::unordered_set<uint32_t> FilterMap;
 				FilterMap						_ids;
 
-				virtual bool preserve(uint32_t);
-				virtual bool filter(uint32_t);
+				virtual bool preserve(uint32_t) const;
+				virtual bool skip(uint32_t) const;
 		};
 	}
 }

@@ -79,8 +79,9 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	_cPerformance.initialize(_name, "Performance",
 		new quantity::ValueQuantity(quantity::fLS),
 		new quantity::ValueQuantity(quantity::fEvents));
-	_cTiming.initialize(_name, "Timing",
-		new quantity::ElectronicsQuantity(quantity::fFEDuTCASlot),
+	_cTiming_FEDuTCA.initialize(_name, "Timing",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fTiming_ns));
 
@@ -98,12 +99,19 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 	es.get<HcalDbRecord>().get(dbService);
 	_emap = dbService->getHcalMapping();
 
+	std::vector<uint32_t> vVME;
+	vVME.push_back(
+		HcalElectronicsId(constants::FIBERCH_MIN, constants::FIBER_VME_MIN,
+		SPIGOT_MIN, CRATE_VME_MIN).rawId());
+	filter_Electronics.initialize(filter::fFilter, hashfunctions::fElectronics,
+		vVME);
+
 	_cEnergy_Subdet.book(ib, _emap);
 	_cTiming_SubdetPMiphi.book(ib, _emap);
 	_cEnergyvsiphi_Subdetieta.book(ib, _emap);
 	_cEnergy_depth.book(ib, _emap);
 	_cTiming_depth.book(ib, _emap);
-	_cTiming_depth.book(ib, _emap);
+	_cTiming_FEDuTCA.book(ib, _emap, filter_Electronics);
 	_cTiming_FEDSlot.book(ib, _emap);
 	_cEnergy_CrateSpigot.book(ib, _emap);
 	_cEnergy_FED.book(ib, _emap);

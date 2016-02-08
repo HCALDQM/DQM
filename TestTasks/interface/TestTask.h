@@ -35,6 +35,9 @@ class TestTask : public DQTask
 		//	tags
 		edm::InputTag	_tagHF;
 
+		//	Hcal Filters
+		filter::HashFilter filter_Electronics;
+
 		//	Electronics Map
 		HcalElectronicsMap const *_emap;
 
@@ -50,7 +53,7 @@ class TestTask : public DQTask
 		Container1D		_cEt_TTSubdetPM;
 		Container1D		_cEt_TTSubdetPMiphi;
 		Container1D		_cEt_TTSubdetieta;
-		ContainerSingle2D _cTiming;
+		Container2D		_cTiming_FEDuTCA;
 		ContainerSingle2D _cSummary;
 		ContainerSingleProf1D _cPerformance;
 
