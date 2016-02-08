@@ -63,8 +63,9 @@ namespace hcaldqm
 
 		uint32_t hash_HFPMiphi(HcalDetId const& did)
 		{
+			int iphi = did.iphi();
 			return utilities::hash(HcalDetId(HcalForward,
-				did.ieta()>0 ? 1 : -1, did.iphi(), 1));
+				did.ieta()>0 ? 1 : -1, iphi%2==0?iphi-1:iphi, 1));
 		}
 
 		uint32_t hash_HBHEPartition(HcalDetId const &did)

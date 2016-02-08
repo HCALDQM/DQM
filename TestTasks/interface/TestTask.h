@@ -50,7 +50,7 @@ class TestTask : public DQTask
 		Container1D		_cEt_TTSubdetPM;
 		Container1D		_cEt_TTSubdetPMiphi;
 		Container1D		_cEt_TTSubdetieta;
-		ContainerSingle2D _cTiming;
+		Container2D		_cTiming_FED;
 		ContainerSingle2D _cSummary;
 		ContainerSingleProf1D _cPerformance;
 
