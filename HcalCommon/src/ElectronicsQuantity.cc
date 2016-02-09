@@ -296,7 +296,7 @@ namespace hcaldqm
 			HcalElectronicsId fibereid = getEid_FiberuTCA(v/FIBERCH_NUM);
 			HcalElectronicsId fcheid = getEid_FiberCh(v%FIBERCH_NUM);
 			return HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
-				fibereid.fiberIndex(), fcheid.fiberChanId());
+				fibereid.fiberIndex(), fcheid.fiberChanId(), false);
 		}
 
 		HcalElectronicsId getEid_FiberVMEFiberCh(int v)
@@ -564,7 +564,7 @@ namespace hcaldqm
 		int FEDQuantity::getValue(HcalElectronicsId const& eid)
 		{
 			int fed = eid.isVMEid()?eid.dccid()+FED_VME_MIN:
-				utilities::crate2fed(eid.crateId())-FED_uTCA_MIN;
+				utilities::crate2fed(eid.crateId());
 			return _feds[fed];
 		}
 

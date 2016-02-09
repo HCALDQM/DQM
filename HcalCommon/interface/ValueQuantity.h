@@ -37,29 +37,32 @@ namespace hcaldqm
 			fQIE10TDC_64 = 24,
 			fQIE10TDC_16 = 25,
 			fDiffAbs = 26,
-			nValueQuantityType = 27
+
+			fRatio_0to2 = 27,
+			fN_to3000 = 28,
+			nValueQuantityType = 29
 		};
 		std::string const name_value[nValueQuantityType] = {
 			"N", "Events", "Energy", "Timing", "ADC", "ADC", "ADC",
 			"fC", "fC", "fC", "Timing", "Timing", "LS", "Et", "Et",
 			"FG", "Ratio", "DigiSize", "Q", "Ratio",
 			"dEtRatio", "SumdEt", "Timing", "ADC", "TDC", "TDC",
-			"Q"
+			"Q", "Ratio", "N",
 		};
 		double const min_value[nValueQuantityType] = {
 			0, 0, 0, -50, -0.5, -0.5, -0.5, 0, 0, 0, -0.5, 0, .5, 0,
 			0, 0, 0, -0.5, -1, 0.5, 0, 0, -0.5, -0.5, -0.5, -0.5,
-			0, 
+			0, 0, 0,
 		};
 		double const max_value[nValueQuantityType] = {
 			1000, 1000, 200, 50, 127.5, 5, 15, 10000, 1000, 3000,
 			9.5, 9.5, 4000.5, 255.5, 255.5, 2, 1, 20.5, 1, 1.5, 
-			1, 1000, 9.5, 255.5, 63.5, 15.5, 1
+			1, 1000, 9.5, 255.5, 63.5, 15.5, 1, 2, 3000
 		};
 		int const nbins_value[nValueQuantityType] = {
 			200, 200, 100, 200, 128, 100, 300, 1000, 200, 600, 
 			10, 200, 4000, 256, 128, 2, 100, 20, 100, 100, 100, 100, 10,
-			256, 64, 16, 200
+			256, 64, 16, 200, 100, 3000
 		};
 
 		class ValueQuantity : public Quantity

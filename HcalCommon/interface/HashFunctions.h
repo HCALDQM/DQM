@@ -169,12 +169,12 @@ namespace hcaldqm
 		std::string const hash_names[nhashes] = {
 			"Subdet", "Subdetiphi", "Subdetieta", "Subdetdepth",
 			"SubdetPM", "SubdetPMiphi", "iphi", "ieta", "depth",
-			"HFPMiphi", "HBHEPartition", "DChannel"
+			"HFPMiphi", "HBHEPartition", "DChannel",
 
 			"FED", "FEDSpigot", "FEDSlot",
 			"Crate", "CrateSpigot", "CrateSlot",
 			"Fiber", "FiberFiberCh", "FiberCh",
-			"Electronics", "EChannel"
+			"Electronics", "EChannel",
 
 			"TTSubdet", "TTSubdetPM", "TTSubdetPMiphi",
 			"TTSubdetieta", "TTdepth", "TChannel"
