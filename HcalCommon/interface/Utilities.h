@@ -128,6 +128,8 @@ namespace hcaldqm
 
 		//	returns a list of FEDs sorted.
 		std::vector<int> getFEDList(HcalElectronicsMap const*);
+		std::vector<int> getFEDVMEList(HcalElectronicsMap const*);
+		std::vector<int> getFEDuTCAList(HcalElectronicsMap const*);
 
 		uint16_t fed2crate(int fed);
 		uint16_t crate2fed(int crate);

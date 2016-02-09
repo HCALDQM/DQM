@@ -133,6 +133,58 @@ namespace hcaldqm
 			std::sort(vfeds.begin(), vfeds.end());
 			return vfeds;
 		}
+		std::vector<int> getFEDVMEList(HcalElectronicsMap const* emap)
+		{
+			std::vector<int> vfeds;
+			std::vector<HcalElectronicsId> vids = 
+				emap->allElectronicsIdPrecision();
+			for (std::vector<HcalElectronicsId>::const_iterator
+				it=vids.begin(); it!=vids.end(); ++it)
+			{
+				if (!it->isVMEid())
+					continue;
+				int fed = it->isVMEid()?it->dccid()+FED_VME_MIN:
+					crate2fed(it->crateId());
+				uint32_t n=0;
+				for (std::vector<int>::const_iterator jt=vfeds.begin();
+					jt!=vfeds.end(); ++jt)
+					if (fed==*jt)
+						break;
+					else
+						n++;
+				if (n==vfeds.size())
+					vfeds.push_back(fed);
+			}
+
+			std::sort(vfeds.begin(), vfeds.end());
+			return vfeds;
+		}
+		std::vector<int> getFEDuTCAList(HcalElectronicsMap const* emap)
+		{
+			std::vector<int> vfeds;
+			std::vector<HcalElectronicsId> vids = 
+				emap->allElectronicsIdPrecision();
+			for (std::vector<HcalElectronicsId>::const_iterator
+				it=vids.begin(); it!=vids.end(); ++it)
+			{
+				if (it->isVMEid())
+					continue;
+				int fed = it->isVMEid()?it->dccid()+FED_VME_MIN:
+					crate2fed(it->crateId());
+				uint32_t n=0;
+				for (std::vector<int>::const_iterator jt=vfeds.begin();
+					jt!=vfeds.end(); ++jt)
+					if (fed==*jt)
+						break;
+					else
+						n++;
+				if (n==vfeds.size())
+					vfeds.push_back(fed);
+			}
+
+			std::sort(vfeds.begin(), vfeds.end());
+			return vfeds;
+		}
 	}
 }
 
