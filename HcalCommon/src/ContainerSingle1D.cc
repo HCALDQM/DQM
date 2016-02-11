@@ -112,6 +112,39 @@ namespace hcaldqm
 		_me->Fill(_qx->getValue(x), _qy->getValue(y));
 	}
 
+	/* virtual */ double ContainerSingle1D::getBinContent(int x)
+	{
+		return _me->getBinContent(_qx->getBin(x));
+	}
+	/* virtual */ double ContainerSingle1D::getBinContent(double x)
+	{
+		return _me->getBinContent(_qx->getBin(x));
+	}
+	/* virtual */ double ContainerSingle1D::getBinEntries(int x)
+	{
+		return _me->getBinEntries(_qx->getBin(x));
+	}
+	/* virtual */ double ContainerSingle1D::getBinEntries(double x)
+	{
+		return _me->getBinEntries(_qx->getBin(x));
+	}
+	/* virtual */ void ContainerSingle1D:setBinContent(int x, int y)
+	{
+		_me->setBinContent(_qx->getBin(x), y);
+	}
+	/* virtual */ void ContainerSingle1D:setBinContent(int x, double y)
+	{
+		_me->setBinContent(_qx->getBin(x), y);
+	}
+	/* virtual */ void ContainerSingle1D:setBinContent(double x, int y)
+	{
+		_me->setBinContent(_qx->getBin(x), y);
+	}
+	/* virtual */ void ContainerSingle1D:setBinContent(double x, double y)
+	{
+		_me->setBinContent(_qx->getBin(x), y);
+	}
+
 	/* virtual */ void ContainerSingle1D::fill(HcalDetId const& id)
 	{
 		_me->Fill(_qx->getValue(id));
@@ -132,6 +165,26 @@ namespace hcaldqm
 			_me->Fill(_qx->getValue(id), _qy->getValue(x), y);
 		else
 			_me->Fill(_qy->getValue(x), _qy->getValue(y));
+	}
+
+	/* virtual */ double ContainerSingle1D::getBinContent(HcalDetId const& id)
+	{
+		return _me->getBinContent(_qx->getBin(id));
+	}
+	/* virtual */ double ContainerSingle1D::getBinEntries(HcalDetId const& id)
+	{
+		return _me->getBinEntries(_qx->getBin(id));
+	}
+
+	/* virtual */ void ContainerSingle1D::setBinContent(HcalDetId const& id,
+		int x)
+	{
+		_me->setBinContent(_qx->getBin(id), x)
+	}
+	/* virtual */ void ContainerSingle1D::setBinContent(HcalDetId const& id,
+		double x)
+	{
+		_me->setBinContent(_qx->getBin(id), x)
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(HcalElectronicsId const& id)
@@ -157,6 +210,26 @@ namespace hcaldqm
 			_me->Fill(_qy->getValue(x), _qy->getValue(y));
 	}
 
+	/* virtual */ double ContainerSingle1D::getBinContent(HcalElectronicsId const& id)
+	{
+		return _me->getBinContent(_qx->getBin(id));
+	}
+	/* virtual */ double ContainerSingle1D::getBinEntries(HcalElectronicsId const& id)
+	{
+		return _me->getBinEntries(_qx->getBin(id));
+	}
+
+	/* virtual */ void ContainerSingle1D::setBinContent(HcalElectronicsId const& id,
+		int x)
+	{
+		_me->setBinContent(_qx->getBin(id), x)
+	}
+	/* virtual */ void ContainerSingle1D::setBinContent(HcalElectronicsId const& id,
+		double x)
+	{
+		_me->setBinContent(_qx->getBin(id), x)
+	}
+
 	/* virtual */ void ContainerSingle1D::fill(HcalTrigTowerDetId const& id)
 	{
 		_me->Fill(_qx->getValue(id));
@@ -179,6 +252,26 @@ namespace hcaldqm
 			_me->Fill(_qx->getValue(id), _qy->getValue(x), y);
 		else
 			_me->Fill(_qy->getValue(x), _qy->getValue(y));
+	}
+
+	/* virtual */ double ContainerSingle1D::getBinContent(HcalTrigTowerDetId const& id)
+	{
+		return _me->getBinContent(_qx->getBin(id));
+	}
+	/* virtual */ double ContainerSingle1D::getBinEntries(HcalTrigTowerDetId const& id)
+	{
+		return _me->getBinEntries(_qx->getBin(id));
+	}
+
+	/* virtual */ void ContainerSingle1D::setBinContent(HcalTrigTowerDetId const& id,
+		int x)
+	{
+		_me->setBinContent(_qx->getBin(id), x)
+	}
+	/* virtual */ void ContainerSingle1D::setBinContent(HcalTrigTowerDetId const& id,
+		double x)
+	{
+		_me->setBinContent(_qx->getBin(id), x)
 	}
 }
 

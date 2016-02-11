@@ -54,6 +54,9 @@ class RawTask : public DQTask
 		HcalElectronicsMap const* _emap;
 		electronicsmap::ElectronicsMap _ehashmap;
 
+		//	vector of HcalElectronicsId for FEDs
+		std::vector<uint32_t> _vhashFEDs;
+
 		//	Filters
 		HashFilter _filter_VME;
 		HashFilter _filter_uTCA;

@@ -215,6 +215,54 @@ namespace hcaldqm
 		return _mes[_hashmap.getHash(tid)]->getMean(axis);
 	}
 
+	//	setBinContent
+	/* virtual */ void Container1D::setBinContent(HcalDetId const& id,
+		int x)
+	{
+		_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalDetId const& id,
+		double x)
+	{
+		_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalDetId const& id,
+		int x, int y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalDetId const& id,
+		int x, double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalDetId const& id,
+		double x, int y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalDetId const& id,
+		double x, double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+
 	//	by HcalElectronicsId
 	/* virtual */ void Container1D::fill(HcalElectronicsId const& did)
 	{
@@ -311,6 +359,54 @@ namespace hcaldqm
 		int axis)
 	{
 		return _mes[_hashmap.getHash(tid)]->getMean(axis);
+	}
+
+	//	setBinContent
+	/* virtual */ void Container1D::setBinContent(HcalElectronicsId const& id,
+		int x)
+	{
+		_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalElectronicsId const& id,
+		double x)
+	{
+		_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalElectronicsId const& id,
+		int x, int y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalElectronicsId const& id,
+		int x, double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalElectronicsId const& id,
+		double x, int y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalElectronicsId const& id,
+		double x, double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
 	}
 
 	//	by HcaTrigTowerlDetId
@@ -411,6 +507,54 @@ namespace hcaldqm
 		int axis)
 	{
 		return _mes[_hashmap.getHash(tid)]->getMean(axis);
+	}
+
+	//	setBinContent
+	/* virtual */ void Container1D::setBinContent(HcalTrigTowerDetId const& id,
+		int x)
+	{
+		_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalTrigTowerDetId const& id,
+		double x)
+	{
+		_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalTrigTowerDetId const& id,
+		int x, int y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalTrigTowerDetId const& id,
+		int x, double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalTrigTowerDetId const& id,
+		double x, int y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
+	}
+	/* virtual */ void Container1D::setBinContent(HcalTrigTowerDetId const& id,
+		double x, double y)
+	{
+		QuantityType qtype = _qx->type();
+		if (qtype==fValueQuantity || qtype==fFlagQuantity)
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x), y);
+		else
+			_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(id), x);
 	}
 
 	/* virtual */ void Container1D::load(DQMStore *store,

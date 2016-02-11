@@ -97,6 +97,36 @@ namespace hcaldqm
 			{return getBinContent(did, x);}
 			virtual double getMean(HcalDetId const&, int axis=1);
 
+			virtual void setBinContent(HcalDetId const&, int);
+			virtual void setBinContent(HcalDetId const&, double);
+			virtual void setBinContent(HcalDetId const&, int, int);
+			virtual void setBinContent(HcalDetId const&, int, double);
+			virtual void setBinContent(HcalDetId const&, double, double);
+			virtual void setBinContent(HcalDetId const&, double, int);
+			virtual void setBinContent(HcalDetId const& id, int x, int y, int)
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalDetId const& id, int x, double y, 
+				int);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalDetId const& id, double x, int y, 
+				int);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalDetId const& id, double x, double y,
+				int);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalDetId const& id, int x, int y, 
+				double);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalDetId const& id, int x, double y, 
+				double);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalDetId const& id, double x, int y, 
+				double);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalDetId const& id, double x, double y,
+				double);
+			{setBinContent(id, x, y);}
+
 			//	using ElectronicsId 
 			virtual void fill(HcalElectronicsId const&);
 			virtual void fill(HcalElectronicsId const&, int);
@@ -132,6 +162,37 @@ namespace hcaldqm
 			{return getBinContent(eid, x);}
 			virtual double getMean(HcalElectronicsId const&, int axis=1);
 
+			virtual void setBinContent(HcalElectronicsId const&, int);
+			virtual void setBinContent(HcalElectronicsId const&, double);
+			virtual void setBinContent(HcalElectronicsId const&, int, int);
+			virtual void setBinContent(HcalElectronicsId const&, int, double);
+			virtual void setBinContent(HcalElectronicsId const&, double, double);
+			virtual void setBinContent(HcalElectronicsId const&, double, int);
+			virtual void setBinContent(HcalElectronicsId const& id, int x, int y
+				, int)
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalElectronicsId const& id, int x, 
+				double y, int);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalElectronicsId const& id, double x, 
+				int y, int);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalElectronicId const& id, double x, 
+				double y, int);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalElectronicsId const& id, int x, 
+				int y, double);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalElectronicsId const& id, int x, 
+				double y, double);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalElectronicsId const& id, double x, 
+				int y, double);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalElectronicsId const& id, double x, 
+				double y, double);
+			{setBinContent(id, x, y);}
+
 			//	using DetId as mapper
 			virtual void fill(HcalTrigTowerDetId const&);
 			virtual void fill(HcalTrigTowerDetId const&, int);
@@ -166,6 +227,38 @@ namespace hcaldqm
 				double x, double)
 			{return getBinContent(tid, x);}
 			virtual double getMean(HcalTrigTowerDetId const&, int axis=1);
+
+			virtual void setBinContent(HcalTrigTowerDetId const&, int);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double);
+			virtual void setBinContent(HcalTrigTowerDetId const&, int, int);
+			virtual void setBinContent(HcalTrigTowerDetId const&, int, double);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double, 
+				double);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double, int);
+			virtual void setBinContent(HcalTrigTowerDetId const& id, int x, 
+				int y, int)
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalTrigTowerDetId const& id, int x, 
+				double y, int);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalTrigTowerDetId const& id, double x, 
+				int y, int);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalTrigTowerDetId const& id, double x, 
+				double y, int);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalTrigTowerDetId const& id, int x, 
+				int y, double);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalTrigTowerDetId const& id, int x, 
+				double y, double);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalTrigTowerDetId const& id, double x, 
+				int y, double);
+			{setBinContent(id, x, y);}
+			virtual void setBinContent(HcalTrigTowerDetId const& id, double x, 
+				double y, double);
+			{setBinContent(id, x, y);}
 
 			//	booking using IBooker
 			//	@aux - typically a cut or anything else

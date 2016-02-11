@@ -63,6 +63,22 @@ namespace hcaldqm
 			virtual double getBinContent(HcalDetId const&, int, double);
 			virtual double getBinContent(HcalDetId const&, double, double);
 
+			virtual void setBinContent(HcalDetId const&, int);
+			virtual void setBinContent(HcalDetId const&, double);
+			virtual void setBinContent(HcalDetId const&, int, int);
+			virtual void setBinContent(HcalDetId const&, int, double);
+			virtual void setBinContent(HcalDetId const&, double, int);
+			virtual void setBinContent(HcalDetId const&, double, double);
+			virtual void setBinContent(HcalDetId const&, int, int, int);
+			virtual void setBinContent(HcalDetId const&, int, double, int);
+			virtual void setBinContent(HcalDetId const&, double, int, int);
+			virtual void setBinContent(HcalDetId const&, double, double, int);
+			virtual void setBinContent(HcalDetId const&, int, int, double);
+			virtual void setBinContent(HcalDetId const&, int, double, double);
+			virtual void setBinContent(HcalDetId const&, double, int, double);
+			virtual void setBinContent(HcalDetId const&, double, double, 
+				double);
+
 			virtual void fill(HcalElectronicsId const&);
 			virtual void fill(HcalElectronicsId const&, int);
 			virtual void fill(HcalElectronicsId const&, double);
