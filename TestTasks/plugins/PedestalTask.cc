@@ -93,7 +93,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	//	book compact containers and load conditions pedestals
 	_cPed.book(_emap);
 	_cPedRef.book(_emap);
-	_cPedRef.load(dbService);
+	_cPedRef.loadPedestals(dbService);
 }
 
 /* virtual */ void PedestalTask::_resetMonitors(UpdateFreq uf)

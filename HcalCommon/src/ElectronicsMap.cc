@@ -61,5 +61,14 @@ namespace hcaldqm
 			uint32_t hash = did.rawId();
 			return _etype==fTHashMap? _ids[hash]:_emap->lookup(did);
 		}
+
+		void ElectronicsMap::print()
+		{
+			std::cout << "ElectronicsMap" << std::endl;
+			BOOST_FOREACH(EMapType::value_type &v, _ids)
+			{
+				std::cout << v.second << std::endl;
+			}
+		}
 	}
 }

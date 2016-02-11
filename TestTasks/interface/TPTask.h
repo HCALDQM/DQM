@@ -53,7 +53,7 @@ class TPTask : public DQTask
 		HashFilter _filter_uTCA;
 		HashFilter _filter_depth0;
 
-		//	Containers
+		//	Et/FG
 		Container1D _cEtData_TTSubdet;
 		Container1D _cEtEmul_TTSubdet;
 		Container2D	_cEtCorr_TTSubdet;
@@ -64,12 +64,24 @@ class TPTask : public DQTask
 		Container1D _cShapeEmul_TTSubdet;
 
 		//	Occupancies
-		Container2D _cOccupancyData_TTdepth;
 		Container2D _cOccupancyData_ElectronicsVME;
 		Container2D _cOccupancyData_ElectronicsuTCA;
-		Container2D _cOccupancyEmul_TTdepth;
 		Container2D _cOccupancyEmul_ElectronicsVME;
 		Container2D _cOccupancyEmul_ElectronicsuTCA;
+
+		//	Mismatches: Et and FG
+		Container2D _cEtMsm_ElectronicsVME;
+		Container2D _cEtMsm_ElectronicsuTCA;
+		Container2D _cFGMsm_ElectronicsVME;
+		Container2D _cFGMsm_ElectronicsuTCA;
+
+		//	Missing Data w.r.t. Emulator
+		Container2D _cMsnData_ElectronicsVME;
+		Container2D _cMsnData_ElectronicsuTCA;
+
+		//	Missing Emulator w.r.t. Data
+		Container2D _cMsnEmul_ElectronicsVME;
+		Container2D _cMsnEmul_ElectronicsuTCA;
 };
 
 #endif

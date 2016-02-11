@@ -14,7 +14,7 @@ LEDHarvesting::LEDHarvesting(edm::ParameterSet const& ps) :
 	_cSignalRatio_SubdetPM.initialize("LEDTrend", "SignalRatio", 
 		hashfunctions::fSubdetPM,
 		new quantity::RunNumber(_vruns),
-		new quantity::ValueQuantity(quantity::fRatio2),
+		new quantity::ValueQuantity(quantity::fRatio_0to2),
 		new quantity::ValueQuantity(quantity::fN, true));
 
 	//	initialize vectors of containers
@@ -39,13 +39,13 @@ LEDHarvesting::LEDHarvesting(edm::ParameterSet const& ps) :
 		//	 init new containers
 		_vcSignalRatio_SubdetPM[i].initialize("LEDTrend", "SignalRatio",
 			hashfunctions::fSubdetPM,
-			new quantity::ValueQuantity(quantity::fRatio2),
+			new quantity::ValueQuantity(quantity::fRatio_0to2),
 			new quantity::ValueQuantity(quantity::fN, true));
 		_vcSignalRatio_depth[i].initialize("LEDTrend", "SignalRatio",
 			hashfunctions::fdepth,
 			new quantity::DetectorQuantity(quantity::fieta),
 			new quantity::DetectorQuantity(quantity::fiphi),
-			new quantity::ValueQuantity(quantity::fRatio2));
+			new quantity::ValueQuantity(quantity::fRatio_0to2));
 	}
 
 	//	when processing after in ClientLike manner you have also

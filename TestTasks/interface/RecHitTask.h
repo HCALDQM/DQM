@@ -55,15 +55,23 @@ class RecHitTask : public DQTask
 		HashFilter _filter_FEDsVME;
 		HashFilter _filter_FEDsuTCA;
 
-		//	Containers
-		Container1D _cEnergy_SubdetPM;
-		Container1D _cTimingCut_SubdetPM;
+		//	Energy
+		Container1D _cEnergy_Subdet;
+		Container1D _cEnergyTotal_Subdet;
+		Container2D _cEnergyTotalPM_Subdet;
+		ContainerProf2D _cEnergy_depth;
+		ContainerProf2D _cEnergy_FEDVME;
+		ContainerProf2D _cEnergy_FEDuTCA;
+		ContainerProf2D _cEnergy_ElectronicsVME;
+		ContainerProf2D _cEnergy_ElectronicsuTCA;
 
 		//	Timing vs Energy
 		Container2D _cTimingvsEnergy_FEDSlot;
 
 		//	Timing
+		Container1D		_cTimingCut_Subdet;
 		Container1D		_cTimingCut_FEDSlot;
+		Container1D		_cTimingCut_HBHEPartition;
 		ContainerProf2D _cTimingCut_FEDVME;
 		ContainerProf2D	_cTimingCut_FEDuTCA;
 		ContainerProf2D _cTimingCut_ElectronicsVME;
@@ -73,7 +81,14 @@ class RecHitTask : public DQTask
 		Container2D _cOccupancy_FEDVME;
 		Container2D _cOccupancy_FEDuTCA;
 		Container2D _cOccupancy_ElectronicsVME;
-		Container2D _cOccupnacy_ElectronicsuTCA;
+		Container2D _cOccupancy_ElectronicsuTCA;
+		ContainerProf1D _cOccupancyvsLS_Subdet;
+
+		Container2D _cOccupancyCut_FEDVME;
+		Container2D _cOccupancyCut_FEDuTCA;
+		Container2D _cOccupancyCut_ElectronicsVME;
+		Container2D _cOccupancyCut_ElectronicsuTCA;
+		ContainerProf1D _cOccupancyCutvsLS_Subdet;
 };
 
 #endif

@@ -16,7 +16,9 @@
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
 #include "DQM/HcalCommon/interface/ContainerSingle1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingle2D.h"
+#include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf2D.h"
+#include "DQM/HcalCommon/interface/ElectronicsMap.h"
 
 using namespace hcaldqm;
 using namespace hcaldqm::filter;
@@ -36,10 +38,13 @@ class RawTask : public DQTask
 		virtual void _resetMonitors(UpdateFreq);
 
 		edm::InputTag		_tagFEDs;
+		edm::InputTag		_tagReport;
 		edm::EDGetTokenT<FEDRawDataCollection>	_tokFEDs;
+		edm::EDGetTokenT<HcalUnpackerReport> _tokReport;
 
 		//	emap
 		HcalElectronicsMap const* _emap;
+		electronicsmap::ElectronicsMap _ehashmap;
 
 		//	Filters
 		HashFilter _filter_VME;
@@ -47,6 +52,13 @@ class RawTask : public DQTask
 		HashFilter _filter_FEDsVME;
 		HashFilter _filter_FEDsuTCA;
 
+		//	Bad Quality
+		Container2D _cBadQuality_FEDVME;
+		Container2D _cBadQuality_FEDuTCA;
+		Container2D _cBadQuality_depth;
+		ContainerSingleProf1D _cBadQualityvsLS;
+
+		//	Mismatches
 		Container2D _cEvnMsm_ElectronicsVME;
 		Container2D _cBcnMsm_ElectronicsVME;
 		Container2D _cOrnMsm_ElectronicsVME;
@@ -54,8 +66,13 @@ class RawTask : public DQTask
 		Container2D _cBcnMsm_ElectronicsuTCA;
 		Container2D _cOrnMsm_ElectronicsuTCA;
 
+		//	Occupancies
 		Container2D _cOccupancy_ElectronicsVME;
 		Container2D _cOccupancy_ElectronicsuTCA;
+	
+		//	Summary
+		ContainerSingle2D _cSummary;
+		Container2D		  _cSummaryvsLS_FED;
 };
 
 #endif

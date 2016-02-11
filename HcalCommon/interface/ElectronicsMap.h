@@ -41,6 +41,8 @@ namespace hcaldqm
 					etype=fHcalElectronicsMap);
 				const HcalElectronicsId lookup(DetId const&);
 				const HcalElectronicsId lookupTrigger(DetId const&);
+
+				void print();
 				
 
 			private:
