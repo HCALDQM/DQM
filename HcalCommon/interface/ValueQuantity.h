@@ -98,6 +98,29 @@ namespace hcaldqm
 				ValueQuantityType _type;
 		};
 
+		class FlagQuantity : public ValueQuantity
+		{
+			public:
+				FlagQuantity() {}
+				FlagQuantity(std::vector<int> const& flags, 
+					std::vector<std::string> const& names) :
+					_flags(flags), _names(names)
+				{}
+				virtual ~FlagQuantity() {}
+
+				virtual int nbins() {return _flags.size();}
+				virtual double min() {return 0;}
+				virtual double max() {return _flags.size();}
+				virtual std::vector<std::string> getLabels()
+				{return _names;}
+				virtual int getValue(int f) {return f;}
+				virtual uint32_t getBin(int f) {return this->getValue(f)+1;}
+
+			protected:
+				std::vector<int>		 _flags;
+				std::vector<std::string> _names;
+		};
+
 		class RunNumber : public ValueQuantity
 		{
 			public:
