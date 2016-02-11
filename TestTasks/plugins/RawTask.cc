@@ -148,8 +148,8 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cBadQuality_depth.book(ib, _emap);
 	_cBadQualityvsLS.book(ib);
 
-	_cSummary.initialize(ib);
-	_cSummaryvsLS_FED.initialize(ib, _emap);
+	_cSummary.book(ib);
+	_cSummaryvsLS_FED.book(ib, _emap);
 
 	//	initialize hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fDHashMap);

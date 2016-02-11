@@ -103,7 +103,7 @@ namespace hcaldqm
 		class QualityQuantity : public ValueQuantity
 		{
 			public:
-				QualityQuanity() {}
+				QualityQuantity() {}
 				virtual ~QualityQuantity() {}
 
 				virtual int nbins() {return constants::nQuality;}
