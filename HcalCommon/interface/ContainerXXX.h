@@ -97,7 +97,9 @@ namespace hcaldqm
 			//	get all the contents from the Container
 			virtual void load(Container1D*);
 			virtual void load(Container1D*, Container1D*);
-			virtual void load(edm::ESHandle<HcalDbService> const&);
+
+			//	loads from dbs
+			virtual void loadPedestals(edm::ESHandle<HcalDbService> const&);
 
 			//	compare 2 sets of data
 			//	1-st Container1D is to where to dump the comparison

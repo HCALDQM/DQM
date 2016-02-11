@@ -409,8 +409,8 @@ namespace hcaldqm
 		}	
 	}
 
-	/* virtual */ void ContainerXXX::load(edm::ESHandle<HcalDbService> const&
-		dbs)
+	/* virtual */ void ContainerXXX::loadPedestals(
+		edm::ESHandle<HcalDbService> const& dbs)
 	{
 		if (!_hashmap.isDHash() || _usetype==fHistogram)
 			return;

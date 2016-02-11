@@ -55,6 +55,7 @@ class RawTask : public DQTask
 		//	Bad Quality
 		Container2D _cBadQuality_FEDVME;
 		Container2D _cBadQuality_FEDuTCA;
+		Container2D _cBadQuality_depth;
 		ContainerSingleProf1D _cBadQualityvsLS;
 
 		//	Mismatches
@@ -68,6 +69,10 @@ class RawTask : public DQTask
 		//	Occupancies
 		Container2D _cOccupancy_ElectronicsVME;
 		Container2D _cOccupancy_ElectronicsuTCA;
+	
+		//	Summary
+		ContainerSingle2D _cSummary;
+		Container2D		  _cSummaryvsLS_FED;
 };
 
 #endif

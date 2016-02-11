@@ -109,6 +109,11 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cBadQualityvsLS.initialize(_name, "BadQualityvsLS",
 		new quantity::ValueQuantity(quantity::fLS),
 		new quantity::ValueQuantity(quantity::fN_m0to10000));
+	_cBadQuality_depth.initialize(_name, "BadQuality",
+		hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
 
 	//	BOOK HISTOGRAMS
 	_cEvnMsm_ElectronicsVME.book(ib, _emap, _filter_uTCA);
@@ -123,6 +128,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 	_cBadQuality_FEDVME.book(ib, _emap, _filter_uTCA);
 	_cBadQuality_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cBadQuality_depth.book(ib, _emap);
 	_cBadQualityvsLS.book(ib);
 
 	//	initialize hash map
@@ -150,12 +156,20 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	for (std::vector<DetId>::const_iterator it=creport->bad_quality_begin();
 		it!=creport->bad_quality_end(); ++it)
 	{
-		std::cout << HcalDetId(*it) << std::endl;
 		HcalElectronicsId eid = _ehashmap.lookup(*it);
+		_cBadQuality_depth.fill(HcalDetId(*it));
 		if (eid.isVMEid())
+		{
+			if (_filter_FEDsVME.filter(eid))
+				continue;
 			_cBadQuality_FEDVME.fill(eid);
+		}
 		else
+		{
+			if (_filter_FEDsuTCA.filter(eid))
+				continue;
 			_cBadQuality_FEDuTCA.fill(eid);
+		}
 	}
 
 	for (int fed=FEDNumbering::MINHCALFEDID; 
@@ -202,10 +216,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 				bool qorn = (htr_orn!=orn);
 				_cOccupancy_ElectronicsVME.fill(eid);
 				if (qevn)
-				{std::cout << "1111111111111111111111" << std::endl;
-					std::cout << eid << std::endl;
 					_cEvnMsm_ElectronicsVME.fill(eid);
-				}
 				if (qorn)
 					_cOrnMsm_ElectronicsVME.fill(eid);
 				if (qbcn)
@@ -232,7 +243,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					FIBERCH_MIN, false);
 				if (_filter_FEDsuTCA.filter(eid))
 					continue;
-				std::cout << eid << std::endl;
 				HcalUHTRData uhtr(hamc13->AMCPayload(iamc),
 					hamc13->AMCSize(iamc));
 
