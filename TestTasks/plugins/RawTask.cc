@@ -21,6 +21,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	edm::ESHandle<HcalDbService> dbs;
 	es.get<HcalDbRecord>().get(dbs);
 	_emap = dbs->getHcalMapping();
+	std::vector<int> vFEDs = utilities::getFEDList(_emap);
 	std::vector<int> vFEDsVME = utilities::getFEDVMEList(_emap);
 	std::vector<int> vFEDsuTCA = utilities::getFEDuTCAList(_emap);
 	std::vector<uint32_t> vVME;
@@ -115,6 +116,22 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fN));
 
+	//	Summary
+	std::vector<int> flags;
+	std::vector<std::string> fnames;
+	flags.push_back(fEvnMsm); fnames.push_back("EvnMsm");
+	flags.push_back(fBcnMsm); fnames.push_back("BcnMsm");
+	flags.push_back(fBadQuality); fnames.push_back("BadQuality");
+	_cSummary.initialize(_name, "Summary",
+		new quantity::FEDQuantity(vFEDs),
+		new quantity::FlagQuantity(flags, fnames),
+		new quantity::QualityQuantity());
+	_cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
+		hashfunctions::fFED,
+		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::FlagQuantity(flags, fnames),
+		new quantity::QualityQuantity());
+
 	//	BOOK HISTOGRAMS
 	_cEvnMsm_ElectronicsVME.book(ib, _emap, _filter_uTCA);
 	_cBcnMsm_ElectronicsVME.book(ib, _emap, _filter_uTCA);
@@ -130,6 +147,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cBadQuality_FEDuTCA.book(ib, _emap, _filter_VME);
 	_cBadQuality_depth.book(ib, _emap);
 	_cBadQualityvsLS.book(ib);
+
+	_cSummary.initialize(ib);
+	_cSummaryvsLS_FED.initialize(ib, _emap);
 
 	//	initialize hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fDHashMap);

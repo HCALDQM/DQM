@@ -24,6 +24,14 @@ using namespace hcaldqm;
 using namespace hcaldqm::filter;
 class RawTask : public DQTask
 {
+	enum RawFlags
+	{
+		fEvnMsm = 0,
+		fBcnMsm = 1,
+		fBadQuality = 2,
+		nRawFlags
+	};
+
 	public:
 		RawTask(edm::ParameterSet const&);
 		virtual ~RawTask() {}

@@ -16,7 +16,20 @@ namespace hcaldqm
 		double const PROBLEMATIC = 0.95;
 		double const LOW = 0.75;
 		double const VERY_LOW = 0.5;
+		double const VERY_LOW_XXX = 0;
 		double const NOT_APPLICABLE = -1;
+		double const DELTA = 0.005;
+
+		enum Quality
+		{
+			fGood = 0,
+			fProblematic = 1,
+			fLow = 2,
+			fVeryLow = 3,
+			fXXX = 4,
+			fNA = 5,
+			nQuality = 6
+		};
 
 		/*
 		 *	Electronics Constants

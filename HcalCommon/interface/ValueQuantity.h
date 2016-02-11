@@ -42,7 +42,7 @@ namespace hcaldqm
 			fN_to3000 = 28,
 			fEnergyTotal = 29,
 			fN_m0to10000 = 30,
-			nValueQuantityType = 31
+			nValueQuantityType = 31,
 		};
 		std::string const name_value[nValueQuantityType] = {
 			"N", "Events", "Energy", "Timing", "ADC", "ADC", "ADC",
@@ -70,7 +70,7 @@ namespace hcaldqm
 		class ValueQuantity : public Quantity
 		{
 			public:
-				ValueQuantity() {}
+				ValueQuantity() : _type(){}
 				ValueQuantity(ValueQuantityType type, bool isLog=false) :
 					Quantity(name_value[type], isLog), _type(type)
 				{}
@@ -98,6 +98,19 @@ namespace hcaldqm
 
 			protected:
 				ValueQuantityType _type;
+		};
+
+		class QualityQuantity : public ValueQuantity
+		{
+			public:
+				QualityQuanity() {}
+				virtual ~QualityQuantity() {}
+
+				virtual int nbins() {return constants::nQuality;}
+				virtual double min() {return (int)constants::fGood;}
+				virtual double max() {return (int)constants::nQuality;}
+				virtual int getValue(int q) {return q;}
+				virtual uint32_t getBin(int q) {return this->getValue(q)+1;}
 		};
 
 		class FlagQuantity : public ValueQuantity
