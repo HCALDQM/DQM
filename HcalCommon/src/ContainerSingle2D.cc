@@ -71,13 +71,8 @@ namespace hcaldqm
 	/* virtual */ void ContainerSingle2D::load(DQMStore::IGetter& ig,
 		std::string subsystem, std::string aux)
 	{
-		me = ig.get(subsystem+"/"+_folder+"/"+_qname+"/"+
+		_me = ig.get(subsystem+"/"+_folder+"/"+_qname+"/"+
 			_qname+(aux==""?aux:"_"+aux));
-	}
-
-	/* virtual */ void ContainerSingle2D::assign(MonitorElement const& me)
-	{
-		(*_me) = me;
 	}
 
 	/* virtual */ void ContainerSingle2D::book(DQMStore *store,

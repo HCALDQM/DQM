@@ -145,7 +145,6 @@ namespace hcaldqm
 
 			virtual void load(DQMStore::IGetter&, std::string subsystem="Hcal",
 				std::string aux="");
-			virtual assign(MonitorElement const&);
 
 		protected:
 			MonitorElement					*_me;

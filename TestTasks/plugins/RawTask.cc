@@ -135,11 +135,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new quantity::FEDQuantity(vFEDs),
 		new quantity::FlagQuantity(fnames),
 		new quantity::QualityQuantity());
-	_cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
-		hashfunctions::fFED,
-		new quantity::LumiSection(_numLSstart),
-		new quantity::FlagQuantity(fnames),
-		new quantity::QualityQuantity());
 
 	//	BOOK HISTOGRAMS
 	_cEvnMsm_ElectronicsVME.book(ib, _emap, _filter_uTCA);
@@ -158,7 +153,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cBadQualityvsLS.book(ib);
 
 	_cSummary.book(ib);
-	_cSummaryvsLS_FED.book(ib, _emap);
 
 	//	initialize hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fDHashMap);
@@ -325,8 +319,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		for (int flag=fEvnMsm; flag<nRawFlags; flag++)
 		{
 			_cSummary.setBinContent(eid, flag, fNA);
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
-				flag, fNA);
 		}
 
 		int nevnmsm = 0;
@@ -379,38 +371,26 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		if (nevnmsm>0)
 		{
 			_cSummary.setBinContent(eid, (int)fEvnMsm, (int)fLow);
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
-				(int)fEvnMsm, (int)fLow);
 		}
 		else
 		{
 			_cSummary.setBinContent(eid, (int)fEvnMsm, (int)fGood);
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
-				(int)fEvnMsm, (int)fGood);
 		}
 		if (nbcnmsm>0)
 		{
 			_cSummary.setBinContent(eid, (int)fBcnMsm, (int)fLow);
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
-				(int)fBcnMsm, (int)fLow);
 		}
 		else
 		{
 			_cSummary.setBinContent(eid, (int)fBcnMsm, (int)fGood);
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
-				(int)fBcnMsm, (int)fGood);
 		}
 		if (nbad>0)
 		{
 			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fLow);
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
-				(int)fBadQuality, (int)fLow);
 		}
 		else
 		{
 			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fGood);
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
-				(int)fBadQuality, (int)fGood);
 		}
 	}
 	

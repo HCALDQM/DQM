@@ -7,6 +7,7 @@
  */
 
 #include "DQM/HcalCommon/interface/DQModule.h"
+#include "DQM/HcalCommon/interface/Utilities.h"
 
 #include <vector>
 #include <string>

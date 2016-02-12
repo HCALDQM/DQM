@@ -8,7 +8,7 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 	_frawnames.push_back("BadQuality");
 }
 
-/* virtual */ void HcalHarvesting::_dqmEndLuminosityBlock(DQMStore::IBooker&,
+/* virtual */ void HcalHarvesting::_dqmEndLuminosityBlock(DQMStore::IBooker& ib,
 	DQMStore::IGetter& ig, edm::LuminosityBlock const&, 
 	edm::EventSetup const&)
 {
@@ -28,14 +28,14 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 		new quantity::FEDQuantity(_vFEDs),
 		new quantity::FlagQuantity(_frawnames),
 		new quantity::QualityQuantity());
-	rawSummaryNew.book(ib, "Hcal", name);
+	rawSummaryCopy.book(ib, "Hcal", name);
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
 		HcalElectronicsId eid(*it);
-		for (int f=0; f<_frawnames.size(); f++)
-			rawSummaryCopy.setBinContent(eid, f, 
-				rawSummary.getBinContent(eid, f));
+		for (uint32_t f=0; f<_frawnames.size(); f++)
+			rawSummaryCopy.setBinContent(eid, (int)f, 
+				rawSummary.getBinContent(eid, (int)f));
 	}
 }
 

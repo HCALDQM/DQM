@@ -22,7 +22,7 @@ namespace hcaldqm
 					FIBERCH_MIN, false).rawId());
 			else
 				_vhashFEDs.push_back(HcalElectronicsId(FIBERCH_MIN,
-					FIBER_VME_MIN, SPIGOT_MIN, (*it)-FED_VME_MIN).rawId())
+					FIBER_VME_MIN, SPIGOT_MIN, (*it)-FED_VME_MIN).rawId());
 	}
 
 	/* virtual */ void DQHarvester::dqmEndLuminosityBlock(
