@@ -39,19 +39,24 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 	for (std::vector<int>::const_iterator it=vFEDsVME.begin();
 		it!=vFEDsVME.end(); ++it)
+	{
 		vhashFEDsVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
 			constants::FIBER_VME_MIN, SPIGOT_MIN,
 			(*it)-constants::FED_VME_MIN).rawId());
+		_vhashFEDs.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
+			constants::FIBER_VME_MIN, SPIGOT_MIN,
+			(*it)-constants::FED_VME_MIN).rawId());
+	}
 	for (std::vector<int>::const_iterator it=vFEDsuTCA.begin();
 		it!=vFEDsuTCA.end(); ++it)
+	{
 		vhashFEDsuTCA.push_back(HcalElectronicsId(
 		utilities::fed2crate(*it), SLOT_uTCA_MIN, FIBER_uTCA_MIN1,
 		FIBERCH_MIN, false).rawId());
-	for (std::vector<int>::const_iterator it=vFEDs.begin();
-		it!=vFEDs.end(); ++it)
 		_vhashFEDs.push_back(HcalElectronicsId(
 		utilities::fed2crate(*it), SLOT_uTCA_MIN, FIBER_uTCA_MIN1,
 		FIBERCH_MIN, false).rawId());
+	}
 	_filter_FEDsVME.initialize(filter::fPreserver, 
 		hashfunctions::fFED, vhashFEDsVME);
 	_filter_FEDsuTCA.initialize(filter::fPreserver,
@@ -113,7 +118,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fN));
 	_cBadQualityvsLS.initialize(_name, "BadQualityvsLS",
-		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::fN_m0to10000));
 	_cBadQuality_depth.initialize(_name, "BadQuality",
 		hashfunctions::fdepth,
@@ -122,19 +127,18 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fN));
 
 	//	Summary
-	std::vector<int> flags;
 	std::vector<std::string> fnames;
-	flags.push_back(fEvnMsm); fnames.push_back("EvnMsm");
-	flags.push_back(fBcnMsm); fnames.push_back("BcnMsm");
-	flags.push_back(fBadQuality); fnames.push_back("BadQuality");
+	fnames.push_back("EvnMsm");
+	fnames.push_back("BcnMsm");
+	fnames.push_back("BadQuality");
 	_cSummary.initialize(_name, "Summary",
 		new quantity::FEDQuantity(vFEDs),
-		new quantity::FlagQuantity(flags, fnames),
+		new quantity::FlagQuantity(fnames),
 		new quantity::QualityQuantity());
 	_cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
 		hashfunctions::fFED,
-		new quantity::ValueQuantity(quantity::fLS),
-		new quantity::FlagQuantity(flags, fnames),
+		new quantity::LumiSection(_numLSstart),
+		new quantity::FlagQuantity(fnames),
 		new quantity::QualityQuantity());
 
 	//	BOOK HISTOGRAMS
@@ -162,6 +166,24 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 /* virtual */ void RawTask::_resetMonitors(UpdateFreq uf)
 {
+	switch(uf)
+	{
+		case fEvent:
+			break;
+		case hcaldqm::fLS:
+			_cEvnMsm_ElectronicsVME.reset();
+			_cBcnMsm_ElectronicsVME.reset();
+			_cEvnMsm_ElectronicsuTCA.reset();
+			_cBcnMsm_ElectronicsuTCA.reset();
+			_cBadQuality_FEDVME.reset();
+			_cBadQuality_FEDuTCA.reset();
+			_cBadQuality_depth.reset();
+			break;
+		default:
+			break;
+	}
+	
+	//	base reset
 	DQTask::_resetMonitors(uf);
 }
 
@@ -302,45 +324,22 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		HcalElectronicsId eid = HcalElectronicsId(*it);
 		for (int flag=fEvnMsm; flag<nRawFlags; flag++)
 		{
-			_cSummary.setBinContent(eid, flag, constants::fNA);
+			_cSummary.setBinContent(eid, flag, fNA);
 			_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
-				flag, constants::fNA);
+				flag, fNA);
 		}
-		
-		//	 check VME => filter uTCA out
-		if (_filter_uTCA.filter(eid))
+
+		int nevnmsm = 0;
+		int nbcnmsm = 0;
+		int nbad = 0;
+		if (eid.isVMEid()) //	VME
 		{
 			for (int is=constants::SPIGOT_MIN; is<=SPIGOT_MAX; is++)
 			{
 				eid = HcalElectronicsId(constants::FIBERCH_MIN,
 					FIBER_VME_MIN, eid.spigot(), eid.dccid());
-				bool qevnmsm = _cEvnMsm_ElectronicsVME.getBinContent(eid)>0?1:0;
-				bool qbcnmsm = _cEvnMsm_ElectronicsVME.getBinContent(eid)>0?1:0;
-				if (qevnmsm)
-				{
-					_cSummary.setBinContent(eid, fEvnMsm, fLow);
-					_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
-						fEvnMsm, fLow);
-				}
-				else
-				{
-					_cSummary.setBinContent(edi, fEvnMsm, fGood);
-					_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
-						fEvnMsm, fLow);
-				}
-				if (qevnmsm)
-				{
-					_cSummary.setBinContent(eid, fBcnMsm, fLow);
-					_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
-						fBcnMsm, fLow);
-				}
-				else
-				{
-					_cSummary.setBinContent(eid, fBcnMsm, fGood);
-					_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
-						fBcnMsm, fGood);
-				}
-				int numbad = 0;
+				nevnmsm += _cEvnMsm_ElectronicsVME.getBinContent(eid);
+				nbcnmsm += _cBcnMsm_ElectronicsVME.getBinContent(eid);
 				for (int ifib=constants::FIBER_VME_MIN; 
 						ifib<=constants::FIBER_VME_MAX; ifib++)
 					for (int ifc=constants::FIBERCH_MIN; 
@@ -348,21 +347,8 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					{
 						eid = HcalElectronicsId(ifc, ifib, eid.spigot(),
 							eid.dccid());
-						_cBadQuality_FEDVME.getBinContent(eid)>0?numbad++:
-							continue;
+						nbad+=_cBadQuality_FEDVME.getBinContent(eid);
 					}
-				if (numbad>0)
-				{
-					_cSummary.fill(eid, fBadQuality, fLow);
-					_cSummaryvsLS_FED.fill(eid, _currentLS,
-						fBadQuality, fLow);
-				}
-				else
-				{
-					_cSummary.fill(eid, fBadQuality, fGood);
-					_cSummaryvsLS_FED.fill(eid, _currentLS,
-						fBadQuality, fGood);
-				}
 			}
 		}
 		else	// uTCA only here
@@ -371,36 +357,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 				is<=constants::SLOT_uTCA_MAX; is++)
 			{
 				eid = HcalElectronicsId(eid.crateId(), is,
-					constants::FIBER_uTCA_MIN1 constants::FIBERCH_MIN, false);
-				bool qevnmsm = _cEvnMsm_ElectronicsuTCA.getBinContent(eid)>0?
-					1:0;
-				bool qbcnmsm = _cEvnMsm_ElectronicsuTCA.getBinContent(eid)>0?
-					1:0;
-				if (qevnmsm)
-				{
-					_cSummary.setBinContent(eid, fEvnMsm, fLow);
-					_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
-						fEvnMsm, fLow);
-				}
-				else
-				{
-					_cSummary.setBinContent(edi, fEvnMsm, fGood);
-					_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
-						fEvnMsm, fLow);
-				}
-				if (qevnmsm)
-				{
-					_cSummary.setBinContent(eid, fBcnMsm, fLow);
-					_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
-						fBcnMsm, fLow);
-				}
-				else
-				{
-					_cSummary.setBinContent(eid, fBcnMsm, fGood);
-					_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
-						fBcnMsm, fGood);
-				}
-				int numbad = 0;
+					constants::FIBER_uTCA_MIN1, constants::FIBERCH_MIN, false);
+				nevnmsm += _cEvnMsm_ElectronicsuTCA.getBinContent(eid);
+				nbcnmsm += _cBcnMsm_ElectronicsuTCA.getBinContent(eid);
 				for (int ifib=constants::FIBER_uTCA_MIN1;
 					ifib<=constants::FIBER_uTCA_MAX2; ifib++)
 				{
@@ -410,25 +369,49 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					{
 						eid = HcalElectronicsId(eid.crateId(), 
 							eid.slot(), ifib, ifc, false);
-						_cBadQuality_FEDuTCA.getBinContent(eid)>0numbad++:
-							continue;
+						nbad+=_cBadQuality_FEDuTCA.getBinContent(eid);
 					}
-				}
-				if (numbad>0)
-				{
-					_cSummary.fill(eid, fBadQuality, fLow);
-					_cSummaryvsLS_FED.fill(eid, _currentLS,
-						fBadQuality, fLow);
-				}
-				else
-				{
-					_cSummary.fill(eid, fBadQuality, fGood);
-					_cSummaryvsLS_FED.fill(eid, _currentLS,
-						fBadQuality, fGood);
 				}
 			}
 		}
-
+		
+		// set all the quality flags
+		if (nevnmsm>0)
+		{
+			_cSummary.setBinContent(eid, (int)fEvnMsm, (int)fLow);
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
+				(int)fEvnMsm, (int)fLow);
+		}
+		else
+		{
+			_cSummary.setBinContent(eid, (int)fEvnMsm, (int)fGood);
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
+				(int)fEvnMsm, (int)fGood);
+		}
+		if (nbcnmsm>0)
+		{
+			_cSummary.setBinContent(eid, (int)fBcnMsm, (int)fLow);
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
+				(int)fBcnMsm, (int)fLow);
+		}
+		else
+		{
+			_cSummary.setBinContent(eid, (int)fBcnMsm, (int)fGood);
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
+				(int)fBcnMsm, (int)fGood);
+		}
+		if (nbad>0)
+		{
+			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fLow);
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
+				(int)fBadQuality, (int)fLow);
+		}
+		else
+		{
+			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fGood);
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, 
+				(int)fBadQuality, (int)fGood);
+		}
 	}
 	
 	//	in the end always do the DQTask::endLumi

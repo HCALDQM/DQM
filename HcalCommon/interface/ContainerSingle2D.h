@@ -25,7 +25,7 @@ namespace hcaldqm
 			ContainerSingle2D(std::string const& folder, 
 				Quantity*, Quantity*,
 				Quantity *qz = new ValueQuantity(quantity::fN));
-			virtual ~ContainerSingle2D() {}
+			virtual ~ContainerSingle2D();
 
 			virtual void initialize(std::string const& folder, 
 				Quantity*, Quantity*,

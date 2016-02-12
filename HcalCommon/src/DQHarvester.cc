@@ -6,10 +6,24 @@ namespace hcaldqm
 		DQModule(ps)
 	{}
 
-	/* virtual */ void DQHarvester::dqmEndLuminosityBlock(DQMStore::IGetter&,
-		edm::LuminosityBlock const&, edm::EventSetup const&)
-	{}
-	/* virtual */ void DQHarvester::dqmEndJob(DQMStore::IBooker&, 
-		DQMStore::IGetter&)
-	{}
+	/* virtual */ void DQHarvester::beginRun(edm::Run const&,
+		edm::EventSetup const& es)
+	{
+		edm::ESHandle<HcalDbService> dbs;
+		es.get<HcalDbRecord>().get(dbs);
+		_emap = dbs->getHcalMapping();
+	}
+
+	/* virtual */ void DQHarvester::dqmEndLuminosityBlock(
+		DQMStore::IBooker& ib, DQMStore::IGetter& ig,
+		edm::LuminosityBlock const& lb, edm::EventSetup const& es)
+	{
+		_currentLS = lb.luminosityBlock();
+		_dqmEndLuminosityBlock(ib, ig, lb, es);
+	}
+	/* virtual */ void DQHarvester::dqmEndJob(DQMStore::IBooker& ib, 
+		DQMStore::IGetter& ig)
+	{
+		_dqmEndJob(ib, ig);
+	}
 }

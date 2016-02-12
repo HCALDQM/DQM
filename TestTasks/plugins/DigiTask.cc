@@ -66,7 +66,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::ffC_10000));
 	_cSumQvsLS_FEDSlot.initialize(_name, "SumQvsLS",
 		hashfunctions::fFEDSlot,
-		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::ffC_10000));
 	_cShapeCut_FEDSlot.initialize(_name, "Shape",
 		hashfunctions::fFEDSlot,
@@ -98,13 +98,13 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fTiming_TS200));
 	_cTimingCutvsLS_FEDSlot.initialize(_name, "TimingvsLS",
 		hashfunctions::fFEDSlot,
-		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::LumiSection(),
 		new quantity::ValueQuantity(quantity::fTiming_TS200));
 
 	//	Charge sharing
 	_cQ2Q12CutvsLS_FEDHFSlot.initialize(_name, "Q2Q12vsLS",
 		hashfunctions::fFEDSlot,
-		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::fRatio_0to2));
 
 	//	Occupancy w/o a cut
@@ -130,7 +130,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fTiming_TS200));
 	_cOccupancyvsLS_Subdet.initialize(_name, "OccupancyvsLS",
 		hashfunctions::fSubdet,
-		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::fN_to3000));
 
 	//	Occupancy w/ a cut
@@ -156,7 +156,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fTiming_TS200));
 	_cOccupancyCutvsLS_Subdet.initialize(_name, "OccupancyCutvsLS",
 		hashfunctions::fSubdet,
-		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::fN_to3000));
 
 	_cCapIdRots_FEDVME.initialize(_name, "CapId",

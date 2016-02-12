@@ -29,7 +29,7 @@ class RawTask : public DQTask
 		fEvnMsm = 0,
 		fBcnMsm = 1,
 		fBadQuality = 2,
-		nRawFlags
+		nRawFlags = 3
 	};
 
 	public:

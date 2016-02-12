@@ -48,6 +48,12 @@ class PedestalHarvesting : public DQHarvester
 
 		//	containers to be loaded
 		std::vector<ContainerProf2D> _vcPedestalMean_depth;
+
+		virtual void _dqmEndLuminosityBlock(DQMStore::IBooker&,
+			DQMStore::IGetter&,
+			edm::LuminosityBlock const&, edm::EventSetup const&) {}
+		virtual void _dqmEndJob(DQMStore::IBooker&,
+			DQMStore::IGetter&) {}
 };
 
 #endif

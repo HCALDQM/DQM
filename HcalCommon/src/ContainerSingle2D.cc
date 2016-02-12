@@ -21,6 +21,16 @@ namespace hcaldqm
 		_qz->setAxisType(quantity::fZAxis);
 	}
 
+	ContainerSingle2D::~ContainerSingle2D()
+	{
+		delete _qx;
+		delete _qy;
+		delete _qz;
+		_qx=NULL;
+		_qy=NULL;
+		_qz=NULL;
+	}
+
 	/* virtual */ void ContainerSingle2D::initialize(std::string const& folder,
 		Quantity *qx, Quantity *qy, Quantity *qz, int debug/*=0*/)
 	{
@@ -151,19 +161,19 @@ namespace hcaldqm
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(int x, int y)
 	{
-		return _me->getBinEntries(_qx->getBin(x), _qy->getBin(y));
+		return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(y));
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(int x, double y)
 	{
-		return _me->getBinEntries(_qx->getBin(x), _qy->getBin(y));
+		return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(y));
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(double x, int y)
 	{
-		return _me->getBinEntries(_qx->getBin(x), _qy->getBin(y));
+		return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(y));
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(double x, double y)
 	{
-		return _me->getBinEntries(_qx->getBin(x), _qy->getBin(y));
+		return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(y));
 	}
 
 	/* virtual */ void ContainerSingle2D::setBinContent(int x, int y, int z)
@@ -278,23 +288,23 @@ namespace hcaldqm
 	}
 	/* virtula */ double ContainerSingle2D::getBinEntries(HcalDetId const& id)
 	{
-		return _me->getBinEntries(_qx->getBin(id), _qy->getBin(id));
+		return _me->getBinEntries(_qx->getBin(id)+_qx->wofnbins()* _qy->getBin(id));
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(HcalDetId const& id,
 		int x)
 	{
 		if (_qx->isCoordinate())
-			return _me->getBinEntries(_qx->getBin(id), _qy->getBin(x));
+			return _me->getBinEntries(_qx->getBin(id)+_qx->wofnbins()*_qy->getBin(x));
 		else
-			return _me->getBinEntries(_qx->getBin(x), _qy->getBin(id));
+			return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(id));
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(HcalDetId const& id,
 		double x)
 	{
 		if (_qx->isCoordinate())
-			return _me->getBinEntries(_qx->getBin(id), _qy->getBin(x));
+			return _me->getBinEntries(_qx->getBin(id)+_qx->wofnbins()*_qy->getBin(x));
 		else
-			return _me->getBinEntries(_qx->getBin(x), _qy->getBin(id));
+			return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(id));
 	}
 
 	/* virtual */ void ContainerSingle2D::setBinContent(HcalDetId const& id, 
@@ -311,7 +321,7 @@ namespace hcaldqm
 		int x, int y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -319,7 +329,7 @@ namespace hcaldqm
 		int x, double y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -327,7 +337,7 @@ namespace hcaldqm
 		double x, int y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -335,7 +345,7 @@ namespace hcaldqm
 		double x, double y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -426,23 +436,23 @@ namespace hcaldqm
 	}
 	/* virtula */ double ContainerSingle2D::getBinEntries(HcalElectronicsId const& id)
 	{
-		return _me->getBinEntries(_qx->getBin(id), _qy->getBin(id));
+		return _me->getBinEntries(_qx->getBin(id)+_qx->wofnbins()*_qy->getBin(id));
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(HcalElectronicsId const& id,
 		int x)
 	{
 		if (_qx->isCoordinate())
-			return _me->getBinEntries(_qx->getBin(id), _qy->getBin(x));
+			return _me->getBinEntries(_qx->getBin(id)+_qx->wofnbins()*_qy->getBin(x));
 		else
-			return _me->getBinEntries(_qx->getBin(x), _qy->getBin(id));
+			return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(id));
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(HcalElectronicsId const& id,
 		double x)
 	{
 		if (_qx->isCoordinate())
-			return _me->getBinEntries(_qx->getBin(id), _qy->getBin(x));
+			return _me->getBinEntries(_qx->getBin(id)+_qx->wofnbins()*_qy->getBin(x));
 		else
-			return _me->getBinEntries(_qx->getBin(x), _qy->getBin(id));
+			return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(id));
 	}
 
 	/* virtual */ void ContainerSingle2D::setBinContent(HcalElectronicsId const& id, 
@@ -459,7 +469,7 @@ namespace hcaldqm
 		int x, int y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -467,7 +477,7 @@ namespace hcaldqm
 		int x, double y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -475,7 +485,7 @@ namespace hcaldqm
 		double x, int y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -483,7 +493,7 @@ namespace hcaldqm
 		double x, double y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -589,23 +599,23 @@ namespace hcaldqm
 	}
 	/* virtula */ double ContainerSingle2D::getBinEntries(HcalTrigTowerDetId const& id)
 	{
-		return _me->getBinEntries(_qx->getBin(id), _qy->getBin(id));
+		return _me->getBinEntries(_qx->getBin(id)+_qx->wofnbins()*_qy->getBin(id));
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(HcalTrigTowerDetId const& id,
 		int x)
 	{
 		if (_qx->isCoordinate())
-			return _me->getBinEntries(_qx->getBin(id), _qy->getBin(x));
+			return _me->getBinEntries(_qx->getBin(id)+_qx->wofnbins()*_qy->getBin(x));
 		else
-			return _me->getBinEntries(_qx->getBin(x), _qy->getBin(id));
+			return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(id));
 	}
 	/* virtual */ double ContainerSingle2D::getBinEntries(HcalTrigTowerDetId const& id,
 		double x)
 	{
 		if (_qx->isCoordinate())
-			return _me->getBinEntries(_qx->getBin(id), _qy->getBin(x));
+			return _me->getBinEntries(_qx->getBin(id)+_qx->wofnbins()*_qy->getBin(x));
 		else
-			return _me->getBinEntries(_qx->getBin(x), _qy->getBin(id));
+			return _me->getBinEntries(_qx->getBin(x)+_qx->wofnbins()*_qy->getBin(id));
 	}
 
 	/* virtual */ void ContainerSingle2D::setBinContent(HcalTrigTowerDetId const& id, 
@@ -622,7 +632,7 @@ namespace hcaldqm
 		int x, int y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -630,7 +640,7 @@ namespace hcaldqm
 		int x, double y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -638,7 +648,7 @@ namespace hcaldqm
 		double x, int y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
@@ -646,7 +656,7 @@ namespace hcaldqm
 		double x, double y)
 	{
 		if (_qx->isCoordinate())
-			_me->setBinContent(_qx->getBin(id), _qy->getBin(y), x);
+			_me->setBinContent(_qx->getBin(id), _qy->getBin(x), y);
 		else
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}

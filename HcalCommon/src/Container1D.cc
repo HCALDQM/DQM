@@ -18,6 +18,14 @@ namespace hcaldqm
 		_qy->setAxisType(quantity::fYAxis);
 	}
 
+	Container1D::~Container1D()
+	{
+		delete _qx;
+		delete _qy;
+		_qx = NULL;
+		_qy = NULL;
+	}
+
 	/* virtuial */ void Container1D::initialize(std::string const& folder, 
 		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy/* = ... */,
 		int debug /* =0 */)

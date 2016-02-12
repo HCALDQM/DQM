@@ -17,6 +17,7 @@
 #include "DQM/HcalCommon/interface/ContainerSingle1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingle2D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf2D.h"
+#include "DQM/HcalCommon/interface/ContainerXXX.h"
 
 using namespace hcaldqm;
 using namespace hcaldqm::filter;

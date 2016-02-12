@@ -144,7 +144,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fN));
 	_cOccupancyvsLS_Subdet.initialize(_name, "OccupancyvsLS",
 		hashfunctions::fSubdet,
-		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::fN_to3000));
 	_cOccupancyCut_FEDVME.initialize(_name, "OccupancyCut",
 		hashfunctions::fFED,
@@ -168,7 +168,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fN));
 	_cOccupancyCutvsLS_Subdet.initialize(_name, "OccupancyCutvsLS",
 		hashfunctions::fSubdet,
-		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::fN_to3000));
 
 

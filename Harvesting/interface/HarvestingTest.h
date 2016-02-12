@@ -39,6 +39,12 @@ class HarvestingTest : public DQHarvester
 		//	Containers
 		Container2D _cTest_Subdet;
 		std::vector<ContainerProf2D> _vcTimingMean_depth;
+
+		//	DQHarvester is abstract
+		virtual void _dqmEndLuminosityBlock(
+			DQMStore::IBooker&, DQMStore::IGetter&,
+			edm::LuminosityBlock const&, edm::EventSetup const&) {}
+		virtual void _dqmEndJob(DQMStore::IBooker&, DQMStore::IGetter&) {}
 };
 
 #endif

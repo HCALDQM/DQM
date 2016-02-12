@@ -28,7 +28,7 @@ namespace hcaldqm
 				std::string const&,
 				Quantity*,
 				Quantity *qy = new ValueQuantity(quantity::fN));
-			virtual ~ContainerSingle1D() {}
+			virtual ~ContainerSingle1D();
 			
 			virtual void initialize(std::string const& folder, 
 				Quantity*,
@@ -55,7 +55,7 @@ namespace hcaldqm
 			virtual void fill(double, int);
 			virtual void fill(double, double);
 
-			virtual double getBinContent(int) 
+			virtual double getBinContent(int) ;
 			virtual double getBinContent(double);
 			virtual double getBinEntries(int);
 			virtual double getBinEntries(double);

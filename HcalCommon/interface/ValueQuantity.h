@@ -52,7 +52,7 @@ namespace hcaldqm
 			"Q", "Ratio", "N", "Energy", "N"
 		};
 		double const min_value[nValueQuantityType] = {
-			0, 0, 0, -50, -0.5, -0.5, -0.5, 0, 0, 0, -0.5, 0, .5, 0,
+			0, 0, 0, -50, -0.5, -0.5, -0.5, 0, 0, 0, -0.5, 0, 0.5, 0,
 			0, 0, 0, -0.5, -1, 0.5, 0, 0, -0.5, -0.5, -0.5, -0.5,
 			0, 0, 0, 0, -0.05
 		};
@@ -100,39 +100,69 @@ namespace hcaldqm
 				ValueQuantityType _type;
 		};
 
+		enum Quality
+		{
+			fNA = 1,
+			fGood = 2,
+			fProblematic = 3,
+			fLow = 4,
+			fVeryLow = 5,
+			fXXX = 6,
+			nQuality = 7
+		};
 		class QualityQuantity : public ValueQuantity
 		{
 			public:
 				QualityQuantity() {}
 				virtual ~QualityQuantity() {}
 
-				virtual int nbins() {return constants::nQuality;}
-				virtual double min() {return (int)constants::fGood;}
-				virtual double max() {return (int)constants::nQuality;}
+				virtual std::string name() {return "Quality";}
+				virtual int nbins() {return nQuality-fNA;}
+				virtual double min() {return (int)fNA;}
+				virtual double max() {return (int)nQuality;}
 				virtual int getValue(int q) {return q;}
-				virtual uint32_t getBin(int q) {return this->getValue(q)+1;}
+				virtual uint32_t getBin(int q) {return this->getValue(q);}
+		};
+
+		class LumiSection : public ValueQuantity
+		{
+			public:
+				LumiSection() {}
+				LumiSection(int n) : ValueQuantity(fLS), 
+					_n(n) 
+				{}
+				virtual ~LumiSection() {}
+
+				virtual std::string name() {return "LS";}
+				virtual int nbins() {return _n;}
+				virtual double min() {return 0.5;}
+				virtual double max() {return _n+0.5;}
+				virtual int getValue(int l) {return l;}
+				virtual uint32_t getBin(int l) {return getValue(l);}
+
+			protected:
+				int _n;
 		};
 
 		class FlagQuantity : public ValueQuantity
 		{
 			public:
 				FlagQuantity() {}
-				FlagQuantity(std::vector<int> const& flags, 
-					std::vector<std::string> const& names) :
-					_flags(flags), _names(names)
+				FlagQuantity( std::vector<std::string> const& names) :
+					_names(names)
 				{}
 				virtual ~FlagQuantity() {}
 
-				virtual int nbins() {return _flags.size();}
+				virtual std::string name() {return "Flag";}
+				virtual int nbins() {return _names.size();}
 				virtual double min() {return 0;}
-				virtual double max() {return _flags.size();}
+				virtual double max() {return _names.size();}
 				virtual std::vector<std::string> getLabels()
 				{return _names;}
 				virtual int getValue(int f) {return f;}
 				virtual uint32_t getBin(int f) {return this->getValue(f)+1;}
 
 			protected:
-				std::vector<int>		 _flags;
 				std::vector<std::string> _names;
 		};
 
@@ -145,6 +175,7 @@ namespace hcaldqm
 				{}
 				virtual ~RunNumber() {}
 
+				virtual std::string name() {return "Run";}
 				virtual int nbins() {return _runs.size();}
 				virtual double min() {return 0;}
 				virtual double max() {return _runs.size();}
@@ -194,6 +225,7 @@ namespace hcaldqm
 				{}
 				virtual ~EventNumber() {}
 
+				virtual std::string name() {return "Event";}
 				virtual int nbins() {return _nevents;}
 				virtual double min() {return 0.5;}
 				virtual double max() {return _nevents+0.5;}

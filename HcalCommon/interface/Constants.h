@@ -20,17 +20,6 @@ namespace hcaldqm
 		double const NOT_APPLICABLE = -1;
 		double const DELTA = 0.005;
 
-		enum Quality
-		{
-			fGood = 0,
-			fProblematic = 1,
-			fLow = 2,
-			fVeryLow = 3,
-			fXXX = 4,
-			fNA = 5,
-			nQuality = 6
-		};
-
 		/*
 		 *	Electronics Constants
 		 */

@@ -27,6 +27,14 @@ namespace hcaldqm
 		_qy->setAxisType(quantity::fYAxis);
 	}
 
+	ContainerSingle1D::~ContainerSingle1D()
+	{
+		delete _qx;
+		delete _qy;
+		_qx = NULL;
+		_qy = NULL;
+	}
+
 	/* virtual */ void ContainerSingle1D::initialize(std::string const& folder,
 		Quantity *qx, Quantity *qy, int debug/*=0*/)
 	{
@@ -128,19 +136,19 @@ namespace hcaldqm
 	{
 		return _me->getBinEntries(_qx->getBin(x));
 	}
-	/* virtual */ void ContainerSingle1D:setBinContent(int x, int y)
+	/* virtual */ void ContainerSingle1D::setBinContent(int x, int y)
 	{
 		_me->setBinContent(_qx->getBin(x), y);
 	}
-	/* virtual */ void ContainerSingle1D:setBinContent(int x, double y)
+	/* virtual */ void ContainerSingle1D::setBinContent(int x, double y)
 	{
 		_me->setBinContent(_qx->getBin(x), y);
 	}
-	/* virtual */ void ContainerSingle1D:setBinContent(double x, int y)
+	/* virtual */ void ContainerSingle1D::setBinContent(double x, int y)
 	{
 		_me->setBinContent(_qx->getBin(x), y);
 	}
-	/* virtual */ void ContainerSingle1D:setBinContent(double x, double y)
+	/* virtual */ void ContainerSingle1D::setBinContent(double x, double y)
 	{
 		_me->setBinContent(_qx->getBin(x), y);
 	}
@@ -179,12 +187,12 @@ namespace hcaldqm
 	/* virtual */ void ContainerSingle1D::setBinContent(HcalDetId const& id,
 		int x)
 	{
-		_me->setBinContent(_qx->getBin(id), x)
+		_me->setBinContent(_qx->getBin(id), x);
 	}
 	/* virtual */ void ContainerSingle1D::setBinContent(HcalDetId const& id,
 		double x)
 	{
-		_me->setBinContent(_qx->getBin(id), x)
+		_me->setBinContent(_qx->getBin(id), x);
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(HcalElectronicsId const& id)
@@ -222,12 +230,12 @@ namespace hcaldqm
 	/* virtual */ void ContainerSingle1D::setBinContent(HcalElectronicsId const& id,
 		int x)
 	{
-		_me->setBinContent(_qx->getBin(id), x)
+		_me->setBinContent(_qx->getBin(id), x);
 	}
 	/* virtual */ void ContainerSingle1D::setBinContent(HcalElectronicsId const& id,
 		double x)
 	{
-		_me->setBinContent(_qx->getBin(id), x)
+		_me->setBinContent(_qx->getBin(id), x);
 	}
 
 	/* virtual */ void ContainerSingle1D::fill(HcalTrigTowerDetId const& id)
@@ -266,12 +274,12 @@ namespace hcaldqm
 	/* virtual */ void ContainerSingle1D::setBinContent(HcalTrigTowerDetId const& id,
 		int x)
 	{
-		_me->setBinContent(_qx->getBin(id), x)
+		_me->setBinContent(_qx->getBin(id), x);
 	}
 	/* virtual */ void ContainerSingle1D::setBinContent(HcalTrigTowerDetId const& id,
 		double x)
 	{
-		_me->setBinContent(_qx->getBin(id), x)
+		_me->setBinContent(_qx->getBin(id), x);
 	}
 }
 

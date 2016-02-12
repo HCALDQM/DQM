@@ -77,7 +77,7 @@ TestTask::TestTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ValueQuantity(quantity::fN));
 	_cPerformance.initialize(_name, "Performance",
-		new quantity::ValueQuantity(quantity::fLS),
+		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::fEvents));
 	_cTiming_FEDuTCA.initialize(_name, "Timing",
 		hashfunctions::fFED,

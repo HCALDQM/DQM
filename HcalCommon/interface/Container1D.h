@@ -41,7 +41,7 @@ namespace hcaldqm
 				hashfunctions::HashType, 
 				Quantity*,
 				Quantity *qy =  new ValueQuantity(quantity::fN));
-			virtual ~Container1D() {}
+			virtual ~Container1D();
 
 			//	Initialize Container
 			//	@folder - folder name where to save. Should already include the
@@ -106,25 +106,25 @@ namespace hcaldqm
 			virtual void setBinContent(HcalDetId const& id, int x, int y, int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalDetId const& id, int x, double y, 
-				int);
+				int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalDetId const& id, double x, int y, 
-				int);
+				int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalDetId const& id, double x, double y,
-				int);
+				int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalDetId const& id, int x, int y, 
-				double);
+				double)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalDetId const& id, int x, double y, 
-				double);
+				double)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalDetId const& id, double x, int y, 
-				double);
+				double)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalDetId const& id, double x, double y,
-				double);
+				double)
 			{setBinContent(id, x, y);}
 
 			//	using ElectronicsId 
@@ -172,25 +172,25 @@ namespace hcaldqm
 				, int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalElectronicsId const& id, int x, 
-				double y, int);
+				double y, int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalElectronicsId const& id, double x, 
-				int y, int);
+				int y, int)
 			{setBinContent(id, x, y);}
-			virtual void setBinContent(HcalElectronicId const& id, double x, 
-				double y, int);
+			virtual void setBinContent(HcalElectronicsId const& id, double x, 
+				double y, int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalElectronicsId const& id, int x, 
-				int y, double);
+				int y, double)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalElectronicsId const& id, int x, 
-				double y, double);
+				double y, double)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalElectronicsId const& id, double x, 
-				int y, double);
+				int y, double)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalElectronicsId const& id, double x, 
-				double y, double);
+				double y, double)
 			{setBinContent(id, x, y);}
 
 			//	using DetId as mapper
@@ -239,25 +239,25 @@ namespace hcaldqm
 				int y, int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalTrigTowerDetId const& id, int x, 
-				double y, int);
+				double y, int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalTrigTowerDetId const& id, double x, 
-				int y, int);
+				int y, int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalTrigTowerDetId const& id, double x, 
-				double y, int);
+				double y, int)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalTrigTowerDetId const& id, int x, 
-				int y, double);
+				int y, double)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalTrigTowerDetId const& id, int x, 
-				double y, double);
+				double y, double)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalTrigTowerDetId const& id, double x, 
-				int y, double);
+				int y, double)
 			{setBinContent(id, x, y);}
 			virtual void setBinContent(HcalTrigTowerDetId const& id, double x, 
-				double y, double);
+				double y, double)
 			{setBinContent(id, x, y);}
 
 			//	booking using IBooker

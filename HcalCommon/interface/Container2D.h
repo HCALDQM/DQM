@@ -24,7 +24,7 @@ namespace hcaldqm
 			Container2D(std::string const& folder,
 				hashfunctions::HashType, Quantity*, Quantity*,
 				Quantity *qz = new ValueQuantity(quantity::fN));
-			virtual ~Container2D() {}
+			virtual ~Container2D();
 
 			//	Initialize Container
 			//	@folder
@@ -102,6 +102,22 @@ namespace hcaldqm
 			virtual double getBinContent(HcalElectronicsId const&, double, 
 				double);
 
+			virtual void setBinContent(HcalElectronicsId const&, int);
+			virtual void setBinContent(HcalElectronicsId const&, double);
+			virtual void setBinContent(HcalElectronicsId const&, int, int);
+			virtual void setBinContent(HcalElectronicsId const&, int, double);
+			virtual void setBinContent(HcalElectronicsId const&, double, int);
+			virtual void setBinContent(HcalElectronicsId const&, double, double);
+			virtual void setBinContent(HcalElectronicsId const&, int, int, int);
+			virtual void setBinContent(HcalElectronicsId const&, int, double, int);
+			virtual void setBinContent(HcalElectronicsId const&, double, int, int);
+			virtual void setBinContent(HcalElectronicsId const&, double, double, int);
+			virtual void setBinContent(HcalElectronicsId const&, int, int, double);
+			virtual void setBinContent(HcalElectronicsId const&, int, double, double);
+			virtual void setBinContent(HcalElectronicsId const&, double, int, double);
+			virtual void setBinContent(HcalElectronicsId const&, double, double, 
+				double);
+
 			virtual void fill(HcalTrigTowerDetId const&);
 			virtual void fill(HcalTrigTowerDetId const&, int);
 			virtual void fill(HcalTrigTowerDetId const&, double);
@@ -125,6 +141,22 @@ namespace hcaldqm
 			virtual double getBinContent(HcalTrigTowerDetId const&, int, double);
 			virtual double getBinContent(HcalTrigTowerDetId const&, 
 				double, double);
+
+			virtual void setBinContent(HcalTrigTowerDetId const&, int);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double);
+			virtual void setBinContent(HcalTrigTowerDetId const&, int, int);
+			virtual void setBinContent(HcalTrigTowerDetId const&, int, double);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double, int);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double, double);
+			virtual void setBinContent(HcalTrigTowerDetId const&, int, int, int);
+			virtual void setBinContent(HcalTrigTowerDetId const&, int, double, int);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double, int, int);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double, double, int);
+			virtual void setBinContent(HcalTrigTowerDetId const&, int, int, double);
+			virtual void setBinContent(HcalTrigTowerDetId const&, int, double, double);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double, int, double);
+			virtual void setBinContent(HcalTrigTowerDetId const&, double, double, 
+				double);
 
 			//	booking. see Container1D.h
 			virtual void book(DQMStore::IBooker&,

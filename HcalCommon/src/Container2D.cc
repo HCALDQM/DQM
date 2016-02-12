@@ -24,6 +24,12 @@ namespace hcaldqm
 		_qy->setAxisType(quantity::fYAxis);
 		_qz->setAxisType(quantity::fZAxis);
 	}
+
+	Container2D::~Container2D()
+	{
+		delete _qz;
+		_qz = NULL;
+	}
 	
 	/* virtual */ void Container2D::initialize(std::string const& folder, 
 		hashfunctions::HashType hashtype,
@@ -311,7 +317,7 @@ namespace hcaldqm
 			_qy->getBin(y), z);
 	}
 	/* virtual */ void Container2D::setBinContent(HcalDetId const& id,
-		int x, double y, doublet z)
+		int x, double y, double z)
 	{
 		_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x),
 			_qy->getBin(y), z);
@@ -590,7 +596,7 @@ namespace hcaldqm
 			_qy->getBin(y), z);
 	}
 	/* virtual */ void Container2D::setBinContent(HcalElectronicsId const& id,
-		int x, double y, doublet z)
+		int x, double y, double z)
 	{
 		_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x),
 			_qy->getBin(y), z);
@@ -869,7 +875,7 @@ namespace hcaldqm
 			_qy->getBin(y), z);
 	}
 	/* virtual */ void Container2D::setBinContent(HcalTrigTowerDetId const& id,
-		int x, double y, doublet z)
+		int x, double y, double z)
 	{
 		_mes[_hashmap.getHash(id)]->setBinContent(_qx->getBin(x),
 			_qy->getBin(y), z);
