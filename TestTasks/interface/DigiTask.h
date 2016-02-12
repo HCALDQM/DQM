@@ -32,6 +32,11 @@ class DigiTask : public DQTask
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
 
+		enum DigiFlag
+		{
+			f
+		};
+
 	protected:
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
 		virtual void _resetMonitors(UpdateFreq);

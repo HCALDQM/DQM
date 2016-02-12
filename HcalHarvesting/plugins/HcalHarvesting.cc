@@ -3,6 +3,9 @@
 HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 	DQHarvester(ps)
 {
+	_frawnames.push_back("EvnMsm");
+	_frawnames.push_back("BcnMsm");
+	_frawnames.push_back("BadQuality");
 }
 
 /* virtual */ void HcalHarvesting::_dqmEndLuminosityBlock(DQMStore::IBooker&,
@@ -10,10 +13,30 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 	edm::EventSetup const&)
 {
 	std::cout << "Harvesting LS" << _currentLS << std::endl;
-	//	to save memory, all we need right now is
-	//	1) get MEs with LS on the axis
-	//	2) check if currentLS%numLSstart==0 
-	//	3) if yes, extend once again
+
+	//	Save the Summary per LS
+	ContainerSingle2D rawSummary;
+	rawSummary.initialize("RawTask", "Summary",
+		new quantity::FEDQuantity(_vFEDs),
+		new quantity::FlagQuantity(_frawnames),
+		new quantity::QualityQuantity());
+	rawSummary.load(ig);
+	ContainerSingle2D rawSummaryCopy;
+	char name[20];
+	sprintf(name, "LS%d", _currentLS);
+	rawSummaryCopy.initialize("RawTask", "SummaryvsLS",
+		new quantity::FEDQuantity(_vFEDs),
+		new quantity::FlagQuantity(_frawnames),
+		new quantity::QualityQuantity());
+	rawSummaryNew.book(ib, "Hcal", name);
+	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
+		it!=_vhashFEDs.end(); ++it)
+	{
+		HcalElectronicsId eid(*it);
+		for (int f=0; f<_frawnames.size(); f++)
+			rawSummaryCopy.setBinContent(eid, f, 
+				rawSummary.getBinContent(eid, f));
+	}
 }
 
 /* virtual */ void HcalHarvesting::_dqmEndJob(DQMStore::IBooker&,

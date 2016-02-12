@@ -36,6 +36,9 @@ class HcalHarvesting : public DQHarvester
 
 		//	electronicsmap hash
 		electronicsmap::ElectronicsMap _emaphash;
+
+		//	flag names
+		std::vector<std::string> _frawnames;
 };
 
 #endif

@@ -26,7 +26,12 @@ namespace hcaldqm
 			virtual void dqmEndJob(DQMStore::IBooker&, DQMStore::IGetter&);
 
 		protected:
+			//	empa
 			HcalElectronicsMap const* _emap;
+
+			//	all FEDs
+			std::vector<int>		_vFEDs;
+			std::vector<uint32_t>	_vhashFEDs;
 
 			virtual void _dqmEndLuminosityBlock(
 				DQMStore::IBooker&, DQMStore::IGetter&, 

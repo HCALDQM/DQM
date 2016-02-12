@@ -143,6 +143,10 @@ namespace hcaldqm
 			virtual void reset() {_me->Reset();}
 			virtual void print() {std::cout << _qname << std::endl;}
 
+			virtual void load(DQMStore::IGetter&, std::string subsystem="Hcal",
+				std::string aux="");
+			virtual assign(MonitorElement const&);
+
 		protected:
 			MonitorElement					*_me;
 			Quantity						*_qx;
