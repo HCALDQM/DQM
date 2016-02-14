@@ -233,9 +233,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 	//	HB collection
 	int numChs = 0;
-	int numChsCus = 0;
+	int numChsCut = 0;
 	int numChsHE = 0;
-	int numChsCusHE = 0;
+	int numChsCutHE = 0;
 	for (HBHEDigiCollection::const_iterator it=chbhe->begin(); it!=chbhe->end();
 		++it)
 	{
@@ -250,11 +250,15 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		{
 			_cOccupancy_FEDVME.fill(eid);
 			_cOccupancy_ElectronicsVME.fill(eid);
+			_cCapIdRots_FEDVME.fill(eid, 
+				utilities::isError<HBHEDataFrame>(*it)?1:0);
 		}
 		else
 		{
 			_cOccupancy_FEDuTCA.fill(eid);
 			_cOccupancy_ElectronicsuTCA.fill(eid);
+			_cCapIdRots_FEDuTCA.fill(eid, 
+				utilities::isError<HBHEDataFrame>(*it)?1:0);
 		}
 
 		for (int i=0; i<it->size(); i++)
@@ -285,7 +289,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				_cOccupancyCut_FEDuTCA.fill(eid);
 				_cOccupancyCut_ElectronicsuTCA.fill(eid);
 			}
-			did.subdet()==HcalBarrel?numChsCut++:numChsCutHE;
+			did.subdet()==HcalBarrel?numChsCut++:numChsCutHE++;
 		}
 		did.subdet()==HcalBarrel?numChs++:numChsHE++;
 	}
@@ -311,11 +315,15 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		{
 			_cOccupancy_FEDVME.fill(eid);
 			_cOccupancy_ElectronicsVME.fill(eid);
+			_cCapIdRots_FEDVME.fill(eid, 
+				utilities::isError<HODataFrame>(*it)?1:0);
 		}
 		else
 		{
 			_cOccupancy_FEDuTCA.fill(eid);
 			_cOccupancy_ElectronicsuTCA.fill(eid);
+			_cCapIdRots_FEDuTCA.fill(eid, 
+				utilities::isError<HODataFrame>(*it)?1:0);
 		}
 
 		for (int i=0; i<it->size(); i++)
@@ -369,11 +377,15 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		{
 			_cOccupancy_FEDVME.fill(eid);
 			_cOccupancy_ElectronicsVME.fill(eid);
+			_cCapIdRots_FEDVME.fill(eid, 
+				utilities::isError<HFDataFrame>(*it)?1:0);
 		}
 		else
 		{
 			_cOccupancy_FEDuTCA.fill(eid);
 			_cOccupancy_ElectronicsuTCA.fill(eid);
+			_cCapIdRots_FEDuTCA.fill(eid, 
+				utilities::isError<HFDataFrame>(*it)?1:0);
 		}
 
 		for (int i=0; i<it->size(); i++)
@@ -422,6 +434,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	/*
 	 *	
 	 */
+	/*
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
@@ -471,7 +484,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		else
 			_cSummary.setBinContent(eid, fCapIdRot, fGood);
 	}
-	
+	*/
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);
 }

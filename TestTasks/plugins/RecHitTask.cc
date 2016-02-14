@@ -238,6 +238,10 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		_logger.dqmthrow("Collection HFRecHitCollection not available "
 			+ _tagHF.label() + " " + _tagHF.instance());
 
+	double ehbm = 0; double ehbp = 0;
+	double ehem = 0; double ehep = 0;
+	int nChsHB = 0; int nChsHE = 0;
+	int nChsHBCut = 0; int nChsHECut = 0;
 	for (HBHERecHitCollection::const_iterator it=chbhe->begin();
 		it!=chbhe->end(); ++it)
 	{
@@ -249,6 +253,8 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		_cEnergy_depth.fill(did, energy);
 		_cTimingvsEnergy_FEDSlot.fill(eid, energy, timing);
 		_cOccupancy_depth.fill(did);
+		did.subdet()==HcalBarrel?did.ieta()>0?ehbp+=energy:ehbm+=energy:
+			did.ieta()>0?ehep+=energy:ehem+=energy;
 		if (eid.isVMEid())
 		{
 			_cEnergy_FEDVME.fill(eid, energy);
@@ -283,8 +289,21 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				_cOccupancyCut_FEDuTCA.fill(eid);
 				_cOccupancyCut_ElectronicsuTCA.fill(eid);
 			}
+			did.subdet()==HcalBarrel?nChsHBCut++:nChsHECut++;
 		}
+		did.subdet()==HcalBarrel?nChsHB++:nChsHE++;
 	}
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), nChsHB);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), nChsHE);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), nChsHBCut);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), nChsHECut);
+	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1,), ehbp, ehbm);
+	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1,), ehep, ehem);
+	_cEnergyTotal_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), ehbp+ehbm);
+	_cEnergyTotal_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), ehep+ehem);
+
+	int nChsHO = 0; int nChsHOCut = 0;
+	double ehop = 0; double ehom = 0;
 	for (HORecHitCollection::const_iterator it=cho->begin();
 		it!=cho->end(); ++it)
 	{
@@ -296,6 +315,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		_cEnergy_depth.fill(did, energy);
 		_cTimingvsEnergy_FEDSlot.fill(eid, energy, timing);
 		_cOccupancy_depth.fill(did);
+		did.ieta()>0?ehop+=energy:ehom+=energy;
 		if (eid.isVMEid())
 		{
 			_cEnergy_FEDVME.fill(eid, energy);
@@ -329,9 +349,17 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				_cOccupancyCut_FEDuTCA.fill(eid);
 				_cOccupancyCut_ElectronicsuTCA.fill(eid);
 			}
+			nChsHOCut++;
 		}
+		nChsHO++;
 	}
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), nChsHO);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), nChsHOCut);
+	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalOuter, 1, 1,4), ehop, ehom);
+	_cEnergyTotal_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), ehop+ehom);
 
+	int nChsHF = 0; int nChsHFCut = 0;
+	double ehfp = 0; double ehfm = 0;
 	for (HFRecHitCollection::const_iterator it=chf->begin();
 		it!=chf->end(); ++it)
 	{
@@ -343,6 +371,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		_cEnergy_depth.fill(did, energy);
 		_cTimingvsEnergy_FEDSlot.fill(eid, energy, timing);
 		_cOccupancy_depth.fill(did);
+		did.ieta()>0?ehfp+=energy:ehfm+=energy;
 		if (eid.isVMEid())
 		{
 			_cEnergy_FEDVME.fill(eid, energy);
@@ -376,8 +405,14 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				_cOccupancyCut_FEDuTCA.fill(eid);
 				_cOccupancyCut_ElectronicsuTCA.fill(eid);
 			}
+			nChsHFCut++;
 		}
+		nChsHF++;
 	}
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, ), nChsHF);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), nChsHFCut);
+	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalForward, 1, 1,1), ehfp, ehfm);
+	_cEnergyTotal_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), ehfp+ehfm);
 }
 
 /* virtual */ void RecHitTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
