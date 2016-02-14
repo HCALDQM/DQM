@@ -293,12 +293,16 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		}
 		did.subdet()==HcalBarrel?nChsHB++:nChsHE++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), nChsHB);
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), nChsHE);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), nChsHBCut);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), nChsHECut);
-	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1,), ehbp, ehbm);
-	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1,), ehep, ehem);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), _currentLS, 
+		nChsHB);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), _currentLS,
+		nChsHE);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), _currentLS,
+		nChsHBCut);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), _currentLS, 
+		nChsHECut);
+	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), ehbp, ehbm);
+	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), ehep, ehem);
 	_cEnergyTotal_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), ehbp+ehbm);
 	_cEnergyTotal_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), ehep+ehem);
 
@@ -353,8 +357,10 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		}
 		nChsHO++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), nChsHO);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), nChsHOCut);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), _currentLS,
+		nChsHO);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), _currentLS,
+		nChsHOCut);
 	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalOuter, 1, 1,4), ehop, ehom);
 	_cEnergyTotal_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), ehop+ehom);
 
@@ -409,8 +415,10 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		}
 		nChsHF++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, ), nChsHF);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), nChsHFCut);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), _currentLS,
+		nChsHF);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), _currentLS,
+		nChsHFCut);
 	_cEnergyTotalPM_Subdet.fill(HcalDetId(HcalForward, 1, 1,1), ehfp, ehfm);
 	_cEnergyTotal_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), ehfp+ehfm);
 }

@@ -293,10 +293,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		}
 		did.subdet()==HcalBarrel?numChs++:numChsHE++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), numChs);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), numChsCut);
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), numChsHE);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), numChsCutHE);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), _currentLS, 
+		numChs);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), _currentLS,
+		numChsCut);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), _currentLS,
+		numChsHE);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), _currentLS,
+		numChsCutHE);
 	numChs=0;
 	numChsCut = 0;
 
@@ -356,10 +360,12 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			}
 			numChsCut++;
 		}
-		numChs++:
+		numChs++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), numChs);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), numChsCut);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), _currentLS,
+		numChs);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), _currentLS,
+		numChsCut);
 	numChs=0; numChsCut=0;
 
 	//	HF collection
@@ -424,8 +430,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		}
 		numChs++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), numChs);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), numChsCut);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), _currentLS, 
+		numChs);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), _currentLS,
+		numChsCut);
 }
 
 /* virtual */ void DigiTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
