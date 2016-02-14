@@ -232,6 +232,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			+ _tagHF.label() + " " + _tagHF.instance());
 
 	//	HB collection
+	int numChs = 0;
+	int numChsCus = 0;
+	int numChsHE = 0;
+	int numChsCusHE = 0;
 	for (HBHEDigiCollection::const_iterator it=chbhe->begin(); it!=chbhe->end();
 		++it)
 	{
@@ -281,8 +285,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				_cOccupancyCut_FEDuTCA.fill(eid);
 				_cOccupancyCut_ElectronicsuTCA.fill(eid);
 			}
+			did.subdet()==HcalBarrel?numChsCut++:numChsCutHE;
 		}
+		did.subdet()==HcalBarrel?numChs++:numChsHE++;
 	}
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), numChs);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), numChsCut);
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), numChsHE);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), numChsCutHE);
+	numChs=0;
+	numChsCut = 0;
 
 	//	HO collection
 	for (HODigiCollection::const_iterator it=cho->begin(); it!=cho->end();
@@ -334,8 +346,13 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				_cOccupancyCut_FEDuTCA.fill(eid);
 				_cOccupancyCut_ElectronicsuTCA.fill(eid);
 			}
+			numChsCut++;
 		}
+		numChs++:
 	}
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), numChs);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), numChsCut);
+	numChs=0; numChsCut=0;
 
 	//	HF collection
 	for (HFDigiCollection::const_iterator it=chf->begin(); it!=chf->end();
@@ -391,13 +408,69 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				_cOccupancyCut_FEDuTCA.fill(eid);
 				_cOccupancyCut_ElectronicsuTCA.fill(eid);
 			}
+			numChsCut++;
 		}
+		numChs++;
 	}
+	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), numChs);
+	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), numChsCut);
 }
 
 /* virtual */ void DigiTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
+	/*
+	 *	
+	 */
+	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
+		it!=_vhashFEDs.end(); ++it)
+	{
+		HcalElectronicsId eid = HcalElectronicsId(*it);
+		for (int flag=fLowOcp; flag<nDigiFlag; flag++)
+			_cSummary.setBinContent(eid, flag, fNA);
+
+		int ncapid = 0;
+		int nmissing = 0;
+		if (eid.isVMEid())
+		{
+			//	VME
+			for (int is=SPIGOT_MIN; is<=SPIGOT_MAX; is++)
+			{
+				eid = HcalElectronicsId(FIBERCH_MIN,
+					FIBER_VME_MIN, is, eid.dccid());
+				ejd = HcalElectronicsId(FIBERCH_MIN,
+					FIBER_VME_MIN, is==SPIGOT_MAX?SPIGOT_MIN:is+1,eid.dccid());
+				int niscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
+				int njscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
+				for (int ifib=FIBER_VME_MIN;ifib<=FIBER_VMEMAX;fib++)
+					for (int ifc=FIBERCH_MIN; ifc<+FIBERCH_MAX; ifc++)
+					{
+						eid=HcalElectronicsId(ifc, ifib, eid.spigot(),
+							eid.dccid());
+						ncapid+=_cCapIdRots_FEDVME.getBinContent(eid);
+						if (_cOccupancy_FEDVME.getBinContent(eid)<1)
+						{
+							_cMissing1LS_FEDVME.fill(eid);
+							nmissing++;
+						}
+					}
+				double ratio = std::min(niscut, njscut)/std::max(niscut, 
+					njscut);
+				_cSummary.setBinContent(eid, fUniSlot, fGood);
+				if (ratio<0.8)
+					_cSummary.setBinContent(eid, fUniSlot, fLow);
+			}
+		}
+		else
+		{
+			//	uTCA
+		}
+
+		if (ncapid>0)
+			_cSummary.setBinContent(eid, fCapIdRot, fLow);
+		else
+			_cSummary.setBinContent(eid, fCapIdRot, fGood);
+	}
 	
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

@@ -34,7 +34,11 @@ class DigiTask : public DQTask
 
 		enum DigiFlag
 		{
-			f
+			fLowOcp = 0,
+			fUniSlot = 1,
+			fMsn1LS = 2,
+			fCapIdRot = 3,
+			nDigiFlag = 4
 		};
 
 	protected:
@@ -97,8 +101,6 @@ class DigiTask : public DQTask
 		Container2D _cCapIdRots_FEDuTCA;
 
 		ContainerSingle2D _cSummarySubdet;
-		Container2D _cSummary_FED;
-		Container2D _cSummary_Subdet;
 		ContainerSingle2D _cSummaryFED;
 };
 
