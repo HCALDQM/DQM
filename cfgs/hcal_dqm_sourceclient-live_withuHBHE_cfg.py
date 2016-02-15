@@ -239,7 +239,7 @@ process.qTester = cms.EDAnalyzer(
 process.preRecoSequence = cms.Sequence(
 		process.hcalDigis
 		*process.uHBHEDigis
-		*process.l1GtUnpack
+#		*process.l1GtUnpack
 )
 
 process.recoSequence = cms.Sequence(

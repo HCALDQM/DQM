@@ -104,7 +104,11 @@ process.hcalDigis.InputLabel = rawTag
 #	Hcal DQM Tasks and Clients import
 #	New Style
 #-------------------------------------
-process.load('DQM.TestTasks.TestTask')
+process.load('DQM.TestTasks.DigiTask')
+process.load('DQM.TestTasks.RecHitTask')
+process.load('DQM.TestTasks.RawTask')
+process.load('DQM.TestTasks.TPTask')
+process.load('DQM.HcalHarvesting.HcalHarvesting')
 
 #-------------------------------------
 #	To force using uTCA
@@ -140,14 +144,29 @@ if useMap:
 #	New Style Modules
 #-------------------------------------
 oldsubsystem = subsystem
-process.testTask.runkeyVal = runType
-process.testTask.runkeyName = runTypeName
+process.digiTask.runkeyVal = runType
+process.digiTask.runkeyName = runTypeName
+process.digiTask.numLSstart = cms.untracked.int32(4000)
+process.recHitTask.runkeyVal = runType
+process.recHitTask.runkeyName = runTypeName
+process.recHitTask.numLSstart = cms.untracked.int32(4000)
+process.rawTask.runkeyVal = runType
+process.rawTask.runkeyName = runTypeName
+process.rawTask.numLSstart = cms.untracked.int32(4000)
+process.tpTask.runkeyVal = runType
+process.tpTask.runkeyName = runTypeName
+process.tpTask.numLSstart = cms.untracked.int32(4000)
+process.hcalHarvesting.runkeyVal = runType
+process.hcalHarvesting.runkeyName = runTypeName
 
 #-------------------------------------
 #	Hcal DQM Tasks/Clients Sequences Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
-	process.testTask
+	process.digiTask
+	*process.recHitTask
+	*process.rawTask
+	*process.tpTask
 )
 
 #-------------------------------------
@@ -187,6 +206,7 @@ process.p = cms.Path(
 		process.preRecoSequence
 		*process.recoSequence
 		*process.tasksSequence
+		*process.hcalHarvesting
 		*process.dqmSequence
 )
 
