@@ -280,6 +280,30 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 /* virtual */ void TPTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
+	for (std::vector<int32_t>::const_iterator it=_vhashFEDs.begin();
+		it!=_vhashFEDS.end(); ++it)
+	{
+		HcalElectronicsId eid = HcalElectronicsId(*it);
+		for (int flag=fLowOcp; flag<nTPFlag; flag++)
+			_cSummary.setBinContent(eid, flag, fNA);
+
+		if (eid.isVMEid())
+		{
+			//	VME
+			for (int is=SPIGOT_MIN; is<=SPIGOT_MAX; is++)
+			{
+
+			}
+		}
+		else 
+		{	
+			//	uTCA
+			for (int is=SLOT_uTCA_MIN; is<=SLOT_uTCA_MAX; is++)
+			{
+
+			}
+		}
+	}
 	
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

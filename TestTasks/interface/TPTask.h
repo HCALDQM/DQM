@@ -32,6 +32,14 @@ class TPTask : public DQTask
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
 
+		enum TPFlag
+		{
+			fOcpUniData = 0,
+			fOcpUniEmul = 1,
+			fEtMsmUni = 2,
+			fFGMsmUni = 3,
+		};
+
 	protected:
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
 		virtual void _resetMonitors(UpdateFreq);

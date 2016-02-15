@@ -32,6 +32,16 @@ class RecHitTask : public DQTask
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
 
+		enum RecoFlag
+		{
+			fOcpUniSlot = 0,
+			fTimeUniSlot = 1,
+			fTCDS = 2,
+			fLowOcp = 3,
+			fMsn1LS = 4,
+			nRecoFlag = 5
+		};
+
 	protected:
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
 		virtual void _resetMonitors(UpdateFreq);
@@ -89,6 +99,11 @@ class RecHitTask : public DQTask
 		Container2D _cOccupancyCut_ElectronicsVME;
 		Container2D _cOccupancyCut_ElectronicsuTCA;
 		ContainerProf1D _cOccupancyCutvsLS_Subdet;
+
+		Container2D _cMissing1LS_FEDVME;
+		Container2D _cMissing1LS_FEDuTCA;
+
+		ContainerSingle2D _cSummary;
 };
 
 #endif

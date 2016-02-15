@@ -171,6 +171,16 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::fN_to3000));
 
+	std::vector<std::string> fnames;
+	fnames.push_back("OcpUniSlot");
+	fnames.push_bakc("TimeUniSlot");
+	fnames.push_back("TCDS");
+	fnames.push_back("LowOcp");
+	fnames.push_back("Msn1LS");
+	_cSummary.initialize(_name, "Summary", 
+		new quantity::FEDQuantity(vFEDs),
+		new quantity::FlagQuantity(fnames),
+		new quantity::QualityQuantity());
 
 	//	BOOK HISTOGRAMS
 	char cutstr[200];
@@ -211,6 +221,8 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cOccupancyCut_ElectronicsVME.book(ib, _emap, _filter_uTCA);
 	_cOccupancyCut_ElectronicsuTCA.book(ib, _emap, _filter_VME);
 	_cOccupancyCutvsLS_Subdet.book(ib, _emap);
+
+	_cSummary.book(ib);
 
 	//	initialize hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fDHashMap);
@@ -426,6 +438,85 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 /* virtual */ void RecHitTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
+	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
+		it!=_vhashFEDs.end(); ++it)
+	{
+		HcalElectronicsId eid = HcalElectronicsId(*it);
+		for (int flag=fLowOcp; flag<nRecoFlag; flag++)
+			_cSummary.setBinContent(eid, flag, fNA);
+
+		int nmissing = 0;
+		int ocpUniSlot = false;
+		if (eid.isVMEid())
+		{
+			for (int is=SPIGOT_MIN; is<=SPIGOT_MAX; is++)
+			{
+				eid = HcalElectronicsId(FIBERCH_MIN, FIBER_VME_MIN, 
+					is, eid.dccid());
+				HcalElectronicsId ejd = HcalElectronicsId(
+					FIBERCH_MIN, FIBER_VME_MIN, 
+					is==SPIGOT_MAX?SPIGOT_MIN:is+1, eid.dccid());
+				int niscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
+				int njscut = _cOccupancyCut_ElectronicsVME.getBinContent(ejd);
+				for (int ifib=FIBER_VME_MIN; ifib<=FIBER_VMEMAX; ifib++)
+					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
+					{
+						eid = HcalElectronicsId(ifc, ifib, is, eid.dccid());
+						if (_cOccupancy_FEDVME.getBinContent(eid)<1)
+						{
+							_cMissing1LS_FEDVME.fill(eid);
+							nmissing++;
+						}
+					}
+				double ratio = std::min(niscut, njscut)/std::max(niscut, 
+					njscut);
+				if (ratio<0.8)
+					ocpUniSlot = true;
+			}
+		}
+		else
+		{
+			//	uTCA
+			for (int is=SLOT_uTCA_MIN; is<=SLOT_uTCA_MAX; is++)
+			{
+				eid = HcalElectronicsId(eid.crateId(), is, 
+					FIBER_uTCA_MIN1, FIBERCH_MIN, false);
+				HcalElectronicsId ejd = HcalElectronicsId(eid.crateId(),
+					is==SLOT_uTCA_MAX?SLOT_uTCA_MIN:is+1, FIBER_uTCA_MIN1,
+					FIBERCH_MIN, false);
+				int niscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(eid);
+				int njscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(ejd);
+				for (ifib=FIBER_uTCA_MIN1; ifb<=FIBER_uTCA_MAX2; ifib++)
+				{
+					if (ifib>FIBER_uTCA_MAX1 && ifib<FIBER_uTCA_MIN2)
+						continue;
+					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
+					{
+						eid=HcalElectronicsId(eid.crateId(), is, ifib, ifc, 
+							false);
+						if (_cOccupancy_FEDuTCA.getBinContent(eid)<1)
+						{
+							_cMissing1LS_FEDuTCA.fill(eid);
+							nmissing++;
+						}
+					}
+				}
+				double ratio = std::min(niscut, njscut)/std::max(niscut, 
+					njscut);
+				if (ratio<0.8)
+					ocpUniSlot = true;
+			}
+		}
+
+		if (nmissing>0)
+			_cSummary.setBinContent(eid, fMsn1LS, fLow);
+		else
+			_cSummary.setBinContent(eid, fMsn1LS, fGood);
+		if (ocpUniSlot)
+			_cSummary.setBinContent(eid, fOcpUniSlot, fLow);
+		else
+			_cSummary.setBinContent(eid, fOcpUniSlot, fGood);
+	}
 	
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

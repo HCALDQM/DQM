@@ -28,6 +28,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	edm::ESHandle<HcalDbService> dbs;
 	es.get<HcalDbRecord>().get(dbs);
 	_emap = dbs->getHcalMapping();
+	std::vector<int> vFEDs = utilities::getFEDList(_emap);
 	std::vector<int> vFEDsVME = utilities::getFEDVMEList(_emap);
 	std::vector<int> vFEDsuTCA = utilities::getFEDuTCAList(_emap);
 	std::vector<uint32_t> vVME;
@@ -169,6 +170,26 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fN));
+	_cMissing1LS_FEDVME.initialize(_name, "Missing1LS",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMissing1LS_FEDuTCA.initialize(_name, "Missing1LS",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+
+	std::vector<std::string> fnames;
+	fnames.push_back("LowOcp");
+	fnames.push_back("UniSlot");
+	fnames.push_back("Msn1LS");
+	fnames.push_back("CapIdRot");
+	_cSummary_FED.intialize(_name, "Summary",
+		new quantity::FEDQuantity(vFEDs),
+		new quantity::FlagQuantity(fnames),
+		new qauntity::QualityQuantity());
 
 	//	BOOK HISTOGRAMS
 	char cutstr[200];
@@ -207,6 +228,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 	_cCapIdRots_FEDVME.book(ib, _emap, _filter_uTCA);
 	_cCapIdRots_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cMissing1LS_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cMissing1LS_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cSummary.book(ib);
 }
 
 /* virtual */ void DigiTask::_resetMonitors(UpdateFreq uf)
@@ -442,16 +466,17 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	/*
 	 *	
 	 */
-	/*
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
 		HcalElectronicsId eid = HcalElectronicsId(*it);
+		//	set flag as unapplicable for this FED first
 		for (int flag=fLowOcp; flag<nDigiFlag; flag++)
 			_cSummary.setBinContent(eid, flag, fNA);
 
 		int ncapid = 0;
 		int nmissing = 0;
+		bool uniSlot = false;
 		if (eid.isVMEid())
 		{
 			//	VME
@@ -459,12 +484,12 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			{
 				eid = HcalElectronicsId(FIBERCH_MIN,
 					FIBER_VME_MIN, is, eid.dccid());
-				ejd = HcalElectronicsId(FIBERCH_MIN,
+				HcalElectronicsId ejd = HcalElectronicsId(FIBERCH_MIN,
 					FIBER_VME_MIN, is==SPIGOT_MAX?SPIGOT_MIN:is+1,eid.dccid());
 				int niscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
 				int njscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
-				for (int ifib=FIBER_VME_MIN;ifib<=FIBER_VMEMAX;fib++)
-					for (int ifc=FIBERCH_MIN; ifc<+FIBERCH_MAX; ifc++)
+				for (int ifib=FIBER_VME_MIN;ifib<=FIBER_VMEMAX;ifib++)
+					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
 					{
 						eid=HcalElectronicsId(ifc, ifib, eid.spigot(),
 							eid.dccid());
@@ -477,22 +502,60 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 					}
 				double ratio = std::min(niscut, njscut)/std::max(niscut, 
 					njscut);
-				_cSummary.setBinContent(eid, fUniSlot, fGood);
 				if (ratio<0.8)
-					_cSummary.setBinContent(eid, fUniSlot, fLow);
+					uniSlot = true;
 			}
 		}
 		else
 		{
 			//	uTCA
+			for (int is=constants::SLOT_uTCA_MIN;
+				is<=SLOT_uTCA_MAX; is++)
+			{
+				eid = HcalElectronicsId(eid.crateId(), is,
+					FIBER_uTCA_MIN1, FIBERCH_MIN, false);
+				HcalElectronicsId ejd = HcalElectronicsId(eid.crateId(), 
+					is==SLOT_uTCA_MAX?SLOT_uTCA_MIN:is+1, FIBER_uTCA_MIN1,
+					FIBERCH_MIN, false);
+				int niscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(eid);
+				int njscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(ejd);
+				for (int ifib=FIBER_uTCA_MIN1;
+					ifib<=FIBER_uTCA_MAX2; ifib++)
+				{
+					if (ifib>FIBER_uTCA_MAX1 && ifib<FIBER_uTCA_MIN2)
+						continue;
+					ncapid+=_cCapIdRots_FEDuTCA.getBinContent(eid);
+					for (int ifc = FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
+					{
+						eid = HcalElectronicsId(eid.crateId(), is,
+							ifib, ifc, false);
+						{
+							_cMissing1LS_FEDuTCA.fill(eid);
+							nmissing++;
+						}
+					}
+				double ratio = std::min(niscut, njscut)/std::max(niscut, 
+					njscut);
+				if (ratio<0.8)
+					uniSlot = true;
+				}
+			}
 		}
 
 		if (ncapid>0)
 			_cSummary.setBinContent(eid, fCapIdRot, fLow);
 		else
 			_cSummary.setBinContent(eid, fCapIdRot, fGood);
+		if (uniSlot)
+			_cSummary.setBinContent(eid, fUniSlot, fLow)
+		else
+			_cSummary.setBinContent(eid, fUniSlot, fGood);
+		if (nmissing>0)
+			_cSummary.setBinContent(eid, fMsn1LS, fLow);
+		else
+			_cSummary.setBinContent(eid, fMsn1LS, fGood);
 	}
-	*/
+
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);
 }

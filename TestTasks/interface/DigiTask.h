@@ -34,10 +34,10 @@ class DigiTask : public DQTask
 
 		enum DigiFlag
 		{
-			fLowOcp = 0,
-			fUniSlot = 1,
-			fMsn1LS = 2,
-			fCapIdRot = 3,
+			fLowOcp = 0, // per subdet
+			fUniSlot = 1, // occupancy uniformity vs Slots per FED
+			fMsn1LS = 2, // missing for 1 LS
+			fCapIdRot = 3, // caps non rotating
 			nDigiFlag = 4
 		};
 
@@ -100,8 +100,10 @@ class DigiTask : public DQTask
 		Container2D _cCapIdRots_FEDVME;
 		Container2D _cCapIdRots_FEDuTCA;
 
-		ContainerSingle2D _cSummarySubdet;
-		ContainerSingle2D _cSummaryFED;
+		Container2D _cMissing1LS_FEDVME;
+		Container2D _cMissing1LS_FEDuTCA;
+
+		ContainerSingle2D _cSummary;
 };
 
 #endif
