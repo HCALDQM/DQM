@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
+pathToFiles = "/data/hcaldqm/DQMIO/local"
 hbmruns = [260918, 261050, 262031, 262398, 262670]
 hbmfiles = ["DQM_V0001_Hcal_R000260918.root", "DQM_V0001_Hcal_R000261050.root",
 	"DQM_V0001_Hcal_R000262031.root", "DQM_V0001_Hcal_R000262398.root",
@@ -17,6 +18,15 @@ hemfiles = ["DQM_V0001_Hcal_R000260921.root", "DQM_V0001_Hcal_R000261054.root",
 hepruns = [260926, 261055, 262039, 262401]
 hepfiles = ["DQM_V0001_Hcal_R000260926.root", "DQM_V0001_Hcal_R000261055.root",
 	"DQM_V0001_Hcal_R000262039.root", "DQM_V0001_Hcal_R000262401.root"]
+
+for f in hbmfiles:
+	f = pathToFiles+"/"+f
+for f in hbpfiles:
+	f = pathToFiles+"/"+f
+for f in hemfiles:
+	f = pathToFiles+"/"+f
+for f in hepfiles:
+	f = pathToFiles+"/"+f
 
 laserHarvesting = cms.EDAnalyzer(
 	"LaserHarvesting",

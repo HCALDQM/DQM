@@ -82,15 +82,16 @@ process.DQM = cms.Service(
 	"DQM",
 	debug = cms.untracked.bool(False),
 	publishFrequency = cms.untracked.double(1.0),
-	collectorPort = cms.untracked.int32(8061),
+	collectorPort = cms.untracked.int32(9999),
 	collectorHost = cms.untracked.string('hcaldqm03.cms'),
 	filter = cms.untracked.string('')
 )
-process.dqmSaver.convention = 'Online'
+process.dqmSaver.convention = 'Offline'
+process.dqmSaver.workflow = "/%s/Commissioning2016/DQMIO" % options.runType.upper()
 process.dqmSaver.referenceHandling = 'all'
-process.dqmSaver.dirName = '.'
+process.dqmSaver.dirName = '/data/hcaldqm/DQMIO/LOCAL'
 process.dqmSaver.producer = 'DQM'
-process.dqmSaver.saveByLumiSection = 10
+process.dqmSaver.saveByLumiSection = -1
 process.dqmSaver.saveByRun = 1
 process.dqmSaver.saveAtJobEnd = False
 process.DQMStore.verbose = 0
@@ -148,10 +149,13 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #-------------------------------------
 #	Hcal DQM Tasks and Clients import
 #-------------------------------------
-process.load("DQM.HcalTasks.PedestalTask")
-process.load("DQM.HcalTasks.LaserTask")
-process.load("DQM.HcalTasks.LEDTask")
-process.load("DQM.HcalTasks.RadDamTask")
+process.load("DQM.TestTasks.PedestalTask")
+process.load("DQM.TestTasks.LEDTask")
+process.load("DQM.TestTasks.LaserTask")
+process.load("DQM.TestTasks.RadDamTask")
+#process.load("DQM.HcalTasks.LaserTask")
+#process.load("DQM.HcalTasks.LEDTask")
+#process.load("DQM.HcalTasks.RadDamTask")
 
 #-------------------------------------
 #	To force using uTCA
@@ -202,16 +206,16 @@ process.utcaDigis.FEDs = cms.untracked.vint32(1100, 1102, 1104, 1106,
 #-------------------------------------
 #	Sequences Definition
 #-------------------------------------
-if options.runType=="pedestal":
+if "pedestal" in options.runType.lower():
 	process.tasksSequence = cms.Sequence(process.pedestalTask)
-elif options.runType=='led':
+elif 'led' in options.runType.lower():
 	process.tasksSequence = cms.Sequence(process.ledTask)
-elif options.runType=="laser":
+elif "laser" in options.runType.lower():
 	process.tasksSequence = cms.Sequence(process.laserTask)
-elif options.runType=="raddam":
+elif "raddam" in options.runType.lower():
 	process.tasksSequence = cms.Sequence(process.raddamTask)
 else:
-	print "### Exiting. Wrong Run Type: " + options.runType
+	print "### Exiting. Wrong Run Type: " + options.runType.lower()
 	sys.exit(0)
 
 #-------------------------------------
@@ -274,3 +278,4 @@ process.options = cms.untracked.PSet(
 			"TooFewProducts"
 		)
 )
+process.options.wantSummary = cms.untracked.bool(True)
