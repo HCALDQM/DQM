@@ -53,8 +53,6 @@ process = customise(process)
 process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('FWCore.MessageLogger.MessageLogger_cfi')
 process.load("EventFilter.HcalRawToDigi.HcalRawToDigi_cfi")
-process.load("RecoLocalCalo.Configuration.hcalLocalReco_cff")
-process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
 process.load("CondCore.DBCommon.CondDBSetup_cfi")
 process.load("L1Trigger.Configuration.L1DummyConfig_cff")
 process.load("EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi")
@@ -70,10 +68,6 @@ process.load("EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi")
 #	-> L1 GT setting
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
-runType			= process.runType.getRunType()
-runTypeName		= process.runType.getRunTypeName()
-isCosmicRun		= runTypeName=="cosmic_run" or runTypeName=="cosmic_run_stage1"
-isHeavyIon		= runTypeName=="hi_run"
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
 rawTag			= cms.InputTag("hltHcalCalibrationRaw")
 rawTagUntracked	= cms.InputTag("hltHcalCalibrationRaw")
@@ -83,22 +77,11 @@ process.essourceSev = cms.ESSource(
 		firstValid		= cms.vuint32(1),
 		iovIsRunNotTime	= cms.bool(True)
 )
-process.emulTPDigis = \
-		process.simHcalTriggerPrimitiveDigis.clone()
-process.emulTPDigis.inputLabel = \
-		cms.VInputTag("hcalDigis", 'hcalDigis')
-process.emulTPDigis.FrontEndFormatError = \
-		cms.bool(True)
-process.HcalTPGCoderULUT.LUTGenerationMode = cms.bool(False)
-process.emulTPDigis.FG_threshold = cms.uint32(2)
-process.emulTPDigis.InputTagFEDRaw = rawTag
 process.l1GtUnpack.DaqGtInputTag = rawTag
-process.hbhereco = process.hbheprereco.clone()
 
 #-------------------------------------
 #	Hcal DQM Tasks and Clients import
 #-------------------------------------
-process.load("DQM.HcalTasks.LEDTask")
 process.load("DQM.HcalTasks.LaserTask")
 process.load("DQM.HcalTasks.PedestalTask")
 process.load('DQM.HcalTasks.RadDamTask')
@@ -141,7 +124,6 @@ process.hcalDigis.InputLabel = rawTag
 #	Hcal DQM Tasks Sequence Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
-		process.ledTask
 		*process.laserTask
 		*process.pedestalTask
 		*process.raddamTask
