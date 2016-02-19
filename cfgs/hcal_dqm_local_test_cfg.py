@@ -38,7 +38,22 @@ options.register(
 	"Local Run Type: pedestal, led, laser, raddam"
 )
 
+options.register(
+	'settingsModuleName',
+	'settings',
+	VarParsing.VarParsing.multiplicity.singleton,
+	VarParsing.VarParsing.varType,string,
+	"Module Name with Settings to be imported"
+)
+
 options.parseArguments()
+#-------------------------------------
+#	Add the HCALDQM UTilities into the sys.path
+#-------------------------------------
+hutils = os.environ["HCALDQMUTILITIES"]
+sys.path.append(hutils)
+import importlib
+settings = importlib.import_module(options.settingsModuleName)
 
 #-------------------------------------
 #	Standard CMSSW Imports/Definitions
@@ -51,8 +66,8 @@ debugstr		= "### HcalDQM::cfg::DEBUG: "
 warnstr			= "### HcalDQM::cfg::WARN: "
 errorstr		= "### HcalDQM::cfg::ERROR:"
 local			= True
-useMap			= False
-dbMap			= False
+useMap			= settings.useMap
+dbMap			= settings.dbMap
 cmsnet			= True
 
 print debugstr, "Input Files= ", options.inputFiles
@@ -86,11 +101,12 @@ process.DQM = cms.Service(
 	collectorHost = cms.untracked.string('hcaldqm03.cms'),
 	filter = cms.untracked.string('')
 )
-process.dqmSaver.convention = 'Online'
+process.dqmSaver.convention = settings.dqmguiconvention
+process.dqmSaver.workflow = "/%s/Commissioning2016/DQMIO" % options.runType.upper()
 process.dqmSaver.referenceHandling = 'all'
-process.dqmSaver.dirName = '.'
+process.dqmSaver.dirName = settings.dqmiopool+"/"+options.runType.upper()
 process.dqmSaver.producer = 'DQM'
-process.dqmSaver.saveByLumiSection = 10
+process.dqmSaver.saveByLumiSection = -1
 process.dqmSaver.saveByRun = 1
 process.dqmSaver.saveAtJobEnd = False
 process.DQMStore.verbose = 0
@@ -120,7 +136,8 @@ process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 #	-> L1 GT setting
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
-process.GlobalTag.globaltag = '74X_dataRun2_Express_v2'
+process.GlobalTag.globaltag = settings.globalTag
+#process.GlobalTag.globaltag = '74X_dataRun2_Express_v2'
 if cmsnet:
 	process.GlobalTag.connect = 'frontier://(serverurl=http://frontier1.cms:8000/FrontierOnProd)(serverurl=http://frontier2.cms:8000/FrontierOnProd)(retrieve-ziplevel=0)/CMS_CONDITIONS'
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
@@ -169,8 +186,8 @@ if useMap==True and dbMap==True:
 					record = cms.string(
 						"HcalElectronicsMapRcd"
 					),
-					tag = cms.string(
-						"HcalElectronicsMap_v7.00_offline"					  )
+					tag = cms.string(settings.emaptag)
+#						"HcalElectronicsMap_v7.00_offline")
 				)
 			),
 			connect = cms.string(
@@ -184,7 +201,8 @@ elif useMap==True and dbMap==False:
 		input = cms.VPSet(
 			cms.PSet(
 				object = cms.string('ElectronicsMap'),
-				file = cms.FileInPath('version_G_emap_2015_may_20')
+				file = cms.FileInPath(settings.emapfileInPath)
+#				file = cms.FileInPath('version_G_emap_2015_may_20')
 			)
 		)
 	)
@@ -205,16 +223,16 @@ process.utcaDigis.FEDs = cms.untracked.vint32(1100, 1102, 1104, 1106,
 #-------------------------------------
 #	Sequences Definition
 #-------------------------------------
-if options.runType=="pedestal":
+if "pedestal" in options.runType.lower():
 	process.tasksSequence = cms.Sequence(process.pedestalTask)
-elif options.runType=='led':
+elif 'led' in options.runType.lower():
 	process.tasksSequence = cms.Sequence(process.ledTask)
-elif options.runType=="laser":
+elif "laser" in options.runType.lower():
 	process.tasksSequence = cms.Sequence(process.laserTask)
-elif options.runType=="raddam":
+elif "raddam" in options.runType.lower():
 	process.tasksSequence = cms.Sequence(process.raddamTask)
 else:
-	print "### Exiting. Wrong Run Type: " + options.runType
+	print "### Exiting. Wrong Run Type: " + options.runType.lower()
 	sys.exit(0)
 
 #-------------------------------------

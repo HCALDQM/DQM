@@ -15,11 +15,16 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 options = VarParsing.VarParsing()
 
 options.register(
-	'inputFiles',
-	"root://eoscms.cern.ch//eos/cms/store/group/dpg_hcal/comm_hcal/LS1/USC_248441.root", #default
+	'runFiles', [""],
 	VarParsing.VarParsing.multiplicity.list,
 	VarParsing.VarParsing.varType.string,
-	"Input Files"
+	"Run Files"
+)
+options.register(
+	'runNumbers', 5,
+	VarParsing.VarParsing.multiplicity.list,
+	VarParsing.VarParsing.varType.int,
+	"Run Numbers"
 )
 
 options.register(
@@ -35,10 +40,25 @@ options.register(
 	'UNKNOWN',
 	VarParsing.VarParsing.multiplicity.singleton,
 	VarParsing.VarParsing.varType.string,
-	"Local Run Type: pedestal, led, laser, raddam"
+	"Local Run Type: pedestal, led, laser(various), raddam"
+)
+
+options.register(
+	'settingsModuleName',
+	"settings",
+	VarParsing.VarParsing.multiplicity.singleton,
+	VarParsing.VarParsing.varType.string,
+	"Module Name with Settings to be imported"
 )
 
 options.parseArguments()
+#-------------------------------------
+#	Add the HCALDQM Utilities into the sys.path
+#-------------------------------------
+hutils = os.environ["HCALDQMUTILITIES"]
+sys.path.append(hutils)
+import importlib
+settings = importlib.import_module(options.settingsModuleName)
 
 #-------------------------------------
 #	Standard CMSSW Imports/Definitions
@@ -51,8 +71,8 @@ debugstr		= "### HcalDQM::cfg::DEBUG: "
 warnstr			= "### HcalDQM::cfg::WARN: "
 errorstr		= "### HcalDQM::cfg::ERROR:"
 local			= True
-useMap			= False
-dbMap			= False
+useMap			= settings.useMap
+dbMap			= settings.dbMap
 cmsnet			= True
 
 print debugstr, "Input Files= ", options.inputFiles
@@ -80,10 +100,11 @@ process.DQM = cms.Service(
 	collectorHost = cms.untracked.string('hcaldqm03.cms'),
 	filter = cms.untracked.string('')
 )
-process.dqmSaver.convention = 'Offline'
-process.dqmSaver.workflow = cms.untracked.string('/LED/Trend2016/DQMIO')
+process.dqmSaver.convention = settings.dqmguiconvention
+process.dqmSaver.workflow = cms.untracked.string('/%s/Trend2016/DQMIO' % 
+	options.runType.upper())
 process.dqmSaver.referenceHandling = 'all'
-process.dqmSaver.dirName = '.'
+process.dqmSaver.dirName = settings.dqmiopool+'/'+options.runType.upper()
 process.dqmSaver.producer = 'DQM'
 process.dqmSaver.saveByLumiSection = -1
 process.dqmSaver.saveByRun = 1
@@ -111,7 +132,8 @@ process.load("CondCore.DBCommon.CondDBSetup_cfi")
 #	-> L1 GT setting
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
-process.GlobalTag.globaltag = '74X_dataRun2_Express_v2'
+process.GlobalTag.globaltag = settings.globalTag
+#process.GlobalTag.globaltag = '74X_dataRun2_Express_v2'
 if cmsnet:
 	process.GlobalTag.connect = 'frontier://(serverurl=http://frontier1.cms:8000/FrontierOnProd)(serverurl=http://frontier2.cms:8000/FrontierOnProd)(retrieve-ziplevel=0)/CMS_CONDITIONS'
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
@@ -130,6 +152,19 @@ process.load("DQM.Harvesting.LaserHarvesting")
 process.load("DQM.Harvesting.LEDHarvesting")
 process.load("DQM.Harvesting.PedestalHarvesting")
 
+if "pedestal" in options.runType.lower():
+	process.harvestingSequence = cms.Sequence(process.pedestalHarvesting)
+	process.pedestalHarvesting.files = cms.untracked.vstring(options.runFiles)
+	process.pedestalHarvesting.runs = cms.untracked.vstring(options.runNumbers)
+elif "led" in options.runType.lower():
+	process.harvestingSequence = cms.Sequence(process.ledHarvesting)
+	process.ledHarvesting.files = cms.untracked.vstring(options.runFiles)
+	process.ledHarvesting.runs = cms.untracked.vstring(options.runNumbers)
+elif "laser" in options.runType.lower():
+	process.harvestingSequence = cms.Sequence(process.laserHarvesting)
+	process.laserHarvesting.files = cms.untracked.vstring(options.runFiles)
+	process.laserHarvesting.runs = cms.untracked.vstring(options.runNumbers)
+
 #-------------------------------------
 #	To force using uTCA
 #	Will not be here for Online DQM
@@ -143,8 +178,8 @@ if useMap==True and dbMap==True:
 					record = cms.string(
 						"HcalElectronicsMapRcd"
 					),
-					tag = cms.string(
-						"HcalElectronicsMap_v7.00_offline"					  )
+					tag = cms.string(settings.emaptag)
+#						"HcalElectronicsMap_v7.00_offline"					  )
 				)
 			),
 			connect = cms.string(
@@ -158,7 +193,8 @@ elif useMap==True and dbMap==False:
 		input = cms.VPSet(
 			cms.PSet(
 				object = cms.string('ElectronicsMap'),
-				file = cms.FileInPath('version_G_emap_2015_may_20')
+				file = cms.FileInPath(settings.emapfileInPath)
+#				file = cms.FileInPath('version_G_emap_2015_may_20')
 			)
 		)
 	)
@@ -169,9 +205,7 @@ elif useMap==True and dbMap==False:
 #	Execution Sequence Definition
 #-------------------------------------
 process.p = cms.Path(
-#	process.laserHarvesting
-#	process.pedestalHarvesting
-	process.ledHarvesting
+	process.harvestingSequence
 	*process.dqmEnv
 	*process.dqmSaver
 )
