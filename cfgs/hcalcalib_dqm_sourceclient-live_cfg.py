@@ -124,7 +124,7 @@ process.hcalDigis.InputLabel = rawTag
 #	Hcal DQM Tasks Sequence Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
-		*process.laserTask
+		process.laserTask
 		*process.pedestalTask
 		*process.raddamTask
 )
