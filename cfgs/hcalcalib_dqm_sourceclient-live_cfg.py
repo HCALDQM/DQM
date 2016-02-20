@@ -46,6 +46,7 @@ process.dqmSaver.tag = subsystem
 referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
+process.source.SelectEvents = cms.untracked.vstring("*HcalCalibration*")
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
@@ -71,12 +72,6 @@ process.load("EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi")
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
 rawTag			= cms.InputTag("hltHcalCalibrationRaw")
 rawTagUntracked	= cms.InputTag("hltHcalCalibrationRaw")
-process.essourceSev = cms.ESSource(
-		"EmptyESSource",
-		recordName		= cms.string("HcalSeverityLevelComputerRcd"),
-		firstValid		= cms.vuint32(1),
-		iovIsRunNotTime	= cms.bool(True)
-)
 process.l1GtUnpack.DaqGtInputTag = rawTag
 
 #-------------------------------------
@@ -113,7 +108,6 @@ if useMap:
 #-------------------------------------
 #	For Debugginb
 #-------------------------------------
-#process.hcalTPTask.moduleParameters.debug = 0
 
 #-------------------------------------
 #	Some Settings before Finishing up
