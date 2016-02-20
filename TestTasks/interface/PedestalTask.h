@@ -63,6 +63,8 @@ class PedestalTask : public DQTask
 		//	2D
 		ContainerProf2D		_cMean_depth;
 		ContainerProf2D		_cRMS_depth;
+		ContainerProf2D		_cMean_FED;
+		ContainerProf2D		_cRMS_FED;
 		
 		//	with DB Conditions comparison
 		ContainerProf2D		_cMeanDBRef_depth;
