@@ -182,6 +182,16 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		hashfunctions::fSubdet,
 		new quantity::LumiSection(_numLSstart),
 		new quantity::ValueQuantity(quantity::fN_to3000));
+	_cMissing1LS_FEDVME.initialize(_name, "Missing1LS",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMissing1LS_FEDuTCA.initialize(_name, "Missing1LS",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
 
 	std::vector<std::string> fnames;
 	fnames.push_back("OcpUniSlot");
@@ -233,6 +243,9 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cOccupancyCut_ElectronicsVME.book(ib, _emap, _filter_uTCA);
 	_cOccupancyCut_ElectronicsuTCA.book(ib, _emap, _filter_VME);
 	_cOccupancyCutvsLS_Subdet.book(ib, _emap);
+
+	_cMissing1LS_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cMissing1LS_FEDuTCA.book(ib, _emap, _filter_VME);
 
 	_cSummary.book(ib);
 
