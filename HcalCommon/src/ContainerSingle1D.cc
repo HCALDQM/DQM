@@ -10,6 +10,13 @@ namespace hcaldqm
 		_qy = NULL;
 	}
 
+	ContainerSingle1D::ContainerSingle1D(ContainerSingle1D const& c):
+		Container(c._folder, c._qname)
+	{
+		_qx = c._qx->makeCopy();
+		_qy = c._qy->makeCopy();
+	}
+
 	ContainerSingle1D::ContainerSingle1D(std::string const& folder,
 		Quantity *qx, Quantity *qy):
 		Container(folder, qy->name()+"vs"+qx->name()), _qx(qx), _qy(qy)

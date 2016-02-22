@@ -83,6 +83,8 @@ namespace hcaldqm
 					Quantity(name_did[type], isLog), _type(type)
 				{}
 				virtual ~DetectorQuantity() {}
+				virtual DetectorQuantity* makeCopy()
+				{return new DetectorQuantity(_type, _isLog);}
 
 				virtual int getValue(HcalDetId const& did) 
 				{return getValue_functions_did[_type](did);}

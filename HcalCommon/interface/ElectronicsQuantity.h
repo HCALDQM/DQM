@@ -196,6 +196,8 @@ namespace hcaldqm
 					Quantity(name_eid[type], isLog), _type(type)
 				{}
 				virtual ~ElectronicsQuantity() {}
+				virtual ElectronicsQuantity* makeCopy()
+				{return new ElectronicsQuantity(_type, _isLog);}
 
 				virtual int getValue(HcalElectronicsId const& eid)
 				{return getValue_functions_eid[_type](eid);}

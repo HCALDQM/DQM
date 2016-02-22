@@ -85,6 +85,8 @@ namespace hcaldqm
 					Quantity(name_tid[type], isLog), _type(type)
 				{}
 				virtual ~TrigTowerQuantity() {}
+				virtual TrigTowerQuantity* makeCopy()
+				{return new TrigTowerQuantity(_type, _isLog);}
 
 				virtual int getValue(HcalTrigTowerDetId const& tid)
 				{return getValue_functions_tid[_type](tid);}

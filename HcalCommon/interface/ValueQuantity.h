@@ -76,6 +76,9 @@ namespace hcaldqm
 				{}
 				virtual ~ValueQuantity() {}
 
+				virtual ValueQuantity* makeCopy()
+				{return new ValueQuantity(_type, _isLog);}
+
 				//	get Value to be overriden
 				virtual int getValue(int x)
 				{return x;}

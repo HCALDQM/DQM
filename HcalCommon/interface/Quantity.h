@@ -47,6 +47,8 @@ namespace hcaldqm
 				virtual std::string		name() {return _name;}
 				virtual bool			isLog() {return _isLog;}
 				virtual	void			setAxisType(AxisType at) {_axistype=at;}
+				virtual Quantity* makeCopy() 
+				{return new Quantity(_name,_isLog);}
 
 				virtual uint32_t getBin(HcalDetId const&) {return 1;}
 				virtual uint32_t getBin(HcalElectronicsId const&) {return 1;}
