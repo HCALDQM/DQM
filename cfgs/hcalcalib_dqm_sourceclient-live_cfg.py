@@ -47,6 +47,8 @@ referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
 process.source.SelectEvents = cms.untracked.vstring("*HcalCalibration*")
+process.DQM.collectorPort = cms.untracked.int32(9190)
+process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
@@ -54,7 +56,6 @@ process.source.SelectEvents = cms.untracked.vstring("*HcalCalibration*")
 process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('FWCore.MessageLogger.MessageLogger_cfi')
 process.load("EventFilter.HcalRawToDigi.HcalRawToDigi_cfi")
-process.load("CondCore.DBCommon.CondDBSetup_cfi")
 process.load("L1Trigger.Configuration.L1DummyConfig_cff")
 process.load("EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi")
 
@@ -86,24 +87,10 @@ process.load('DQM.HcalTasks.RadDamTask')
 #	Absent for Online Running
 #-------------------------------------
 if useMap:
-	process.es_pool = cms.ESSource("PoolDBESSource",
-			process.CondDBSetup,
-			timetype = cms.string('runnumber'),
-			toGet = cms.VPSet(
-				cms.PSet(
-					record = cms.string(
-						"HcalElectronicsMapRcd"
-					),
-					tag = cms.string(
-						"HcalElectronicsMap_v7.05_hlt"
-					)
-				)
-			),
-			connect = cms.string(
-				'frontier://FrontierProd/CMS_CONDITIONS'),
-			authenticationMethod = cms.untracked.uint32(0)
-	)	
-	process.es_prefer_es_pool = cms.ESPrefer('PoolDBESSource', 'es_pool')
+    process.GlobalTag.toGet.append(cms.PSet(record = cms.string("HcalElectronicsMapRcd"),
+                                            tag = cms.string("HcalElectronicsMap_v7.05_hlt"),
+                                            )
+                                   )
 
 #-------------------------------------
 #	For Debugginb
