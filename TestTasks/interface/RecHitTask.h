@@ -55,6 +55,9 @@ class RecHitTask : public DQTask
 
 		double _cutE_HBHE, _cutE_HO, _cutE_HF;
 
+		//	hashes/FED vectors
+		std::vector<uint32_t> _vhashFEDs;
+
 		//	emap
 		HcalElectronicsMap const* _emap;
 		electronicsmap::ElectronicsMap _ehashmap;

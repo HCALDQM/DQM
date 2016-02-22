@@ -48,8 +48,22 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
 	vFEDHF.push_back(HcalElectronicsId(32, SLOT_uTCA_MIN,
 		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+
+	//	initialize filters
 	_filter_FEDHF.initialize(filter::fPreserver, hashfunctions::fFED,
 		vFEDHF);
+
+	//	push the rawIds of each fed into the vector...
+	for (std::vector<int>::const_iterator it=vFEDsVME.begin();
+		it!=vFEDsVME.end(); ++it)
+		_vhashFEDs.push_back(HcalElectronicsId(
+			constants::FIBERCH_MIN, FIBER_VME_MIN, SPIGOT_MIN,
+			(*it)-FED_VME_MIN).rawId());
+	for (std::vector<int>::const_iterator it=vFEDsuTCA.begin();
+		it!=vFEDsuTCA.end(); ++it)
+		_vhashFEDs.push_back(HcalElectronicsId(
+			utilities::fed2crate(*it), SLOT_uTCA_MIN, FIBER_uTCA_MIN1,
+			FIBERCH_MIN, false).rawId());
 
 	//	INITIALIZE FIRST
 	_cADC_SubdetPM.initialize(_name, "ADC", hashfunctions::fSubdetPM,
@@ -186,10 +200,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	fnames.push_back("UniSlot");
 	fnames.push_back("Msn1LS");
 	fnames.push_back("CapIdRot");
-	_cSummary_FED.intialize(_name, "Summary",
+	_cSummary.initialize(_name, "Summary",
 		new quantity::FEDQuantity(vFEDs),
 		new quantity::FlagQuantity(fnames),
-		new qauntity::QualityQuantity());
+		new quantity::QualityQuantity());
 
 	//	BOOK HISTOGRAMS
 	char cutstr[200];
@@ -484,11 +498,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			{
 				eid = HcalElectronicsId(FIBERCH_MIN,
 					FIBER_VME_MIN, is, eid.dccid());
-				HcalElectronicsId ejd = HcalElectronicsId(FIBERCH_MIN,
-					FIBER_VME_MIN, is==SPIGOT_MAX?SPIGOT_MIN:is+1,eid.dccid());
+//				HcalElectronicsId ejd = HcalElectronicsId(FIBERCH_MIN,
+//					FIBER_VME_MIN, is==SPIGOT_MAX?SPIGOT_MIN:is+1,eid.dccid());
 				int niscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
 				int njscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
-				for (int ifib=FIBER_VME_MIN;ifib<=FIBER_VMEMAX;ifib++)
+				for (int ifib=FIBER_VME_MIN;ifib<=FIBER_VME_MAX;ifib++)
 					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
 					{
 						eid=HcalElectronicsId(ifc, ifib, eid.spigot(),
@@ -547,7 +561,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		else
 			_cSummary.setBinContent(eid, fCapIdRot, fGood);
 		if (uniSlot)
-			_cSummary.setBinContent(eid, fUniSlot, fLow)
+			_cSummary.setBinContent(eid, fUniSlot, fLow);
 		else
 			_cSummary.setBinContent(eid, fUniSlot, fGood);
 		if (nmissing>0)

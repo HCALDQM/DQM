@@ -38,6 +38,7 @@ class TPTask : public DQTask
 			fOcpUniEmul = 1,
 			fEtMsmUni = 2,
 			fFGMsmUni = 3,
+			nTPFlag = 4
 		};
 
 	protected:
@@ -51,6 +52,9 @@ class TPTask : public DQTask
 
 		//	switches
 		bool _skip1x1;
+
+		//	hashes/FEDs vectors
+		std::vector<uint32_t> _vhashFEDs;
 
 		//	emap
 		HcalElectronicsMap const* _emap;
@@ -90,6 +94,8 @@ class TPTask : public DQTask
 		//	Missing Emulator w.r.t. Data
 		Container2D _cMsnEmul_ElectronicsVME;
 		Container2D _cMsnEmul_ElectronicsuTCA;
+
+		ContainerSingle2D _cSummary;
 };
 
 #endif

@@ -23,6 +23,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	edm::ESHandle<HcalDbService> dbs;
 	es.get<HcalDbRecord>().get(dbs);
 	_emap = dbs->getHcalMapping();
+	std::vector<int> vFEDs = utilities::getFEDList(_emap);
 	std::vector<int> vFEDsVME = utilities::getFEDVMEList(_emap);
 	std::vector<int> vFEDsuTCA = utilities::getFEDuTCAList(_emap);
 	std::vector<uint32_t> vVME;
@@ -39,6 +40,16 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	depth0.push_back(HcalTrigTowerDetId(1, 1, 0).rawId());
 	_filter_depth0.initialize(filter::fPreserver, hashfunctions::fTTdepth,
 		depth0);
+
+	//	push the rawIds of each fed into the vector
+	for (std::vector<int>::const_iterator it=vFEDsVME.begin();
+		it!=vFEDsVME.end(); ++it)
+		_vhashFEDs.push_back(HcalElectronicsId(FIBERCH_MIN, FIBER_VME_MIN,
+			SPIGOT_MIN, (*it)-FED_VME_MIN).rawId());
+	for (std::vector<int>::const_iterator it=vFEDsuTCA.begin();
+		it!=vFEDsuTCA.end(); ++it)
+		_vhashFEDs.push_back(HcalElectronicsId(utilities::fed2crate(*it), 
+			SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
 
 	//	INITIALIZE FIRST
 	//	Et/FG
@@ -133,6 +144,15 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ValueQuantity(quantity::fN));
 
+	std::vector<std::string> fnames;
+	fnames.push_back("OcpUniData");
+	fnames.push_back("OcpUniEmul");
+	fnames.push_back("EtMsmUni");
+	fnames.push_back("FGMsmUni");
+	_cSummary.initialize(_name, "Summary",
+		new quantity::FEDQuantity(vFEDs),
+		new quantity::FlagQuantity(fnames),
+		new quantity::QualityQuantity());
 
 	//	BOOK HISTOGRAMS
 	_cEtData_TTSubdet.book(ib, _emap);
@@ -280,11 +300,11 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 /* virtual */ void TPTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
-	for (std::vector<int32_t>::const_iterator it=_vhashFEDs.begin();
-		it!=_vhashFEDS.end(); ++it)
+	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
+		it!=_vhashFEDs.end(); ++it)
 	{
 		HcalElectronicsId eid = HcalElectronicsId(*it);
-		for (int flag=fLowOcp; flag<nTPFlag; flag++)
+		for (int flag=fOcpUniData; flag<nTPFlag; flag++)
 			_cSummary.setBinContent(eid, flag, fNA);
 
 		if (eid.isVMEid())

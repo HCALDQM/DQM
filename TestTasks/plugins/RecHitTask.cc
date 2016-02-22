@@ -28,6 +28,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	edm::ESHandle<HcalDbService> dbs;
 	es.get<HcalDbRecord>().get(dbs);
 	_emap = dbs->getHcalMapping();
+	std::vector<int> vFEDs = utilities::getFEDList(_emap);
 	std::vector<int> vFEDsVME = utilities::getFEDVMEList(_emap);
 	std::vector<int> vFEDsuTCA = utilities::getFEDuTCAList(_emap);
 	std::vector<uint32_t> vVME;
@@ -40,6 +41,17 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		vVME);
 	_filter_uTCA.initialize(filter::fFilter, hashfunctions::fElectronics,
 		vuTCA);
+
+	//	push the rawIds of each fed into the vector
+	for (std::vector<int>::const_iterator it=vFEDsVME.begin();
+		it!=vFEDsVME.end(); ++it)
+		_vhashFEDs.push_back(HcalElectronicsId(
+			FIBERCH_MIN, FIBER_VME_MIN, SPIGOT_MIN, (*it)-FED_VME_MIN).rawId());
+	for (std::vector<int>::const_iterator it=vFEDsuTCA.begin(); 
+		it!=vFEDsuTCA.end(); ++it)
+		_vhashFEDs.push_back(HcalElectronicsId(
+			utilities::fed2crate(*it), SLOT_uTCA_MIN, FIBER_uTCA_MIN1,
+			FIBERCH_MIN, false).rawId());
 
 	//	INITIALIZE FIRST
 	//	Energy
@@ -173,7 +185,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 
 	std::vector<std::string> fnames;
 	fnames.push_back("OcpUniSlot");
-	fnames.push_bakc("TimeUniSlot");
+	fnames.push_back("TimeUniSlot");
 	fnames.push_back("TCDS");
 	fnames.push_back("LowOcp");
 	fnames.push_back("Msn1LS");
@@ -458,7 +470,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 					is==SPIGOT_MAX?SPIGOT_MIN:is+1, eid.dccid());
 				int niscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
 				int njscut = _cOccupancyCut_ElectronicsVME.getBinContent(ejd);
-				for (int ifib=FIBER_VME_MIN; ifib<=FIBER_VMEMAX; ifib++)
+				for (int ifib=FIBER_VME_MIN; ifib<=FIBER_VME_MAX; ifib++)
 					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
 					{
 						eid = HcalElectronicsId(ifc, ifib, is, eid.dccid());
@@ -486,7 +498,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 					FIBERCH_MIN, false);
 				int niscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(eid);
 				int njscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(ejd);
-				for (ifib=FIBER_uTCA_MIN1; ifb<=FIBER_uTCA_MAX2; ifib++)
+				for (int ifib=FIBER_uTCA_MIN1; ifib<=FIBER_uTCA_MAX2; ifib++)
 				{
 					if (ifib>FIBER_uTCA_MAX1 && ifib<FIBER_uTCA_MIN2)
 						continue;

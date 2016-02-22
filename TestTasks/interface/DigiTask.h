@@ -54,14 +54,15 @@ class DigiTask : public DQTask
 
 		double _cutSumQ_HBHE, _cutSumQ_HO, _cutSumQ_HF;
 
+		//	hashes/FED vectors
+		std::vector<uint32_t> _vhashFEDs;
+
 		//	emap
 		HcalElectronicsMap const* _emap;
 
 		//	Filters
 		HashFilter _filter_VME;
 		HashFilter _filter_uTCA;
-		HashFilter _filter_FEDsVME;
-		HashFilter _filter_FEDsuTCA;
 		HashFilter _filter_FEDHF;
 
 		//	Containers
