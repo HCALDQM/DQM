@@ -41,22 +41,39 @@ class TPComparisonTask : public DQTask
 		//	tmp flags
 		bool _skip1x1;
 
+		//	emap
+		HcalElectronicsMap const* _emap;
+		electronicsmap::ElectronicsMap _ehashmap;
+
+		//	hahses/FED vectors
+		std::vector<uint32_t> _vhashFEDs;
+
+		//	Filters
+		HashFilter _filter_VME;
+		HashFilter _filter_uTCA;
+
 		/**
 		 *	Containers
 		 */
 
 		//	Et
-		Container2D			_cEt_TPSubDet[4];
+		Container2D			_cEt_TPSubdet[4];
 
 		//	FG
-		Container2D			_cFG_TPSubDet[4];
+		Container2D			_cFG_TPSubdet[4];
 
 		//	Missing
 		Container2D			_cMsn_depth;
+		Container2D			_cMsn_FEDVME;
+		Container2D			_cMsn_FEDuTCA;
 
 		//	mismatches
 		Container2D			_cEtMsm_depth;
 		Container2D			_cFGMsm_depth;
+		Container2D			_cEtMsm_FEDVME;
+		Container2D			_cEtMsm_FEDuTCA;
+		Container2D			_cFGMsm_FEDVME;
+		Container2D			_cFGMsm_FEDuTCA;
 };
 
 #endif

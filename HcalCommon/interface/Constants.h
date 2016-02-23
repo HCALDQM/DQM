@@ -101,6 +101,23 @@ namespace hcaldqm
 		int const FIBERCH_MAX = 2;
 		int const FIBERCH_NUM = FIBERCH_MAX-FIBERCH_MIN+1;
 
+		//	TP SLBs, Fibers
+		int const SLB_MIN = 1;
+		int const SLB_MAX = 6;
+		int const SLB_NUM = SLB_MAX-SLB_MIN+1;
+
+		int const TPFIBER_MIN = 1;
+		int const TPFIBER_MAX = 5;
+		int const TPFIBER_NUM = TPFIBER_MAX-TPFIBER_MIN+1;
+
+		int const SLBCH_MIN = 0;
+		int const SLBCH_MAX = 3;
+		int const SLBCH_NUM = SLBCH_MAX-SLBCH_MIN+1;
+
+		int const TPFIBERCH_MIN = 0;
+		int const TPFIBERCH_MAX = 7;
+		int const TPFIBERCH_NUM = TPFIBERCH_MAX-TPFIBERCH_MIN+1;
+
 		/*
 		 *	Detector Constants
 		 */

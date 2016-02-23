@@ -22,7 +22,9 @@ namespace hcaldqm
 			fHcalElectronicsMap = 0,
 			fDHashMap = 1,
 			fTHashMap = 2,
-			nElectronicsMapType = 3
+			fDHashMap_2E1D = 3,
+			fTHashMap_2E1T = 4,
+			nElectronicsMapType = 5
 		};
 
 		class ElectronicsMap

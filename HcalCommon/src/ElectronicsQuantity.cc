@@ -112,6 +112,41 @@ namespace hcaldqm
 			return ifiber*FIBERCH_NUM+ifch;
 		}
 
+		int getValue_SLB(HcalElectronicsId const &eid)
+		{
+			int slbsite = eid.slbSiteNumber();
+			return slbsite-SLB_MIN;
+		}
+
+		int getValue_SLBCh(HcalElectronicsId const& eid)
+		{
+			return eid.slbChannelIndex()-SLBCH_MIN;
+		}
+
+		int getValue_SLBSLBCh(HcalElectronicsId const &eid)
+		{
+			int islb = getValue_SLB(eid);
+			int islbch = getValue_SLBCh(eid);
+			return islb*SLBCH_NUM+islbch;
+		}
+
+		int getValue_FiberuTCATP(HcalElectronicsId const& eid)
+		{
+			return eid.fiberIndex()-TPFIBER_MIN;
+		}
+
+		int getValue_FiberChuTCATP(HcalElectronicsId const &eid)
+		{
+			return eid.fiberChanid()-TPFIBERCH_MIN;
+		}
+
+		int getValue_FiberuTCATPFiberChuTCATP(HcalElectronicsId const& eid)
+		{
+			int ifib = getValue_FiberuTCATP(eid);
+			int ifibch = getValue_FiberChuTCATP(eid);
+			return ifib*TPFIBERCH_NUM+ifibch;
+		}
+
 		uint32_t getBin_FED(HcalElectronicsId const& eid)
 		{
 			return (uint32_t)(getValue_FED(eid)+1);
@@ -190,6 +225,36 @@ namespace hcaldqm
 		uint32_t getBin_FiberVMEFiberCh(HcalElectronicsId const& eid)
 		{
 			return (uint32_t)(getValue_FiberVMEFiberCh(eid)+1);
+		}
+
+		uint32_t getBin_SLB(HcalElectronicsId const& eid)
+		{
+			return (uint32_t)(getValue_SLB(eid)+1);
+		}
+
+		uint32_t getBin_SLBCh(HcalElectronicsId const& eid)
+		{
+			return (uint32_t)(getValue_SLBCh(eid)+1);
+		}
+
+		uint32_t getBin_SLBSLBCh(HcalElectronicsId const& eid)
+		{
+			return (uint32_t)(getValue_SLBSLBCh(eid)+1);
+		}
+
+		uint32_t getBin_FiberuTCATP(HcalElectronicsId const& eid)
+		{
+			return (uint32_t)(getValue_FiberuTCATP(eid)+1);
+		}
+
+		uint32_t getBin_FiberChuTCATP(HcalElectronicsid const& eid)
+		{
+			return (uint32_t)(getValue_FiberChuTCATP(eid)+1);
+		}
+
+		uint32_t getBin_FiberuTCATPFiberChuTCATP(HcalElectronicsId const& eid)
+		{
+			return (uint32_t)(getValue_FiberuTCATPFiberChuTCATP(eid)+1);
 		}
 
 		HcalElectronicsId getEid_FED(int v)
@@ -305,6 +370,49 @@ namespace hcaldqm
 			HcalElectronicsId fcheid = getEid_FiberCh(v%FIBERCH_NUM);
 			return HcalElectronicsId(fcheid.fiberChanId(),
 				fibereid.fiberIndex(), SPIGOT_MIN, CRATE_VME_MIN);
+		}
+
+		HcalElectronicsId getEid_SLB(int v)
+		{
+			return HcalElectronicsId(SLBCH_MIN, v+SLB_MIN,
+				SPIGOT_MIN, CRATE_VME_MIN, CRATE_VME_MIN, SLOT_VME_MIN,
+				0);
+		}
+
+		HcalElectronicsId getEid_SLBCh(int v)
+		{
+			return HcalElectronicsId(v+SLBCH_MIN, SLB_MIN,
+				SPIGOT_MIN, CRATE_VME_MIN, CRATE_VME_MIN, SLOT_VME_MIN,
+				0);
+		}
+		
+		HcalElectronicsId getEid_SLBSLBCh(int v)
+		{
+			HcalElectronicsId slbeid = getEid_SLB(v/SLBCH_NUM);
+			HcalElectronicsId slbcheid = getEid_SLBCh(v%SLBCH_NUM);
+			return HcalElectronicsId(slbcheid.slbChannelIndex(),
+				slbeid.slbSiteNumber(), SPIGOT_MIN, CRATE_VME_MIN,
+				CRATE_VME_MIN, SLOT_VME_MIN, 0);
+		}
+
+		HcalElectronicsId getEid_FiberuTCATP(int v)
+		{
+			return HcalElectronicsId(CRATE_uTCA_MIN,
+				SLOT_uTCA_MIN, v+TPFIBER_MIN, TPFIBERCH_MIN, true);
+		}
+
+		HcalElectronicsId getEid_FiberChuTCATP(int v)
+		{
+			return HcalElectronicsId(CRATE_uTCA_MIN,
+				SLOT_uTCA_MIN, TPFIBER_MIN, v+TPFIBERCH_MIN, true);
+		}
+
+		HcalElectronicsId getEid_FiberuTCATPFiberChuTCATP(int v)
+		{
+			HcalElectronicsId fibeid = getEid_FiberuTCATP(v/TPFIBERCH_NUM);
+			HcalElectronicsId fibcheid = getEid_FiberChuTCATP(v%TPFIBERCH_NUM);
+			return HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
+				fibeid.fiberIndex(), fibcheid.fiberChanId(), true);
 		}
 
 		std::vector<std::string> getLabels_FED()
@@ -552,6 +660,94 @@ namespace hcaldqm
 						eid.fiberChanId());
 					labels.push_back(std::string(name));
 				}
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_SLB()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<SLB_NUM; i++)
+			{
+				HcalElectronicsId eid = getEid_SLB(i);
+				sprintf(name, "%d", eid.slbSiteNumber());
+				labels.push_back(std::string(name));
+			}
+
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_SLBCh()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<SLBCH_NUM; i++)
+			{
+				HcalElectronicsId eid = getEid_SLBCh(i);
+				sprintf(name, "%d", eid.slbChannelIndex());
+				labels.push_back(std::string(name));
+			}
+
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_SLBSLBCh()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<SLB_NUM; i++)
+				for (int j=0; j<SLBCH_NUM; j++)
+				{
+					HcalElectronicsId eid=getEid_SLBSLBCh(i*SLBCH_NUM+j);
+					sprintf(name, "%d-%d", eid.slbSiteNumber(),
+						eid.slbChannelIndex());
+					labels.push_back(std::string(name));
+				}
+
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_FiberuTCATP()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<TPFIBER_NUM; i++)
+			{
+				HcalElectronicsId eid = getEid_FiberuTCATP(i);
+				sprintf(name, "%d", eid.fiberIndex());
+				labels.push_back(std::string(name));
+			}
+
+			return labels;
+		}
+		
+		std::vector<std::string> getLabels_FiberChuTCATP()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<TPFIBERCH_NUM; i++)
+			{
+				HcalElectronicsId eid = getEid_FiberChuTCATP(i);
+				sprintf(name, "%d", eid.fiberChanId());
+				labels.push_back(std::string(name));
+			}
+
+			return labels;
+		}
+
+		std::vector<std::string> getLabels_FiberuTCATPFiberChuTCATP()
+		{
+			std::vector<std::string> labels;
+			char name[10];
+			for (int i=0; i<TPFIBER_NUM; i++)
+				for (int j=0; j<TPFIBERCH_NUM; j++)
+				{
+					HcalElectronicsId eid=getEid_SLBSLBCh(i*TPFIBERCH_NUM+j);
+					sprintf(name, "%d-%d", eid.fiberIndex(),
+						eid.fiberChanId());
+					labels.push_back(std::string(name));
+				}
+
 			return labels;
 		}
 

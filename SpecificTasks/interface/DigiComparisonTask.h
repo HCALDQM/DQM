@@ -38,18 +38,33 @@ class DigiComparisonTask : public DQTask
 		edm::EDGetTokenT<HBHEDigiCollection>	_tokHBHE1;
 		edm::EDGetTokenT<HBHEDigiCollection>	_tokHBHE2;
 
+		//	emap+hashmap
+		HcalElectronicsMap const* _emap;
+		electronicsmap::ElectronicsMap _ehashmap;
+
+		//	hashes/FED vectors
+		std::vector<uint32_t> _vhashFEDs;
+
+		//	Filters
+		HashFilter _filter_VME;
+		HashFilter _filter_uTCA;
+
 		/**
 		 *	Containers
 		 */
 
 		//	ADC
-		Container2D			_cADC_SubDet[10];
+		Container2D			_cADC_Subdet[10];
 
 		//	Mismatched
+		Container2D			_cMsm_FEDVME;
+		Container2D			_cMsm_FEDuTCA;
 		Container2D			_cMsm_depth;
 
 		//	Missing Completely
 		Container2D			_cMsn_depth;
+		Container2D			_cMsn_FEDVME;
+		Container2D			_cMsn_FEDuTCA;
 };
 
 #endif
