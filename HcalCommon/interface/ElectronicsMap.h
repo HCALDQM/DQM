@@ -8,6 +8,7 @@
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
 #include "DQM/HcalCommon/interface/HashMapper.h"
+#include "DQM/HcalCommon/interface/HashFilter.h"
 
 #include "boost/unordered_map.hpp"
 #include "boost/foreach.hpp"
@@ -22,8 +23,6 @@ namespace hcaldqm
 			fHcalElectronicsMap = 0,
 			fDHashMap = 1,
 			fTHashMap = 2,
-			fDHashMap_2E1D = 3,
-			fTHashMap_2E1T = 4,
 			nElectronicsMapType = 5
 		};
 
@@ -41,10 +40,11 @@ namespace hcaldqm
 
 				void initialize(HcalElectronicsMap const*, ElectronicsMapType
 					etype=fHcalElectronicsMap);
+				//	filter is to filter HcalElectronicsId out 
+				void initialize(HcalElectronicsMap const*, ElectronicsMapType,
+					filter::HashFilter const&);
 				const HcalElectronicsId lookup(DetId const&);
 				const HcalElectronicsId lookupTrigger(DetId const&);
-				std::vector<HcalElectronicsId> glookup(DetId const&);
-				std::vector<HcalElectronicsId> glookupTrigger(DetId const&);
 
 				void print();
 				

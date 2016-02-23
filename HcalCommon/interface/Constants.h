@@ -106,7 +106,7 @@ namespace hcaldqm
 		int const SLB_MAX = 6;
 		int const SLB_NUM = SLB_MAX-SLB_MIN+1;
 
-		int const TPFIBER_MIN = 1;
+		int const TPFIBER_MIN = 0;
 		int const TPFIBER_MAX = 5;
 		int const TPFIBER_NUM = TPFIBER_MAX-TPFIBER_MIN+1;
 

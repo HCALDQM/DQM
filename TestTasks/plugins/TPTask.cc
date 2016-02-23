@@ -173,6 +173,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_cMsnData_ElectronicsuTCA.book(ib, _emap, _filter_VME);
 	_cMsnEmul_ElectronicsVME.book(ib, _emap, _filter_uTCA);
 	_cMsnEmul_ElectronicsuTCA.book(ib, _emap, _filter_VME);
+	_cSummary.book(ib);
 	
 	//	initialize the hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fTHashMap);

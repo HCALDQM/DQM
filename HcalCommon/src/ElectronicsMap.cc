@@ -1,4 +1,5 @@
 #include "DQM/HcalCommon/interface/ElectronicsMap.h"
+#include <iomanip>
 
 namespace hcaldqm
 {
@@ -47,7 +48,20 @@ namespace hcaldqm
 							_ids.insert(std::make_pair(hash, eid));	
 					}
 				}
-				else if (_etype==fDHashMap_2E1D)
+			}
+		}
+
+		void ElectronicsMap::initialize(HcalElectronicsMap const* emap,
+			ElectronicsMapType etype, filter::HashFilter const& filter)
+		{
+			_etype=etype;
+			_emap = emap;
+			
+			//	note this initialization has iteration over electronics not 
+			//	detector
+			if (_etype!=fHcalElectronicsMap)
+			{
+				if (_etype==fDHashMap)
 				{
 					std::vector<HcalElectronicsId> eids = 
 						emap->allElectronicsIdPrecision();
@@ -56,25 +70,27 @@ namespace hcaldqm
 					{
 						HcalGenericDetId did = HcalGenericDetId(
 							_emap->lookup(*it));
-
-						//	check that it is an HcalDetId
+						if (filter.filter(*it))
+							continue;
 						if (!did.isHcalDetId())
 							continue;
 
-						_ids.insert(std::make_pair(did.rawId(), 
-							*it));
+						_ids.insert(std::make_pair(did.rawId(), *it));
 					}
 				}
-				else if (_etype==fTHashMap_2E1T)
+				else if (_etype==fTHashMap)
 				{
-					std::vector<HcalElectronicsId> eids = 
+					std::vector<HcalElectronicsId> eids=
 						emap->allElectronicsIdTrigger();
 					for (std::vector<HcalElectronicsId>::const_iterator it=
 						eids.begin(); it!=eids.end(); ++it)
 					{
-						HcalTrigTowerDetId tid = _emap->lookupTrigger(*it);
-						_ids.insert(std::make_pair(tid.rawId(),
-							*it));
+						if (filter.filter(*it))
+							continue;
+						HcalTrigTowerDetId tid = emap->lookupTrigger(*it);
+						std::cout << tid << std::endl;
+						std::cout << *it << std::endl;
+						_ids.insert(std::make_pair(tid.rawId(), *it));
 					}
 				}
 			}
@@ -93,41 +109,13 @@ namespace hcaldqm
 			return _etype==fTHashMap? _ids[hash]:_emap->lookup(did);
 		}
 
-		//	2 funcs below are for 2->1 mappings
-		std::vector<HcalElectronicsId> ElectronicsMap::glookup(DetId const& did)
-		{
-			uint32_t hash = did.rawId();
-			std::vector<HcalElectronicsId> eids;
-			std::pair<EMapType::const_iterator, EMapType::const_iterator> p = 
-				_ids.equal_range(hash);
-			if (p.first==_ids.end() && p.second==_ids.end())
-				return eids;
-
-			eids.push_back(p.first->second);
-			eids.push_back(p.second->second);
-			return eids;
-		}
-		std::vector<HcalElectronicsId> ElectronicsMap::glookupTrigger(
-			DetId const& did)
-		{
-			uint32_t hash = did.rawId();
-			std::vector<HcalElectronicsId> eids;
-			std::pair<EMapType::const_iterator, EMapType::const_iterator> p = 
-				_ids.equal_range(hash);
-			if (p.first==_ids.end() && p.second==_ids.end())
-				return eids;
-
-			eids.push_back(p.first->second);
-			eids.push_back(p.second->second);
-			return eids;
-		}
-
 		void ElectronicsMap::print()
 		{
 			std::cout << "ElectronicsMap" << std::endl;
 			BOOST_FOREACH(EMapType::value_type &v, _ids)
 			{
-				std::cout << v.first << "  "<< v.second << std::endl;
+				std::cout << std::hex << v.first 
+					<< std::dec << "  "<< v.second << std::endl;
 			}
 		}
 	}

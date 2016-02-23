@@ -132,11 +132,15 @@ namespace hcaldqm
 
 		int getValue_FiberuTCATP(HcalElectronicsId const& eid)
 		{
+			std::cout << "fiberIndex: " << eid.fiberIndex() << std::endl;
+			std::cout << eid << std::endl;
 			return eid.fiberIndex()-TPFIBER_MIN;
 		}
 
 		int getValue_FiberChuTCATP(HcalElectronicsId const &eid)
 		{
+			std::cout << "fiberChan: " << eid.fiberChanId() << std::endl;
+			std::cout << eid << std::endl;
 			return eid.fiberChanId()-TPFIBERCH_MIN;
 		}
 
@@ -144,6 +148,8 @@ namespace hcaldqm
 		{
 			int ifib = getValue_FiberuTCATP(eid);
 			int ifibch = getValue_FiberChuTCATP(eid);
+			std::cout << "ifib=" << ifib << " ifibch=" << ifibch << std::endl;
+			std::cout << eid << std::endl;
 			return ifib*TPFIBERCH_NUM+ifibch;
 		}
 
@@ -742,7 +748,8 @@ namespace hcaldqm
 			for (int i=0; i<TPFIBER_NUM; i++)
 				for (int j=0; j<TPFIBERCH_NUM; j++)
 				{
-					HcalElectronicsId eid=getEid_SLBSLBCh(i*TPFIBERCH_NUM+j);
+					HcalElectronicsId eid=getEid_FiberuTCATPFiberChuTCATP(
+						i*TPFIBERCH_NUM+j);
 					sprintf(name, "%d-%d", eid.fiberIndex(),
 						eid.fiberChanId());
 					labels.push_back(std::string(name));

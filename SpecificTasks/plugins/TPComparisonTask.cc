@@ -99,6 +99,9 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	_cEtMsm_FEDuTCA.book(ib, _emap, _filter_VME);
 	_cFGMsm_FEDuTCA.book(ib, _emap, _filter_VME);
 
+	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fTHashMap,
+		_filter_VME);
+//	_ehashmap.print();
 //	_cMsn_depth.book(ib);
 //	_cEtMsm_depth.book(ib);
 //	_cFGMsm_depth.book(ib);
@@ -123,7 +126,8 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		_logger.dqmthrow(
 			"Collection HcalTrigPrimDigiCollection isn't available" + 
 			_tag2.label() + " " + _tag2.instance());
-/*
+
+	//	assume always coll1 is VME and coll2 is uTCA
 	for (HcalTrigPrimDigiCollection::const_iterator it1=coll1->begin();
 		it1!=coll1->end(); ++it1)
 	{
@@ -136,27 +140,33 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		HcalTrigTowerDetId tid = it1->id();
 		HcalTrigPrimDigiCollection::const_iterator it2=coll2->find(
 			HcalTrigTowerDetId(tid.ieta(), tid.iphi(), 0));
+		HcalElectronicsId eid2 = _ehashmap.lookupTrigger(tid);
 
 		if (it2==coll2->end())
-			_cMsn_depth.fill(tid);
+		{
+//			_cMsn_depth.fill(tid);
+			std::cout << tid << std::endl;
+			_cMsn_FEDuTCA.fill(eid2);
+		}
 		else
 			for (int i=0; i<it1->size(); i++)
 			{
-				_cEt_TPSubDet[i].fill(tid, 
+				_cEt_TTSubdet[i].fill(tid, 
 					it1->sample(i).compressedEt(), 
 					it2->sample(i).compressedEt());
-				_cFG_TPSubDet[i].fill(tid,
+				_cFG_TTSubdet[i].fill(tid,
 					it1->sample(i).fineGrain(),
 					it2->sample(i).fineGrain());
 				if (it1->sample(i).compressedEt()!=
 					it2->sample(i).compressedEt())
-					_cEtMsm_depth.fill(tid);
+					_cEtMsm_FEDuTCA.fill(eid2);
+//					_cEtMsm_depth.fill(tid);
 				if (it1->sample(i).fineGrain()!=
 					it2->sample(i).fineGrain())
-					_cFGMsm_depth.fill(tid);
+//					_cFGMsm_depth.fill(tid);
+					_cFGMsm_FEDuTCA.fill(eid2);
 			}
 	}
-	*/
 }
 
 /* virtual */ void TPComparisonTask::endLuminosityBlock(

@@ -20,7 +20,9 @@ namespace hcaldqm
 
 	Container1D::~Container1D()
 	{
+		std::cout << "11111111111111111111111111111111" << std::endl;
 		delete _qx;
+		std::cout << "22222222222222222222222222222222" << std::endl;
 		delete _qy;
 		_qx = NULL;
 		_qy = NULL;
@@ -755,9 +757,6 @@ namespace hcaldqm
 		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qname+
 			(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName());
 		_logger.debug(_hashmap.getHashTypeName());
-		
-		std::cout << "Booking " << _qname << std::endl;
-
 		if (_hashmap.isDHash())
 		{
 			//	for Detector Hashes
@@ -765,8 +764,6 @@ namespace hcaldqm
 			for (std::vector<HcalGenericDetId>::const_iterator it=
 				dids.begin(); it!=dids.end(); ++it)
 			{
-				std::cout << *it << std::endl;
-
 				//	skip trigger towers and calibration
 				if (!it->isHcalDetId())
 					continue;
@@ -796,7 +793,6 @@ namespace hcaldqm
 			for (std::vector<HcalElectronicsId>::const_iterator it=
 				eids.begin(); it!=eids.end(); ++it)
 			{
-				std::cout << *it << std::endl;
 
 				HcalElectronicsId eid = HcalElectronicsId(it->rawId());
 				uint32_t hash = _hashmap.getHash(eid);
@@ -823,8 +819,6 @@ namespace hcaldqm
 			for (std::vector<HcalTrigTowerDetId>::const_iterator it=
 				tids.begin(); it!=tids.end(); ++it)
 			{
-				std::cout << *it << std::endl;
-
 				HcalTrigTowerDetId tid = HcalTrigTowerDetId(it->rawId());
 				uint32_t hash = _hashmap.getHash(tid);
 				MEMap::iterator mit = _mes.find(hash);
@@ -853,8 +847,6 @@ namespace hcaldqm
 		ib.setCurrentFolder(subsystem+"/"+_folder+"/"+_qname+
 			(aux==""?aux:"_"+aux)+"/"+_hashmap.getHashTypeName());
 		_logger.debug(_hashmap.getHashTypeName());
-
-		std::cout << "Booking " << _qname << std::endl;
 
 		if (_hashmap.isDHash())
 		{

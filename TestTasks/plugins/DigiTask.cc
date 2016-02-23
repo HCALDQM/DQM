@@ -213,6 +213,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	sprintf(cutstr2, "_SumQHF%d", int(_cutSumQ_HF));
 
 	_cADC_SubdetPM.book(ib, _emap);
+
 	_cfC_SubdetPM.book(ib, _emap);
 	_cSumQ_SubdetPM.book(ib, _emap);
 	_cSumQ_depth.book(ib, _emap);
@@ -239,6 +240,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cOccupancyCut_ElectronicsVME.book(ib, _emap, _filter_uTCA);
 	_cOccupancyCut_ElectronicsuTCA.book(ib, _emap, _filter_VME);
 	_cOccupancyCutvsLS_Subdet.book(ib, _emap);
+
 
 	_cCapIdRots_FEDVME.book(ib, _emap, _filter_uTCA);
 	_cCapIdRots_FEDuTCA.book(ib, _emap, _filter_VME);
@@ -478,8 +480,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	edm::EventSetup const& es)
 {
 	/*
-	 *	
-	 */
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
@@ -569,6 +569,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		else
 			_cSummary.setBinContent(eid, fMsn1LS, fGood);
 	}
+*/
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

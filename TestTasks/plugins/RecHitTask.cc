@@ -460,9 +460,10 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cEnergyTotal_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), ehfp+ehfm);
 }
 
-/* virtual */ void RecHitTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
-	edm::EventSetup const& es)
+/* virtual */ void RecHitTask::endLuminosityBlock(edm::LuminosityBlock const& 
+	lb, edm::EventSetup const& es)
 {
+	/*
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
@@ -542,7 +543,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		else
 			_cSummary.setBinContent(eid, fOcpUniSlot, fGood);
 	}
-	
+	*/
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);
 }

@@ -86,6 +86,9 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 	_cMsn_FEDVME.book(ib, _emap, _filter_uTCA);
 	_cMsm_FEDuTCA.book(ib, _emap, _filter_VME);
 	_cMsn_FEDuTCA.book(ib, _emap, _filter_VME);
+
+	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fDHashMap,
+		_filter_VME);
 }
 
 /* virtual */ void DigiComparisonTask::_resetMonitors(UpdateFreq uf)
@@ -106,19 +109,20 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		_logger.dqmthrow("Collection HBHEDigiCollection isn't available"
 			+ _tagHBHE2.label() + " " + _tagHBHE2.instance());
 
+	//	always assume that coll1 is VME and coll2 is uTCA
 	for (HBHEDigiCollection::const_iterator it1=chbhe1->begin();
 		it1!=chbhe1->end(); ++it1)
 	{
 		HcalDetId did = it1->id();
 		HBHEDigiCollection::const_iterator it2 = chbhe2->find(did);
+
+		//	get the eid for uTCA HBHE channel
+		HcalElectronicsId eid2 = _ehashmap.lookup(did);
 		if (it2==chbhe2->end())
 		{
+			//	fill the depth plot
 			_cMsn_depth.fill(did);
-			HcalElectronicsId eid = it1->elecId();
-			if (eid.isVMEid())
-				_cMsn_FEDVME.fill(eid);
-			else
-				_cMsn_FEDuTCA.fill(eid);
+			_cMsn_FEDuTCA.fill(eid2);
 		}
 		else
 			for (int i=0; i<it1->size(); i++)
@@ -128,11 +132,7 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 				if (it1->sample(i).adc()!=it2->sample(i).adc())
 				{
 					_cMsm_depth.fill(did);
-					HcalElectronicsId eid = it1->elecId();
-					if (eid.isVMEid())
-						_cMsm_FEDVME.fill(eid);
-					else
-						_cMsm_FEDuTCA.fill(eid);
+					_cMsm_FEDuTCA.fill(eid2);
 				}
 			}
 	}
