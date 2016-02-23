@@ -13,8 +13,11 @@
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
+#include "DQM/HcalCommon/interface/HashFilter.h"
+#include "DQM/HcalCommon/interface/ElectronicsMap.h"
 
 using namespace hcaldqm;
+using namespace hcaldqm::filter;
 class TPComparisonTask : public DQTask
 {
 	public: 
@@ -57,19 +60,16 @@ class TPComparisonTask : public DQTask
 		 */
 
 		//	Et
-		Container2D			_cEt_TPSubdet[4];
+		Container2D			_cEt_TTSubdet[4];
 
 		//	FG
-		Container2D			_cFG_TPSubdet[4];
+		Container2D			_cFG_TTSubdet[4];
 
 		//	Missing
-		Container2D			_cMsn_depth;
 		Container2D			_cMsn_FEDVME;
 		Container2D			_cMsn_FEDuTCA;
 
 		//	mismatches
-		Container2D			_cEtMsm_depth;
-		Container2D			_cFGMsm_depth;
 		Container2D			_cEtMsm_FEDVME;
 		Container2D			_cEtMsm_FEDuTCA;
 		Container2D			_cFGMsm_FEDVME;

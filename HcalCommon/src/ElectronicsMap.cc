@@ -94,7 +94,7 @@ namespace hcaldqm
 		}
 
 		//	2 funcs below are for 2->1 mappings
-		std::vector<HcalElectronicsId> ElectronicsMap::lookup(DetId const& did)
+		std::vector<HcalElectronicsId> ElectronicsMap::glookup(DetId const& did)
 		{
 			uint32_t hash = did.rawId();
 			std::vector<HcalElectronicsId> eids;
@@ -103,11 +103,11 @@ namespace hcaldqm
 			if (p.first==_ids.end() && p.second==_ids.end())
 				return eids;
 
-			eids.push_back(p.first.second);
-			eids.push_back(p.second.second);
+			eids.push_back(p.first->second);
+			eids.push_back(p.second->second);
 			return eids;
 		}
-		std::vector<HcalElectronicsId> ElectronicsMap::lookupTrigger(
+		std::vector<HcalElectronicsId> ElectronicsMap::glookupTrigger(
 			DetId const& did)
 		{
 			uint32_t hash = did.rawId();
@@ -117,8 +117,8 @@ namespace hcaldqm
 			if (p.first==_ids.end() && p.second==_ids.end())
 				return eids;
 
-			eids.push_back(p.first.second);
-			eids.push_back(p.second.second);
+			eids.push_back(p.first->second);
+			eids.push_back(p.second->second);
 			return eids;
 		}
 

@@ -45,13 +45,13 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	for (unsigned int i=0; i<4; i++)
 	{
 		sprintf(aux, "_TS%d", i);
-		_cEt_TPSubdet[i].initialize(_name, "Et",
-			hashfunctions::fTPSubdet,
+		_cEt_TTSubdet[i].initialize(_name, "Et",
+			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fEt_128),
 			new quantity::ValueQuantity(quantity::fEt_128),
 			new quantity::ValueQuantity(quantity::fN));
-		_cFG_TPSubdet[i].initialize(_name, "FG",
-			hashfunctions::fTPSubdet,
+		_cFG_TTSubdet[i].initialize(_name, "FG",
+			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fFG),
 			new quantity::ValueQuantity(quantity::fFG),
 			new quantity::ValueQuantity(quantity::fN));
@@ -89,8 +89,8 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 
 	for (unsigned int i=0; i<4; i++)
 	{
-		_cEt_TPSubdet[i].book(ib, _emap);
-		_cFG_TPSubdet[i].book(ib, _emap);
+		_cEt_TTSubdet[i].book(ib, _emap);
+		_cFG_TTSubdet[i].book(ib, _emap);
 	}
 	_cMsn_FEDVME.book(ib, _emap, _filter_uTCA);
 	_cEtMsm_FEDVME.book(ib, _emap, _filter_uTCA);

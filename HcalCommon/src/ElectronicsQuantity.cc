@@ -137,7 +137,7 @@ namespace hcaldqm
 
 		int getValue_FiberChuTCATP(HcalElectronicsId const &eid)
 		{
-			return eid.fiberChanid()-TPFIBERCH_MIN;
+			return eid.fiberChanId()-TPFIBERCH_MIN;
 		}
 
 		int getValue_FiberuTCATPFiberChuTCATP(HcalElectronicsId const& eid)
@@ -247,7 +247,7 @@ namespace hcaldqm
 			return (uint32_t)(getValue_FiberuTCATP(eid)+1);
 		}
 
-		uint32_t getBin_FiberChuTCATP(HcalElectronicsid const& eid)
+		uint32_t getBin_FiberChuTCATP(HcalElectronicsId const& eid)
 		{
 			return (uint32_t)(getValue_FiberChuTCATP(eid)+1);
 		}
@@ -375,14 +375,14 @@ namespace hcaldqm
 		HcalElectronicsId getEid_SLB(int v)
 		{
 			return HcalElectronicsId(SLBCH_MIN, v+SLB_MIN,
-				SPIGOT_MIN, CRATE_VME_MIN, CRATE_VME_MIN, SLOT_VME_MIN,
+				SPIGOT_MIN, CRATE_VME_MIN, CRATE_VME_MIN, SLOT_VME_MIN1,
 				0);
 		}
 
 		HcalElectronicsId getEid_SLBCh(int v)
 		{
 			return HcalElectronicsId(v+SLBCH_MIN, SLB_MIN,
-				SPIGOT_MIN, CRATE_VME_MIN, CRATE_VME_MIN, SLOT_VME_MIN,
+				SPIGOT_MIN, CRATE_VME_MIN, CRATE_VME_MIN, SLOT_VME_MIN1,
 				0);
 		}
 		
@@ -392,7 +392,7 @@ namespace hcaldqm
 			HcalElectronicsId slbcheid = getEid_SLBCh(v%SLBCH_NUM);
 			return HcalElectronicsId(slbcheid.slbChannelIndex(),
 				slbeid.slbSiteNumber(), SPIGOT_MIN, CRATE_VME_MIN,
-				CRATE_VME_MIN, SLOT_VME_MIN, 0);
+				CRATE_VME_MIN, SLOT_VME_MIN1, 0);
 		}
 
 		HcalElectronicsId getEid_FiberuTCATP(int v)

@@ -79,7 +79,7 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 
 	//	BOOK
 	for (unsigned int i=0; i<10; i++)
-		_cADC_SubDet[i].book(ib, _emap);
+		_cADC_Subdet[i].book(ib, _emap);
 	_cMsm_depth.book(ib, _emap);
 	_cMsn_depth.book(ib, _emap);
 	_cMsm_FEDVME.book(ib, _emap, _filter_uTCA);
@@ -123,7 +123,7 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		else
 			for (int i=0; i<it1->size(); i++)
 			{
-				_cADC_SubDet[i].fill(did, double(it1->sample(i).adc()),
+				_cADC_Subdet[i].fill(did, double(it1->sample(i).adc()),
 					double(it2->sample(i).adc()));
 				if (it1->sample(i).adc()!=it2->sample(i).adc())
 				{

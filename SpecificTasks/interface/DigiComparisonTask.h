@@ -13,8 +13,11 @@
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
+#include "DQM/HcalCommon/interface/ElectronicsMap.h"
+#include "DQM/HcalCommon/interface/HashFilter.h"
 
 using namespace hcaldqm;
+using namespace hcaldqm::filter;
 class DigiComparisonTask : public DQTask
 {
 	public: 

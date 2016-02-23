@@ -43,6 +43,8 @@ namespace hcaldqm
 					etype=fHcalElectronicsMap);
 				const HcalElectronicsId lookup(DetId const&);
 				const HcalElectronicsId lookupTrigger(DetId const&);
+				std::vector<HcalElectronicsId> glookup(DetId const&);
+				std::vector<HcalElectronicsId> glookupTrigger(DetId const&);
 
 				void print();
 				
