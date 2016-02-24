@@ -87,8 +87,10 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 	_cMsm_FEDuTCA.book(ib, _emap, _filter_VME);
 	_cMsn_FEDuTCA.book(ib, _emap, _filter_VME);
 
-	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fDHashMap,
+	_ehashmapuTCA.initialize(_emap, hcaldqm::electronicsmap::fDHashMap,
 		_filter_VME);
+	_ehashmapVME.initialize(_emap, hcaldqm::electronicsmap::fDHashMap,
+		_filter_uTCA);
 }
 
 /* virtual */ void DigiComparisonTask::_resetMonitors(UpdateFreq uf)
@@ -117,7 +119,7 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		HBHEDigiCollection::const_iterator it2 = chbhe2->find(did);
 
 		//	get the eid for uTCA HBHE channel
-		HcalElectronicsId eid2 = _ehashmap.lookup(did);
+		HcalElectronicsId eid2 = _ehashmapuTCA.lookup(did);
 		if (it2==chbhe2->end())
 		{
 			//	fill the depth plot
@@ -131,10 +133,22 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 					double(it2->sample(i).adc()));
 				if (it1->sample(i).adc()!=it2->sample(i).adc())
 				{
+					//	fill depth, uTCA and VME as well for which guys
+					//	mismatches happen
 					_cMsm_depth.fill(did);
 					_cMsm_FEDuTCA.fill(eid2);
+					_cMsm_FEDVME.fill(it1->elecId());
 				}
 			}
+	}
+	for (HBHEDigiCollection::const_iterator it2=chbhe2->begin();
+		it2!=chbhe2->end(); ++it2)
+	{
+		HcalDetId did = it2->id();
+		HBHEDigiCollection::const_iterator it1 = chbhe1->find(did);
+		HcalElectronicsId eid = _ehashmapVME.lookup(did);
+		if (it1==chbhe1->end())
+			_cMsn_FEDVME.fill(eid);
 	}
 }
 

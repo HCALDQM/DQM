@@ -480,10 +480,15 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	edm::EventSetup const& es)
 {
 	/*
+	// iterate over each fed and set its status
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
 		HcalElectronicsId eid = HcalElectronicsId(*it);
+		//	set some vars per FED
+		int numChs = eid.isVMEid() ? SPIGOT_NUM*FIBER_VME_NUM*FIBERCH_NUM:
+			SLOT_uTCA_NUM*FIBER_uTCA_NUM*FIBERCH_NUM;
+
 		//	set flag as unapplicable for this FED first
 		for (int flag=fLowOcp; flag<nDigiFlag; flag++)
 			_cSummary.setBinContent(eid, flag, fNA);

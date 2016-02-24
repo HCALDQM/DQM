@@ -87,6 +87,23 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCATPFiberChuTCATP),
 		new quantity::ValueQuantity(quantity::fN));
 
+	_cMsnuTCA.initialize(_name, "Missing",
+		new quantity::TrigTowerQuantity(quantity::fTTieta),
+		new quantity::TrigTowerQuantity(quantity::fTTiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMsnVME.initialize(_name, "Missing",
+		new quantity::TrigTowerQuantity(quantity::fTTieta),
+		new quantity::TrigTowerQuantity(quantity::fTTiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cEtMsm.initialize(_name, "EtMsm",
+		new quantity::TrigTowerQuantity(quantity::fTTieta),
+		new quantity::TrigTowerQuantity(quantity::fTTiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cFGMsm.initialize(_name, "FGMsm",
+		new quantity::TrigTowerQuantity(quantity::fTTieta),
+		new quantity::TrigTowerQuantity(quantity::fTTiphi),
+		new quantity::ValueQuantity(quantity::fN));
+
 	for (unsigned int i=0; i<4; i++)
 	{
 		_cEt_TTSubdet[i].book(ib, _emap);
@@ -99,8 +116,15 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	_cEtMsm_FEDuTCA.book(ib, _emap, _filter_VME);
 	_cFGMsm_FEDuTCA.book(ib, _emap, _filter_VME);
 
-	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fTHashMap,
+	_cMsnuTCA.book(ib, _subsystem, "uTCA");
+	_cMsnVME.book(ib, _subsystem, "VME");
+	_cEtMsm.book(ib, _subsystem);
+	_cFGMsm.book(ib, _subsystem);
+
+	_ehashmapuTCA.initialize(_emap, hcaldqm::electronicsmap::fTHashMap,
 		_filter_VME);
+	_ehashmapVME.initialize(_emap, hcaldqm::electronicsmap::fTHashMap,
+		_filter_uTCA);
 //	_ehashmap.print();
 //	_cMsn_depth.book(ib);
 //	_cEtMsm_depth.book(ib);
@@ -140,12 +164,12 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		HcalTrigTowerDetId tid = it1->id();
 		HcalTrigPrimDigiCollection::const_iterator it2=coll2->find(
 			HcalTrigTowerDetId(tid.ieta(), tid.iphi(), 0));
-		HcalElectronicsId eid2 = _ehashmap.lookupTrigger(tid);
+		HcalElectronicsId eid2 = _ehashmapuTCA.lookupTrigger(tid);
+		HcalElectronicsId eid1 = _ehashmapVME.lookupTrigger(tid);
 
 		if (it2==coll2->end())
 		{
-//			_cMsn_depth.fill(tid);
-			std::cout << tid << std::endl;
+			_cMsnuTCA.fill(tid);
 			_cMsn_FEDuTCA.fill(eid2);
 		}
 		else
@@ -159,13 +183,36 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 					it2->sample(i).fineGrain());
 				if (it1->sample(i).compressedEt()!=
 					it2->sample(i).compressedEt())
+				{
 					_cEtMsm_FEDuTCA.fill(eid2);
-//					_cEtMsm_depth.fill(tid);
+					_cEtMsm_FEDVME.fill(eid1);
+					_cEtMsm.fill(tid);
+				}
 				if (it1->sample(i).fineGrain()!=
 					it2->sample(i).fineGrain())
-//					_cFGMsm_depth.fill(tid);
+				{
 					_cFGMsm_FEDuTCA.fill(eid2);
+					_cFGMsm_FEDVME.fill(eid1);
+					_cFGMsm.fill(tid);
+				}
 			}
+	}
+	for (HcalTrigPrimDigiCollection::const_iterator it2=coll2->begin();
+		it2!=coll2->end(); ++it2)
+	{
+		HcalTrigTowerDetId tid = it2->id();
+		if (_skip1x1)
+			if (tid.depth()==10)
+				continue;
+
+		HcalElectronicsId eid = _ehashmapVME.lookupTrigger(tid);
+		HcalTrigPrimDigiCollection::const_iterator it1=coll1->find(
+			HcalTrigTowerDetId(tid.ieta(), tid.iphi(), 0));
+		if (it1==coll1->end())
+		{
+			_cMsn_FEDVME.fill(eid);
+			_cMsnVME.fill(tid);
+		}
 	}
 }
 

@@ -43,7 +43,8 @@ class DigiComparisonTask : public DQTask
 
 		//	emap+hashmap
 		HcalElectronicsMap const* _emap;
-		electronicsmap::ElectronicsMap _ehashmap;
+		electronicsmap::ElectronicsMap _ehashmapuTCA;
+		electronicsmap::ElectronicsMap _ehashmapVME;
 
 		//	hashes/FED vectors
 		std::vector<uint32_t> _vhashFEDs;

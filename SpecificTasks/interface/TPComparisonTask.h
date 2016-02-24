@@ -13,6 +13,7 @@
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
+#include "DQM/HcalCommon/interface/ContainerSingle2D.h"
 #include "DQM/HcalCommon/interface/HashFilter.h"
 #include "DQM/HcalCommon/interface/ElectronicsMap.h"
 
@@ -46,7 +47,8 @@ class TPComparisonTask : public DQTask
 
 		//	emap
 		HcalElectronicsMap const* _emap;
-		electronicsmap::ElectronicsMap _ehashmap;
+		electronicsmap::ElectronicsMap _ehashmapuTCA;
+		electronicsmap::ElectronicsMap _ehashmapVME;
 
 		//	hahses/FED vectors
 		std::vector<uint32_t> _vhashFEDs;
@@ -68,12 +70,17 @@ class TPComparisonTask : public DQTask
 		//	Missing
 		Container2D			_cMsn_FEDVME;
 		Container2D			_cMsn_FEDuTCA;
+		ContainerSingle2D	_cMsnVME;
+		ContainerSingle2D	_cMsnuTCA;
 
 		//	mismatches
 		Container2D			_cEtMsm_FEDVME;
 		Container2D			_cEtMsm_FEDuTCA;
 		Container2D			_cFGMsm_FEDVME;
 		Container2D			_cFGMsm_FEDuTCA;
+
+		ContainerSingle2D	_cEtMsm;
+		ContainerSingle2D	_cFGMsm;
 };
 
 #endif

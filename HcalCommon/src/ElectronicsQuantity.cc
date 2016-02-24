@@ -115,11 +115,16 @@ namespace hcaldqm
 		int getValue_SLB(HcalElectronicsId const &eid)
 		{
 			int slbsite = eid.slbSiteNumber();
+			std::cout << eid << std::endl;
+			std::cout << "islb=" << slbsite-SLB_MIN << std::endl;
 			return slbsite-SLB_MIN;
 		}
 
 		int getValue_SLBCh(HcalElectronicsId const& eid)
 		{
+			std::cout << eid << std::endl;
+			std::cout << "islbch=" << eid.slbChannelIndex()-SLBCH_MIN
+				<< std::endl;
 			return eid.slbChannelIndex()-SLBCH_MIN;
 		}
 
@@ -127,6 +132,9 @@ namespace hcaldqm
 		{
 			int islb = getValue_SLB(eid);
 			int islbch = getValue_SLBCh(eid);
+			std::cout << eid << std::endl;
+			std::cout << "islb=" << islb << "  islbch=" << islbch 
+				<< std::endl;
 			return islb*SLBCH_NUM+islbch;
 		}
 

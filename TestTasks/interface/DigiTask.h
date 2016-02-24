@@ -38,7 +38,8 @@ class DigiTask : public DQTask
 			fUniSlot = 1, // occupancy uniformity vs Slots per FED
 			fMsn1LS = 2, // missing for 1 LS
 			fCapIdRot = 3, // caps non rotating
-			nDigiFlag = 4
+			fDigiSize = 4,
+			nDigiFlag = 5
 		};
 
 	protected:
@@ -103,6 +104,9 @@ class DigiTask : public DQTask
 
 		Container2D _cMissing1LS_FEDVME;
 		Container2D _cMissing1LS_FEDuTCA;
+
+		Container1D _cDigiSize_FEDVME;
+		Container1D _cDigiSize_FEDuTCA;
 
 		ContainerSingle2D _cSummary;
 };
