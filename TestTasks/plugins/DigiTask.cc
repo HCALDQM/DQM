@@ -194,12 +194,20 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fN));
+	_cDigiSize_FEDVME.initialize(_name, "DigiSize",
+		hashfunctions::fFED,
+		new quantity::ValueQuantity(quantity::fDigiSize),
+		new quantity::ValueQuantity(quantity::fN));
+	_cDigiSize_FEDuTCA.initialize(_name, "DigiSize",
+		hashfunctions::fFED,
+		new quantity::ValueQuantity(quantity::fDigiSize),
+		new quantity::ValueQuantity(quantity::fN));
 
 	std::vector<std::string> fnames;
-	fnames.push_back("LowOcp");
 	fnames.push_back("UniSlot");
 	fnames.push_back("Msn1LS");
 	fnames.push_back("CapIdRot");
+	fnames.push_back("DigiSize");
 	_cSummary.initialize(_name, "Summary",
 		new quantity::FEDQuantity(vFEDs),
 		new quantity::FlagQuantity(fnames),
@@ -246,11 +254,40 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cCapIdRots_FEDuTCA.book(ib, _emap, _filter_VME);
 	_cMissing1LS_FEDVME.book(ib, _emap, _filter_uTCA);
 	_cMissing1LS_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cDigiSize_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cDigiSize_FEDuTCA.book(ib, _emap, _filter_VME);
 	_cSummary.book(ib);
+
+	_ehashmapVME.initialize(_emap, electronicsmap::fE2DHashMap,
+		_filter_uTCA);
+	_ehashmapuTCA.initialize(_emap, electronicsmap::fE2DHashMap,
+		_filter_VME);
 }
 
 /* virtual */ void DigiTask::_resetMonitors(UpdateFreq uf)
 {
+	switch(uf)
+	{
+		case hcaldqm::fLS:
+			_cDigiSize_FEDVME.reset();
+			_cDigiSize_FEDuTCA.reset();
+			_cCapIdRots_FEDVME.reset();
+			_cCapIdRots_FEDuTCA.reset();
+			_cOccupancy_FEDVME.reset();
+			_cOccupancy_FEDuTCA.reset();
+			break;
+		case hcaldqm::f10LS:
+			_cMissing1LS_FEDVME.reset();
+			_cMissing1LS_FEDuTCA.reset();
+			_cOccupancy_ElectronicsVME.reset();
+			_cOccupancy_ElectronicsuTCA.reset();
+			_cOccupancyCut_ElectronicsVME.reset();
+			_cOccupancyCut_ElectronicsuTCA.reset();
+			break;
+		default:
+			break;
+	}
+
 	DQTask::_resetMonitors(uf);
 }
 
@@ -292,6 +329,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancy_ElectronicsVME.fill(eid);
 			_cCapIdRots_FEDVME.fill(eid, 
 				utilities::isError<HBHEDataFrame>(*it)?1:0);
+			_cDigiSize_FEDVME.fill(eid, it->size());
 		}
 		else
 		{
@@ -299,6 +337,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancy_ElectronicsuTCA.fill(eid);
 			_cCapIdRots_FEDuTCA.fill(eid, 
 				utilities::isError<HBHEDataFrame>(*it)?1:0);
+			_cDigiSize_FEDuTCA.fill(eid, it->size());
 		}
 
 		for (int i=0; i<it->size(); i++)
@@ -361,6 +400,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancy_ElectronicsVME.fill(eid);
 			_cCapIdRots_FEDVME.fill(eid, 
 				utilities::isError<HODataFrame>(*it)?1:0);
+			_cDigiSize_FEDVME.fill(eid, it->size());
 		}
 		else
 		{
@@ -368,6 +408,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancy_ElectronicsuTCA.fill(eid);
 			_cCapIdRots_FEDuTCA.fill(eid, 
 				utilities::isError<HODataFrame>(*it)?1:0);
+			_cDigiSize_FEDuTCA.fill(eid, it->size());
 		}
 
 		for (int i=0; i<it->size(); i++)
@@ -425,6 +466,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancy_ElectronicsVME.fill(eid);
 			_cCapIdRots_FEDVME.fill(eid, 
 				utilities::isError<HFDataFrame>(*it)?1:0);
+			_cDigiSize_FEDVME.fill(eid, it->size());
 		}
 		else
 		{
@@ -432,6 +474,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancy_ElectronicsuTCA.fill(eid);
 			_cCapIdRots_FEDuTCA.fill(eid, 
 				utilities::isError<HFDataFrame>(*it)?1:0);
+			_cDigiSize_FEDuTCA.fill(eid, it->size());
 		}
 
 		for (int i=0; i<it->size(); i++)
@@ -479,54 +522,79 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 /* virtual */ void DigiTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
-	/*
 	// iterate over each fed and set its status
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
 		HcalElectronicsId eid = HcalElectronicsId(*it);
 		//	set some vars per FED
-		int numChs = eid.isVMEid() ? SPIGOT_NUM*FIBER_VME_NUM*FIBERCH_NUM:
-			SLOT_uTCA_NUM*FIBER_uTCA_NUM*FIBERCH_NUM;
+//		int numChs = eid.isVMEid() ? SPIGOT_NUM*FIBER_VME_NUM*FIBERCH_NUM:
+//			SLOT_uTCA_NUM*FIBER_uTCA_NUM*FIBERCH_NUM;
 
 		//	set flag as unapplicable for this FED first
-		for (int flag=fLowOcp; flag<nDigiFlag; flag++)
+		for (int flag=fUniSlot; flag<nDigiFlag; flag++)
 			_cSummary.setBinContent(eid, flag, fNA);
 
+		//	init some flags/constants/whatever before checks
 		int ncapid = 0;
 		int nmissing = 0;
 		bool uniSlot = false;
+		bool digisize = false;
+
+		//	electronics type specific
 		if (eid.isVMEid())
 		{
+			double mdsize = _cDigiSize_FEDVME.getMean(eid);
+			double rdsize = _cDigiSize_FEDVME.getRMS(eid);
+			//	check if rms>0 or mean!=expected(10)
+			//	HARDCODED EXPECTED here! Only for VME
+			digisize = rdsize>0 || mdsize!=10;
+
 			//	VME
 			for (int is=SPIGOT_MIN; is<=SPIGOT_MAX; is++)
 			{
 				eid = HcalElectronicsId(FIBERCH_MIN,
 					FIBER_VME_MIN, is, eid.dccid());
-//				HcalElectronicsId ejd = HcalElectronicsId(FIBERCH_MIN,
-//					FIBER_VME_MIN, is==SPIGOT_MAX?SPIGOT_MIN:is+1,eid.dccid());
-				int niscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
-				int njscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
+				HcalElectronicsId ejd = HcalElectronicsId(FIBERCH_MIN,
+					FIBER_VME_MIN, is==SPIGOT_MAX?SPIGOT_MIN:is+1,eid.dccid());
+
+				//	note, Occupancy w/o a cut is used - cause no ZS 
+				int niscut = _cOccupancy_ElectronicsVME.getBinContent(eid);
+				int njscut = _cOccupancy_ElectronicsVME.getBinContent(ejd);
 				for (int ifib=FIBER_VME_MIN;ifib<=FIBER_VME_MAX;ifib++)
 					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
 					{
 						eid=HcalElectronicsId(ifc, ifib, eid.spigot(),
 							eid.dccid());
+
+						//	get the capid rotated channels checked
 						ncapid+=_cCapIdRots_FEDVME.getBinContent(eid);
+
+						//	get the occupancy checked - what misses out...
 						if (_cOccupancy_FEDVME.getBinContent(eid)<1)
 						{
 							_cMissing1LS_FEDVME.fill(eid);
 							nmissing++;
 						}
 					}
-				double ratio = std::min(niscut, njscut)/std::max(niscut, 
-					njscut);
-				if (ratio<0.8)
+
+				//	set/check the ratio for unislot
+				double ratio = niscut==0 && njscut==0? 1:
+					double(std::min(niscut, njscut))/double(std::max(niscut, 
+					njscut));
+				//	when at least x5 difference
+				if (ratio<0.2)
 					uniSlot = true;
 			}
 		}
 		else
 		{
+			double mdsize = _cDigiSize_FEDuTCA.getMean(eid);
+			double rdsize = _cDigiSize_FEDuTCA.getRMS(eid);
+			HcalDetId did = HcalDetId(_ehashmapuTCA.lookup(eid));
+			//	check if rms>0 or mean!=expected
+			digisize = rdsize>0 || mdsize!=constants::TS_NUM[did.subdet()-1];
+			
 			//	uTCA
 			for (int is=constants::SLOT_uTCA_MIN;
 				is<=SLOT_uTCA_MAX; is++)
@@ -536,28 +604,45 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				HcalElectronicsId ejd = HcalElectronicsId(eid.crateId(), 
 					is==SLOT_uTCA_MAX?SLOT_uTCA_MIN:is+1, FIBER_uTCA_MIN1,
 					FIBERCH_MIN, false);
-				int niscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(eid);
-				int njscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(ejd);
+
+				//	HARDCODED HF SELECTION
+				//	TODO: map back to HcalDetId
+				int niscut = eid.crateId()==22 || eid.crateId()==29 || 
+					eid.crateId()==32?
+					_cOccupancyCut_ElectronicsuTCA.getBinContent(eid):
+					_cOccupancy_ElectronicsuTCA.getBinContent(eid);
+				int njscut = ejd.crateId()==22 || ejd.crateId()==29 || 
+					ejd.crateId()==32?
+					_cOccupancyCut_ElectronicsuTCA.getBinContent(ejd):
+					_cOccupancy_ElectronicsuTCA.getBinContent(ejd);
 				for (int ifib=FIBER_uTCA_MIN1;
 					ifib<=FIBER_uTCA_MAX2; ifib++)
 				{
+					//	skip fibers in between for now
 					if (ifib>FIBER_uTCA_MAX1 && ifib<FIBER_uTCA_MIN2)
 						continue;
-					ncapid+=_cCapIdRots_FEDuTCA.getBinContent(eid);
 					for (int ifc = FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
 					{
 						eid = HcalElectronicsId(eid.crateId(), is,
 							ifib, ifc, false);
+
+						//	capid
+						ncapid+=_cCapIdRots_FEDuTCA.getBinContent(eid);
+						//	occupancy - missing chs
+						if (_cOccupancy_FEDuTCA.getBinContent(eid)<1)
 						{
 							_cMissing1LS_FEDuTCA.fill(eid);
 							nmissing++;
 						}
 					}
-				double ratio = std::min(niscut, njscut)/std::max(niscut, 
-					njscut);
-				if (ratio<0.8)
-					uniSlot = true;
 				}
+				//	set/check the ratio for unislot
+				double ratio = niscut==0 && njscut==0?1:
+					double(std::min(niscut, njscut))/double(std::max(niscut, 
+					njscut));
+				//	when x5 difference
+				if (ratio<0.2)
+					uniSlot = true;
 			}
 		}
 
@@ -573,8 +658,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cSummary.setBinContent(eid, fMsn1LS, fLow);
 		else
 			_cSummary.setBinContent(eid, fMsn1LS, fGood);
+		digisize?
+			_cSummary.setBinContent(eid, fDigiSize, fLow):
+			_cSummary.setBinContent(eid, fDigiSize, fGood);
 	}
-*/
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

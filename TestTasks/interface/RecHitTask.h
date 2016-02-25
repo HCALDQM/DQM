@@ -37,9 +37,8 @@ class RecHitTask : public DQTask
 			fOcpUniSlot = 0,
 			fTimeUniSlot = 1,
 			fTCDS = 2,
-			fLowOcp = 3,
-			fMsn1LS = 4,
-			nRecoFlag = 5
+			fMsn1LS = 3,
+			nRecoFlag = 4
 		};
 
 	protected:

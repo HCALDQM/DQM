@@ -96,6 +96,7 @@ namespace hcaldqm
 			virtual double getBinContent(HcalDetId const& did, double x, double)
 			{return getBinContent(did, x);}
 			virtual double getMean(HcalDetId const&, int axis=1);
+			virtual double getRMS(HcalDetId const&, int axix=1);
 
 			virtual void setBinContent(HcalDetId const&, int);
 			virtual void setBinContent(HcalDetId const&, double);
@@ -161,6 +162,7 @@ namespace hcaldqm
 				double x, double)
 			{return getBinContent(eid, x);}
 			virtual double getMean(HcalElectronicsId const&, int axis=1);
+			virtual double getRMS(HcalElectronicsId const&, int axis=1);
 
 			virtual void setBinContent(HcalElectronicsId const&, int);
 			virtual void setBinContent(HcalElectronicsId const&, double);
@@ -227,6 +229,7 @@ namespace hcaldqm
 				double x, double)
 			{return getBinContent(tid, x);}
 			virtual double getMean(HcalTrigTowerDetId const&, int axis=1);
+			virtual double getRMS(HcalTrigTowerDetId const&, int axis=1);
 
 			virtual void setBinContent(HcalTrigTowerDetId const&, int);
 			virtual void setBinContent(HcalTrigTowerDetId const&, double);

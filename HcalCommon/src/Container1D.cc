@@ -20,9 +20,7 @@ namespace hcaldqm
 
 	Container1D::~Container1D()
 	{
-		std::cout << "11111111111111111111111111111111" << std::endl;
 		delete _qx;
-		std::cout << "22222222222222222222222222222222" << std::endl;
 		delete _qy;
 		_qx = NULL;
 		_qy = NULL;
@@ -66,7 +64,7 @@ namespace hcaldqm
 		std::cout << "Container by " << _hashmap.getHashTypeName() << std::endl;
 		BOOST_FOREACH(MEMap::value_type &pair, _mes)
 		{
-			std::cout << HcalDetId(pair.first) << std::endl;
+			std::cout << std::hex << pair.first << std::dec << std::endl;
 		}
 	}
 
@@ -225,6 +223,11 @@ namespace hcaldqm
 		return _mes[_hashmap.getHash(tid)]->getMean(axis);
 	}
 
+	/* virtual */ double Container1D::getRMS(HcalDetId const& id, int axis)
+	{
+		return _mes[_hashmap.getHash(id)]->getRMS(axis);
+	}
+
 	//	setBinContent
 	/* virtual */ void Container1D::setBinContent(HcalDetId const& id,
 		int x)
@@ -369,6 +372,12 @@ namespace hcaldqm
 		int axis)
 	{
 		return _mes[_hashmap.getHash(tid)]->getMean(axis);
+	}
+	
+	/* virtual */ double Container1D::getRMS(HcalElectronicsId const& id, 
+		int axis)
+	{
+		return _mes[_hashmap.getHash(id)]->getRMS(axis);
 	}
 
 	//	setBinContent
@@ -517,6 +526,12 @@ namespace hcaldqm
 		int axis)
 	{
 		return _mes[_hashmap.getHash(tid)]->getMean(axis);
+	}
+	
+	/* virtual */ double Container1D::getRMS(HcalTrigTowerDetId const& id, 
+		int axis)
+	{
+		return _mes[_hashmap.getHash(id)]->getRMS(axis);
 	}
 
 	//	setBinContent

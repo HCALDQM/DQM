@@ -1,4 +1,5 @@
 #include "DQM/TestTasks/interface/RecHitTask.h"
+#include <math.h>
 
 RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	DQTask(ps)
@@ -197,7 +198,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	fnames.push_back("OcpUniSlot");
 	fnames.push_back("TimeUniSlot");
 	fnames.push_back("TCDS");
-	fnames.push_back("LowOcp");
 	fnames.push_back("Msn1LS");
 	_cSummary.initialize(_name, "Summary", 
 		new quantity::FEDQuantity(vFEDs),
@@ -250,11 +250,31 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cSummary.book(ib);
 
 	//	initialize hash map
-	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fDHashMap);
+	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fD2EHashMap);
 }
 
 /* virtual */ void RecHitTask::_resetMonitors(UpdateFreq uf)
 {
+	switch(uf)
+	{
+		case hcaldqm::fLS:
+			_cOccupancy_FEDVME.reset();
+			_cOccupancy_FEDuTCA.reset();
+			break;
+		case hcaldqm::f10LS:
+			_cMissing1LS_FEDVME.reset();
+			_cMissing1LS_FEDuTCA.reset();
+			_cOccupancyCut_ElectronicsVME.reset();
+			_cOccupancyCut_ElectronicsuTCA.reset();
+			_cOccupancy_ElectronicsVME.reset();
+			_cOccupancy_ElectronicsuTCA.reset();
+			_cTimingCut_ElectronicsVME.reset();
+			_cTimingCut_ElectronicsuTCA.reset();
+			break;
+		default:
+			break;
+	}
+
 	DQTask::_resetMonitors(uf);
 }
 
@@ -285,7 +305,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		double energy = it->energy();
 		double timing = it->time();
 		HcalDetId did = it->id();
-		HcalElectronicsId eid = _ehashmap.lookup(did);
+		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
 		_cEnergy_depth.fill(did, energy);
 		_cTimingvsEnergy_FEDSlot.fill(eid, energy, timing);
@@ -351,7 +371,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		double energy = it->energy();
 		double timing = it->time();
 		HcalDetId did = it->id();
-		HcalElectronicsId eid = _ehashmap.lookup(did);
+		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
 		_cEnergy_depth.fill(did, energy);
 		_cTimingvsEnergy_FEDSlot.fill(eid, energy, timing);
@@ -409,7 +429,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		double energy = it->energy();
 		double timing = it->time();
 		HcalDetId did = it->id();
-		HcalElectronicsId eid = _ehashmap.lookup(did);
+		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
 		_cEnergy_depth.fill(did, energy);
 		_cTimingvsEnergy_FEDSlot.fill(eid, energy, timing);
@@ -463,16 +483,16 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 /* virtual */ void RecHitTask::endLuminosityBlock(edm::LuminosityBlock const& 
 	lb, edm::EventSetup const& es)
 {
-	/*
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
 		HcalElectronicsId eid = HcalElectronicsId(*it);
-		for (int flag=fLowOcp; flag<nRecoFlag; flag++)
+		for (int flag=fOcpUniSlot; flag<nRecoFlag; flag++)
 			_cSummary.setBinContent(eid, flag, fNA);
 
 		int nmissing = 0;
-		int ocpUniSlot = false;
+		bool ocpUniSlot = false;
+		bool timeslot = false;
 		if (eid.isVMEid())
 		{
 			for (int is=SPIGOT_MIN; is<=SPIGOT_MAX; is++)
@@ -482,8 +502,10 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				HcalElectronicsId ejd = HcalElectronicsId(
 					FIBERCH_MIN, FIBER_VME_MIN, 
 					is==SPIGOT_MAX?SPIGOT_MIN:is+1, eid.dccid());
-				int niscut = _cOccupancyCut_ElectronicsVME.getBinContent(eid);
-				int njscut = _cOccupancyCut_ElectronicsVME.getBinContent(ejd);
+				int niscut = _cOccupancy_ElectronicsVME.getBinContent(eid);
+				int njscut = _cOccupancy_ElectronicsVME.getBinContent(ejd);
+				double timeis = _cTimingCut_ElectronicsVME.getBinContent(eid);
+				double timejs = _cTimingCut_ElectronicsVME.getBinContent(ejd);
 				for (int ifib=FIBER_VME_MIN; ifib<=FIBER_VME_MAX; ifib++)
 					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
 					{
@@ -494,10 +516,16 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 							nmissing++;
 						}
 					}
-				double ratio = std::min(niscut, njscut)/std::max(niscut, 
-					njscut);
-				if (ratio<0.8)
+				double ratio = niscut==0 && njscut==0?1:
+					double(std::min(niscut, njscut))/double(std::max(niscut, 
+					njscut));
+				double timediff = timeis-timejs;
+				//	at least x5 difference
+				if (ratio<0.2)
 					ocpUniSlot = true;
+				//	3ns if timing difference between spigots>3ns - set it
+				if (std::fabs(timediff)>3.)
+					timeslot = true;
 			}
 		}
 		else
@@ -510,8 +538,16 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				HcalElectronicsId ejd = HcalElectronicsId(eid.crateId(),
 					is==SLOT_uTCA_MAX?SLOT_uTCA_MIN:is+1, FIBER_uTCA_MIN1,
 					FIBERCH_MIN, false);
-				int niscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(eid);
-				int njscut = _cOccupancyCut_ElectronicsuTCA.getBinContent(ejd);
+				int niscut = eid.crateId()==22 || eid.crateId()==29 ||
+					eid.crateId()==32?
+					_cOccupancyCut_ElectronicsuTCA.getBinContent(eid):
+					_cOccupancy_ElectronicsuTCA.getBinContent(eid);
+				int njscut = ejd.crateId()==22 || ejd.crateId()==29 ||
+					ejd.crateId()==32?
+					_cOccupancyCut_ElectronicsuTCA.getBinContent(ejd):
+					_cOccupancy_ElectronicsuTCA.getBinContent(ejd);
+				double timeis = _cTimingCut_ElectronicsuTCA.getBinContent(eid);
+				double timejs = _cTimingCut_ElectronicsuTCA.getBinContent(ejd);
 				for (int ifib=FIBER_uTCA_MIN1; ifib<=FIBER_uTCA_MAX2; ifib++)
 				{
 					if (ifib>FIBER_uTCA_MAX1 && ifib<FIBER_uTCA_MIN2)
@@ -527,23 +563,30 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 						}
 					}
 				}
-				double ratio = std::min(niscut, njscut)/std::max(niscut, 
-					njscut);
-				if (ratio<0.8)
+				double ratio = niscut==0 && njscut==0?1:
+					double(std::min(niscut, njscut))/double(std::max(niscut, 
+					njscut));
+				double timediff = timeis-timejs;
+				//	at least x5 difference
+				if (ratio<0.2)
 					ocpUniSlot = true;
+				//	3ns
+				if (std::fabs(timediff)>3.)
+					timeslot = true;
 			}
 		}
 
-		if (nmissing>0)
-			_cSummary.setBinContent(eid, fMsn1LS, fLow);
-		else
+		nmissing>0?
+			_cSummary.setBinContent(eid, fMsn1LS, fLow):
 			_cSummary.setBinContent(eid, fMsn1LS, fGood);
-		if (ocpUniSlot)
-			_cSummary.setBinContent(eid, fOcpUniSlot, fLow);
-		else
+		ocpUniSlot?
+			_cSummary.setBinContent(eid, fOcpUniSlot, fLow):
 			_cSummary.setBinContent(eid, fOcpUniSlot, fGood);
+		timeslot?
+			_cSummary.setBinContent(eid, fTimeUniSlot, fLow):
+			_cSummary.setBinContent(eid, fTimeUniSlot, fGood);
 	}
-	*/
+	
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);
 }

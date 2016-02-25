@@ -155,7 +155,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cSummary.book(ib);
 
 	//	initialize hash map
-	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fDHashMap);
+	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fE2DHashMap);
 }
 
 /* virtual */ void RawTask::_resetMonitors(UpdateFreq uf)
@@ -197,7 +197,12 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	for (std::vector<DetId>::const_iterator it=creport->bad_quality_begin();
 		it!=creport->bad_quality_end(); ++it)
 	{
-		HcalElectronicsId eid = _ehashmap.lookup(*it);
+		//	TODO - this should be taken care of...
+		//	if true -> either throw or put somewhere to note!
+		if (!HcalGenericDetId(*it).isHcalDetId())
+			continue;
+
+		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(*it));
 		_cBadQuality_depth.fill(HcalDetId(*it));
 		if (eid.isVMEid())
 		{
@@ -368,30 +373,15 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		}
 		
 		// set all the quality flags
-		if (nevnmsm>0)
-		{
-			_cSummary.setBinContent(eid, (int)fEvnMsm, (int)fLow);
-		}
-		else
-		{
+		nevnmsm>0?
+			_cSummary.setBinContent(eid, (int)fEvnMsm, (int)fLow):
 			_cSummary.setBinContent(eid, (int)fEvnMsm, (int)fGood);
-		}
-		if (nbcnmsm>0)
-		{
-			_cSummary.setBinContent(eid, (int)fBcnMsm, (int)fLow);
-		}
-		else
-		{
+		nbcnmsm>0?
+			_cSummary.setBinContent(eid, (int)fBcnMsm, (int)fLow):
 			_cSummary.setBinContent(eid, (int)fBcnMsm, (int)fGood);
-		}
-		if (nbad>0)
-		{
-			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fLow);
-		}
-		else
-		{
+		nbad>0?
+			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fLow):
 			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fGood);
-		}
 	}
 	
 	//	in the end always do the DQTask::endLumi

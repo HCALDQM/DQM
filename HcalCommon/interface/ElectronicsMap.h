@@ -4,6 +4,12 @@
 /**
  *	file:		ElectronicsMap.h
  *	Author:		Viktor Khristenko
+ *
+ *	Description:
+ *		HcalElectronicsMap is slow. Upon beginRun hash what you need from 
+ *		emap. Preserve only uint32_t. When you look things up, you know
+ *		what is the key and you know what is the output as you define it up
+ *		infront.
  */
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
@@ -21,8 +27,10 @@ namespace hcaldqm
 		enum ElectronicsMapType
 		{
 			fHcalElectronicsMap = 0,
-			fDHashMap = 1,
-			fTHashMap = 2,
+			fD2EHashMap = 1,
+			fT2EHashMap = 2,
+			fE2DHashMap = 3,
+			fE2THashMap = 4,
 			nElectronicsMapType = 5
 		};
 
@@ -40,11 +48,12 @@ namespace hcaldqm
 
 				void initialize(HcalElectronicsMap const*, ElectronicsMapType
 					etype=fHcalElectronicsMap);
-				//	filter is to filter HcalElectronicsId out 
+
+				//	filter is to filter things you do not need out
 				void initialize(HcalElectronicsMap const*, ElectronicsMapType,
 					filter::HashFilter const&);
-				const HcalElectronicsId lookup(DetId const&);
-				const HcalElectronicsId lookupTrigger(DetId const&);
+				uint32_t lookup(DetId const&);
+				uint32_t lookup(HcalElectronicsId const&);
 
 				void print();
 				
@@ -54,8 +63,7 @@ namespace hcaldqm
 				ElectronicsMapType	_etype;
 
 				//	2 choices either use as HcalElectronicsMap or as ur hash
-				typedef boost::unordered_map<uint32_t, HcalElectronicsId> 
-					EMapType;
+				typedef boost::unordered_map<uint32_t, uint32_t> EMapType;
 				EMapType			_ids;
 
 				//	

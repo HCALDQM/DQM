@@ -150,8 +150,6 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 	//	book compact containers
 	_cSignals_DChannel.book(_emap);
 	_cTiming_DChannel.book(_emap);
-
-	_emaphash.initialize(_emap, hcaldqm::electronicsmap::fDHashMap);
 }
 
 /* virtual */ void LEDTask::_resetMonitors(UpdateFreq uf)
@@ -208,7 +206,7 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		if (sumQ<_lowHBHE)
 			continue;
 		HcalDetId did = digi.id();
-		HcalElectronicsId eid = _emaphash.lookup(did);
+		HcalElectronicsId eid = digi.elecId();
 
 		double aveTS = utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
@@ -241,7 +239,7 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		if (sumQ<_lowHO)
 			continue;
 		HcalDetId did = digi.id();
-		HcalElectronicsId eid = _emaphash.lookup(did);
+		HcalElectronicsId eid = digi.elecId();
 
 		double aveTS = utilities::aveTS<HODataFrame>(digi, 8.5, 0,
 			digi.size()-1);
@@ -274,7 +272,7 @@ LEDTask::LEDTask(edm::ParameterSet const& ps):
 		if (sumQ<_lowHF)
 			continue;
 		HcalDetId did = digi.id();
-		HcalElectronicsId eid = _emaphash.lookup(did);
+		HcalElectronicsId eid = digi.elecId();
 
 		double aveTS = utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
 			digi.size()-1);

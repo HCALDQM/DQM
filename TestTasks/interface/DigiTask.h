@@ -10,6 +10,7 @@
 #include "DQM/HcalCommon/interface/DQTask.h"
 #include "DQM/HcalCommon/interface/Utilities.h"
 #include "DQM/HcalCommon/interface/HashFilter.h"
+#include "DQM/HcalCommon/interface/ElectronicsMap.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
@@ -34,12 +35,16 @@ class DigiTask : public DQTask
 
 		enum DigiFlag
 		{
-			fLowOcp = 0, // per subdet
-			fUniSlot = 1, // occupancy uniformity vs Slots per FED
-			fMsn1LS = 2, // missing for 1 LS
-			fCapIdRot = 3, // caps non rotating
-			fDigiSize = 4,
-			nDigiFlag = 5
+			//	UniSlot - for HF FEDs use OccupancyCut, for others use 
+			//	just Occupancy
+			fUniSlot = 0,
+			//	missing for 1LS
+			fMsn1LS = 1,
+			//	caps non rotating
+			fCapIdRot = 2,
+			//	digi size issues - typically is a consequence
+			fDigiSize = 3,
+			nDigiFlag = 4
 		};
 
 	protected:
@@ -60,6 +65,8 @@ class DigiTask : public DQTask
 
 		//	emap
 		HcalElectronicsMap const* _emap;
+		electronicsmap::ElectronicsMap _ehashmapuTCA;
+		electronicsmap::ElectronicsMap _ehashmapVME;
 
 		//	Filters
 		HashFilter _filter_VME;

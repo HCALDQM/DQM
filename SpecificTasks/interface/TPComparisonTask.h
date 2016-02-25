@@ -79,6 +79,7 @@ class TPComparisonTask : public DQTask
 		Container2D			_cFGMsm_FEDVME;
 		Container2D			_cFGMsm_FEDuTCA;
 
+		//	depth like
 		ContainerSingle2D	_cEtMsm;
 		ContainerSingle2D	_cFGMsm;
 };

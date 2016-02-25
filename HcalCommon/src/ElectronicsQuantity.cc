@@ -115,16 +115,11 @@ namespace hcaldqm
 		int getValue_SLB(HcalElectronicsId const &eid)
 		{
 			int slbsite = eid.slbSiteNumber();
-			std::cout << eid << std::endl;
-			std::cout << "islb=" << slbsite-SLB_MIN << std::endl;
 			return slbsite-SLB_MIN;
 		}
 
 		int getValue_SLBCh(HcalElectronicsId const& eid)
 		{
-			std::cout << eid << std::endl;
-			std::cout << "islbch=" << eid.slbChannelIndex()-SLBCH_MIN
-				<< std::endl;
 			return eid.slbChannelIndex()-SLBCH_MIN;
 		}
 
@@ -132,23 +127,16 @@ namespace hcaldqm
 		{
 			int islb = getValue_SLB(eid);
 			int islbch = getValue_SLBCh(eid);
-			std::cout << eid << std::endl;
-			std::cout << "islb=" << islb << "  islbch=" << islbch 
-				<< std::endl;
 			return islb*SLBCH_NUM+islbch;
 		}
 
 		int getValue_FiberuTCATP(HcalElectronicsId const& eid)
 		{
-			std::cout << "fiberIndex: " << eid.fiberIndex() << std::endl;
-			std::cout << eid << std::endl;
 			return eid.fiberIndex()-TPFIBER_MIN;
 		}
 
 		int getValue_FiberChuTCATP(HcalElectronicsId const &eid)
 		{
-			std::cout << "fiberChan: " << eid.fiberChanId() << std::endl;
-			std::cout << eid << std::endl;
 			return eid.fiberChanId()-TPFIBERCH_MIN;
 		}
 
@@ -156,8 +144,6 @@ namespace hcaldqm
 		{
 			int ifib = getValue_FiberuTCATP(eid);
 			int ifibch = getValue_FiberChuTCATP(eid);
-			std::cout << "ifib=" << ifib << " ifibch=" << ifibch << std::endl;
-			std::cout << eid << std::endl;
 			return ifib*TPFIBERCH_NUM+ifibch;
 		}
 

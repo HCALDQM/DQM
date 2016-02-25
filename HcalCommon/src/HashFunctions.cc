@@ -269,11 +269,26 @@ namespace hcaldqm
 
 		uint32_t hash_Electronics(HcalElectronicsId const& eid)
 		{
-			return eid.isVMEid() ?
+			return eid.isVMEid()?
 				utilities::hash(HcalElectronicsId(FIBERCH_MIN,
 					FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN)):
 				utilities::hash(HcalElectronicsId(CRATE_uTCA_MIN,
 					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false));
+/*			NOTE: as an update - should separate Trigger Eid and Det Eid
+ *			return eid.isVMEid() ?
+				eid.isTriggerChainId()?
+					utilities::hash(HcalElectronicsId(SLBCH_MIN,
+						SLB_MIN, SPIGOT_MIN, CRATE_VME_MIN, 
+						CRATE_VME_MIN, SLOT_VME_MIN1, 0)):
+					utilities::hash(HcalElectronicsId(FIBERCH_MIN,
+						FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN))
+				:
+				eid.isTriggerChainId()?
+				utilities::hash(HcalElectronicsId(CRATE_uTCA_MIN,
+					SLOT_uTCA_MIN, TPFIBER_MIN, TPFIBERCH_MIN, true)):
+				utilities::hash(HcalElectronicsId(CRATE_uTCA_MIN,
+					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false));
+					*/
 		}
 
 		uint32_t hash_EChannel(HcalElectronicsId const& eid)

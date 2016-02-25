@@ -34,11 +34,16 @@ class TPTask : public DQTask
 
 		enum TPFlag
 		{
-			fOcpUniData = 0,
-			fOcpUniEmul = 1,
-			fEtMsmUni = 2,
-			fFGMsmUni = 3,
-			nTPFlag = 4
+			fOcpUniSlotData = 0,
+			fOcpUniSlotEmul = 1,
+			fEtMsmUniSlot = 2,
+			fFGMsmUniSlot = 3,
+			fMsnUniSlotData = 4,
+			fMsnUniSlotEmul = 5,
+			fEtCorrRatio = 6,
+			fEtMsmNumber = 7,
+			fFGMsmNumber = 8,
+			nTPFlag = 9
 		};
 
 	protected:
@@ -71,9 +76,9 @@ class TPTask : public DQTask
 		Container2D	_cEtCorr_TTSubdet;
 		Container2D _cFGCorr_TTSubdet;
 
-		//	Shape
-		Container1D _cShapeData_TTSubdet;
-		Container1D _cShapeEmul_TTSubdet;
+		//	Et Correlation Ratio
+		ContainerProf2D _cEtCorrRatio_ElectronicsVME;
+		ContainerProf2D _cEtCorrRatio_ElectronicsuTCA;
 
 		//	Occupancies
 		Container2D _cOccupancyData_ElectronicsVME;

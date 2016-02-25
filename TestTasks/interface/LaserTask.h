@@ -52,7 +52,6 @@ class LaserTask : public DQTask
 
 		//	emap
 		HcalElectronicsMap const* _emap;
-		electronicsmap::ElectronicsMap _emaphash;
 
 		//	Cuts
 		double _lowHBHE;

@@ -121,9 +121,9 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	_cEtMsm.book(ib, _subsystem);
 	_cFGMsm.book(ib, _subsystem);
 
-	_ehashmapuTCA.initialize(_emap, hcaldqm::electronicsmap::fTHashMap,
+	_ehashmapuTCA.initialize(_emap, hcaldqm::electronicsmap::fT2EHashMap,
 		_filter_VME);
-	_ehashmapVME.initialize(_emap, hcaldqm::electronicsmap::fTHashMap,
+	_ehashmapVME.initialize(_emap, hcaldqm::electronicsmap::fT2EHashMap,
 		_filter_uTCA);
 //	_ehashmap.print();
 //	_cMsn_depth.book(ib);
@@ -164,8 +164,10 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		HcalTrigTowerDetId tid = it1->id();
 		HcalTrigPrimDigiCollection::const_iterator it2=coll2->find(
 			HcalTrigTowerDetId(tid.ieta(), tid.iphi(), 0));
-		HcalElectronicsId eid2 = _ehashmapuTCA.lookupTrigger(tid);
-		HcalElectronicsId eid1 = _ehashmapVME.lookupTrigger(tid);
+		HcalElectronicsId eid2 = HcalElectronicsId(
+			_ehashmapuTCA.lookup(tid));
+		HcalElectronicsId eid1 = HcalElectronicsId(
+			_ehashmapVME.lookup(tid));
 
 		if (it2==coll2->end())
 		{
@@ -205,7 +207,8 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 			if (tid.depth()==10)
 				continue;
 
-		HcalElectronicsId eid = _ehashmapVME.lookupTrigger(tid);
+		HcalElectronicsId eid = HcalElectronicsId(
+			_ehashmapVME.lookup(tid));
 		HcalTrigPrimDigiCollection::const_iterator it1=coll1->find(
 			HcalTrigTowerDetId(tid.ieta(), tid.iphi(), 0));
 		if (it1==coll1->end())
