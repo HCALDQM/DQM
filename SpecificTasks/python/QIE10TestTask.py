@@ -9,5 +9,5 @@ qie10TestTask = cms.EDAnalyzer(
 	runkeyVal = cms.untracked.int32(0),
 	runkeyName = cms.untracked.string("pp_run"),
 
-	tagHF = cms.untracked.InputTag("qie10Digis")
+	tagQIE10 = cms.untracked.InputTag("qie10Digis")
 )

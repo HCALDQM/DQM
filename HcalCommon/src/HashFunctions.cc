@@ -184,7 +184,7 @@ namespace hcaldqm
 		std::string name_DChannel(HcalDetId const& did)
 		{
 			char name[40];
-			sprintf(name, "%sieta%diphi%dd%d",
+			sprintf(name, "%s-%d-%d-%d",
 				constants::SUBDET_NAME[did.subdet()-1].c_str(), 
 				did.ieta(), did.iphi(), did.depth());
 			return std::string(name);
@@ -375,9 +375,14 @@ namespace hcaldqm
 
 		std::string name_EChannel(HcalElectronicsId const& eid)
 		{
-			std::stringstream stream;
-			stream << eid;
-			return std::string(stream.str());
+			char name[20];
+			if (eid.isVMEid())
+				sprintf(name, "%d-%d-%d-%d", eid.dccid(),
+					eid.spigot(), eid.fiberIndex(), eid.fiberChanId());
+			else
+				sprintf(name, "%d-%d-%d-%d", eid.crateId(),
+					eid.slot(), eid.fiberIndex(), eid.fiberChanId());
+			return std::string(name);
 		}
 
 		/**

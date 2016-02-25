@@ -74,7 +74,8 @@ class QIE10TestTask : public DQTask
 		virtual void _resetMonitors(UpdateFreq);
 
 		//	tags
-		edm::InputTag	_tagHF;
+		edm::InputTag	_tagQIE10;
+		edm::EDGetTokenT<QIE10DigiCollection> _tokQIE10;
 
 		//	filters
 		HashFilter _filter_C36;
@@ -87,8 +88,8 @@ class QIE10TestTask : public DQTask
 		Container1D	_cShape_EChannel;
 		Container2D	_cLETDCvsADC_EChannel[10];
 		Container2D	_cTETDCvsADC_EChannel[10];
-		Container1D _cLETDC[10];
-		Container1D _cADC[10];
+		Container1D _cLETDC_EChannel[10];
+		Container1D _cADC_EChannel[10];
 };
 
 #endif

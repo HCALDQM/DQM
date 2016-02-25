@@ -62,5 +62,10 @@ namespace hcaldqm
 		{
 			return _ids.find(id)==_ids.end()?true:false;
 		}
+
+		/* virtual */ void HashFilter::print()
+		{
+
+		}
 	}
 }

@@ -23,9 +23,12 @@ namespace hcaldqm
 
 	ContainerSingle2D::~ContainerSingle2D()
 	{
-		delete _qx;
-		delete _qy;
-		delete _qz;
+		if (_qx!=NULL)
+			delete _qx;
+		if (_qy!=NULL)
+			delete _qy;
+		if (_qz!=NULL)
+			delete _qz;
 		_qx=NULL;
 		_qy=NULL;
 		_qz=NULL;

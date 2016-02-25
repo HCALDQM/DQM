@@ -8,12 +8,9 @@ namespace hcaldqm
 	using namespace quantity;
 	using namespace mapper;
 
-	Container2D::Container2D()
-	{
-		_qx = NULL;
-		_qy = NULL;
-		_qz = NULL;
-	}
+	Container2D::Container2D():
+		_qz(NULL)
+	{}
 
 	Container2D::Container2D(std::string const& folder,
 		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy,
@@ -27,7 +24,8 @@ namespace hcaldqm
 
 	Container2D::~Container2D()
 	{
-		delete _qz;
+		if (_qz!=NULL)
+			delete _qz;
 		_qz = NULL;
 	}
 	

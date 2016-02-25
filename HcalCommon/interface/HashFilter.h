@@ -51,6 +51,8 @@ namespace hcaldqm
 				virtual bool filter(HcalElectronicsId const&) const;
 				virtual bool filter(HcalTrigTowerDetId const&) const;
 
+				virtual void print();
+
 			protected:	
 				FilterType						_ftype;
 				typedef boost::unordered_set<uint32_t> FilterMap;

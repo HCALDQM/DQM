@@ -6,7 +6,8 @@ namespace hcaldqm
 	using namespace mapper;
 	using namespace constants;
 
-	Container1D::Container1D()
+	Container1D::Container1D():
+		_qx(NULL), _qy(NULL)
 	{}
 
 	Container1D::Container1D(std::string const& folder,
@@ -20,8 +21,10 @@ namespace hcaldqm
 
 	Container1D::~Container1D()
 	{
-		delete _qx;
-		delete _qy;
+		if (_qx!=NULL)
+			delete _qx;
+		if (_qy!=NULL)
+			delete _qy;
 		_qx = NULL;
 		_qy = NULL;
 	}

@@ -36,8 +36,10 @@ namespace hcaldqm
 
 	ContainerSingle1D::~ContainerSingle1D()
 	{
-		delete _qx;
-		delete _qy;
+		if (_qx!=NULL)
+			delete _qx;
+		if (_qy!=NULL)
+			delete _qy;
 		_qx = NULL;
 		_qy = NULL;
 	}
