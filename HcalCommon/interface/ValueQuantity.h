@@ -42,6 +42,7 @@ namespace hcaldqm
 			fN_to3000 = 28,
 			fEnergyTotal = 29,
 			fN_m0to10000 = 30,
+
 			nValueQuantityType = 31,
 		};
 		std::string const name_value[nValueQuantityType] = {

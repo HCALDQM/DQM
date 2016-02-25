@@ -41,10 +41,8 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		vhashuTCA);
 
 	//	INTIALIZE CONTAINERS
-	char aux[20];
 	for (unsigned int i=0; i<4; i++)
 	{
-		sprintf(aux, "_TS%d", i);
 		_cEt_TTSubdet[i].initialize(_name, "Et",
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fEt_128),
@@ -104,10 +102,12 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		new quantity::TrigTowerQuantity(quantity::fTTiphi),
 		new quantity::ValueQuantity(quantity::fN));
 
+	char aux[20];
 	for (unsigned int i=0; i<4; i++)
 	{
-		_cEt_TTSubdet[i].book(ib, _emap);
-		_cFG_TTSubdet[i].book(ib, _emap);
+		sprintf(aux, "TS%d", i);
+		_cEt_TTSubdet[i].book(ib, _emap, _subsystem, aux);
+		_cFG_TTSubdet[i].book(ib, _emap, _subsystem, aux);
 	}
 	_cMsn_FEDVME.book(ib, _emap, _filter_uTCA);
 	_cEtMsm_FEDVME.book(ib, _emap, _filter_uTCA);

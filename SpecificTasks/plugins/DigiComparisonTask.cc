@@ -37,10 +37,8 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		vhashuTCA);
 	
 	//	INITIALIZE
-	char aux[20];
 	for  (unsigned int i=0; i<10; i++)
 	{
-		sprintf(aux, "_TS%d", i);
 		_cADC_Subdet[i].initialize(_name, "ADC",
 			hashfunctions::fSubdet,
 			new quantity::ValueQuantity(quantity::fADC_128),
@@ -78,8 +76,12 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fN));
 
 	//	BOOK
+	char aux[20];
 	for (unsigned int i=0; i<10; i++)
-		_cADC_Subdet[i].book(ib, _emap);
+	{
+		sprintf(aux, "TS%d", i);
+		_cADC_Subdet[i].book(ib, _emap, _subsystem, aux);
+	}
 	_cMsm_depth.book(ib, _emap);
 	_cMsn_depth.book(ib, _emap);
 	_cMsm_FEDVME.book(ib, _emap, _filter_uTCA);

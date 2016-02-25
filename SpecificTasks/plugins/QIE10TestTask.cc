@@ -50,11 +50,11 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 		_cADC_EChannel[j].initialize(_name,
 			"ADC", hashfunctions::fEChannel,
 			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
-			new quantity::ValueQuantity(quantity::fN));
+			new quantity::ValueQuantity(quantity::fN, true));
 		_cLETDC_EChannel[j].initialize(_name,
 			"TDC", hashfunctions::fEChannel,
 			new quantity::ValueQuantity(quantity::fQIE10TDC_64),
-			new quantity::ValueQuantity(quantity::fN));
+			new quantity::ValueQuantity(quantity::fN, true));
 	}
 
 	_cShape_EChannel.book(ib, _emap, _filter_C36);
@@ -69,7 +69,8 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 	}
 
 	_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap, _filter_C36);
-	_ehashmap.print();
+//	_ehashmap.print();
+//	_cADC_EChannel[0].print();
 }
 
 /* virtual */ void QIE10TestTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
@@ -98,10 +99,10 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 			_cShape_EChannel.fill(eid, j, adc2fC[frame[j].adc()]);	
 			_cLETDCvsADC_EChannel[j].fill(eid, frame[j].adc(), 
 				frame[j].le_tdc());
-			_cTETDCvsADC_EChannel[i].fill(eid, frame[j].adc(), 
+			_cTETDCvsADC_EChannel[j].fill(eid, frame[j].adc(), 
 				frame[j].te_tdc());
-			_cLETDC_EChannel[i].fill(eid, frame[j].le_tdc());
-			_cADC_EChannel[i].fill(eid, frame[j].adc());
+			_cLETDC_EChannel[j].fill(eid, frame[j].le_tdc());
+			_cADC_EChannel[j].fill(eid, frame[j].adc());
 		}
 	}
 }
