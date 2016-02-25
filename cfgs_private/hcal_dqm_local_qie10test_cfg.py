@@ -53,7 +53,7 @@ errorstr		= "### HcalDQM::cfg::ERROR:"
 local			= True
 useMap			= True
 dbMap			= False
-cmsnet			= False
+cmsnet			= True
 
 print debugstr, "Input Files= ", options.inputFiles
 print debugstr, "Run over #events=", options.processEvents
@@ -82,7 +82,7 @@ process.DQM = cms.Service(
 	"DQM",
 	debug = cms.untracked.bool(False),
 	publishFrequency = cms.untracked.double(1.0),
-	collectorPort = cms.untracked.int32(8061),
+	collectorPort = cms.untracked.int32(9999),
 	collectorHost = cms.untracked.string('hcaldqm03.cms'),
 	filter = cms.untracked.string('')
 )
@@ -99,15 +99,12 @@ process.dqmEnv.subSystemFolder = subsystem
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
 #-------------------------------------
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
-process.load('Configuration.Geometry.GeometryIdeal_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('FWCore.MessageLogger.MessageLogger_cfi')
 process.load("EventFilter.HcalRawToDigi.HcalRawToDigi_cfi")
-process.load("RecoLocalCalo.Configuration.hcalLocalReco_cff")
-process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
-process.load("CondCore.DBCommon.CondDBSetup_cfi")
-process.load("EventFilter.L1GlobalTriggerRawToDigi.l1GtUnpack_cfi")
-process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
+process.load("CondCore.CondDB.CondDB_cfi")
+from Configuration.AlCa.autoCond import autoCond
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module Settings
@@ -120,39 +117,19 @@ process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 #	-> L1 GT setting
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
-process.GlobalTag.globaltag = '74X_dataRun2_Express_v2'
+process.GlobalTag.globaltag = autoCond['startup']
+#process.GlobalTag.globaltag = '75X_dataRun2_HLTHI_v4'
 if cmsnet:
 	process.GlobalTag.connect = 'frontier://(serverurl=http://frontier1.cms:8000/FrontierOnProd)(serverurl=http://frontier2.cms:8000/FrontierOnProd)(retrieve-ziplevel=0)/CMS_CONDITIONS'
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
 rawTagStr		= "source"
 rawTag			= cms.InputTag(rawTagStr)
-process.essourceSev = cms.ESSource(
-		"EmptyESSource",
-		recordName		= cms.string("HcalSeverityLevelComputerRcd"),
-		firstValid		= cms.vuint32(1),
-		iovIsRunNotTime	= cms.bool(True)
-)
-process.hcalRecAlgos.DropChannelStatusBits = cms.vstring('')
-process.valHcalTriggerPrimitiveDigis = \
-		process.simHcalTriggerPrimitiveDigis.clone()
-process.valHcalTriggerPrimitiveDigis.inputLabel = \
-		cms.VInputTag("hcalDigis", 'hcalDigis')
-process.valHcalTriggerPrimitiveDigis.FrontEndFormatError = \
-		cms.bool(True)
-process.HcalTPGCoderULUT.LUTGenerationMode = cms.bool(False)
-process.valHcalTriggerPrimitiveDigis.FG_threshold = cms.uint32(2)
-process.valHcalTriggerPrimitiveDigis.InputTagFEDRaw = rawTag
-process.hbhereco = process.hbheprereco.clone()
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 #-------------------------------------
 #	Hcal DQM Tasks and Clients import
 #-------------------------------------
-process.load("DQM.HcalTasks.PedestalTask")
-process.load("DQM.HcalTasks.LaserTask")
-process.load("DQM.HcalTasks.LEDTask")
-process.load("DQM.HcalTasks.RadDamTask")
-process.load("DQM.Specific.QIE10TestTask")
+process.load("DQM.SpecificTasks.QIE10TestTask")
 
 #-------------------------------------
 #	To force using uTCA
@@ -182,7 +159,8 @@ elif useMap==True and dbMap==False:
 		input = cms.VPSet(
 			cms.PSet(
 				object = cms.string('ElectronicsMap'),
-				file = cms.FileInPath('version_qie10.txt')
+				file = cms.FileInPath('emap_split_PMT_BOX_UXC.txt')
+#				file = cms.FileInPath('version_qie10.txt')
 #				file = cms.FileInPath('version_G_emap_2015_may_20')
 			)
 		)
@@ -205,22 +183,7 @@ process.qie10Digis = process.hcalDigis.clone()
 process.qie10Digis.InputLabel = rawTag
 process.qie10Digis.FEDs = cms.untracked.vint32(1132)
 
-#-------------------------------------
-#	Sequences Definition
-#-------------------------------------
-if options.runType=="pedestal":
-	process.tasksSequence = cms.Sequence(process.pedestalTask)
-elif options.runType=='led':
-	process.tasksSequence = cms.Sequence(process.ledTask)
-elif options.runType=="laser":
-	process.tasksSequence = cms.Sequence(process.laserTask)
-elif options.runType=="raddam":
-	process.tasksSequence = cms.Sequence(process.raddamTask)
-elif options.runType=="QIE10Test":
-	process.tasksSequence = cms.Sequence(process.qie10TestTask)
-else:
-	print "### Exiting. Wrong Run Type: " + options.runType
-	sys.exit(0)
+process.tasksSequence = cms.Sequence(process.qie10TestTask)
 
 #-------------------------------------
 #	Some Settings for Local(a la DetDiag)
@@ -229,39 +192,14 @@ else:
 #	Get the Local Trigger Information	
 #-------------------------------------
 process.hcalDigis.InputLabel = rawTag
-process.pedestalTask.tagRaw = cms.untracked.InputTag('source')
-process.laserTask.tagRaw = cms.untracked.InputTag('source')
-process.ledTask.tagRaw = cms.untracked.InputTag('source')
-process.raddamTask.tagRaw = cms.untracked.InputTag("source")
-process.pedestalTask.subsystem = cms.untracked.string("Hcal")
-process.laserTask.subsystem = cms.untracked.string("Hcal")
-process.ledTask.subsystem = cms.untracked.string("Hcal")
-process.pedestalTask.ptype = cms.untracked.int32(2)
-process.ledTask.ptype = cms.untracked.int32(2)
-process.laserTask.ptype = cms.untracked.int32(2)
-process.raddamTask.subsystem = cms.untracked.string('Hcal')
-process.raddamTask.ptype = cms.untracked.int32(2)
 process.qie10TestTask.tagRaw = cms.untracked.InputTag("source")
 process.qie10TestTask.ptype = cms.untracked.int32(2)
-
-
-#-------------------------------------
-#	To see Laser Board info and trigger info
-#-------------------------------------
-process.tbunpacker = cms.EDProducer(
-	"HcalTBObjectUnpacker",
-	IncludeUnmatchedHits	= cms.untracked.bool(False),
-	HcalTriggerFED			= cms.untracked.int32(1)
-)
-process.tbunpacker.fedRawDataCollectionTag = rawTag
 
 #-------------------------------------
 #	Execution Sequence Definition
 #-------------------------------------
 process.p = cms.Path(
-					process.tbunpacker
-					*process.qie10Digis
-#					*process.hcalDigis
+					process.qie10Digis
 					*process.tasksSequence
                     *process.dqmEnv
                     *process.dqmSaver
