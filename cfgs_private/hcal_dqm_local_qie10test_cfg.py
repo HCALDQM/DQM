@@ -117,7 +117,7 @@ from Configuration.AlCa.autoCond import autoCond
 #	-> L1 GT setting
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
-process.GlobalTag.globaltag = autoCond['startup']
+process.GlobalTag.globaltag = autoCond['run2_data']
 #process.GlobalTag.globaltag = '75X_dataRun2_HLTHI_v4'
 if cmsnet:
 	process.GlobalTag.connect = 'frontier://(serverurl=http://frontier1.cms:8000/FrontierOnProd)(serverurl=http://frontier2.cms:8000/FrontierOnProd)(retrieve-ziplevel=0)/CMS_CONDITIONS'
@@ -159,7 +159,8 @@ elif useMap==True and dbMap==False:
 		input = cms.VPSet(
 			cms.PSet(
 				object = cms.string('ElectronicsMap'),
-				file = cms.FileInPath('emap_split_PMT_BOX_UXC.txt')
+				file = cms.FileInPath('version_G_emap_all_ngHF2016_feb24.txt')
+#				file = cms.FileInPath('emap_split_PMT_BOX_UXC.txt')
 #				file = cms.FileInPath('version_qie10.txt')
 #				file = cms.FileInPath('version_G_emap_2015_may_20')
 			)
