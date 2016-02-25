@@ -5,64 +5,64 @@ using namespace hcaldqm;
 QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 	DQTask(ps)
 {
-	_cDetIds.push_back(HcalDetId(HcalForward, 1, 10, 1));
-	_cDetIds.push_back(HcalDetId(HcalForward, 1, 11, 1));
-	_cDetIds.push_back(HcalDetId(HcalForward, 1, 12, 1));
-	_cDetIds.push_back(HcalDetId(HcalForward, 1, 13, 1));
-	_cDetIds.push_back(HcalDetId(HcalForward, 2, 10, 1));
-	_cDetIds.push_back(HcalDetId(HcalForward, 2, 11, 1));
-	_cDetIds.push_back(HcalDetId(HcalForward, 2, 12, 1));
-	_cDetIds.push_back(HcalDetId(HcalForward, 2, 13, 1));
-
-	char name[200];
-	for (unsigned int i=0; i<_cDetIds.size(); i++)
-	{
-		sprintf(name, "_iphi%d_ieta%d", _cDetIds[i].iphi(), _cDetIds[i].ieta());
-		_vcShape.push_back(ContainerSingle1D(_name+"/Shape",
-			"Shape"+std::string(name), 
-			new axis::ValueAxis(axis::fXaxis, fTimeTS),
-			new axis::ValueAxis(axis::fYaxis, fNomFC)));
-		for (unsigned int j=0; j<10; j++)
-		{
-			char aux[10];
-			sprintf(aux, "_TS%d", j);
-			_vcLETDCvsADC[j].push_back(ContainerSingle2D(_name+"/LETDCvsADC",
-				"LETDCvsADC"+std::string(name)+std::string(aux),
-				new axis::ValueAxis(axis::fXaxis, axis::fQIE10ADC256),
-				new axis::ValueAxis(axis::fYaxis, axis::fQIE10TDC64),
-				new axis::ValueAxis(axis::fZaxis, axis::fEntries)));
-			_vcTETDCvsADC[j].push_back(ContainerSingle2D(_name+"/TETDCvsADC",
-				"TETDCvsADC"+std::string(name)+std::string(aux),
-				new axis::ValueAxis(axis::fXaxis, axis::fQIE10ADC256),
-				new axis::ValueAxis(axis::fYaxis, axis::fQIE10TDC64),
-				new axis::ValueAxis(axis::fZaxis, axis::fEntries)));
-			_vcLETDC[j].push_back(ContainerSingle1D(_name+"/LETDC",
-				"LETDC"+std::string(name)+std::string(aux),
-				new axis::ValueAxis(axis::fXaxis, axis::fQIE10TDC64),
-				new axis::ValueAxis(axis::fYaxis, axis::fEntries, true)));
-		}
-	}
-
+	
 	//	tags
 	_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF",
 		edm::InputTag("hcalDigis"));
 }
-
 /* virtual */ void QIE10TestTask::bookHistograms(DQMStore::IBooker &ib,
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	DQTask::bookHistograms(ib, r, es);
 
-	for (unsigned int i=0; i<_cDetIds.size(); i++)
+	//	GET WHAT YOU NEED
+	edm::ESHandle<HcalDbService> dbs;
+	s.get<HcalDbRecord>().get(dbs);
+	_emap = dbs->getHcalMapping();
+	std::vector<uint32_t> vhashC36;
+	vhashC36.push_back(HcalElectronicsId(36, SLOT_uTCA_MIN,
+		FIBER_uTCA_MIN1, FIBERCH_MIN).rawId());
+	_filter_C36.initialize(filter::fPreserver, hashfunctions::fCrate,
+		vhashC36);
+
+	//	INITIALIZE what you need
+	_cShape_EChannel.initialize(ContainerSingle1D(_name,
+		"Shape", hashfunctions::EChannel,
+		new quantity::ValueQuantity(quantity::fTiming_TS),
+		new quantity::ValueQuantity(quantity::ffC_10000)));
+	for (unsigned int j=0; j<10; j++)
 	{
-		_vcShape[i].book(ib, _subsystem);
-		for (unsigned int j=0; j<10; j++)
-		{
-			_vcLETDCvsADC[j][i].book(ib, _subsystem);
-			_vcTETDCvsADC[j][i].book(ib, _subsystem);
-			_vcLETDC[j][i].book(ib, _subsystem);
-		}
+		_cLETDCvsADC[j].initialize(_name,
+			"LETDCvsADC", hashfunctions::EChannel,
+			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
+			new quantity::ValueQuantity(quantity::fQIE10TDC_64),
+			new quantity::ValueQuantity(quantity::fN));
+		_cTETDCvsADC[j].initialize(_name,
+			"TETDCvsADC", hashfunctions::EChannel,
+			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
+			new quantity::ValueQuantity(quantity::fQIE10TDC_64),
+			new quantity::ValueQuantity(quantity::fN));
+		_cADC[j].initialize(_name,
+			"ADC", hashfunctions::EChannel,
+			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
+			new quantity::ValueQuantity(quantity::fN));
+		_cTDC[j].initialize(_name,
+			"TDC", hashfunctions::EChannel,
+			new quantity::ValueQuantity(quantity::fQIE10TDC_256),
+			new quantity::ValueQuantity(quantity::fN));
 	}
+
+	_vcShape.book(ib, _emap, _filter_C36);
+	for (unsigned int i=0; i<10; i++)
+	{
+		char aux[10];
+		sprintf(aux, "TS%d", j);
+		_cLETDCvsADC[i].book(ib, _emap, _filter_C36, _subsystem, aux);
+		_cTETDCvsADC[j][i].book(ib, _emap, _filter_C36, _subsystem, aux);
+		_cLETDC[j][i].book(ib, _emap, _filter_C36, _subsystem, aux);
+	}
+
+	_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap, _filter_C36);
 }
 
 /* virtual */ void QIE10TestTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
@@ -80,46 +80,25 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 	if (!e.getByLabel(_tagHF, cqie10))
 		std::cout << "Collection isn't availalbe" << std::endl;
 
-//	std::cout << "Event" << std::endl;
 	for (int i=0; i<cqie10->size(); i++)
 	{
 		HcalDetId did = (*cqie10)[i].detid();
+		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 
 		std::cout << "#unpacked=" << cqie10->size() << std::endl;
-		for (unsigned int ii=0; ii<_cDetIds.size(); ii++)
-			std::cout << _cDetIds[ii].iphi() << " " << _cDetIds[ii].ieta()
-				<< " " << _cDetIds[ii].depth() << std::endl;
+		std::cout << did << std::endl;
+		std::cout << eid << std::endl;
 
-		std::cout << "#digis=" << cqie10->size() << std::endl;
-		for (unsigned int ii=0; ii<_cDetIds.size(); ii++)
+		for (int j=0; j<(*cqie10)[i].samples(); j++)
 		{
-			if (did==_cDetIds[i])
-			{
-				std::cout << "Matched " << i << std::endl;
-				std::cout << did.iphi() << " " << did.ieta() << " " 
-					<< did.depth() << " " << did.rawId() << std::endl;
-				for (int j=0; j<(*cqie10)[i].samples(); j++)
-				{
-					_vcShape[i].fill(j, adc2fC[(*cqie10)[i][j].adc()]);	
-					std::cout << (*cqie10)[i][j].adc() << "  " << 
-					" " << (*cqie10)[i][j].le_tdc() << " "
-						<< (*cqie10)[i][j].te_tdc() << std::endl;
-					_vcLETDCvsADC[j][i].fill((*cqie10)[i][j].adc(), 
-						(*cqie10)[i][j].le_tdc());
-					_vcTETDCvsADC[j][i].fill((*cqie10)[i][j].adc(), 
-						(*cqie10)[i][j].te_tdc());
-					_vcLETDC[j][i].fill((*cqie10)[i][j].le_tdc());
-				}
-				std::cout << std::endl;
-			}
+			_cShape.fill(eid, j, adc2fC[(*cqie10)[i][j].adc()]);	
+			_cLETDCvsADC[j].fill(eid, (*cqie10)[i][j].adc(), 
+				(*cqie10)[i][j].le_tdc());
+			_cTETDCvsADC[i].fill(eid, (*cqie10)[i][j].adc(), 
+				(*cqie10)[i][j].te_tdc());
+			_cLETDC[i].fill((eid, *cqie10)[i][j].le_tdc());
+			_cADC[i].fill((eid, *cqie10)[i][j].adc());
 		}
-//			else 
-//			{
-//				std::cout << "Didn't match" << std::endl;
-//				std::cout << did.iphi() << " " << did.ieta() << " "
-//					<< did.depth() << " " << did.rawId() << std::endl;
-//			}
-	}
 }
 
 /* virtual */ void QIE10TestTask::_resetMonitors(UpdateFreq)

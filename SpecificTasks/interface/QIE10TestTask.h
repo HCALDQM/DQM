@@ -15,6 +15,8 @@
 #include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingle1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingle2D.h"
+#include "DQM/HcalCommon/interface/HashFilter.h"
+#include "DQM/HcalCommon/interface/ElectronicsMap.h"
 
 double adc2fC[256] = {
 	1.58, 4.73, 7.88, 11.0, 14.2, 17.3, 20.5, 23.6, 
@@ -54,6 +56,8 @@ double adc2fC[256] = {
 
 
 using namespace hcaldqm;
+using namespace hcaldqm::filter;
+using namespace hcaldqm::electronicsmap;
 class QIE10TestTask : public DQTask
 {
 	public:
@@ -72,13 +76,19 @@ class QIE10TestTask : public DQTask
 		//	tags
 		edm::InputTag	_tagHF;
 
-		std::vector<HcalDetId> _cDetIds;
+		//	filters
+		HashFilter _filter_C36;
 
+		//	Electronics Maps/Hashes
+		HcalElectronicsMap const* _emap;
+		ElectronicsMap _ehashmap;
+		
 		//	Containers
-		std::vector<ContainerSingle1D>		_vcShape;
-		std::vector<ContainerSingle2D>		_vcLETDCvsADC[10];
-		std::vector<ContainerSingle2D>		_vcTETDCvsADC[10];
-		std::vector<ContainerSingle1D>		_vcLETDC[10];
+		Container1D	_cShape_EChannel;
+		Container2D	_cLETDCvsADC_EChannel[10];
+		Container2D	_cTETDCvsADC_EChannel[10];
+		Container1D _cLETDC[10];
+		Container1D _cADC[10];
 };
 
 #endif

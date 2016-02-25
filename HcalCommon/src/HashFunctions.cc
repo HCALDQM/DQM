@@ -295,7 +295,7 @@ namespace hcaldqm
 		{
 			return eid.isVMEid() ?
 				utilities::hash(HcalElectronicsId(eid.fiberChanId(),
-					eid.fiberIndex(), eid.spigot(), eid.crateId())):
+					eid.fiberIndex(), eid.spigot(), eid.dccid())):
 				utilities::hash(HcalElectronicsId(eid.crateId(),
 					eid.slot(), eid.crateId(), eid.fiberChanId(), false));
 		}
