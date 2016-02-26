@@ -231,7 +231,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	{
 		//	tmp
 		if (_skip1x1)
-			if (it->id().depth()==10)	// 10 is the depth for 1x1
+			if (it->id().version()>0)	// 10 is the depth for 1x1 or v1
 				continue;
 		//	\tmp
 
@@ -307,7 +307,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	{
 		//	tmp
 		if (_skip1x1)
-			if (it->id().depth()==10)
+			if (it->id().version()>0)
 				continue;
 		//	\tmp
 

@@ -25,9 +25,9 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 	es.get<HcalDbRecord>().get(dbs);
 	_emap = dbs->getHcalMapping();
 	std::vector<uint32_t> vhashC36;
-	vhashC36.push_back(HcalElectronicsId(36, SLOT_uTCA_MIN,
+	vhashC36.push_back(HcalElectronicsId(36, 3,
 		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
-	_filter_C36.initialize(filter::fPreserver, hashfunctions::fCrate,
+	_filter_C36.initialize(filter::fPreserver, hashfunctions::fCrateSlot,
 		vhashC36);
 
 	//	INITIALIZE what you need

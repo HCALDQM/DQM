@@ -327,16 +327,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		{
 			_cOccupancy_FEDVME.fill(eid);
 			_cOccupancy_ElectronicsVME.fill(eid);
-			_cCapIdRots_FEDVME.fill(eid, 
-				utilities::isError<HBHEDataFrame>(*it)?1:0);
+			if (utilities::isError<HBHEDataFrame>(*it))
+				_cCapIdRots_FEDVME.fill(eid, 1);
 			_cDigiSize_FEDVME.fill(eid, it->size());
 		}
 		else
 		{
 			_cOccupancy_FEDuTCA.fill(eid);
 			_cOccupancy_ElectronicsuTCA.fill(eid);
-			_cCapIdRots_FEDuTCA.fill(eid, 
-				utilities::isError<HBHEDataFrame>(*it)?1:0);
+			if (utilities::isError<HBHEDataFrame>(*it))
+				_cCapIdRots_FEDuTCA.fill(eid, 1);
 			_cDigiSize_FEDuTCA.fill(eid, it->size());
 		}
 
@@ -398,16 +398,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		{
 			_cOccupancy_FEDVME.fill(eid);
 			_cOccupancy_ElectronicsVME.fill(eid);
-			_cCapIdRots_FEDVME.fill(eid, 
-				utilities::isError<HODataFrame>(*it)?1:0);
+			if (utilities::isError<HODataFrame>(*it))
+				_cCapIdRots_FEDVME.fill(eid, 1);
 			_cDigiSize_FEDVME.fill(eid, it->size());
 		}
 		else
 		{
 			_cOccupancy_FEDuTCA.fill(eid);
 			_cOccupancy_ElectronicsuTCA.fill(eid);
-			_cCapIdRots_FEDuTCA.fill(eid, 
-				utilities::isError<HODataFrame>(*it)?1:0);
+			if (utilities::isError<HODataFrame>(*it))
+				_cCapIdRots_FEDuTCA.fill(eid, 1);
 			_cDigiSize_FEDuTCA.fill(eid, it->size());
 		}
 
@@ -464,16 +464,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		{
 			_cOccupancy_FEDVME.fill(eid);
 			_cOccupancy_ElectronicsVME.fill(eid);
-			_cCapIdRots_FEDVME.fill(eid, 
-				utilities::isError<HFDataFrame>(*it)?1:0);
+			if (utilities::isError<HFDataFrame>(*it))
+				_cCapIdRots_FEDVME.fill(eid, 1);
 			_cDigiSize_FEDVME.fill(eid, it->size());
 		}
 		else
 		{
 			_cOccupancy_FEDuTCA.fill(eid);
 			_cOccupancy_ElectronicsuTCA.fill(eid);
-			_cCapIdRots_FEDuTCA.fill(eid, 
-				utilities::isError<HFDataFrame>(*it)?1:0);
+			if (utilities::isError<HFDataFrame>(*it))
+				_cCapIdRots_FEDuTCA.fill(eid, 1);
 			_cDigiSize_FEDuTCA.fill(eid, it->size());
 		}
 
