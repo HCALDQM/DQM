@@ -433,7 +433,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		else
 		{
 			//	if such a data digi isn't present in emulator
-			_cEtCorr_TTSubdet.fill(tid, soiEt_d, -1);
+			_cEtCorr_TTSubdet.fill(tid, soiEt_d, -2);
 			_cMsnEmul_depthlike.fill(tid);
 			if (eid.isVMEid())
 				_cMsnEmul_ElectronicsVME.fill(eid);
@@ -461,7 +461,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			int soiEt = it->SOI_compressedEt();
 			_cEtEmul_TTSubdet.fill(tid, soiEt);
 			_cEtEmul_depthlike.fill(tid, soiEt);
-			_cEtCorr_TTSubdet.fill(tid, -1, soiEt);
+			_cEtCorr_TTSubdet.fill(tid, -2, soiEt);
 			_cOccupancyEmul_depthlike.fill(tid);
 			_cMsnEmul_depthlike.fill(tid);
 			if (eid.isVMEid())

@@ -39,6 +39,9 @@ class HcalHarvesting : public DQHarvester
 
 		//	flag names
 		std::vector<std::string> _frawnames;
+		std::vector<std::string> _fdiginames;
+		std::vector<std::string> _freconames;
+		std::vector<std::string> _ftpnames;
 };
 
 #endif

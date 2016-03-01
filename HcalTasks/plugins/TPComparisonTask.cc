@@ -47,8 +47,8 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	{
 		_cEt_TTSubdet[i].initialize(_name, "Et",
 			hashfunctions::fTTSubdet,
-			new quantity::ValueQuantity(quantity::fEt_128),
-			new quantity::ValueQuantity(quantity::fEt_128),
+			new quantity::ValueQuantity(quantity::fEtCorr_256),
+			new quantity::ValueQuantity(quantity::fEtCorr_256),
 			new quantity::ValueQuantity(quantity::fN));
 		_cFG_TTSubdet[i].initialize(_name, "FG",
 			hashfunctions::fTTSubdet,
@@ -58,8 +58,8 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	}
 	_cEtall_TTSubdet.initialize(_name, "Et",
 		hashfunctions::fTTSubdet,
-		new quantity::ValueQuantity(quantity::fEt_128),
-		new quantity::ValueQuantity(quantity::fEt_128),
+		new quantity::ValueQuantity(quantity::fEtCorr_256),
+		new quantity::ValueQuantity(quantity::fEtCorr_256),
 		new quantity::ValueQuantity(quantity::fN));
 	_cMsn_FEDVME.initialize(_name, "Missing",
 		hashfunctions::fFED,
@@ -165,7 +165,7 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	{
 		//	tmp
 		if (_skip1x1)
-			if (it1->id().depth()==10)
+			if (it1->id().version()>0)
 				continue;
 		//	\tmp
 
@@ -181,6 +181,13 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		{
 			_cMsnuTCA.fill(tid);
 			_cMsn_FEDuTCA.fill(eid2);
+			for (int i=0; i<it1->size(); i++)
+			{
+				_cEtall_TTSubdet.fill(tid, 
+					it1->sample(i).compressedEt(), -2);
+				_cEt_TTSubdet[i].fill(tid, 
+					it1->sample(i).compressedEt(), -2);
+			}
 		}
 		else
 			for (int i=0; i<it1->size(); i++)
@@ -215,7 +222,7 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	{
 		HcalTrigTowerDetId tid = it2->id();
 		if (_skip1x1)
-			if (tid.depth()==10)
+			if (tid.version()>0)
 				continue;
 
 		HcalElectronicsId eid = HcalElectronicsId(
@@ -226,6 +233,12 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		{
 			_cMsn_FEDVME.fill(eid);
 			_cMsnVME.fill(tid);
+			for (int i=0; i<it2->size(); i++)
+			{
+				_cEtall_TTSubdet.fill(tid, 
+					-2, it2->sample(i).compressedEt());
+				_cEt_TTSubdet[i].fill(tid, -2, it2->sample(i).compressedEt());
+			}
 		}
 	}
 }

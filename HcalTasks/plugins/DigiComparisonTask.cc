@@ -43,13 +43,13 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 	{
 		_cADC_Subdet[i].initialize(_name, "ADC",
 			hashfunctions::fSubdet,
-			new quantity::ValueQuantity(quantity::fADC_128),
-			new quantity::ValueQuantity(quantity::fADC_128));
+			new quantity::ValueQuantity(quantity::fADCCorr_128),
+			new quantity::ValueQuantity(quantity::fADCCorr_128));
 	}
 	_cADCall_Subdet.initialize(_name, "ADC",
 		hashfunctions::fSubdet,
-		new quantity::ValueQuantity(quantity::fADC_128),
-		new quantity::ValueQuantity(quantity::fADC_128));
+		new quantity::ValueQuantity(quantity::fADCCorr_128),
+		new quantity::ValueQuantity(quantity::fADCCorr_128));
 	_cADCMsnuTCA_Subdet.initialize(_name, "ADCMsnuTCA",
 		hashfunctions::fSubdet,
 		new quantity::ValueQuantity(quantity::fADC_128),
@@ -145,7 +145,11 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 			_cMsn_depth.fill(did);
 			_cMsn_FEDuTCA.fill(eid2);
 			for (int i=0; i<it1->size(); i++)
+			{
 				_cADCMsnuTCA_Subdet.fill(did, it1->sample(i).adc());
+				_cADCall_Subdet.fill(did, it1->sample(i).adc(), -2);
+				_cADC_Subdet[i].fill(did, it1->sample(i).adc(), -2);
+			}
 		}
 		else
 			for (int i=0; i<it1->size(); i++)
@@ -174,7 +178,11 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		{
 			_cMsn_FEDVME.fill(eid);
 			for (int i=0; i<it2->size(); i++)
+			{
 				_cADCMsnVME_Subdet.fill(did, it2->sample(i).adc());
+				_cADCall_Subdet.fill(did, -2, it2->sample(i).adc());
+				_cADC_Subdet[i].fill(did, -2, it2->sample(i).adc());
+			}
 		}
 	}
 }
