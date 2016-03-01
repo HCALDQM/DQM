@@ -1,3 +1,3 @@
 #Automatically created by SCRAM
 import os
-__path__.append(os.path.dirname(os.path.abspath(__file__).rsplit('/DQM/HcalHarvesting/',1)[0])+'/cfipython/slc6_amd64_gcc491/DQM/HcalHarvesting')
+__path__.append(os.path.dirname(os.path.abspath(__file__).rsplit('/DQM/HcalHarvesting/',1)[0])+'/cfipython/slc6_amd64_gcc493/DQM/HcalHarvesting')
