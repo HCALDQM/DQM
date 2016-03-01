@@ -20,8 +20,8 @@ warnstr			= "### HcalDQM::cfg::WARN: "
 errorstr		= "### HcalDQM::cfg::ERROR:"
 useOfflineGT	= False
 useFileInput	= False
-useMapDB		= False
-useMapText		= True
+useMap		= False
+useMapText		= False
 
 #-------------------------------------
 #	Central DQM Stuff imports
@@ -125,26 +125,12 @@ process.load('DQM.SpecificTasks.TPComparisonTask')
 #	To force using uTCA
 #	Will not be here for Online DQM
 #-------------------------------------
-if useMapDB:
-	process.es_pool = cms.ESSource("PoolDBESSource",
-			process.CondDBSetup,
-			timetype = cms.string('runnumber'),
-			toGet = cms.VPSet(
-				cms.PSet(
-					record = cms.string(
-						"HcalElectronicsMapRcd"
-					),
-					tag = cms.string(
-						"HcalElectronicsMap_v7.05_hlt"
-					)
-				)
-			),
-			connect = cms.string(
-				'frontier://FrontierProd/CMS_CONDITIONS'),
-			authenticationMethod = cms.untracked.uint32(0)
-	)	
-	process.es_prefer_es_pool = cms.ESPrefer('PoolDBESSource', 'es_pool')
-
+if useMap:
+	process.GlobalTag.toGet.append(cms.PSet(
+		record = cms.string("HcalElectronicsMapRcd"),
+		tag = cms.string("HcalElectronicsMap_v7.05_hlt")
+		)
+	)
 if useMapText:
 	process.es_ascii = cms.ESSource('HcalTextCalibrations',
 		input = cms.VPSet(
@@ -176,6 +162,7 @@ process.primDigis.FEDs = cms.untracked.vint32(primFEDs)
 
 process.secDigis = process.hcalDigis.clone()
 process.secDigis.InputLabel = rawTag
+process.secDigis.ElectronicsMap = cms.string("full")
 secFEDs = [x+700 for x in range(18)]
 print "Secondary FEDs to be Unpacked:", secFEDs
 process.secDigis.FEDs = cms.untracked.vint32(secFEDs)
@@ -203,6 +190,7 @@ oldsubsystem = subsystem
 process.rawTask.tagFEDs = rawTagUntracked
 process.rawTask.runkeyVal = runType
 process.rawTask.runkeyName = runTypeName
+process.rawTask.tagReport = cms.untracked.InputTag("primDigis")
 
 process.digiTask.tagHBHE = cms.untracked.InputTag('primDigis')
 process.digiTask.tagHO = cms.untracked.InputTag('primDigis')
@@ -219,10 +207,11 @@ process.tpTask.tagEmul = cms.untracked.InputTag("emulTPPrim")
 #	Hcal DQM Tasks/Clients Sequences Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
+#		process.rawTask
 		process.digiTask
 		+process.tpTask
-		+process.secDigiTask
-		+process.secTPTask
+#		+process.secDigiTask
+#		+process.secTPTask
 		+process.digiComparisonTask
 		+process.tpComparisonTask
 )

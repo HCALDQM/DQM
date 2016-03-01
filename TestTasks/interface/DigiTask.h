@@ -97,11 +97,17 @@ class DigiTask : public DQTask
 		Container2D _cOccupancy_FEDuTCA;
 		Container2D _cOccupancy_ElectronicsVME;
 		Container2D _cOccupancy_ElectronicsuTCA;
+		Container2D _cOccupancy_depth;
+		Container2D _cOccupancyNR_FEDVME;
+		Container2D _cOccupancyNR_FEDuTCA;
 
 		Container2D _cOccupancyCut_FEDVME;
 		Container2D _cOccupancyCut_FEDuTCA;
 		Container2D _cOccupancyCut_ElectronicsVME;
 		Container2D _cOccupancyCut_ElectronicsuTCA;
+		Container2D _cOccupancyCut_depth;
+		Container2D _cOccupancyCutNR_FEDVME;
+		Container2D _cOccupancyCutNR_FEDuTCA;
 
 		ContainerProf1D _cOccupancyvsLS_Subdet;
 		ContainerProf1D _cOccupancyCutvsLS_Subdet;

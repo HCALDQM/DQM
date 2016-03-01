@@ -59,6 +59,7 @@ class DigiComparisonTask : public DQTask
 
 		//	ADC
 		Container2D			_cADC_Subdet[10];
+		Container2D			_cADCall_Subdet;
 
 		//	Mismatched
 		Container2D			_cMsm_FEDVME;
@@ -66,6 +67,8 @@ class DigiComparisonTask : public DQTask
 		Container2D			_cMsm_depth;
 
 		//	Missing Completely
+		Container1D			_cADCMsnuTCA_Subdet;
+		Container1D			_cADCMsnVME_Subdet;
 		Container2D			_cMsn_depth;
 		Container2D			_cMsn_FEDVME;
 		Container2D			_cMsn_FEDuTCA;

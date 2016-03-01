@@ -21,7 +21,9 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 	//	GET WHAT YOU NEED
 	edm::ESHandle<HcalDbService> dbs;
 	es.get<HcalDbRecord>().get(dbs);
-	_emap = dbs->getHcalMapping();
+	edm::ESHandle<HcalElectronicsMap> item;
+	es.get<HcalElectronicsMapRcd>().get("full", item);
+	_emap = item.product();
 	std::vector<int> vFEDs = utilities::getFEDList(_emap);
 	std::vector<int> vFEDsVME = utilities::getFEDVMEList(_emap);
 	std::vector<int> vFEDsuTCA = utilities::getFEDuTCAList(_emap);
@@ -44,6 +46,18 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 			new quantity::ValueQuantity(quantity::fADC_128),
 			new quantity::ValueQuantity(quantity::fADC_128));
 	}
+	_cADCall_Subdet.initialize(_name, "ADC",
+		hashfunctions::fSubdet,
+		new quantity::ValueQuantity(quantity::fADC_128),
+		new quantity::ValueQuantity(quantity::fADC_128));
+	_cADCMsnuTCA_Subdet.initialize(_name, "ADCMsnuTCA",
+		hashfunctions::fSubdet,
+		new quantity::ValueQuantity(quantity::fADC_128),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cADCMsnVME_Subdet.initialize(_name, "ADCMsnVME",
+		hashfunctions::fSubdet,
+		new quantity::ValueQuantity(quantity::fADC_128),
+		new quantity::ValueQuantity(quantity::fN, true));
 	_cMsm_depth.initialize(_name, "Mismatched",
 		hashfunctions::fdepth,
 		new quantity::DetectorQuantity(quantity::fieta),
@@ -82,6 +96,9 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		sprintf(aux, "TS%d", i);
 		_cADC_Subdet[i].book(ib, _emap, _subsystem, aux);
 	}
+	_cADCall_Subdet.book(ib, _emap);
+	_cADCMsnVME_Subdet.book(ib, _emap);
+	_cADCMsnuTCA_Subdet.book(ib, _emap);
 	_cMsm_depth.book(ib, _emap);
 	_cMsn_depth.book(ib, _emap);
 	_cMsm_FEDVME.book(ib, _emap, _filter_uTCA);
@@ -127,10 +144,14 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 			//	fill the depth plot
 			_cMsn_depth.fill(did);
 			_cMsn_FEDuTCA.fill(eid2);
+			for (int i=0; i<it1->size(); i++)
+				_cADCMsnuTCA_Subdet.fill(did, it1->sample(i).adc());
 		}
 		else
 			for (int i=0; i<it1->size(); i++)
 			{
+				_cADCall_Subdet.fill(did, double(it1->sample(i).adc()),
+					double(it2->sample(i).adc()));
 				_cADC_Subdet[i].fill(did, double(it1->sample(i).adc()),
 					double(it2->sample(i).adc()));
 				if (it1->sample(i).adc()!=it2->sample(i).adc())
@@ -150,7 +171,11 @@ DigiComparisonTask::DigiComparisonTask(edm::ParameterSet const& ps):
 		HBHEDigiCollection::const_iterator it1 = chbhe1->find(did);
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmapVME.lookup(did));
 		if (it1==chbhe1->end())
+		{
 			_cMsn_FEDVME.fill(eid);
+			for (int i=0; i<it2->size(); i++)
+				_cADCMsnVME_Subdet.fill(did, it2->sample(i).adc());
+		}
 	}
 }
 

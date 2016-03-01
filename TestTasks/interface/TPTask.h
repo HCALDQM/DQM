@@ -57,6 +57,7 @@ class TPTask : public DQTask
 
 		//	switches
 		bool _skip1x1;
+		int _cutEt;
 
 		//	hashes/FEDs vectors
 		std::vector<uint32_t> _vhashFEDs;
@@ -76,29 +77,53 @@ class TPTask : public DQTask
 		Container2D	_cEtCorr_TTSubdet;
 		Container2D _cFGCorr_TTSubdet;
 
+		ContainerProf2D _cEtData_ElectronicsVME;
+		ContainerProf2D _cEtData_ElectronicsuTCA;
+		ContainerProf2D _cEtEmul_ElectronicsVME;
+		ContainerProf2D _cEtEmul_ElectronicsuTCA;
+
+		//	depth like
+		ContainerSingleProf2D _cEtData_depthlike;
+		ContainerSingleProf2D _cEtEmul_depthlike;
+
 		//	Et Correlation Ratio
 		ContainerProf2D _cEtCorrRatio_ElectronicsVME;
 		ContainerProf2D _cEtCorrRatio_ElectronicsuTCA;
+		ContainerSingleProf2D _cEtCorrRatio_depthlike;
 
 		//	Occupancies
 		Container2D _cOccupancyData_ElectronicsVME;
 		Container2D _cOccupancyData_ElectronicsuTCA;
 		Container2D _cOccupancyEmul_ElectronicsVME;
 		Container2D _cOccupancyEmul_ElectronicsuTCA;
+		
+		Container2D _cOccupancyCutData_ElectronicsVME;
+		Container2D _cOccupancyCutData_ElectronicsuTCA;
+		Container2D _cOccupancyCutEmul_ElectronicsVME;
+		Container2D _cOccupancyCutEmul_ElectronicsuTCA;
+
+		//	depth like
+		ContainerSingle2D _cOccupancyData_depthlike;
+		ContainerSingle2D _cOccupancyEmul_depthlike;
+		ContainerSingle2D _cOccupancyCutData_depthlike;
+		ContainerSingle2D _cOccupancyCutEmul_depthlike;
 
 		//	Mismatches: Et and FG
 		Container2D _cEtMsm_ElectronicsVME;
 		Container2D _cEtMsm_ElectronicsuTCA;
 		Container2D _cFGMsm_ElectronicsVME;
 		Container2D _cFGMsm_ElectronicsuTCA;
+		ContainerSingle2D _cEtMsm_depthlike;
 
 		//	Missing Data w.r.t. Emulator
 		Container2D _cMsnData_ElectronicsVME;
 		Container2D _cMsnData_ElectronicsuTCA;
+		ContainerSingle2D _cMsnData_depthlike;
 
 		//	Missing Emulator w.r.t. Data
 		Container2D _cMsnEmul_ElectronicsVME;
 		Container2D _cMsnEmul_ElectronicsuTCA;
+		ContainerSingle2D _cMsnEmul_depthlike;
 
 		ContainerSingle2D _cSummary;
 };

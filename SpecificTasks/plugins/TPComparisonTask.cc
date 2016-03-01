@@ -25,7 +25,9 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	//	GET WHAT YOU NEED
 	edm::ESHandle<HcalDbService> dbs;
 	es.get<HcalDbRecord>().get(dbs);
-	_emap = dbs->getHcalMapping();
+	edm::ESHandle<HcalElectronicsMap> item;
+	es.get<HcalElectronicsMapRcd>().get("full", item);
+	_emap = item.product();
 	std::vector<int> vFEDs = utilities::getFEDList(_emap);
 	std::vector<int> vFEDsVME = utilities::getFEDVMEList(_emap);
 	std::vector<int> vFEDsuTCA = utilities::getFEDuTCAList(_emap);
@@ -54,6 +56,11 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 			new quantity::ValueQuantity(quantity::fFG),
 			new quantity::ValueQuantity(quantity::fN));
 	}
+	_cEtall_TTSubdet.initialize(_name, "Et",
+		hashfunctions::fTTSubdet,
+		new quantity::ValueQuantity(quantity::fEt_128),
+		new quantity::ValueQuantity(quantity::fEt_128),
+		new quantity::ValueQuantity(quantity::fN));
 	_cMsn_FEDVME.initialize(_name, "Missing",
 		hashfunctions::fFED,
 		new quantity::ElectronicsQuantity(quantity::fSpigot),
@@ -109,6 +116,7 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		_cEt_TTSubdet[i].book(ib, _emap, _subsystem, aux);
 		_cFG_TTSubdet[i].book(ib, _emap, _subsystem, aux);
 	}
+	_cEtall_TTSubdet.book(ib, _emap);
 	_cMsn_FEDVME.book(ib, _emap, _filter_uTCA);
 	_cEtMsm_FEDVME.book(ib, _emap, _filter_uTCA);
 	_cFGMsm_FEDVME.book(ib, _emap, _filter_uTCA);
@@ -177,6 +185,9 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		else
 			for (int i=0; i<it1->size(); i++)
 			{
+				_cEtall_TTSubdet.fill(tid, 
+					it1->sample(i).compressedEt(), 
+					it2->sample(i).compressedEt());
 				_cEt_TTSubdet[i].fill(tid, 
 					it1->sample(i).compressedEt(), 
 					it2->sample(i).compressedEt());

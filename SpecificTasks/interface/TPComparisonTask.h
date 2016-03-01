@@ -63,6 +63,7 @@ class TPComparisonTask : public DQTask
 
 		//	Et
 		Container2D			_cEt_TTSubdet[4];
+		Container2D			_cEtall_TTSubdet;
 
 		//	FG
 		Container2D			_cFG_TTSubdet[4];

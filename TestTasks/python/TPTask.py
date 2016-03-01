@@ -16,6 +16,9 @@ tpTask = cms.EDAnalyzer(
 	tagData = cms.untracked.InputTag("hcalDigis"),
 	tagEmul = cms.untracked.InputTag("emulTPDigis"),
 
+	#	cut to put on Et to get the occupancy
+	cutEt = cms.untracked.int32(3),
+
 	#	some speacial features
 	skip1x1 = cms.untracked.bool(True)
 )
