@@ -111,13 +111,10 @@ namespace hcaldqm
 					{
 						HcalGenericDetId did = HcalGenericDetId(
 							_emap->lookup(*it));
-						std::cout << *it << std::endl;
 						if (filter.filter(*it))
 							continue;
-						std::cout << "111111111111" << std::endl;
 						if (!did.isHcalDetId())
 							continue;
-						std::cout << "2222222222222" << std::endl;
 
 						_ids.insert(std::make_pair(did.rawId(), it->rawId()));
 					}
