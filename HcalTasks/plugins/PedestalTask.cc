@@ -51,6 +51,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_xPedSum.initialize(hashfunctions::fDChannel);
 	_xPedSum2.initialize(hashfunctions::fDChannel);
 	_xPedRefMean.initialize(hashfunctions::fDChannel);
+	_xPedEntries.initialize(hashfunctions::fDChannel);
 	_xPedRefRMS.initialize(hashfunctions::fDChannel);
 
 	//	Containers
@@ -226,6 +227,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	if (_ptype==fLocal)
 		if (r.runAuxiliary().run()==1)
 			return;
+	_xPedSum.print();
+	_xPedEntries.print();
 	this->_dump();
 }
 
