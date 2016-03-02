@@ -181,40 +181,40 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_xEntries.initialize(hashfunctions::fDChannel);
 
 	//	BOOK
-	_cSignalMean_Subdet.book(ib, _emap);
-	_cSignalRMS_Subdet.book(ib, _emap);
-	_cTimingMean_Subdet.book(ib, _emap);
-	_cTimingRMS_Subdet.book(ib, _emap);
+	_cSignalMean_Subdet.book(ib, _emap, _subsystem);
+	_cSignalRMS_Subdet.book(ib, _emap, _subsystem);
+	_cTimingMean_Subdet.book(ib, _emap, _subsystem);
+	_cTimingRMS_Subdet.book(ib, _emap, _subsystem);
 
-	_cSignalMean_depth.book(ib, _emap);
-	_cSignalRMS_depth.book(ib, _emap);
-	_cTimingMean_depth.book(ib, _emap);
-	_cTimingRMS_depth.book(ib, _emap);
+	_cSignalMean_depth.book(ib, _emap, _subsystem);
+	_cSignalRMS_depth.book(ib, _emap, _subsystem);
+	_cTimingMean_depth.book(ib, _emap, _subsystem);
+	_cTimingRMS_depth.book(ib, _emap, _subsystem);
 
 	if (_ptype==fLocal)
 	{
-		_cTimingvsEvent_SubdetPM.book(ib, _emap);
-		_cSignalvsEvent_SubdetPM.book(ib, _emap);
+		_cTimingvsEvent_SubdetPM.book(ib, _emap, _subsystem);
+		_cSignalvsEvent_SubdetPM.book(ib, _emap, _subsystem);
 	}
 	else
 	{	
-		_cTimingvsLS_SubdetPM.book(ib, _emap);
-		_cSignalvsLS_SubdetPM.book(ib, _emap);
+		_cTimingvsLS_SubdetPM.book(ib, _emap, _subsystem);
+		_cSignalvsLS_SubdetPM.book(ib, _emap, _subsystem);
 	}
 
-	_cSignalMean_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cSignalMean_FEDuTCA.book(ib, _emap, _filter_VME);
-	_cSignalRMS_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cSignalRMS_FEDuTCA.book(ib, _emap, _filter_VME);
-	_cTimingMean_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cTimingMean_FEDuTCA.book(ib, _emap, _filter_VME);
-	_cTimingRMS_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cTimingRMS_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cSignalMean_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cSignalMean_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cSignalRMS_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cSignalRMS_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cTimingMean_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cTimingMean_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cTimingRMS_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cTimingRMS_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 
-	_cShapeCut_FEDSlot.book(ib, _emap);
-	_cMissing_depth.book(ib, _emap);
-	_cMissing_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cMissing_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cShapeCut_FEDSlot.book(ib, _emap, _subsystem);
+	_cMissing_depth.book(ib, _emap,_subsystem);
+	_cMissing_FEDVME.book(ib, _emap, _filter_uTCA,_subsystem);
+	_cMissing_FEDuTCA.book(ib, _emap, _filter_VME,_subsystem);
 
 	_xSignalSum.book(_emap);
 	_xSignalSum2.book(_emap);

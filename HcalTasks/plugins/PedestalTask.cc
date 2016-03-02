@@ -155,32 +155,32 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fN));
 
 	//	book plots
-	_cMean_Subdet.book(ib, _emap);
-	_cRMS_Subdet.book(ib, _emap);
-	_cMean_depth.book(ib, _emap);
-	_cRMS_depth.book(ib, _emap);
-	_cMeanDBRef_Subdet.book(ib, _emap);
-	_cRMSDBRef_Subdet.book(ib, _emap);
-	_cMeanDBRef_depth.book(ib, _emap);
-	_cRMSDBRef_depth.book(ib, _emap);
-	_cMissing_depth.book(ib, _emap);
-	_cMeanBad_depth.book(ib, _emap);
-	_cRMSBad_depth.book(ib, _emap);
+	_cMean_Subdet.book(ib, _emap, _subsystem);
+	_cRMS_Subdet.book(ib, _emap, _subsystem);
+	_cMean_depth.book(ib, _emap, _subsystem);
+	_cRMS_depth.book(ib, _emap, _subsystem);
+	_cMeanDBRef_Subdet.book(ib, _emap, _subsystem);
+	_cRMSDBRef_Subdet.book(ib, _emap, _subsystem);
+	_cMeanDBRef_depth.book(ib, _emap, _subsystem);
+	_cRMSDBRef_depth.book(ib, _emap, _subsystem);
+	_cMissing_depth.book(ib, _emap, _subsystem);
+	_cMeanBad_depth.book(ib, _emap, _subsystem);
+	_cRMSBad_depth.book(ib, _emap, _subsystem);
 
-	_cMean_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cMean_FEDuTCA.book(ib, _emap, _filter_VME);
-	_cRMS_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cRMS_FEDuTCA.book(ib, _emap, _filter_VME);
-	_cMeanDBRef_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cMeanDBRef_FEDuTCA.book(ib, _emap, _filter_VME);
-	_cRMSDBRef_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cRMSDBRef_FEDuTCA.book(ib, _emap, _filter_VME);
-	_cMissing_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cMissing_FEDuTCA.book(ib, _emap, _filter_VME);
-	_cRMSBad_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cRMSBad_FEDuTCA.book(ib, _emap, _filter_VME);
-	_cMeanBad_FEDVME.book(ib, _emap, _filter_uTCA);
-	_cMeanBad_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cMean_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cMean_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cRMS_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cRMS_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cMeanDBRef_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cMeanDBRef_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cRMSDBRef_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cRMSDBRef_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cMissing_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cMissing_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cRMSBad_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cRMSBad_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cMeanBad_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cMeanBad_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	
 	//	book compact containers
 	_xPedSum.book(_emap);
@@ -227,8 +227,6 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	if (_ptype==fLocal)
 		if (r.runAuxiliary().run()==1)
 			return;
-	_xPedSum.print();
-	_xPedEntries.print();
 	this->_dump();
 }
 

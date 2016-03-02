@@ -77,7 +77,6 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	for (std::vector<HcalDetId>::const_iterator it=_vDetIds.begin();
 		it!=_vDetIds.end(); ++it)
 	{
-		std::cout << *it << std::endl;
 		_vcShape.push_back(ContainerSingle1D(_name, 
 			"Shape",
 			new quantity::ValueQuantity(quantity::fTiming_TS),

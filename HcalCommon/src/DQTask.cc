@@ -41,11 +41,11 @@ namespace hcaldqm
 		edm::Run const& r,
 		edm::EventSetup const& es)
 	{
-		_cEvsTotal.book(ib);
-		_cEvsPerLS.book(ib);
-		_cRunKeyVal.book(ib);
-		_cRunKeyName.book(ib);
-		_cProcessingTypeName.book(ib);
+		_cEvsTotal.book(ib, _subsystem);
+		_cEvsPerLS.book(ib, _subsystem);
+		_cRunKeyVal.book(ib, _subsystem);
+		_cRunKeyName.book(ib, _subsystem);
+		_cProcessingTypeName.book(ib, _subsystem);
 
 		//	fill what you can now
 		_cRunKeyVal.fill(_runkeyVal);
