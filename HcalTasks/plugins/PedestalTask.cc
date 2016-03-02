@@ -28,13 +28,13 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			return;
 	DQTask::bookHistograms(ib, r, es);
 	
-	edm::ESHandle<HcalDbService> dbService;
-	es.get<HcalDbRecord>().get(dbService);
-	_emap = dbService->getHcalMapping();
+	edm::ESHandle<HcalDbService> dbs;
+	es.get<HcalDbRecord>().get(dbs);
+	_emap = dbs->getHcalMapping();
 	std::vector<uint32_t> vhashVME;
 	std::vector<uint32_t> vhashuTCA;
 	std::vector<uint32_t> vhashC36;
-	vVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
+	vhashVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
 		constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
 	vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
 		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
@@ -182,16 +182,16 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cMeanBad_FEDuTCA.book(ib, _emap, _filter_VME);
 	
 	//	book compact containers
-	_xPedSum.book(_emap, _filter_C36);
-	_xPedSum2.book(_emap, _filter_C36);
-	_xPedEntries.book(_emap, _filter_C36);
-	_xPedRefMean.book(_emap, _filter_C36);
-	_xPedRefRMS.book(_emap, _filter_C36);
+	_xPedSum.book(_emap);
+	_xPedSum2.book(_emap);
+	_xPedEntries.book(_emap);
+	_xPedRefMean.book(_emap);
+	_xPedRefRMS.book(_emap);
 
 	_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
 
 	//	load conditions pedestals
-	std::vector<HcalGenericDetId> dids = emap->allPrecisionId();
+	std::vector<HcalGenericDetId> dids = _emap->allPrecisionId();
 	for (std::vector<HcalGenericDetId>::const_iterator it=dids.begin();
 		it!=dids.end(); ++it)
 	{
@@ -201,16 +201,17 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		//	skip Crate 36
 		if (_filter_C36.filter(HcalElectronicsId(_ehashmap.lookup(*it))))
 			continue;
+		HcalDetId did = HcalDetId(it->rawId());
 
-		HcalPedestal const* peds = dbs->getPedestal(*it);
+		HcalPedestal const* peds = dbs->getPedestal(did);
 		float const *means = peds->getValues();
 		float const *rmss = peds->getWidths();
 		double msum=0; double rsum=0;
 		for (uint32_t i=0; i<4; i++)
-		{msum+=means[i]; rsum+=widths[i];}
+		{msum+=means[i]; rsum+=rmss[i];}
 		msum/=4; rsum/=4;
-		_xPedRefMean.set(*it, msum);
-		_xPedRefRMS.set(*it, rsum);
+		_xPedRefMean.set(did, msum);
+		_xPedRefRMS.set(did, rsum);
 	}
 }
 
@@ -225,6 +226,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	if (_ptype==fLocal)
 		if (r.runAuxiliary().run()==1)
 			return;
+	this->_dump();
 }
 
 /* virtual */ void PedestalTask::_dump()
@@ -267,14 +269,15 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		HcalElectronicsId eid(_ehashmap.lookup(*it));
 		if (_filter_C36.filter(eid))
 			continue;
-		double sum = _xPedSum.get(*it); double refm = _xPedRefMean.get(*it);
-		double sum2 = _xPedSum2.get(*it); double refr = _xPedRefRMS.get(*it);
-		double n = _xPedEntries.get(*it);
+		HcalDetId did = HcalDetId(it->rawId());
+		double sum = _xPedSum.get(did); double refm = _xPedRefMean.get(did);
+		double sum2 = _xPedSum2.get(did); double refr = _xPedRefRMS.get(did);
+		double n = _xPedEntries.get(did);
 
 		//	if channel is missing
 		if (n==0)
 		{
-			_cMissing_depth.fill(*it);
+			_cMissing_depth.fill(did);
 			if (eid.isVMEid())
 				_cMissing_FEDVME.fill(eid);
 			else
@@ -286,14 +289,14 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		sum/=n; double rms = sqrt(sum2/n-sum*sum);
 		double diffm = sum-refm;
 		double diffr = rms - refr;
-		_cMean_Subdet.fill(*it, sum);
-		_cMean_depth.fill(*it, sum);
-		_cRMS_Subdet.fill(*it, rms);
-		_cRMS_depth.fill(*it, rms);
-		_cMeanDBRef_Subdet.fill(*it, diff);
-		_cMeanDBRef_depth.fill(*it, diffm);
-		_cRMSDBRef_Subdet.fill(*it, diffr);
-		_cRMSDBRef_depth.fill(*it, diffr);
+		_cMean_Subdet.fill(did, sum);
+		_cMean_depth.fill(did, sum);
+		_cRMS_Subdet.fill(did, rms);
+		_cRMS_depth.fill(did, rms);
+		_cMeanDBRef_Subdet.fill(did, diffm);
+		_cMeanDBRef_depth.fill(did, diffm);
+		_cRMSDBRef_Subdet.fill(did, diffr);
+		_cRMSDBRef_depth.fill(did, diffr);
 		if (eid.isVMEid())
 		{
 			_cMean_FEDVME.fill(eid, sum);
@@ -312,7 +315,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		//	if bad quality...
 		if (fabs(diffm)>0.2)
 		{
-			_cMeanBad_depth.fill(*it);
+			_cMeanBad_depth.fill(did);
 			if (eid.isVMEid())
 				_cMeanBad_FEDVME.fill(eid);
 			else
@@ -320,7 +323,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		}
 		if (fabs(diffr)>0.2)
 		{
-			_cRMSBad_depth.fill(*it);
+			_cRMSBad_depth.fill(did);
 			if (eid.isVMEid())
 				_cRMSBad_FEDVME.fill(eid);
 			else 

@@ -13,10 +13,12 @@
 #include "DQM/HcalCommon/interface/Container2D.h"
 #include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
-#include "DQM/HcalCommon/interface/ContainerCompact.h"
 #include "DQM/HcalCommon/interface/ContainerXXX.h"
+#include "DQM/HcalCommon/interface/HashFilter.h"
+#include "DQM/HcalCommon/interface/ElectronicsMap.h"
 
 using namespace hcaldqm;
+using namespace hcaldqm::filter;
 class PedestalTask : public DQTask
 {
 	public:
@@ -70,10 +72,10 @@ class PedestalTask : public DQTask
 		//	2D
 		ContainerProf2D		_cMean_depth;
 		ContainerProf2D		_cRMS_depth;
-		ContianerProf2D		_cMean_FEDVME;
-		ContianerProf2D		_cMean_FEDuTCA;
-		ContianerProf2D		_cRMS_FEDVME;
-		ContianerProf2D		_cRMS_FEDuTCA;
+		ContainerProf2D		_cMean_FEDVME;
+		ContainerProf2D		_cMean_FEDuTCA;
+		ContainerProf2D		_cRMS_FEDVME;
+		ContainerProf2D		_cRMS_FEDuTCA;
 		
 		//	with DB Conditions comparison
 		ContainerProf2D		_cMeanDBRef_depth;

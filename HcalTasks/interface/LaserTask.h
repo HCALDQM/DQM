@@ -10,7 +10,6 @@
 #include "DQM/HcalCommon/interface/DQTask.h"
 #include "DQM/HcalCommon/interface/Utilities.h"
 #include "DQM/HcalCommon/interface/ElectronicsMap.h"
-#include "DQM/HcalCommon/interface/ContainerCompact.h"
 #include "DQM/HcalCommon/interface/ContainerXXX.h"
 #include "DQM/HcalCommon/interface/Container1D.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
@@ -20,7 +19,7 @@
 #include "DQM/HcalCommon/interface/ContainerProf2D.h"
 
 using namespace hcaldqm;
-
+using namespace hcaldqm::filter;
 class LaserTask : public DQTask
 {
 	public:
@@ -30,8 +29,13 @@ class LaserTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
-		virtual void endRun(edm::Run const&, edm::EventSetup const&)
-		{this->_dump();}
+		virtual void endRun(edm::Run const& r, edm::EventSetup const&)
+		{
+			if (_ptype==fLocal)
+				if (r.runAuxiliary().run()==1)
+					return;
+			this->_dump();
+		}
 
 	protected:
 		//	funcs

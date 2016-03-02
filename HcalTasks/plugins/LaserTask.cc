@@ -46,7 +46,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	std::vector<uint32_t> vhashVME;
 	std::vector<uint32_t> vhashuTCA;
 	std::vector<uint32_t> vhashC36;
-	vVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
+	vhashVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
 		constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
 	vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
 		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
@@ -120,20 +120,20 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::ffC_3000));
 	_cTimingvsEvent_SubdetPM.initialize(_name, "TimingvsEvent",
 		hashfunctions::fSubdetPM,
-		new quantity::EventNumber(nevents),
-		new quntity::ValueQuantity(quantity::fTiming_TS200));
+		new quantity::EventNumber(_nevents),
+		new quantity::ValueQuantity(quantity::fTiming_TS200));
 	_cSignalvsEvent_SubdetPM.initialize(_name, "SignalvsEvent",
 		hashfunctions::fSubdetPM,
-		new quantity::EventNumber(nevents),
-		new quntity::ValueQuantity(quantity::ffC_3000));
+		new quantity::EventNumber(_nevents),
+		new quantity::ValueQuantity(quantity::ffC_3000));
 	_cTimingvsLS_SubdetPM.initialize(_name, "TimingvsEvent",
 		hashfunctions::fSubdetPM,
 		new quantity::LumiSection(_numLSstart),
-		new quntity::ValueQuantity(quantity::fTiming_TS200));
+		new quantity::ValueQuantity(quantity::fTiming_TS200));
 	_cSignalvsLS_SubdetPM.initialize(_name, "SignalvsEvent",
 		hashfunctions::fSubdetPM,
 		new quantity::LumiSection(_numLSstart),
-		new quntity::ValueQuantity(quantity::ffC_3000));
+		new quantity::ValueQuantity(quantity::ffC_3000));
 
 	_cSignalMean_depth.initialize(_name, "SignalMean",
 		hashfunctions::fdepth, 
@@ -256,17 +256,18 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	{
 		if (!it->isHcalDetId())
 			continue;
+		HcalDetId did = HcalDetId(it->rawId());
 		HcalElectronicsId eid(_ehashmap.lookup(*it));
-		int n = _xEntries.get(*it);
-		double msig = _xSignalSum.get(*it)/n; 
-		double mtim = _xTimingSum.get(*it)/n;
-		double rsig = sqrt(_xSignalSum2.get(*it)/n-msig*msig);
-		double rtim = sqrt(_xTimingSum2.get(*it)/n-mtim*mtim);
+		int n = _xEntries.get(did);
+		double msig = _xSignalSum.get(did)/n; 
+		double mtim = _xTimingSum.get(did)/n;
+		double rsig = sqrt(_xSignalSum2.get(did)/n-msig*msig);
+		double rtim = sqrt(_xTimingSum2.get(did)/n-mtim*mtim);
 
 		//	channels missing or low signal
 		if (n==0)
 		{
-			_cMissing_depth.fill(*it);
+			_cMissing_depth.fill(did);
 			if (eid.isVMEid())
 				_cMissing_FEDVME.fill(eid);
 			else
@@ -276,7 +277,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_cSignalMean_Subdet.fill(did, msig);
 		_cSignalMean_depth.fill(did, msig);
 		_cSignalRMS_Subdet.fill(did, rsig);
-		_cSignlaRMS_depth.fill(did, rsig);
+		_cSignalRMS_depth.fill(did, rsig);
 		_cTimingMean_Subdet.fill(did, mtim);
 		_cTimingMean_depth.fill(did, mtim);
 		_cTimingRMS_Subdet.fill(did, rtim);
@@ -290,10 +291,10 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		}
 		else
 		{
-			_cSignalMean_FEDVME.fill(eid, msig);
-			_cSignalRMS_FEDVME.fill(eid, rsig);
-			_cTimingMean_FEDVME.fill(eid, mtim);
-			_cTimingRMS_FEDVME.fill(eid, rtim);
+			_cSignalMean_FEDuTCA.fill(eid, msig);
+			_cSignalRMS_FEDuTCA.fill(eid, rsig);
+			_cTimingMean_FEDuTCA.fill(eid, mtim);
+			_cTimingRMS_FEDuTCA.fill(eid, rtim);
 		}
 	}
 }
