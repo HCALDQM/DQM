@@ -35,26 +35,4 @@ Reside just in the root folder of the repo. Here they are:
 * `hcal_dqm_sourceclient-offline_cfg.py`
 
 ## HowTo
-* master-80X is the branch to be used for 2016 Online/Offline Production.
-* DQM_master-80X_v0 is the tag that reflects most up-to-date master-80X branch
-
-* dev-80X is the branch being **master** development
-* master-80X is being propogated into the CMSSW Official Release currently.
-* Several tags for dev-master are also available
-
-1. cmsrel CMSSW greater or equal than 74X and setup the environment
-2. git cms-addpkg DQM/Integration
-3. You can either just clone the repo or actually fork it...
-4. cp -r HcalCommon HcalTasks **your_cmssw**/src/DQM
-5. Copy the `hcal_dqm_*` files into the DQM/Integration/python/test
-6. Build CMSSW: scram b -j 8 from the src dir of the CMSSW
-7. To Run `.py` on lxplus, you have to set OfflineGT to True,
-useFileInput to True and put the right tag in(However, current tag should be reasonable).
-8. In DQM/Integration/python/config there is a file `fileinputsource_cfi.py`, which 
-contains the definition for the Pool Source. Put in there the filenames you want to run over. This step is exactly the same as for any analysis - you have to 
-provide the input files...
-
-
-
-
-
+80X - most recent PR branch. see tags for 80X...
