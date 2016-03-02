@@ -1,7 +1,7 @@
 #include "DQM/HcalHarvesting/interface/HcalHarvesting.h"
 
 HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
-	DQHarvester(ps)
+	DQHarvester(ps), _reportSummaryMap(NULL)
 {
 	//	get the flags
 	_digiHarvesting = ps.getUntrackedParameter<bool>("digiHarvesting");
@@ -44,7 +44,7 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 	{
 		ig.setCurrentFolder("Hcal/EventInfo");
 		_reportSummaryMap = ib.book2D("reportSummaryMap", "reportSummaryMap",
-			_vFEDs.size(), 0, vFEDs.size(), 4, 0, 4);
+			_vFEDs.size(), 0, _vFEDs.size(), 4, 0, 4);
 		_reportSummaryMap->setBinLabel(1, "RAW", 2);
 		_reportSummaryMap->setBinLabel(2, "DIGI", 2);
 		_reportSummaryMap->setBinLabel(3, "RECO", 2);
@@ -52,7 +52,7 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 		for (uint32_t i=0; i<_vFEDs.size(); i++)
 		{
 			char name[5];
-			sprintf(name, "%d", vFEDs[i]);
+			sprintf(name, "%d", _vFEDs[i]);
 			_reportSummaryMap->setBinLabel(i+1, name, 1);
 		}
 	}
@@ -126,8 +126,6 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 	//	process: put the quality into the copy and set the reportSummaryMap
 	//	contents. This is done only for those Summaries for which Tasks
 	//	exist
-	MonitorElement *reportSummaryMap = ig.get(
-		"Hcal/EventInfo/reportSummaryMap");
 	int ifed = 0;
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
@@ -147,8 +145,8 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 			}
 		}
 		counter>0?
-			reportSummaryMap->setBinContent(ifed+1, 1, quantity::fLow):
-			reportSummaryMap->setBinContent(ifed+1, 1, quantity::fGood);
+			_reportSummaryMap->setBinContent(ifed+1, 1, quantity::fLow):
+			_reportSummaryMap->setBinContent(ifed+1, 1, quantity::fGood);
 
 		//	DIGI if set to harvest
 		counter=0;
@@ -164,8 +162,8 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 			}
 		}
 		counter>0?
-			reportSummaryMap->setBinContent(ifed+1, 2, quantity::fLow):
-			reportSummaryMap->setBinContent(ifed+1, 2, quantity::fGood);
+			_reportSummaryMap->setBinContent(ifed+1, 2, quantity::fLow):
+			_reportSummaryMap->setBinContent(ifed+1, 2, quantity::fGood);
 
 		//	RECO
 		counter=0;
@@ -181,8 +179,8 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 			}
 		}
 		counter>0?
-			reportSummaryMap->setBinContent(ifed+1, 3, quantity::fLow):
-			reportSummaryMap->setBinContent(ifed+1, 3, quantity::fGood);
+			_reportSummaryMap->setBinContent(ifed+1, 3, quantity::fLow):
+			_reportSummaryMap->setBinContent(ifed+1, 3, quantity::fGood);
 
 		//	TP
 		counter=0;
@@ -198,8 +196,8 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 			}
 		}
 		counter>0?
-			reportSummaryMap->setBinContent(ifed+1, 4, quantity::fLow):
-			reportSummaryMap->setBinContent(ifed+1, 4, quantity::fGood);
+			_reportSummaryMap->setBinContent(ifed+1, 4, quantity::fLow):
+			_reportSummaryMap->setBinContent(ifed+1, 4, quantity::fGood);
 
 		ifed++;
 	}
