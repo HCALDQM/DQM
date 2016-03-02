@@ -52,7 +52,9 @@ class LEDTask : public DQTask
 
 		//	emap
 		HcalElectronicsMap const* _emap;
-		electronicsmap::ElectronicsMap _emaphash;
+		electronicsmap::ElectronicsMap _ehashmap;
+		HashFilter _filter_uTCA;
+		HashFilter _filter_VME;
 
 		//	Cuts
 		double _lowHBHE;
@@ -60,8 +62,11 @@ class LEDTask : public DQTask
 		double _lowHF;
 
 		//	Compact
-		ContainerXXX _cSignals_DChannel;
-		ContainerXXX _cTiming_DChannel;
+		ContainerXXX<double> _xSignalSum;
+		ContainerXXX<double> _xSignalSum2;
+		ContainerXXX<int> _xEntries;
+		ContainerXXX<double> _xTimingSum;
+		ContainerXXX<double> _xTimingSum2;
 
 		//	1D
 		Container1D		_cSignalMean_Subdet;
@@ -78,15 +83,19 @@ class LEDTask : public DQTask
 		ContainerProf2D		_cTimingMean_depth;
 		ContainerProf2D		_cTimingRMS_depth;
 
-		ContainerSingleProf2D _cTimingVME;
-		ContainerSingleProf2D _cSignalVME;
-		ContainerSingle2D _cOccupancyVME;
-		ContainerSingleProf2D _cTiminguTCA;
-		ContainerSingleProf2D _cSignaluTCA;
-		ContainerSingle2D _cOccupancyuTCA;
+		ContainerProf2D		_cSignalMean_FEDVME;
+		ContainerProf2D		_cSignalMean_FEDuTCA;
+		ContainerProf2D		_cTimingMean_FEDVME;
+		ContainerProf2D		_cTimingMean_FEDuTCA;
+		ContainerProf2D		_cSignalRMS_FEDVME;
+		ContainerProf2D		_cSignalRMS_FEDuTCA;
+		ContainerProf2D		_cTimingRMS_FEDVME;
+		ContainerProf2D		_cTimingRMS_FEDuTCA;
 
 		//	Bad Quality and Missing Channels
 		Container2D		_cMissing_depth;
+		Container2D		_cMissing_FEDVME;
+		Container2D		_cMissing_FEDuTCA;
 };
 
 #endif

@@ -5,51 +5,6 @@ using namespace hcaldqm;
 PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	DQTask(ps)
 {
-	//	Containers
-	_cMean_Subdet.initialize(_name, "Mean",hashfunctions::fSubdet, 
-		new quantity::ValueQuantity(quantity::fADC_15),
-		new quantity::ValueQuantity(quantity::fN, true));
-	_cRMS_Subdet.initialize(_name, "RMS", hashfunctions::fSubdet, 
-		new quantity::ValueQuantity(quantity::fADC_5),
-		new quantity::ValueQuantity(quantity::fN, true));
-	_cMean_depth.initialize(_name, "Mean", hashfunctions::fdepth, 
-		new quantity::DetectorQuantity(quantity::fieta), 
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fADC_15));
-	_cRMS_depth.initialize(_name, "RMS", hashfunctions::fdepth, 
-		new quantity::DetectorQuantity(quantity::fieta), 
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fADC_5));
-	_cPed.initialize(hashfunctions::fDChannel);
-	_cPedRef.initialize(hashfunctions::fDChannel, compact::fDoubleValued);
-	_cMeanDBRef_Subdet.initialize(_name, "MeanDBRef", hashfunctions::fSubdet,
-		new quantity::ValueQuantity(quantity::fAroundZero),
-		new quantity::ValueQuantity(quantity::fN, true));
-	_cRMSDBRef_Subdet.initialize(_name, "RMSDBRef", hashfunctions::fSubdet,
-		new quantity::ValueQuantity(quantity::fAroundZero),
-		new quantity::ValueQuantity(quantity::fN, true));
-	_cMeanDBRef_depth.initialize(_name, "MeanDBRef", hashfunctions::fdepth,
-		new quantity::DetectorQuantity(quantity::fieta),
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fAroundZero));
-	_cRMSDBRef_depth.initialize(_name, "RMSDBRef", hashfunctions::fdepth,
-		new quantity::DetectorQuantity(quantity::fieta),
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fAroundZero));
-	_cMissing_depth.initialize(_name, "Missing", hashfunctions::fdepth,
-		new quantity::DetectorQuantity(quantity::fieta),
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fN));
-	_cMeanBad_depth.initialize(_name, "MeanBad", hashfunctions::fdepth,
-		new quantity::DetectorQuantity(quantity::fieta),
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fN));
-	_cRMSBad_depth.initialize(_name, "RMSBad", hashfunctions::fdepth,
-		new quantity::DetectorQuantity(quantity::fieta),
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fN));
-
-
 	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
 		edm::InputTag("hcalDigis"));
@@ -72,10 +27,131 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		if (r.runAuxiliary().run()==1)
 			return;
 	DQTask::bookHistograms(ib, r, es);
-
+	
 	edm::ESHandle<HcalDbService> dbService;
 	es.get<HcalDbRecord>().get(dbService);
 	_emap = dbService->getHcalMapping();
+	std::vector<uint32_t> vhashVME;
+	std::vector<uint32_t> vhashuTCA;
+	std::vector<uint32_t> vhashC36;
+	vVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
+		constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
+	vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
+		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+	vhashC36.push_back(HcalElectronicsId(36, SLOT_uTCA_MIN,
+		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+	_filter_VME.initialize(filter::fFilter, hashfunctions::fElectronics,
+		vhashVME);
+	_filter_uTCA.initialize(filter::fFilter, hashfunctions::fElectronics,
+		vhashuTCA);
+	_filter_C36.initialize(filter::fFilter, hashfunctions::fCrate,
+		vhashC36);
+
+	//	Containers XXX
+	_xPedSum.initialize(hashfunctions::fDChannel);
+	_xPedSum2.initialize(hashfunctions::fDChannel);
+	_xPedRefMean.initialize(hashfunctions::fDChannel);
+	_xPedRefRMS.initialize(hashfunctions::fDChannel);
+
+	//	Containers
+	_cMean_Subdet.initialize(_name, "Mean",hashfunctions::fSubdet, 
+		new quantity::ValueQuantity(quantity::fADC_15),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cRMS_Subdet.initialize(_name, "RMS", hashfunctions::fSubdet, 
+		new quantity::ValueQuantity(quantity::fADC_5),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cMean_depth.initialize(_name, "Mean", hashfunctions::fdepth, 
+		new quantity::DetectorQuantity(quantity::fieta), 
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fADC_15));
+	_cRMS_depth.initialize(_name, "RMS", hashfunctions::fdepth, 
+		new quantity::DetectorQuantity(quantity::fieta), 
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fADC_5));
+	_cMean_FEDVME.initialize(_name, "Mean", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fADC_15));
+	_cMean_FEDuTCA.initialize(_name, "Mean", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fADC_15));
+	_cRMS_FEDVME.initialize(_name, "RMS", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fADC_5));
+	_cRMS_FEDuTCA.initialize(_name, "RMS", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fADC_5));
+
+	_cMeanDBRef_Subdet.initialize(_name, "MeanDBRef", hashfunctions::fSubdet,
+		new quantity::ValueQuantity(quantity::fAroundZero),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cRMSDBRef_Subdet.initialize(_name, "RMSDBRef", hashfunctions::fSubdet,
+		new quantity::ValueQuantity(quantity::fAroundZero),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cMeanDBRef_depth.initialize(_name, "MeanDBRef", hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fAroundZero));
+	_cRMSDBRef_depth.initialize(_name, "RMSDBRef", hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fAroundZero));
+	_cMeanDBRef_FEDVME.initialize(_name, "MeanDBRef", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fADC_5));
+	_cMeanDBRef_FEDuTCA.initialize(_name, "MeanDBRef", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fADC_5));
+	_cRMSDBRef_FEDVME.initialize(_name, "RMSDBRef", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fADC_5));
+	_cRMSDBRef_FEDuTCA.initialize(_name, "RMSDBRef", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fADC_5));
+
+	_cMissing_depth.initialize(_name, "Missing", hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMeanBad_depth.initialize(_name, "MeanBad", hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cRMSBad_depth.initialize(_name, "RMSBad", hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMissing_FEDVME.initialize(_name, "Missing", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMissing_FEDuTCA.initialize(_name, "Missing", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMeanBad_FEDVME.initialize(_name, "MeanBad", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMeanBad_FEDuTCA.initialize(_name, "MeanBad", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cRMSBad_FEDVME.initialize(_name, "RMSBad", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cRMSBad_FEDuTCA.initialize(_name, "RMSBad", hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
 
 	//	book plots
 	_cMean_Subdet.book(ib, _emap);
@@ -89,11 +165,53 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cMissing_depth.book(ib, _emap);
 	_cMeanBad_depth.book(ib, _emap);
 	_cRMSBad_depth.book(ib, _emap);
+
+	_cMean_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cMean_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cRMS_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cRMS_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cMeanDBRef_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cMeanDBRef_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cRMSDBRef_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cRMSDBRef_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cMissing_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cMissing_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cRMSBad_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cRMSBad_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cMeanBad_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cMeanBad_FEDuTCA.book(ib, _emap, _filter_VME);
 	
-	//	book compact containers and load conditions pedestals
-	_cPed.book(_emap);
-	_cPedRef.book(_emap);
-	_cPedRef.loadPedestals(dbService);
+	//	book compact containers
+	_xPedSum.book(_emap, _filter_C36);
+	_xPedSum2.book(_emap, _filter_C36);
+	_xPedEntries.book(_emap, _filter_C36);
+	_xPedRefMean.book(_emap, _filter_C36);
+	_xPedRefRMS.book(_emap, _filter_C36);
+
+	_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
+
+	//	load conditions pedestals
+	std::vector<HcalGenericDetId> dids = emap->allPrecisionId();
+	for (std::vector<HcalGenericDetId>::const_iterator it=dids.begin();
+		it!=dids.end(); ++it)
+	{
+		//	skip if calib or whatever
+		if (!it->isHcalDetId())
+			continue;
+		//	skip Crate 36
+		if (_filter_C36.filter(HcalElectronicsId(_ehashmap.lookup(*it))))
+			continue;
+
+		HcalPedestal const* peds = dbs->getPedestal(*it);
+		float const *means = peds->getValues();
+		float const *rmss = peds->getWidths();
+		double msum=0; double rsum=0;
+		for (uint32_t i=0; i<4; i++)
+		{msum+=means[i]; rsum+=widths[i];}
+		msum/=4; rsum/=4;
+		_xPedRefMean.set(*it, msum);
+		_xPedRefRMS.set(*it, rsum);
+	}
 }
 
 /* virtual */ void PedestalTask::_resetMonitors(UpdateFreq uf)
@@ -107,89 +225,20 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	if (_ptype==fLocal)
 		if (r.runAuxiliary().run()==1)
 			return;
-
-	this->_dump();
-/*
-	/////////
-//	DQMStore *store = edm::Service<DQMStore>().operator->();
-//	store->showDirStructure();
-//	std::cout <<"CURRENT DIRECTORY: "<< store->pwd() << std::endl;
-//	store->open("DQM_V0001_Hcal_R000262665.root",
-//		false, "", "HCAL", DQMStore::KeepRunDirs);
-//	store->load("DQM_V0001_Hcal_R000262665.root");
-//	store->setCurrentFolder("./Run 262665");
-//	store->showDirStructure();
-//	store->cd("Run ");
-//	std::cout <<"11111111 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
-//	store->cd("../");
-//	std::cout <<"2222222 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
-//	store->goUp();
-//	std::cout <<"3333333 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
-
-//	sprintf(cutstr, "_sumQHBHE%dHO%dHF%d", int(20),
-//		int(20), int(20));
-//	Container2D	cMeans;
-//	Container2D cRMSs;
-//	cMeans.initialize(_name, "Mean", hashfunctions::fdepth, 
-//		new quantity::DetectorQuantity(quantity::fieta), 
-//		new quantity::DetectorQuantity(quantity::fiphi),
-//		new quantity::ValueQuantity(quantity::fADC_15), 10);
-//	cRMSs.initialize(_name, "RMS", hashfunctions::fdepth, 
-//		new quantity::DetectorQuantity(quantity::fieta), 
-//		new quantity::DetectorQuantity(quantity::fiphi),
-//		new quantity::ValueQuantity(quantity::fADC_5));
-//	cMeans.load(store, _emap, _subsystem, std::string(""),
-//		std::string("HCAL/Run 262665"), 
-//		DQMStore::KeepRunDirs);
-//	cRMSs.load(store, _emap, _subsystem, std::string(""),
-//		std::string("HCAL/Run 262665"),
-//		DQMStore::KeepRunDirs);
-//	cMeans.print();
-//	cRMSs.print();
-//
-//
-	std::cout << "SIZE=" << _cPedRef.size() << std::endl;
-	_cPedRef.print();
-//	_cPedRef.load(&cMeans, &cRMSs);
-	_cPedRef.print();
-	hcaldqm::QualityWrapper qwrap(&hcaldqm::pedestal_quality2, 0.1);
-	_cPedRef.compare(_cPeds, &_cMeanRef_Subdet, &_cAbsent_depth,
-		&_cBad_depth, &hcaldqm::diff, qwrap);
-	_cPedRef.compare(_cPeds, &_cMeanRef_depth, &_cAbsent_depth,
-		&_cBad_depth, &hcaldqm::diff, qwrap);
-	_cPedRef.compare(_cPeds, &_cRMSRef_Subdet, &_cAbsent_depth,
-		&_cBad_depth, &hcaldqm::diff, qwrap, false);
-	_cPedRef.compare(_cPeds, &_cRMSRef_depth, &_cAbsent_depth,
-		&_cBad_depth, &hcaldqm::diff, qwrap, false);
-//	_cPeds.compare(_cPedRef, &_cMeanRef_Subdet);
-//	_cPeds.compare(_cPedRef, &_cMeanRef_depth);
-	_cPedRef.print();
-	store->cd();
-	std::cout <<"44444444 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
-	store->cd("Hcal");
-	std::cout <<"55555555 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
-	store->cd("");
-	store->cd("HCAL/Run 262665");
-	std::cout <<"666666666 CURRENT DIRECTORY: "<< store->pwd() << std::endl;
-	store->rmdir(store->pwd());
-	
-	store->showDirStructure();
-	*/
 }
 
 /* virtual */ void PedestalTask::_dump()
 {
-	//	dump the pedestals first
+	//	reset what's needed
 	_cMean_Subdet.reset();
 	_cRMS_Subdet.reset();
 	_cMean_depth.reset();
 	_cRMS_depth.reset();
-	_cPed.dump(&_cMean_Subdet, true);
-	_cPed.dump(&_cRMS_Subdet, false);
-	_cPed.dump(&_cMean_depth, true);
-	_cPed.dump(&_cRMS_depth, false);
-
-	//	compare with Conditions Pedestals and dump
+	_cMean_FEDVME.reset();
+	_cMean_FEDuTCA.reset();
+	_cRMS_FEDVME.reset();
+	_cRMS_FEDuTCA.reset();
+	
 	_cMeanDBRef_Subdet.reset();
 	_cMeanDBRef_depth.reset();
 	_cRMSDBRef_Subdet.reset();
@@ -197,17 +246,87 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cMissing_depth.reset();
 	_cMeanBad_depth.reset();
 	_cRMSBad_depth.reset();
-	hcaldqm::QualityWrapper qwrap(&hcaldqm::pedestal_quality2, 0.2);
-	std::vector<Container1D*> vMean;
-	std::vector<Container1D*> vRMS;
-	vMean.push_back(&_cMeanDBRef_Subdet);
-	vMean.push_back(&_cMeanDBRef_depth);
-	vRMS.push_back(&_cRMSDBRef_Subdet);
-	vRMS.push_back(&_cRMSDBRef_depth);
-	_cPedRef.compare(_cPed, vMean, &_cMissing_depth,
-		&_cMeanBad_depth, &hcaldqm::diff, qwrap); //	means
-	_cPedRef.compare(_cPed, vRMS, &_cMissing_depth,
-		&_cRMSBad_depth, &hcaldqm::diff, qwrap, false); //	rmss
+
+	_cMeanDBRef_FEDVME.reset();
+	_cMeanDBRef_FEDuTCA.reset();
+	_cRMSDBRef_FEDVME.reset();
+	_cRMSDBRef_FEDuTCA.reset();
+	_cMissing_FEDVME.reset();
+	_cMissing_FEDuTCA.reset();
+	_cMeanBad_FEDVME.reset();
+	_cMeanBad_FEDuTCA.reset();
+	_cRMSBad_FEDVME.reset();
+	_cRMSBad_FEDuTCA.reset();
+
+	std::vector<HcalGenericDetId> dids = _emap->allPrecisionId();
+	for (std::vector<HcalGenericDetId>::const_iterator it=dids.begin();
+		it!=dids.end(); ++it)
+	{
+		if (!it->isHcalDetId())
+			continue;
+		HcalElectronicsId eid(_ehashmap.lookup(*it));
+		if (_filter_C36.filter(eid))
+			continue;
+		double sum = _xPedSum.get(*it); double refm = _xPedRefMean.get(*it);
+		double sum2 = _xPedSum2.get(*it); double refr = _xPedRefRMS.get(*it);
+		double n = _xPedEntries.get(*it);
+
+		//	if channel is missing
+		if (n==0)
+		{
+			_cMissing_depth.fill(*it);
+			if (eid.isVMEid())
+				_cMissing_FEDVME.fill(eid);
+			else
+				_cMissing_FEDuTCA.fill(eid);
+			continue;
+		}
+
+		//	if not missing
+		sum/=n; double rms = sqrt(sum2/n-sum*sum);
+		double diffm = sum-refm;
+		double diffr = rms - refr;
+		_cMean_Subdet.fill(*it, sum);
+		_cMean_depth.fill(*it, sum);
+		_cRMS_Subdet.fill(*it, rms);
+		_cRMS_depth.fill(*it, rms);
+		_cMeanDBRef_Subdet.fill(*it, diff);
+		_cMeanDBRef_depth.fill(*it, diffm);
+		_cRMSDBRef_Subdet.fill(*it, diffr);
+		_cRMSDBRef_depth.fill(*it, diffr);
+		if (eid.isVMEid())
+		{
+			_cMean_FEDVME.fill(eid, sum);
+			_cRMS_FEDVME.fill(eid, rms);
+			_cMeanDBRef_FEDVME.fill(eid, diffm);
+			_cRMSDBRef_FEDVME.fill(eid, diffr);
+		}
+		else
+		{
+			_cMean_FEDuTCA.fill(eid, sum);
+			_cRMS_FEDuTCA.fill(eid, rms);
+			_cMeanDBRef_FEDuTCA.fill(eid, diffm);
+			_cRMSDBRef_FEDuTCA.fill(eid, diffr);
+		}
+
+		//	if bad quality...
+		if (fabs(diffm)>0.2)
+		{
+			_cMeanBad_depth.fill(*it);
+			if (eid.isVMEid())
+				_cMeanBad_FEDVME.fill(eid);
+			else
+				_cMeanBad_FEDuTCA.fill(eid);
+		}
+		if (fabs(diffr)>0.2)
+		{
+			_cRMSBad_depth.fill(*it);
+			if (eid.isVMEid())
+				_cRMSBad_FEDVME.fill(eid);
+			else 
+				_cRMSBad_FEDuTCA.fill(eid);
+		}
+	}
 }
 
 /* virtual */ void PedestalTask::_process(edm::Event const& e,
@@ -236,7 +355,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
-			_cPed.fill(did, it->sample(i).adc());
+			_xPedSum.get(did)+=it->sample(i).adc();
+			_xPedSum2.get(did)+=it->sample(i).adc()*it->sample(i).adc();
+			_xPedEntries.get(did)++;
 		}
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
@@ -248,7 +369,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
-			_cPed.fill(did, it->sample(i).adc());
+			_xPedSum.get(did)+=it->sample(i).adc();
+			_xPedSum2.get(did)+=it->sample(i).adc()*it->sample(i).adc();
+			_xPedEntries.get(did)++;
 		}
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
@@ -260,7 +383,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
-			_cPed.fill(did, it->sample(i).adc());
+			_xPedSum.get(did)+=it->sample(i).adc();
+			_xPedSum2.get(did)+=it->sample(i).adc()*it->sample(i).adc();
+			_xPedEntries.get(did)++;
 		}
 	}
 

@@ -5,104 +5,7 @@ using namespace hcaldqm;
 LaserTask::LaserTask(edm::ParameterSet const& ps):
 	DQTask(ps)
 {
-	int nevents = ps.getUntrackedParameter<int>("nevents", 2000);
-
-	//	Containers
-	_cSignalMean_Subdet.initialize(_name, "SignalMean",
-		hashfunctions::fSubdet, 
-		new quantity::ValueQuantity(quantity::ffC_3000),
-		new quantity::ValueQuantity(quantity::fN, true));
-	_cSignalRMS_Subdet.initialize(_name, "SignalRMS",
-		hashfunctions::fSubdet, 
-		new quantity::ValueQuantity(quantity::ffC_1000),
-		new quantity::ValueQuantity(quantity::fN, true));
-	_cTimingMean_Subdet.initialize(_name, "TimingMean",
-		hashfunctions::fSubdet, 
-		new quantity::ValueQuantity(quantity::fTiming_TS200),
-		new quantity::ValueQuantity(quantity::fN, true));
-	_cTimingRMS_Subdet.initialize(_name, "TimingRMS",
-		hashfunctions::fSubdet, 
-		new quantity::ValueQuantity(quantity::fTiming_TS200), 
-		new quantity::ValueQuantity(quantity::fN, true));
-
-	_cShapeCut_FEDSlot.initialize(_name, "Shape", 
-		hashfunctions::fFEDSlot,
-		new quantity::ValueQuantity(quantity::fTiming_TS),
-		new quantity::ValueQuantity(quantity::ffC_3000));
-	_cTimingvsEvent_SubdetPM.initialize(_name, "TimingvsEvent",
-		hashfunctions::fSubdetPM,
-		new quantity::EventNumber(nevents),
-		new quantity::ValueQuantity(quantity::fTiming_TS200));
-	_cSignalvsEvent_SubdetPM.initialize(_name, "SignalvsEvent",
-		hashfunctions::fSubdetPM,
-		new quantity::EventNumber(nevents),
-		new quantity::ValueQuantity(quantity::ffC_3000));
-	_cTimingvsLS_SubdetPM.initialize(_name, "TimingvsLS",
-		hashfunctions::fSubdetPM,
-		new quantity::LumiSection(_numLSstart),
-		new quantity::ValueQuantity(quantity::fTiming_TS200));
-	_cSignalvsLS_SubdetPM.initialize(_name, "SignalvsLS",
-		hashfunctions::fSubdetPM,
-		new quantity::LumiSection(_numLSstart),
-		new quantity::ValueQuantity(quantity::ffC_3000));
-
-	_cSignalMean_depth.initialize(_name, "SignalMean",
-		hashfunctions::fdepth, 
-		new quantity::DetectorQuantity(quantity::fieta), 
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::ffC_3000));
-	_cSignalRMS_depth.initialize(_name, "SignalRMS",
-		hashfunctions::fdepth, 
-		new quantity::DetectorQuantity(quantity::fieta), 
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::ffC_1000));
-	_cTimingMean_depth.initialize(_name, "TimingMean",
-		hashfunctions::fdepth, 
-		new quantity::DetectorQuantity(quantity::fieta), 
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fTiming_TS200));
-	_cTimingRMS_depth.initialize(_name, "TimingRMS",
-		hashfunctions::fdepth,
-		new quantity::DetectorQuantity(quantity::fieta), 
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fTiming_TS200));
-
-	_cTimingVME.initialize(_name, "TimingMean",
-		new quantity::ElectronicsQuantity(quantity::fFEDVME),
-		new quantity::ElectronicsQuantity(quantity::fSpigot),
-		new quantity::ValueQuantity(quantity::fTiming_TS200));
-	_cSignalVME.initialize(_name, "SignalMean",
-		new quantity::ElectronicsQuantity(quantity::fFEDVME),
-		new quantity::ElectronicsQuantity(quantity::fSpigot),
-		new quantity::ValueQuantity(quantity::ffC_3000));
-	_cTiminguTCA.initialize(_name, "TimingMean",
-		new quantity::ElectronicsQuantity(quantity::fFEDuTCA),
-		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
-		new quantity::ValueQuantity(quantity::fTiming_TS200));
-	_cSignaluTCA.initialize(_name, "SignalMean",
-		new quantity::ElectronicsQuantity(quantity::fFEDuTCA),
-		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
-		new quantity::ValueQuantity(quantity::ffC_3000));
-
-	_cOccupancyVME.initialize(_name, "Occupancy",
-		new quantity::ElectronicsQuantity(quantity::fFEDVME),
-		new quantity::ElectronicsQuantity(quantity::fSpigot),
-		new quantity::ValueQuantity(quantity::fN));
-	_cOccupancyuTCA.initialize(_name, "Occupancy",
-		new quantity::ElectronicsQuantity(quantity::fFEDuTCA),
-		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
-		new quantity::ValueQuantity(quantity::fN));
-
-	_cMissing_depth.initialize(_name, "Missing",
-		hashfunctions::fdepth,
-		new quantity::DetectorQuantity(quantity::fieta),
-		new quantity::DetectorQuantity(quantity::fiphi),
-		new quantity::ValueQuantity(quantity::fN));
-
-	
-	//	initialize compact containers
-	_cSignals_DChannel.initialize(hashfunctions::fDChannel);
-	_cTiming_DChannel.initialize(hashfunctions::fDChannel);
+	_nevents = ps.getUntrackedParameter<int>("nevents", 2000);
 
 	//	tags
 	_tagHBHE = ps.getUntrackedParameter<edm::InputTag>("tagHBHE",
@@ -126,7 +29,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_lowHF = ps.getUntrackedParameter<double>("lowHF",
 		20);
 }
-
+	
 /* virtual */ void LaserTask::bookHistograms(DQMStore::IBooker &ib,
 	edm::Run const& r, edm::EventSetup const& es)
 {
@@ -134,16 +37,150 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		if (r.runAuxiliary().run()==1)
 			return;
 
-	char cutstr[20];
-	sprintf(cutstr, "sumQHBHE%dHO%dHF%d", int(_lowHBHE),
-		int(_lowHO), int(_lowHF));
-
 	DQTask::bookHistograms(ib, r, es);
-
+	
 	edm::ESHandle<HcalDbService> dbService;
 	es.get<HcalDbRecord>().get(dbService);
 	_emap = dbService->getHcalMapping();
 
+	std::vector<uint32_t> vhashVME;
+	std::vector<uint32_t> vhashuTCA;
+	std::vector<uint32_t> vhashC36;
+	vVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
+		constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
+	vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
+		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+	_filter_VME.initialize(filter::fFilter, hashfunctions::fElectronics,
+		vhashVME);
+	_filter_uTCA.initialize(filter::fFilter, hashfunctions::fElectronics,
+		vhashuTCA);
+
+	//	INITIALIZE
+	_cSignalMean_Subdet.initialize(_name, "SignalMean",
+		hashfunctions::fSubdet, 
+		new quantity::ValueQuantity(quantity::ffC_3000),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cSignalRMS_Subdet.initialize(_name, "SignalRMS",
+		hashfunctions::fSubdet, 
+		new quantity::ValueQuantity(quantity::ffC_1000),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cTimingMean_Subdet.initialize(_name, "TimingMean",
+		hashfunctions::fSubdet, 
+		new quantity::ValueQuantity(quantity::fTiming_TS200),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cTimingRMS_Subdet.initialize(_name, "TimingRMS",
+		hashfunctions::fSubdet, 
+		new quantity::ValueQuantity(quantity::fTiming_TS200), 
+		new quantity::ValueQuantity(quantity::fN, true));
+
+	_cSignalMean_FEDVME.initialize(_name, "SignalMean",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::ffC_3000));
+	_cSignalMean_FEDuTCA.initialize(_name, "SignalMean",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::ffC_3000));
+	_cSignalRMS_FEDVME.initialize(_name, "SignalRMS",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::ffC_3000));
+	_cSignalRMS_FEDuTCA.initialize(_name, "SignalRMS",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::ffC_3000));
+	_cTimingMean_FEDVME.initialize(_name, "TimingMean",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fTiming_TS200));
+	_cTimingMean_FEDuTCA.initialize(_name, "TimingMean",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fTiming_TS200));
+	_cTimingRMS_FEDVME.initialize(_name, "TimingRMS",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fTiming_TS200));
+	_cTimingRMS_FEDuTCA.initialize(_name, "TimingRMS",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fTiming_TS200));
+
+	_cShapeCut_FEDSlot.initialize(_name, "Shape", 
+		hashfunctions::fFEDSlot,
+		new quantity::ValueQuantity(quantity::fTiming_TS),
+		new quantity::ValueQuantity(quantity::ffC_3000));
+	_cTimingvsEvent_SubdetPM.initialize(_name, "TimingvsEvent",
+		hashfunctions::fSubdetPM,
+		new quantity::EventNumber(nevents),
+		new quntity::ValueQuantity(quantity::fTiming_TS200));
+	_cSignalvsEvent_SubdetPM.initialize(_name, "SignalvsEvent",
+		hashfunctions::fSubdetPM,
+		new quantity::EventNumber(nevents),
+		new quntity::ValueQuantity(quantity::ffC_3000));
+	_cTimingvsLS_SubdetPM.initialize(_name, "TimingvsEvent",
+		hashfunctions::fSubdetPM,
+		new quantity::LumiSection(_numLSstart),
+		new quntity::ValueQuantity(quantity::fTiming_TS200));
+	_cSignalvsLS_SubdetPM.initialize(_name, "SignalvsEvent",
+		hashfunctions::fSubdetPM,
+		new quantity::LumiSection(_numLSstart),
+		new quntity::ValueQuantity(quantity::ffC_3000));
+
+	_cSignalMean_depth.initialize(_name, "SignalMean",
+		hashfunctions::fdepth, 
+		new quantity::DetectorQuantity(quantity::fieta), 
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::ffC_3000));
+	_cSignalRMS_depth.initialize(_name, "SignalRMS",
+		hashfunctions::fdepth, 
+		new quantity::DetectorQuantity(quantity::fieta), 
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::ffC_1000));
+	_cTimingMean_depth.initialize(_name, "TimingMean",
+		hashfunctions::fdepth, 
+		new quantity::DetectorQuantity(quantity::fieta), 
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fTiming_TS200));
+	_cTimingRMS_depth.initialize(_name, "TimingRMS",
+		hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta), 
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fTiming_TS200));
+
+	_cMissing_depth.initialize(_name, "Missing",
+		hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMissing_FEDVME.initialize(_name, "Missing",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMissing_FEDuTCA.initialize(_name, "Missing",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+
+	
+	//	initialize compact containers
+	_xSignalSum.initialize(hashfunctions::fDChannel);
+	_xSignalSum2.initialize(hashfunctions::fDChannel);
+	_xTimingSum.initialize(hashfunctions::fDChannel);
+	_xTimingSum2.initialize(hashfunctions::fDChannel);
+	_xEntries.initialize(hashfunctions::fDChannel);
+
+	//	BOOK
 	_cSignalMean_Subdet.book(ib, _emap);
 	_cSignalRMS_Subdet.book(ib, _emap);
 	_cTimingMean_Subdet.book(ib, _emap);
@@ -154,31 +191,38 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_cTimingMean_depth.book(ib, _emap);
 	_cTimingRMS_depth.book(ib, _emap);
 
-	_cShapeCut_FEDSlot.book(ib, _emap);
-
 	if (_ptype==fLocal)
 	{
 		_cTimingvsEvent_SubdetPM.book(ib, _emap);
 		_cSignalvsEvent_SubdetPM.book(ib, _emap);
 	}
 	else
-	{
+	{	
 		_cTimingvsLS_SubdetPM.book(ib, _emap);
 		_cSignalvsLS_SubdetPM.book(ib, _emap);
 	}
 
-	_cTimingVME.book(ib, _subsystem, std::string("VME"));
-	_cSignalVME.book(ib, _subsystem, std::string("VME"));
-	_cTiminguTCA.book(ib, _subsystem, std::string("uTCA"));
-	_cSignaluTCA.book(ib, _subsystem, std::string("uTCA"));
-	_cOccupancyVME.book(ib, _subsystem, std::string("VME"));
-	_cOccupancyuTCA.book(ib, _subsystem, std::string("uTCA"));
+	_cSignalMean_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cSignalMean_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cSignalRMS_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cSignalRMS_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cTimingMean_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cTimingMean_FEDuTCA.book(ib, _emap, _filter_VME);
+	_cTimingRMS_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cTimingRMS_FEDuTCA.book(ib, _emap, _filter_VME);
 
+	_cShapeCut_FEDSlot.book(ib, _emap);
 	_cMissing_depth.book(ib, _emap);
+	_cMissing_FEDVME.book(ib, _emap, _filter_uTCA);
+	_cMissing_FEDuTCA.book(ib, _emap, _filter_VME);
 
-	//	book compact containers
-	_cSignals_DChannel.book(_emap);
-	_cTiming_DChannel.book(_emap);
+	_xSignalSum.book(_emap);
+	_xSignalSum2.book(_emap);
+	_xEntries.book(_emap);
+	_xTimingSum.book(_emap);
+	_xTimingSum2.book(_emap);
+
+	_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
 }
 
 /* virtual */ void LaserTask::_resetMonitors(UpdateFreq uf)
@@ -197,14 +241,61 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_cTimingMean_depth.reset();
 	_cTimingRMS_depth.reset();
 
-	_cSignals_DChannel.dump(&_cSignalMean_Subdet, &_cMissing_depth, true);
-	_cSignals_DChannel.dump(&_cSignalRMS_Subdet, &_cMissing_depth,false);
-	_cTiming_DChannel.dump(&_cTimingMean_Subdet, &_cMissing_depth,true);
-	_cTiming_DChannel.dump(&_cTimingRMS_Subdet, &_cMissing_depth,false);
-	_cSignals_DChannel.dump(&_cSignalMean_depth, &_cMissing_depth,true);
-	_cSignals_DChannel.dump(&_cSignalRMS_depth, &_cMissing_depth,false);
-	_cTiming_DChannel.dump(&_cTimingMean_depth,&_cMissing_depth, true);
-	_cTiming_DChannel.dump(&_cTimingRMS_depth,&_cMissing_depth, false);
+	_cSignalMean_FEDVME.reset();
+	_cSignalMean_FEDuTCA.reset();
+	_cSignalRMS_FEDVME.reset();
+	_cSignalRMS_FEDuTCA.reset();
+	_cTimingMean_FEDVME.reset();
+	_cTimingMean_FEDuTCA.reset();
+	_cTimingRMS_FEDVME.reset();
+	_cTimingRMS_FEDuTCA.reset();
+
+	std::vector<HcalGenericDetId> dids = _emap->allPrecisionId();
+	for (std::vector<HcalGenericDetId>::const_iterator it=dids.begin();
+		it!=dids.end(); ++it)
+	{
+		if (!it->isHcalDetId())
+			continue;
+		HcalElectronicsId eid(_ehashmap.lookup(*it));
+		int n = _xEntries.get(*it);
+		double msig = _xSignalSum.get(*it)/n; 
+		double mtim = _xTimingSum.get(*it)/n;
+		double rsig = sqrt(_xSignalSum2.get(*it)/n-msig*msig);
+		double rtim = sqrt(_xTimingSum2.get(*it)/n-mtim*mtim);
+
+		//	channels missing or low signal
+		if (n==0)
+		{
+			_cMissing_depth.fill(*it);
+			if (eid.isVMEid())
+				_cMissing_FEDVME.fill(eid);
+			else
+				_cMissing_FEDuTCA.fill(eid);
+			continue;
+		}
+		_cSignalMean_Subdet.fill(did, msig);
+		_cSignalMean_depth.fill(did, msig);
+		_cSignalRMS_Subdet.fill(did, rsig);
+		_cSignlaRMS_depth.fill(did, rsig);
+		_cTimingMean_Subdet.fill(did, mtim);
+		_cTimingMean_depth.fill(did, mtim);
+		_cTimingRMS_Subdet.fill(did, rtim);
+		_cTimingRMS_depth.fill(did, rtim);
+		if (eid.isVMEid())
+		{
+			_cSignalMean_FEDVME.fill(eid, msig);
+			_cSignalRMS_FEDVME.fill(eid, rsig);
+			_cTimingMean_FEDVME.fill(eid, mtim);
+			_cTimingRMS_FEDVME.fill(eid, rtim);
+		}
+		else
+		{
+			_cSignalMean_FEDVME.fill(eid, msig);
+			_cSignalRMS_FEDVME.fill(eid, rsig);
+			_cTimingMean_FEDVME.fill(eid, mtim);
+			_cTimingRMS_FEDVME.fill(eid, rtim);
+		}
+	}
 }
 
 /* virtual */ void LaserTask::_process(edm::Event const& e,
@@ -224,7 +315,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_logger.dqmthrow("Collection HFDigiCollection isn't available "
 			+ _tagHF.label() + " " + _tagHF.instance());
 
-	int currentEvent = e.eventAuxiliary().id().event();
+//	int currentEvent = e.eventAuxiliary().id().event();
 
 	for (HBHEDigiCollection::const_iterator it=chbhe->begin();
 		it!=chbhe->end(); ++it)
@@ -239,12 +330,20 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 
 		double aveTS = utilities::aveTS<HBHEDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
-		_cSignals_DChannel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
-		_cTiming_DChannel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
+		_xSignalSum.get(did)+=sumQ;
+		_xSignalSum2.get(did)+=sumQ*sumQ;
+		_xTimingSum.get(did)+=aveTS;
+		_xTimingSum2.get(did)+=aveTS*aveTS;
+		_xEntries.get(did)++;
 
-		//	 only for local processing
+		for (int i=0; i<digi.size(); i++)
+			_cShapeCut_FEDSlot.fill(eid, i, 
+				digi.sample(i).nominal_fC()-2.5);
+
+		//	select based on local global
 		if (_ptype==fLocal)
 		{
+			int currentEvent = e.eventAuxiliary().id().event();
 			_cTimingvsEvent_SubdetPM.fill(did, currentEvent, aveTS);
 			_cSignalvsEvent_SubdetPM.fill(did, currentEvent, sumQ);
 		}
@@ -253,23 +352,6 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 			_cTimingvsLS_SubdetPM.fill(did, _currentLS, aveTS);
 			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
 		}
-
-		if (eid.isVMEid())
-		{
-			_cTimingVME.fill(eid, aveTS);
-			_cSignalVME.fill(eid, sumQ);
-			_cOccupancyVME.fill(eid);
-		}
-		else
-		{
-			_cTiminguTCA.fill(eid, aveTS);
-			_cSignaluTCA.fill(eid, sumQ);
-			_cOccupancyuTCA.fill(eid);
-		}
-
-		for (int i=0; i<digi.size(); i++)
-			_cShapeCut_FEDSlot.fill(eid, i, 
-				digi.sample(i).nominal_fC()-2.5);
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
 		it!=cho->end(); ++it)
@@ -284,12 +366,20 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 
 		double aveTS = utilities::aveTS<HODataFrame>(digi, 8.5, 0,
 			digi.size()-1);
-		_cSignals_DChannel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
-		_cTiming_DChannel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
+		_xSignalSum.get(did)+=sumQ;
+		_xSignalSum2.get(did)+=sumQ*sumQ;
+		_xTimingSum.get(did)+=aveTS;
+		_xTimingSum2.get(did)+=aveTS*aveTS;
+		_xEntries.get(did)++;
 
-		//	 only for local processing
+		for (int i=0; i<digi.size(); i++)
+			_cShapeCut_FEDSlot.fill(eid, i, 
+				digi.sample(i).nominal_fC()-8.5);
+
+		//	select based on local global
 		if (_ptype==fLocal)
 		{
+			int currentEvent = e.eventAuxiliary().id().event();
 			_cTimingvsEvent_SubdetPM.fill(did, currentEvent, aveTS);
 			_cSignalvsEvent_SubdetPM.fill(did, currentEvent, sumQ);
 		}
@@ -298,24 +388,6 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 			_cTimingvsLS_SubdetPM.fill(did, _currentLS, aveTS);
 			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
 		}
-
-
-		if (eid.isVMEid())
-		{
-			_cTimingVME.fill(eid, aveTS);
-			_cSignalVME.fill(eid, sumQ);
-			_cOccupancyVME.fill(eid);
-		}
-		else
-		{
-			_cTiminguTCA.fill(eid, aveTS);
-			_cSignaluTCA.fill(eid, sumQ);
-			_cOccupancyuTCA.fill(eid);
-		}
-
-		for (int i=0; i<digi.size(); i++)
-			_cShapeCut_FEDSlot.fill(eid, i, 
-				digi.sample(i).nominal_fC()-8.5);
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
 		it!=chf->end(); ++it)
@@ -330,12 +402,20 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 
 		double aveTS = utilities::aveTS<HFDataFrame>(digi, 2.5, 0,
 			digi.size()-1);
-		_cSignals_DChannel.fill(did, sumQ>0 ? sumQ : GARBAGE_VALUE);
-		_cTiming_DChannel.fill(did, sumQ>0 ? aveTS : GARBAGE_VALUE);
+		_xSignalSum.get(did)+=sumQ;
+		_xSignalSum2.get(did)+=sumQ*sumQ;
+		_xTimingSum.get(did)+=aveTS;
+		_xTimingSum2.get(did)+=aveTS*aveTS;
+		_xEntries.get(did)++;
 
-		//	 only for local processing
+		for (int i=0; i<digi.size(); i++)
+			_cShapeCut_FEDSlot.fill(eid, i, 
+				digi.sample(i).nominal_fC()-2.5);
+
+		//	select based on local global
 		if (_ptype==fLocal)
 		{
+			int currentEvent = e.eventAuxiliary().id().event();
 			_cTimingvsEvent_SubdetPM.fill(did, currentEvent, aveTS);
 			_cSignalvsEvent_SubdetPM.fill(did, currentEvent, sumQ);
 		}
@@ -344,24 +424,6 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 			_cTimingvsLS_SubdetPM.fill(did, _currentLS, aveTS);
 			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
 		}
-
-
-		if (eid.isVMEid())
-		{
-			_cTimingVME.fill(eid, aveTS);
-			_cSignalVME.fill(eid, sumQ);
-			_cOccupancyVME.fill(eid);
-		}
-		else
-		{
-			_cTiminguTCA.fill(eid, aveTS);
-			_cSignaluTCA.fill(eid, sumQ);
-			_cOccupancyuTCA.fill(eid);
-		}
-
-		for (int i=0; i<digi.size(); i++)
-			_cShapeCut_FEDSlot.fill(eid, i, 
-				digi.sample(i).nominal_fC()-2.5);
 	}
 
 	if (_ptype==fOnline && _evsTotal>0 &&

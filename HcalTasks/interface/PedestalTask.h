@@ -47,10 +47,17 @@ class PedestalTask : public DQTask
 
 		//	emap
 		HcalElectronicsMap const*	_emap;
-		HcalPedestal const*			_condPeds;
+		electronicsmap::ElectronicsMap _ehashmap;
+		HashFilter _filter_uTCA;
+		HashFilter _filter_VME;
+		HashFilter _filter_C36;
 
-		ContainerXXX		_cPed;
-		ContainerXXX		_cPedRef;
+
+		ContainerXXX<double> _xPedSum;
+		ContainerXXX<double> _xPedSum2;
+		ContainerXXX<int>	_xPedEntries;
+		ContainerXXX<double> _xPedRefMean;
+		ContainerXXX<double> _xPedRefRMS;
 
 		//	1D Means/RMSs
 		Container1D		_cMean_Subdet;
@@ -63,15 +70,30 @@ class PedestalTask : public DQTask
 		//	2D
 		ContainerProf2D		_cMean_depth;
 		ContainerProf2D		_cRMS_depth;
+		ContianerProf2D		_cMean_FEDVME;
+		ContianerProf2D		_cMean_FEDuTCA;
+		ContianerProf2D		_cRMS_FEDVME;
+		ContianerProf2D		_cRMS_FEDuTCA;
 		
 		//	with DB Conditions comparison
 		ContainerProf2D		_cMeanDBRef_depth;
 		ContainerProf2D		_cRMSDBRef_depth;
+		ContainerProf2D		_cMeanDBRef_FEDVME;
+		ContainerProf2D		_cMeanDBRef_FEDuTCA;
+		ContainerProf2D		_cRMSDBRef_FEDVME;
+		ContainerProf2D		_cRMSDBRef_FEDuTCA;
 
 		//	Missing + Bad Quality
 		Container2D		_cMissing_depth;
 		Container2D		_cMeanBad_depth;
 		Container2D		_cRMSBad_depth;
+
+		Container2D		_cMissing_FEDVME;
+		Container2D		_cMissing_FEDuTCA;
+		Container2D		_cMeanBad_FEDVME;
+		Container2D		_cRMSBad_FEDuTCA;
+		Container2D		_cRMSBad_FEDVME;
+		Container2D		_cMeanBad_FEDuTCA;
 };
 
 #endif
