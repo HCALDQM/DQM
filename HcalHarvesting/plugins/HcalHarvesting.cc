@@ -3,7 +3,7 @@
 HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 	DQHarvester(ps), _reportSummaryMap(NULL)
 {
-	//	get the flags
+	//	get the flags 
 	_digiHarvesting = ps.getUntrackedParameter<bool>("digiHarvesting");
 	_rawHarvesting = ps.getUntrackedParameter<bool>("rawHarvesting");
 	_recoHarvesting = ps.getUntrackedParameter<bool>("recoHarvesting");
@@ -56,6 +56,20 @@ HcalHarvesting::HcalHarvesting(edm::ParameterSet const& ps) :
 			_reportSummaryMap->setBinLabel(i+1, name, 1);
 		}
 	}
+
+	//	get the flags from DATA itself...
+	ig.get("Hcal/DigiTask/Summary/Summary")!=NULL?
+		_digiHarvesting = true:
+		_digiHarvesting = false;
+	ig.get("Hcal/RecHitTask/Summary/Summary")!=NULL?
+		_recoHarvesting = true:
+		_recoHarvesting = false;
+	ig.get("Hcal/RawTask/Summary/Summary")!=NULL?
+		_rawHarvesting = true:
+		_rawHarvesting = false;
+	ig.get("Hcal/TPTask/Summary/Summary")!=NULL?
+		_tpHarvesting = true:
+		_tpHarvesting = false;
 
 	//	Initialize what you need
 	ContainerSingle2D rawSummary;
