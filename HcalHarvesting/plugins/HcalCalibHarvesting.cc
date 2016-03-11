@@ -18,7 +18,7 @@ HcalCalibHarvesting::HcalCalibHarvesting(edm::ParameterSet const& ps) :
 	{
 		ig.setCurrentFolder("HcalCalib/EventInfo");
 		_reportSummaryMap = ib.book2D("reportSummaryMap", "reportSummaryMap",
-			_vFEDs.size(), 0, _vFEDs.size(), 4, 0, 4);
+			_vFEDs.size(), 0, _vFEDs.size(), 1, 0, 1);
 		_reportSummaryMap->setBinLabel(1, "PED", 2);
 		for (uint32_t i=0; i<_vFEDs.size(); i++)
 		{
@@ -35,16 +35,16 @@ HcalCalibHarvesting::HcalCalibHarvesting(edm::ParameterSet const& ps) :
 	//	book the new plots and load existing ones if needed
 	char name[20];
 	sprintf(name, "LS%d", _currentLS);
-	pedSummary.initialize("RawTask", "Summary",
+	pedSummary.initialize("PedestalTask", "Summary",
 		new quantity::FEDQuantity(_vFEDs),
-		new quantity::FlagQuantity(_frawnames),
+		new quantity::FlagQuantity(_fpednames),
 		new quantity::QualityQuantity());
-	pedSummaryCopy.initialize("RawTask", "SummaryvsLS",
+	pedSummaryCopy.initialize("PedestalTask", "SummaryvsLS",
 		new quantity::FEDQuantity(_vFEDs),
-		new quantity::FlagQuantity(_frawnames),
+		new quantity::FlagQuantity(_fpednames),
 		new quantity::QualityQuantity());
 	pedSummaryCopy.book(ib, _subsystem, name);
-	pedSummary.load(ig);
+	pedSummary.load(ig, _subsystem);
 
 	//	process: put the quality into the copy and set the reportSummaryMap
 	//	contents. This is done only for those Summaries for which Tasks

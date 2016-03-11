@@ -207,7 +207,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cMeanBad_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cMeanBad_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 
-	_cSummary.book(ib);
+	_cSummary.book(ib, _subsystem);
 	
 	//	book compact containers
 	_xPedSum.book(_emap);
