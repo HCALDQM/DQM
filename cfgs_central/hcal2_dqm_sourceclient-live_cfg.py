@@ -89,6 +89,7 @@ if isHeavyIon:
 	rawTag			= cms.InputTag("rawDataRepacker")
 	rawTagUntracked	= cms.untracked.InputTag("rawDataRepacker")
 
+process.hcalRecAlgos.DropChannelStatusBits = cms.vstring('')
 #	init 2 emulators
 process.emulTPPrim = \
 		process.simHcalTriggerPrimitiveDigis.clone()
@@ -121,8 +122,8 @@ process.load("DQM.HcalTasks.DigiTask")
 process.load('DQM.HcalTasks.TPTask')
 process.load('DQM.HcalTasks.RecHitTask')
 process.load('DQM.HcalTasks.HcalHarvesting')
-process.load('DQM.SpecificTasks.DigiComparisonTask')
-process.load('DQM.SpecificTasks.TPComparisonTask')
+process.load('DQM.HcalTasks.DigiComparisonTask')
+process.load('DQM.HcalTasks.TPComparisonTask')
 
 #-------------------------------------
 #	To force using uTCA
@@ -160,48 +161,26 @@ secFEDs = [x+700 for x in range(18)]
 print "Secondary FEDs to be Unpacked:", secFEDs
 process.secDigis.FEDs = cms.untracked.vint32(secFEDs)
 
-process.secDigiTask = process.digiTask.clone()
-process.secDigiTask.name = cms.untracked.string("secDigiTask")
-process.secDigiTask.tagHBHE = cms.untracked.InputTag('secDigis')
-process.secDigiTask.tagHO = cms.untracked.InputTag('secDigis')
-process.secDigiTask.tagHF = cms.untracked.InputTag('secDigis')
-
-process.secTPTask = process.tpTask.clone()
-process.secTPTask.name = cms.untracked.string('secTPTask')
-process.secTPTask.tagData = cms.untracked.InputTag("secDigis")
-process.secTPTask.tagEmul = cms.untracked.InputTag('emulTPSec')
-
 process.digiComparisonTask.tagHBHE1 = cms.untracked.InputTag('primDigis')
 process.digiComparisonTask.tagHBHE2 = cms.untracked.InputTag('secDigis')
+process.digiComparisonTask.runkeyVal = runType
+process.digiComparisonTask.runkeyName = runTypeName
+
 process.tpComparisonTask.tag1 = cms.untracked.InputTag('primDigis')
 process.tpComparisonTask.tag2 = cms.untracked.InputTag('secDigis')
+process.tpComparisonTask.runkeyVal = runType
+process.tpComparisonTask.runkeyName = runTypeName
 
 #-------------------------------------
 #	Settigns for the Primary Modules
 #-------------------------------------
 oldsubsystem = subsystem
-process.rawTask.tagFEDs = rawTagUntracked
-process.rawTask.runkeyVal = runType
-process.rawTask.runkeyName = runTypeName
-process.rawTask.tagReport = cms.untracked.InputTag("primDigis")
-
-process.digiTask.tagHBHE = cms.untracked.InputTag('primDigis')
-process.digiTask.tagHO = cms.untracked.InputTag('primDigis')
-process.digiTask.tagHF = cms.untracked.InputTag('primDigis')
-process.digiTask.runkeyVal = runType
-process.digiTask.runkeyName = runTypeName
-
 process.recHitTask.tagHBHE = cms.untracked.InputTag("hbhereco")
 process.recHitTask.tagHO = cms.untracked.InputTag("horeco")
 process.recHitTask.tagHF = cms.untracked.InputTag("hfreco")
 process.recHitTask.runkeyVal = runType
 process.recHitTask.runkeyName = runTypeName
-prcoess.recHitTask.tagRaw = rawTagUntracked
-
-process.tpTask.runkeyVal = runType
-process.tpTask.runkeyName = runTypeName
-process.tpTask.tagData = cms.untracked.InputTag("primDigis")
-process.tpTask.tagEmul = cms.untracked.InputTag("emulTPPrim")
+process.recHitTask.tagRaw = rawTagUntracked
 
 #-------------------------------------
 #	Hcal DQM Tasks/Clients Sequences Definition

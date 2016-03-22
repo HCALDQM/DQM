@@ -79,13 +79,7 @@ rawTagUntracked = cms.untracked.InputTag("rawDataCollector")
 if isHeavyIon:
 	rawTag = cms.InputTag("rawDataRepacker")
 	rawTagUntracked = cms.untracked.InputTag("rawDataRepacker")
-process.essourceSev = cms.ESSource(
-		"EmptyESSource",
-		recordName		= cms.string("HcalSeverityLevelComputerRcd"),
-		firstValid		= cms.vuint32(1),
-		iovIsRunNotTime	= cms.bool(True)
-)
-process.hcalRecAlgos.DropChannelStatusBits = cms.vstring('')
+
 process.emulTPDigis = \
 		process.simHcalTriggerPrimitiveDigis.clone()
 process.emulTPDigis.inputLabel = \
@@ -101,7 +95,6 @@ process.hcalDigis.InputLabel = rawTag
 #	Hcal DQM Tasks and Harvesters import
 #	New Style
 #-------------------------------------
-process.load("DQM.HcalTasks.RecHitTask")
 process.load("DQM.HcalTasks.DigiTask")
 process.load('DQM.HcalTasks.TPTask')
 process.load('DQM.HcalTasks.RawTask')
@@ -133,8 +126,6 @@ process.digiTask.runkeyVal = runType
 process.digiTask.runkeyName = runTypeName
 process.rawTask.runkeyVal = runType
 process.rawTask.runkeyName = runTypeName
-process.recHitTask.runkeyVal = runType
-process.recHitTask.runkeyName = runTypeName
 process.tpTask.runkeyVal = runType
 process.tpTask.runkeyName = runTypeName
 
