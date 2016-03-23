@@ -35,10 +35,7 @@ class HcalHarvesting : public DQHarvester
 			DQMStore::IGetter&);
 
 		//	flags to harvest...
-		bool _digiHarvesting;
-		bool _rawHarvesting;
-		bool _recoHarvesting;
-		bool _tpHarvesting;
+		int _modules[4];
 
 		//	electronicsmap hash
 		electronicsmap::ElectronicsMap _emaphash;
