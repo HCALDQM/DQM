@@ -36,6 +36,10 @@ class HcalHarvesting : public DQHarvester
 
 		//	flags to harvest...
 		int _modules[4];
+		bool _rawHarvesting;
+		bool _digiHarvesting;
+		bool _recoHarvesting;
+		bool _tpHarvesting;
 
 		//	electronicsmap hash
 		electronicsmap::ElectronicsMap _emaphash;
