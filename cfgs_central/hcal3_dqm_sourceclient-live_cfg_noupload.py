@@ -44,12 +44,12 @@ process.load('DQM.Integration.config.environment_cfi')
 #-------------------------------------
 process.dqmEnv.subSystemFolder = subsystem
 # note to have a different filename saved
-process.dqmSaver.tag = "Hcal2"
+process.dqmSaver.tag = subsystem
 referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
 process.DQMStore.verbose = 0
-process.DQM.collectorPort = cms.untracked.int32(9190)
+process.DQM.collectorPort = cms.untracked.int32(9999)
 process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
 process.dqmSaver.path = "/data/hcaldqm/DQMIO/ONLINE_PLAYBACK"
 
@@ -187,13 +187,8 @@ process.recHitTask.tagRaw = rawTagUntracked
 #	Hcal DQM Tasks/Clients Sequences Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
-		process.recHitTask
-		+process.digiComparisonTask
+		process.digiComparisonTask
 		+process.tpComparisonTask
-)
-
-process.harvestingSequence = cms.Sequence(
-	process.hcalHarvesting
 )
 
 #-------------------------------------
@@ -206,12 +201,6 @@ process.preRecoSequence = cms.Sequence(
 		*process.emulTPSec
 )
 
-process.recoSequence = cms.Sequence(
-		process.hfreco
-		*process.hbhereco
-		*process.horeco
-)
-
 process.dqmSequence = cms.Sequence(
 		process.dqmEnv
 		*process.dqmSaver
@@ -219,9 +208,7 @@ process.dqmSequence = cms.Sequence(
 
 process.p = cms.Path(
 		process.preRecoSequence
-		*process.recoSequence
 		*process.tasksSequence
-		*process.harvestingSequence
 		*process.dqmSequence
 )
 
