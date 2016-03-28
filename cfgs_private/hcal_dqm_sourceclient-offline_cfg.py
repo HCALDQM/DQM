@@ -78,6 +78,7 @@ process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
 rawTag			= cms.InputTag("rawDataCollector")
+rawTagUntracked	= cms.untracked.InputTag("rawDataCollector")
 process.essourceSev = cms.ESSource(
 		"EmptyESSource",
 		recordName		= cms.string("HcalSeverityLevelComputerRcd"),
@@ -101,7 +102,11 @@ process.hbhereco = process.hbheprereco.clone()
 #	Hcal DQM Tasks and Clients import
 #	New Style
 #-------------------------------------
-process.load("DQM.HcalTasks.OfflineSourceSequence_pp")
+process.load("DQM.HcalTasks.DigiTask")
+process.load('DQM.HcalTasks.TPTask')
+process.load('DQM.HcalTasks.RawTask')
+process.load('DQM.HcalTasks.RecHitTask')
+process.load('DQM.HcalTasks.HcalHarvesting')
 
 #-------------------------------------
 #	For Debugginb
@@ -114,19 +119,29 @@ process.load("DQM.HcalTasks.OfflineSourceSequence_pp")
 #-------------------------------------
 
 oldsubsystem = subsystem
+runType = 0
+runTypeName = "cosmics"
+process.rawTask.tagFEDs = rawTagUntracked
+process.digiTask.runkeyVal = runType
+process.digiTask.runkeyName = runTypeName
+process.rawTask.runkeyVal = runType
+process.rawTask.runkeyName = runTypeName
+process.tpTask.runkeyVal = runType
+process.tpTask.runkeyName = runTypeName
+process.recHitTask.runkeyVal = runType
+process.recHitTask.runkeyName = runTypeName
 
-#-------------------------------------
-#	Quality Tester. May be in the future
-#-------------------------------------
-#process.qTester = cms.EDAnalyzer(
-#	"QualityTester",
-#	prescaleFactor = cms.untracked.int32(1),
-#	qtList = cms.untracked.FileInPath(
-#		"DQM/HcalMonitorClient/data/hcal_qualitytest_config.xml"),
-#	getQualityTestsFromFile = cms.untracked.bool(True),
-#	qtestOnEndLumi = cms.untracked.bool(True),
-#	qtestOnEndRun = cms.untracked.bool(True)
-#)
+
+process.tasksSequence = cms.Sequence(
+	process.rawTask
+	*process.digiTask
+	*process.tpTask
+	*process.recHitTask
+)
+
+process.harvestingSequence = cms.Sequence(
+	process.hcalHarvesting
+)
 
 #-------------------------------------
 #	Paths/Sequences Definitions
@@ -150,8 +165,8 @@ process.dqmSequence = cms.Sequence(
 process.p = cms.Path(
 		process.preRecoSequence
 		*process.recoSequence
-		*process.hcalOfflineSequence
-		*process.qTester
+		*process.tasksSequence
+		*process.harvestingSequence
 		*process.dqmSequence
 )
 
