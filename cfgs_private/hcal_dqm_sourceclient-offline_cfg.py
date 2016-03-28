@@ -27,8 +27,8 @@ useMap		= False
 #-------------------------------------
 from DQM.Integration.config.online_customizations_cfi import *
 if useOfflineGT:
-	process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
-	process.GlobalTag.globaltag = '74X_dataRun2_HLT_v1'
+	process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+	process.GlobalTag.globaltag = '80X_dataRun2_HLT_v6'
 else:
 	process.load('DQM.Integration.config.FrontierCondition_GT_cfi')
 if useFileInput:
@@ -77,8 +77,6 @@ process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 #	-> L1 GT setting
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
-runType			= process.runType.getRunType()
-cmssw			= os.getenv("CMSSW_VERSION").split("_")
 rawTag			= cms.InputTag("rawDataCollector")
 process.essourceSev = cms.ESSource(
 		"EmptyESSource",
@@ -103,31 +101,7 @@ process.hbhereco = process.hbheprereco.clone()
 #	Hcal DQM Tasks and Clients import
 #	New Style
 #-------------------------------------
-process.load("DQM.HcalTasks.OfflineSequence")
-
-#-------------------------------------
-#	To force using uTCA
-#	Will not be here for Online DQM
-#-------------------------------------
-if useMap:
-	process.es_pool = cms.ESSource("PoolDBESSource",
-			process.CondDBSetup,
-			timetype = cms.string('runnumber'),
-			toGet = cms.VPSet(
-				cms.PSet(
-					record = cms.string(
-						"HcalElectronicsMapRcd"
-					),
-					tag = cms.string(
-						"HcalElectronicsMap_v7.05_hlt"
-					)
-				)
-			),
-			connect = cms.string(
-				'frontier://FrontierProd/CMS_CONDITIONS'),
-			authenticationMethod = cms.untracked.uint32(0)
-	)	
-	process.es_prefer_es_pool = cms.ESPrefer('PoolDBESSource', 'es_pool')
+process.load("DQM.HcalTasks.OfflineSourceSequence_pp")
 
 #-------------------------------------
 #	For Debugginb
@@ -159,7 +133,6 @@ oldsubsystem = subsystem
 #-------------------------------------
 process.preRecoSequence = cms.Sequence(
 		process.hcalDigis
-		*process.l1GtUnpack
 )
 
 process.recoSequence = cms.Sequence(
