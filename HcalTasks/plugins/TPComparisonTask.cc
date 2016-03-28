@@ -93,12 +93,10 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fN));
 
 	_cMsn_ElectronicsuTCA.initialize(_name, "Missing", 
-		hashfunctions::fElectronics,
 		new quantity::TrigTowerQuantity(quantity::fTTieta),
 		new quantity::TrigTowerQuantity(quantity::fTTiphi),
 		new quantity::ValueQuantity(quantity::fN));
 	_cMsn_ElectronicsVME.initialize(_name, "Missing",
-		hashfunctions::fElectronics,
 		new quantity::TrigTowerQuantity(quantity::fTTieta),
 		new quantity::TrigTowerQuantity(quantity::fTTiphi),
 		new quantity::ValueQuantity(quantity::fN));
@@ -126,8 +124,8 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 	_cEtMsm_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cFGMsm_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 
-	_cMsn_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
-	_cMsn_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cMsn_ElectronicsuTCA.book(ib, _subsystem, std::string("uTCA"));
+	_cMsn_ElectronicsVME.book(ib, _subsystem, std::string("VME"));
 	_cEtMsm.book(ib, _subsystem);
 	_cFGMsm.book(ib, _subsystem);
 

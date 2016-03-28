@@ -275,12 +275,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 
 /* virtual */ void PedestalTask::endRun(edm::Run const& r, 
 	edm::EventSetup const&)
-{	
-	if (_ptype==fLocal)
-		if (r.runAuxiliary().run()==1)
-			return;
-	this->_dump();
-}
+{}
 
 /* virtual */ void PedestalTask::_dump()
 {
@@ -339,7 +334,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			continue;
 		}
 
-		//	if not missing
+		//	if not missing, fill the occupancy...
+		_cOccupancyvsLS_Subdet.fill(did, _currentLS);
 		sum/=n; double rms = sqrt(sum2/n-sum*sum);
 		double diffm = sum-refm;
 		double diffr = rms - refr;
@@ -439,8 +435,6 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		_logger.dqmthrow("Collection HFDigiCollection isn't available"
 			+ _tagHF.label() + " " + _tagHF.instance());
 
-	int n1 = 0;
-	int n2 = 0;
 	for (HBHEDigiCollection::const_iterator it=chbhe->begin();
 		it!=chbhe->end(); ++it)
 	{
@@ -454,14 +448,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			_xPedSum2.get(did)+=it->sample(i).adc()*it->sample(i).adc();
 			_xPedEntries.get(did)++;
 		}
-
-		did.subdet()==HcalBarrel?n1++:n2++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), _currentLS,
-		n1);
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), _currentLS,
-		n2);
-	n1=0;
 	for (HODigiCollection::const_iterator it=cho->begin();
 		it!=cho->end(); ++it)
 	{
@@ -475,10 +462,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			_xPedSum2.get(did)+=it->sample(i).adc()*it->sample(i).adc();
 			_xPedEntries.get(did)++;
 		}
-		n1++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), _currentLS,
-		n1); n1=0;
 	for (HFDigiCollection::const_iterator it=chf->begin();
 		it!=chf->end(); ++it)
 	{
@@ -492,10 +476,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			_xPedSum2.get(did)+=it->sample(i).adc()*it->sample(i).adc();
 			_xPedEntries.get(did)++;
 		}
-		n1++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), _currentLS,
-		n1);
 }
 
 /* virtual */ bool PedestalTask::_isApplicable(edm::Event const& e)

@@ -105,7 +105,7 @@ class PedestalTask : public DQTask
 		Container2D		_cRMSBad_depth;
 
 		Container1D _cMissingvsLS_FED;
-		ContainerProf1D _cOccupancyvsLS_Subdet;
+		Container1D _cOccupancyvsLS_Subdet;
 		Container1D _cNBadMeanvsLS_FED;
 		Container1D _cNBadRMSvsLS_FED;
 
