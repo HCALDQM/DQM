@@ -86,7 +86,7 @@ class RecHitTask : public DQTask
 		ContainerProf2D _cTimingCut_ElectronicsVME;
 		ContainerProf2D _cTimingCut_ElectronicsuTCA;
 		ContainerProf2D _cTimingCut_depth;
-		ContainerProf1D _cTimingCutvsLS_FED;_
+		ContainerProf1D _cTimingCutvsLS_FED;
 
 		Container2D _cOccupancy_depth;
 		Container2D _cOccupancy_FEDVME;

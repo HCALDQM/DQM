@@ -13,7 +13,7 @@ import os, sys, socket, string
 #-------------------------------------
 import FWCore.ParameterSet.Config as cms
 process			= cms.Process('HCALDQM')
-subsystem		= 'Hcal2'
+subsystem		= 'Hcal'
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
 debugstr		= "### HcalDQM::cfg::DEBUG: "
 warnstr			= "### HcalDQM::cfg::WARN: "
@@ -43,11 +43,15 @@ process.load('DQM.Integration.config.environment_cfi')
 #	Central DQM Customization
 #-------------------------------------
 process.dqmEnv.subSystemFolder = subsystem
-process.dqmSaver.tag = "Hcal2" # to have a file saved as DQM_V..._Hcal2...
+# note to have a different filename saved
+process.dqmSaver.tag = "Hcal2"
 referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
 process.DQMStore.verbose = 0
+process.DQM.collectorPort = cms.untracked.int32(9190)
+process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
+process.dqmSaver.path = "/data/hcaldqm/DQMIO/ONLINE_PLAYBACK"
 
 #	Note, runType is obtained after importing DQM-related modules
 #	=> DQM-dependent
@@ -162,13 +166,11 @@ process.digiComparisonTask.tagHBHE1 = cms.untracked.InputTag('primDigis')
 process.digiComparisonTask.tagHBHE2 = cms.untracked.InputTag('secDigis')
 process.digiComparisonTask.runkeyVal = runType
 process.digiComparisonTask.runkeyName = runTypeName
-process.digiComparisonTask.subsystem = cms.untracked.string(subsystem)
 
 process.tpComparisonTask.tag1 = cms.untracked.InputTag('primDigis')
 process.tpComparisonTask.tag2 = cms.untracked.InputTag('secDigis')
 process.tpComparisonTask.runkeyVal = runType
 process.tpComparisonTask.runkeyName = runTypeName
-process.tpComparisonTask.subsystem = cms.untracked.string(subsystem)
 
 #-------------------------------------
 #	Settigns for the Primary Modules
@@ -180,9 +182,6 @@ process.recHitTask.tagHF = cms.untracked.InputTag("hfreco")
 process.recHitTask.runkeyVal = runType
 process.recHitTask.runkeyName = runTypeName
 process.recHitTask.tagRaw = rawTagUntracked
-process.recHitTask.subsystem = cms.untracked.string(subsystem)
-
-process.hcalHarvesting.subsystem = cms.untracked.string(subsystem)
 
 #-------------------------------------
 #	Hcal DQM Tasks/Clients Sequences Definition

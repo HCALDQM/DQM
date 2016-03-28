@@ -222,7 +222,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cEnergy_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
 
 	//	Timing
-	_cTimingCut_Subdet.book(ib, _emap, _subsystem);
+	_cTimingCut_SubdetPM.book(ib, _emap, _subsystem);
 	_cTimingvsEnergy_SubdetPM.book(ib, _emap, _subsystem);
 	_cTimingCut_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cTimingCut_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
@@ -331,7 +331,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 
 		if (energy>_cutE_HBHE)
 		{
-			_cTimingCut_Subdet.fill(did, timing);
+			_cTimingCut_SubdetPM.fill(did, timing);
 			_cTimingCut_HBHEPartition.fill(did, timing);
 			_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
 			_cOccupancyCut_depth.fill(did);
@@ -394,7 +394,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 
 		if (energy>_cutE_HO)
 		{
-			_cTimingCut_Subdet.fill(did, timing);
+			_cTimingCut_SubdetPM.fill(did, timing);
 			_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
 			_cOccupancyCut_depth.fill(did);
 			_cTimingCut_depth.fill(did, timing);
@@ -452,7 +452,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 
 		if (energy>_cutE_HF)
 		{
-			_cTimingCut_Subdet.fill(did, timing);
+			_cTimingCut_SubdetPM.fill(did, timing);
 			_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
 			_cOccupancyCut_depth.fill(did);
 			_cTimingCut_depth.fill(did, timing);
