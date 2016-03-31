@@ -46,9 +46,9 @@ void PedestalHarvesting::book(DQMStore* store)
 	{
 		sprintf(runname, "vs%d", _vruns[i]);
 		_vcPedestalDiff_SubdetPM[i].book(store, _emap,
-			"Hcal", runname);
+			_subsystem, runname);
 		_vcPedestalDiff_depth[i].book(store, _emap,
-			"Hcal", runname);
+			_subsystem, runname);
 	}
 }
 
@@ -75,7 +75,7 @@ void PedestalHarvesting::book(DQMStore* store)
 		store->open(*it, false, "", "", DQMStore::KeepRunDirs);
 		sprintf(runnumber,"Run %d", _vruns[irun]);
 		//	fill containers with data
-		_vcPedestalMean_depth[irun].load(store, _emap, "Hcal", "",
+		_vcPedestalMean_depth[irun].load(store, _emap, _subsystem, "",
 			std::string(runnumber), DQMStore::KeepRunDirs);
 
 		std::vector<HcalGenericDetId> dids = _emap->allPrecisionId();
