@@ -46,6 +46,14 @@ options.register(
 	"Module Name with Settings to be imported"
 )
 
+options.register(
+	'harvestRunList',
+	[],
+	VarParsing.VarParsing.multiplicity.list,
+	VarParsing.VarParsing.varType.int,
+	"Run List to Harvest"
+)
+
 options.parseArguments()
 #-------------------------------------
 #	Add the HCALDQM UTilities into the sys.path
@@ -104,7 +112,8 @@ process.DQM = cms.Service(
 process.dqmSaver.convention = settings.dqmguiconvention
 process.dqmSaver.workflow = "/%s/Commissioning2016/DQMIO" % options.runType.upper()
 process.dqmSaver.referenceHandling = 'all'
-process.dqmSaver.dirName = settings.dqmiopool
+#process.dqmSaver.dirName = settings.dqmiopool
+process.dqmSaver.dirName = './upload'
 process.dqmSaver.producer = 'DQM'
 process.dqmSaver.saveByLumiSection = -1
 process.dqmSaver.saveByRun = 1
@@ -133,8 +142,7 @@ from Configuration.AlCa.autoCond import autoCond
 #	-> L1 GT setting
 #	-> Rename the hbheprereco to hbhereco
 #-------------------------------------
-process.GlobalTag.globaltag = autoCond[settings.globaltag]
-#process.GlobalTag.globaltag = '74X_dataRun2_Express_v2'
+process.GlobalTag.globaltag = settings.globaltag
 if cmsnet:
 	process.GlobalTag.connect = 'frontier://(serverurl=http://frontier1.cms:8000/FrontierOnProd)(serverurl=http://frontier2.cms:8000/FrontierOnProd)(retrieve-ziplevel=0)/CMS_CONDITIONS'
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
@@ -145,11 +153,14 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #-------------------------------------
 #	Hcal DQM Tasks and Clients import
 #-------------------------------------
-process.load("DQM.TestTasks.PedestalTask")
-process.load("DQM.TestTasks.LEDTask")
-process.load("DQM.TestTasks.LaserTask")
-process.load("DQM.TestTasks.RadDamTask")
+process.load("DQM.HcalTasks.PedestalTask")
+process.load("DQM.HcalTasks.LEDTask")
+process.load("DQM.HcalTasks.LaserTask")
+process.load("DQM.HcalTasks.RadDamTask")
 process.load('DQM.SpecificTasks.QIE10TestTask')
+process.load('DQM.SpecificHarvesting.PedestalHarvesting')
+process.load('DQM.SpecificHarvesting.LEDHarvesting')
+process.load('DQM.SpecificHarvesting.LaserHarvesting')
 
 #-------------------------------------
 #	To force using uTCA
@@ -201,21 +212,61 @@ process.qie10Digis.FEDs = cms.untracked.vint32(1132)
 #-------------------------------------
 #	Sequences Definition
 #-------------------------------------
+shouldHarvest = False
+print options.harvestRunList
 if "pedestal" in options.runType.lower():
 	process.tasksSequence = cms.Sequence(
 		process.pedestalTask
 		*process.qie10TestTask
 	)
+	#	check that the list of runs to harvest makes sense
+	if len(options.harvestRunList)==0:
+		print "### Exiting... Run List to Harvest is not provided..."
+		sys.exit(0)
+
+	#	create the harvesting sequence
+	process.harvestingSequence = cms.Sequence(
+		process.pedestalHarvesting
+	)
+	shouldHarvest = True
+	path = settings.dqmiopool+"/"
+	basefilename = "DQM_V0001_R000%d__PEDESTAL__Commissioning2016__DQMIO.root"
+	filenames = [path+(basefilename%x) for x in options.harvestRunList]
+	print filenames
+	process.pedestalHarvesting.files = cms.untracked.vstring(filenames)
+	process.pedestalHarvesting.runs = cms.untracked.vint32(
+		options.harvestRunList)
 elif 'led' in options.runType.lower():
 	process.tasksSequence = cms.Sequence(
 		process.ledTask
 		*process.qie10TestTask
 	)
+
+	#	check that the list of runs to harvest makes sense
+	if len(options.harvestRunList)==0:
+		print "### Exiting... Run List to Harvest is not provided..."
+		sys.exit(0)
+
+	#	create the harvesting sequence
+	process.harvestingSequence = cms.Sequence(
+		process.ledHarvesting
+	)
+	shouldHarvest = True
+	path = settings.dqmiopool+"/"
+	basefilename = "DQM_V0001_R000%d__LED__Commissioning2016__DQMIO.root"
+	filenames = [path+(basefilename%x) for x in options.harvestRunList]
+	print filenames
+	process.ledHarvesting.files = cms.untracked.vstring(filenames)
+	process.ledHarvesting.runs = cms.untracked.vint32(
+		options.harvestRunList)
 elif "laser" in options.runType.lower():
 	process.tasksSequence = cms.Sequence(
 		process.laserTask
 		*process.qie10TestTask
 	)
+#	process.harvestingSequence = cms.Sequence(
+#		process.laserHarvesting
+#	)
 elif "raddam" in options.runType.lower():
 	process.tasksSequence = cms.Sequence(process.raddamTask)
 else:
@@ -257,14 +308,25 @@ process.tbunpacker.fedRawDataCollectionTag = rawTag
 #-------------------------------------
 #	Execution Sequence Definition
 #-------------------------------------
-process.p = cms.Path(
-					process.tbunpacker
-					*process.hcalDigis
-					*process.qie10Digis
-					*process.tasksSequence
-                    *process.dqmEnv
-                    *process.dqmSaver
-)
+if shouldHarvest:
+	process.p = cms.Path(
+		process.tbunpacker
+		*process.hcalDigis
+		*process.qie10Digis
+		*process.tasksSequence
+		*process.harvestingSequence
+        *process.dqmEnv
+        *process.dqmSaver
+	)
+else:
+	process.p = cms.Path(
+		process.tbunpacker
+		*process.hcalDigis
+		*process.qie10Digis
+		*process.tasksSequence
+        *process.dqmEnv
+        *process.dqmSaver
+	)
 
 #-------------------------------------
 #	Outputs the event Content for Debugging mostly
