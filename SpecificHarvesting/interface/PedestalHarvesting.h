@@ -41,13 +41,22 @@ class PedestalHarvesting : public DQHarvester
 		std::vector<std::string>	_vfiles;
 		std::vector<int>			_vruns;
 
+		//	current run handle
+		int _runnum;
+
 		//	new containers
+		//	vs run# container
+		//	2D for each run comparison
+		//	1D for each run comparison
 		Container2D _cPedestalDiff_SubdetPM;
 		std::vector<Container1D> _vcPedestalDiff_SubdetPM;
 		std::vector<ContainerProf2D> _vcPedestalDiff_depth;
 
 		//	containers to be loaded
+		//	vector of means for each run
+		//	1 container for the current run histograms
 		std::vector<ContainerProf2D> _vcPedestalMean_depth;
+		ContainerProf2D _cPedestalMean_depth;
 
 		virtual void _dqmEndLuminosityBlock(DQMStore::IBooker&,
 			DQMStore::IGetter&,

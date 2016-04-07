@@ -6,9 +6,13 @@ namespace hcaldqm
 		DQModule(ps)
 	{}
 
-	/* virtual */ void DQHarvester::beginRun(edm::Run const&,
+	/* virtual */ void DQHarvester::beginRun(edm::Run const& r,
 		edm::EventSetup const& es)
 	{
+		if (_ptype==fLocal)
+			if (r.runAuxiliary().run()==1)
+				return;
+
 		edm::ESHandle<HcalDbService> dbs;
 		es.get<HcalDbRecord>().get(dbs);
 		_emap = dbs->getHcalMapping();

@@ -1,4 +1,4 @@
-#include "DQM/Harvesting/interface/HarvestingTest.h"
+#include "DQM/SpecificHarvesting/interface/HarvestingTest.h"
 
 HarvestingTest::HarvestingTest(edm::ParameterSet const& ps) :
 	DQHarvester(ps)

@@ -41,6 +41,9 @@ class LaserHarvesting : public DQHarvester
 		std::vector<std::string>	_vfiles;
 		std::vector<int>			_vruns;
 
+		//	current run number handle
+		int _runnum;
+
 		//	new containers
 		Container2D _cTimingMean_SubdetPM;
 		Container2D _cSignalRatio_SubdetPM;
@@ -50,6 +53,8 @@ class LaserHarvesting : public DQHarvester
 		//	containers to be loaded
 		std::vector<ContainerProf2D> _vcTimingMean_depth;
 		std::vector<ContainerProf2D> _vcSignalMean_depth;
+		ContainerProf2D _cSignalMean_depth;
+		ContainerProf2D _cTimingMean_depth;
 
 		virtual void _dqmEndLuminosityBlock(DQMStore::IBooker&,
 			DQMStore::IGetter&, edm::LuminosityBlock const&,

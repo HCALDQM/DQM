@@ -1,38 +1,21 @@
 import FWCore.ParameterSet.Config as cms
 
-pathToFiles = "/data/hcaldqm/DQMIO/local"
-hbmruns = [260918, 261050, 262031, 262398, 262670]
-hbmfiles = ["DQM_V0001_Hcal_R000260918.root", "DQM_V0001_Hcal_R000261050.root",
-	"DQM_V0001_Hcal_R000262031.root", "DQM_V0001_Hcal_R000262398.root",
-	"DQM_V0001_Hcal_R000262670.root"]
-
-hbpruns = [260919, 261053, 262032, 262399, 262673]
-hbpfiles = ["DQM_V0001_Hcal_R000260919.root", "DQM_V0001_Hcal_R000261053.root",
-	"DQM_V0001_Hcal_R000262032.root", "DQM_V0001_Hcal_R000262399.root",
-	"DQM_V0001_Hcal_R000262673.root"]
-
-hemruns = [260921, 261054, 262035, 262400]
-hemfiles = ["DQM_V0001_Hcal_R000260921.root", "DQM_V0001_Hcal_R000261054.root",
-	"DQM_V0001_Hcal_R000262035.root", "DQM_V0001_Hcal_R000262400.root"]
-
-hepruns = [260926, 261055, 262039, 262401]
-hepfiles = ["DQM_V0001_Hcal_R000260926.root", "DQM_V0001_Hcal_R000261055.root",
-	"DQM_V0001_Hcal_R000262039.root", "DQM_V0001_Hcal_R000262401.root"]
-
-for f in hbmfiles:
-	f = pathToFiles+"/"+f
-for f in hbpfiles:
-	f = pathToFiles+"/"+f
-for f in hemfiles:
-	f = pathToFiles+"/"+f
-for f in hepfiles:
-	f = pathToFiles+"/"+f
+path = "/data/hcaldqm/DQMIO/LOCAL/"
+basefilename = "DQM_V0001_R000%d__LASER__Commissioning2016__DQMIO.root"
+runs = cms.untracked.vint32(260763, 260782, 260838,
+		260930, 261057, 262040, 262668, 264052, 264260, 264509, 264548,
+		264737)
+filenames = [path+(basefilename%x) for x in runs]
 
 laserHarvesting = cms.EDAnalyzer(
 	"LaserHarvesting",
+	name = cms.untracked.string("LaserHarvesting"),
+	debug = cms.untracked.int32(0),
+	runkeyVal = cms.untracked.int32(0),
+	runkeyName = cms.untracked.string("pp_run"),
+	ptype = cms.untracked.int32(2),
+	subsystem = cms.untracked.string("Hcal"),
 
-	#	list of path/name of files to generate trend plots
-	files = cms.untracked.vstring(hepfiles),
-
-	runs = cms.untracked.vint32(hepruns)
+	files = cms.untracked.vstring(filenames),
+	runs = cms.untracked.vint32(runs)
 )
