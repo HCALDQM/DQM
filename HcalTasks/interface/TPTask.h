@@ -75,6 +75,7 @@ class TPTask : public DQTask
 		Container1D _cEtData_TTSubdet;
 		Container1D _cEtEmul_TTSubdet;
 		Container2D	_cEtCorr_TTSubdet;
+		Container2D _cEtCorr2x3_TTSubdet;
 		Container2D _cFGCorr_TTSubdet;
 
 		ContainerProf2D _cEtData_ElectronicsVME;
@@ -107,6 +108,10 @@ class TPTask : public DQTask
 		ContainerSingle2D _cOccupancyEmul_depthlike;
 		ContainerSingle2D _cOccupancyCutData_depthlike;
 		ContainerSingle2D _cOccupancyCutEmul_depthlike;
+
+		//	2x3 occupancies just in case
+		ContainerSingle2D _cOccupancyData2x3_depthlike;
+		ContainerSingle2D _cOccupancyEmul2x3_depthlike;
 
 		//	Mismatches: Et and FG
 		Container2D _cEtMsm_ElectronicsVME;

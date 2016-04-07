@@ -214,6 +214,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fN));
+	_cCapIdRots1LS_depth.initialize(_name, "CapId",
+		hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cCapIdRotsTotal_depth.initialize(_name, "CapIdTotal",
+		hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
 	_cMissing1LS_FEDVME.initialize(_name, "Missing1LS",
 		hashfunctions::fFED,
 		new quantity::ElectronicsQuantity(quantity::fSpigot),
@@ -223,6 +233,16 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		hashfunctions::fFED,
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMissing1LS_depth.initialize(_name, "Missing1LS",
+		hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cMissingTotal_depth.initialize(_name, "MissingTotal",
+		hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fN));
 	_cDigiSize_FEDVME.initialize(_name, "DigiSize",
 		hashfunctions::fFED,
@@ -288,8 +308,12 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 	_cCapIdRots_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cCapIdRots_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cCapIdRots_depth.book(ib, _emap, _subsystem);
+	_cCapIdRotsTotal_depth.book(ib, _emap, _subsystem);
 	_cMissing1LS_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cMissing1LS_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cMissing1LS_depth.book(ib, _emap, _subsystem);
+	_cMissingTotal_depth.book(ib, _emap, _subsystem);
 	_cDigiSize_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cDigiSize_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cSummary.book(ib, _subsystem);
@@ -315,6 +339,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		case hcaldqm::f10LS:
 			_cMissing1LS_FEDVME.reset();
 			_cMissing1LS_FEDuTCA.reset();
+			_cMissing1LS_depth.reset();
 			_cOccupancy_ElectronicsVME.reset();
 			_cOccupancy_ElectronicsuTCA.reset();
 			_cOccupancyCut_ElectronicsVME.reset();
@@ -375,7 +400,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_cOccupancy_ElectronicsuTCA.fill(eid);
 			_cOccupancyNR_FEDuTCA.fill(eid);
 			if (!it->validate(0, it->size()))
+			{
+				_cCapIdRots_depth.fill(did);
 				_cCapIdRots_FEDuTCA.fill(eid, 1);
+			}
 			_cDigiSize_FEDuTCA.fill(eid, it->size());
 		}
 
@@ -635,6 +663,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 						if (_cOccupancy_FEDVME.getBinContent(eid)<1)
 						{
 							_cMissing1LS_FEDVME.fill(eid);
+							HcalDetId did = _ehashmapVME.lookup(eid);
+							_cMissing1LS_depth.fill(did);
+							_cMissingTotal_depth.fill(did);
 							nmissing++;
 						}
 					}
@@ -693,6 +724,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 						if (_cOccupancy_FEDuTCA.getBinContent(eid)<1)
 						{
 							_cMissing1LS_FEDuTCA.fill(eid);
+							HcalDetId did = _ehashmapuTCA.lookup(eid);
+							_cMissing1LS_depth.fill(did);
+							_cMissingTotal_depth.fill(did);
 							nmissing++;
 						}
 					}

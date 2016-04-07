@@ -229,6 +229,24 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		new quantity::TrigTowerQuantity(quantity::fTTiphi),
 		new quantity::ValueQuantity(quantity::fRatio_0to2));
 
+	//	Whatever has to go online only goes here
+	if (_ptype==fOnline)
+	{
+		_cEtCorr2x3_TTSubdet.initialize(_name, "EtCorr2x3", 
+			hashfunctions::fTTSubdet,
+			new quantity::ValueQuantity(quantity::fEtCorr_256),
+			new quantity::ValueQuantity(quantity::fEtCorr_256),
+			new quantity::ValueQuantity(quantity::fN, true));
+		_cOccupancyData2x3_depthlike.initialize(_name, "OccupancyData2x3",
+			new quantity::TrigTowerQuantity(quantity::fTTieta2x3),
+			new quantity::TrigTowerQuantity(quantity::fTTiphi),
+			new quantity::ValueQuantity(quantity::fN));
+		_cOccupancyEmul2x3_depthlike.initialize(_name, "OccupancyEmul2x3",
+			new quantity::TrigTowerQuantity(quantity::fTTieta2x3),
+			new quantity::TrigTowerQuantity(quantity::fTTiphi),
+			new quantity::ValueQuantity(quantity::fN));
+	}
+
 	std::vector<std::string> fnames;
 	fnames.push_back("OcpUniSlotD");
 	fnames.push_back("OcpUniSlotE");
@@ -282,6 +300,14 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_cMsnData_depthlike.book(ib, _subsystem);
 	_cMsnEmul_depthlike.book(ib, _subsystem);
 	_cSummary.book(ib, _subsystem);
+
+	//	whatever has to go online only goes here
+	if (_ptype==fOnline)
+	{
+		_cEtCorr2x3_TTSubdet.book(ib, _emap, _subsystem);
+		_cOccupancyData2x3_depthlike.book(ib, _subsystem);
+		_cOccupancyEmul2x3_depthlike.book(ib, _subsystem);
+	}
 	
 	//	initialize the hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fT2EHashMap);
@@ -328,16 +354,31 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	bool useD1 = false;
 	//	\tmp
 
+	//	loop over data tp digis
 	for (HcalTrigPrimDigiCollection::const_iterator it=cdata->begin();
 		it!=cdata->end(); ++it)
 	{
-		//	tmp
-		if (_skip1x1)
-			if (it->id().version()>0)	// 10 is the depth for 1x1 or v1
-				continue;
-		//	\tmp
-
 		HcalTrigTowerDetId tid = it->id();
+
+		//	for HF 2x3 TPs do separately...
+		if (tid.version()==0 && tid.ietaAbs()>=29)
+		{
+			//	do this only for online processing
+			if (_ptype==fOnline)
+			{
+				_cOccupancyData2x3_depthlike.fill(tid);
+				HcalTrigPrimDigiCollection::const_iterator jt=cemul->find(
+					HcalTrigTowerDetId(tid.ieta(), tid.iphi(), 0));
+				if (jt!=cemul->end())
+					_cEtCorr2x3_TTSubdet.fill(tid, it->SOI_compressedEt(),
+						jt->SOI_compressedEt());
+			}
+
+			//	skip to the next tp digi
+			continue;
+		}
+
+		//	further only HBHE regular TPs + HF 1x1
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(tid));
 		int soiEt_d = it->SOI_compressedEt();
 		int soiFG_d = it->SOI_fineGrain()?1:0;
@@ -441,16 +482,21 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 				_cMsnEmul_ElectronicsuTCA.fill(eid);
 		}
 	}
+	//	loop over emulator tp digis
 	for (HcalTrigPrimDigiCollection::const_iterator it=cemul->begin();
 		it!=cemul->end(); ++it)
 	{
-		//	tmp
-		if (_skip1x1)
-			if (it->id().version()>0)
-				continue;
-		//	\tmp
-
 		HcalTrigTowerDetId tid = it->id();
+		//	for HF 2x3 TP digis just fill the emulator occp
+		if (tid.version()==0 && tid.ietaAbs()>=29)
+		{
+			//	only do this for online processing
+			if (_ptype==fOnline)
+				_cOccupancyEmul2x3_depthlike.fill(tid);
+			continue;
+		}
+
+		//	continue only with 1x1 HF digis and regular HBHE tp digis
 		HcalTrigPrimDigiCollection::const_iterator jt=cdata->find(
 			HcalTrigTowerDetId(tid.ieta(), tid.iphi(), useD1?1:0));
 		if (jt==cdata->end())

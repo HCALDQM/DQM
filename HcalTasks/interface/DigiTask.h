@@ -114,9 +114,13 @@ class DigiTask : public DQTask
 
 		Container2D _cCapIdRots_FEDVME;
 		Container2D _cCapIdRots_FEDuTCA;
+		Container2D _cCapIdRots_depth
+		Container2D _cCapIdRotsTotal_depth;
 
 		Container2D _cMissing1LS_FEDVME;
 		Container2D _cMissing1LS_FEDuTCA;
+		Container2D _cMissing1LS_depth;
+		Container2D _cMissingTotal_depth;
 
 		Container1D _cDigiSize_FEDVME;
 		Container1D _cDigiSize_FEDuTCA;
