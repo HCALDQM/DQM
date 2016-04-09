@@ -54,13 +54,14 @@ namespace hcaldqm
 						it=eids.begin(); it!=eids.end(); ++it)
 					{
 						HcalDetId did = HcalDetId(_emap->lookup(*it));
-						EMapType::iterator eit = _ids.find(it->rawId());
+						uint32_t hash = hashfunctions::hash_EChannel(
+							*it);
+						EMapType::iterator eit = _ids.find(hash);
 						if (eit!=_ids.end())
 							continue;
 						
-						//	eid.rawId() -> did.rawId()
-						_ids.insert(std::make_pair(it->rawId(), 
-							did.rawId()));
+						//	note, we have EChannel hashing here
+						_ids.insert(std::make_pair(hash, did.rawId()));
 					}
 				}
 				else if (_etype==fE2THashMap)
@@ -108,6 +109,7 @@ namespace hcaldqm
 							_emap->lookup(*it));
 						if (filter.filter(*it))
 							continue;
+						//	skip those that are not detid or calib ids
 						if (!did.isHcalDetId())
 							continue;
 
@@ -136,12 +138,16 @@ namespace hcaldqm
 					{
 						HcalGenericDetId did = HcalGenericDetId(
 							_emap->lookup(*it));
+						uint32_t hash = hashfunctions::hash_EChannel(
+							*it);
 						if (filter.filter(*it))
 							continue;
+						//	skip those that are not detid or calib ids
 						if (!did.isHcalDetId())
 							continue;
 
-						_ids.insert(std::make_pair(it->rawId(), did.rawId()));
+						//	note: use EChannel hashing here!
+						_ids.insert(std::make_pair(hash,did.rawId()));
 					}
 				}
 				else if (_etype==fE2THashMap)

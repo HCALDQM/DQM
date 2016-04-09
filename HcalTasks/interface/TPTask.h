@@ -130,6 +130,12 @@ class TPTask : public DQTask
 		Container2D _cMsnEmul_ElectronicsuTCA;
 		ContainerSingle2D _cMsnEmul_depthlike;
 
+		//	Occupancy vs BX
+		ContainerProf1D _cOccupancyDatavsBX_TTSubdet;
+		ContainerProf1D _cOccupancyEmulvsBX_TTSubdet;
+		ContainerProf1D _cOccupancyCutDatavsBX_TTSubdet;
+		ContainerProf1D _cOccupancyCutEmulvsBX_TTSubdet;
+
 		ContainerSingle2D _cSummary;
 };
 

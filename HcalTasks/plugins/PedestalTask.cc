@@ -135,19 +135,19 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 
 	_cMissingvsLS_FED.initialize(_name, "MissingvsLS", 
 		hashfunctions::fFED,
-		new quantity::LumiSection(_numLSstart),
+		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fN));
 	_cOccupancyvsLS_Subdet.initialize(_name, "OccupancyvsLS", 
 		hashfunctions::fSubdet,
-		new quantity::LumiSection(_numLSstart),
+		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fN));
 	_cNBadMeanvsLS_FED.initialize(_name, "NBadMeanvsLS", 
 		hashfunctions::fFED,
-		new quantity::LumiSection(_numLSstart),
+		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fN));
 	_cNBadRMSvsLS_FED.initialize(_name, "NBadRMSvsLS", 
 		hashfunctions::fFED,
-		new quantity::LumiSection(_numLSstart),
+		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fN));
 
 	_cMissing_depth.initialize(_name, "Missing", hashfunctions::fdepth,

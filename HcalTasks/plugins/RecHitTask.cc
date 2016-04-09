@@ -104,7 +104,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fTiming_ns));
 	_cTimingCutvsLS_FED.initialize(_name, "TimingCutvsLS",
 		hashfunctions::fFED,
-		new quantity::LumiSection(_numLSstart),
+		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fTiming_ns));
 	_cTimingCut_ElectronicsVME.initialize(_name, "TimingCut",
 		hashfunctions::fElectronics,
@@ -154,7 +154,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fN));
 	_cOccupancyvsLS_Subdet.initialize(_name, "OccupancyvsLS",
 		hashfunctions::fSubdet,
-		new quantity::LumiSection(_numLSstart),
+		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fN_to3000));
 	_cOccupancyCut_FEDVME.initialize(_name, "OccupancyCut",
 		hashfunctions::fFED,
@@ -178,7 +178,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fN));
 	_cOccupancyCutvsLS_Subdet.initialize(_name, "OccupancyCutvsLS",
 		hashfunctions::fSubdet,
-		new quantity::LumiSection(_numLSstart),
+		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fN_to3000));
 	_cOccupancyCut_depth.initialize(_name, "OccupancyCut",
 		hashfunctions::fdepth,
@@ -259,7 +259,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 {
 	switch(uf)
 	{
-		case hcaldqm::fLS:
+		case hcaldqm::f1LS:
 			_cOccupancy_FEDVME.reset();
 			_cOccupancy_FEDuTCA.reset();
 			break;
@@ -333,20 +333,32 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		{
 			_cTimingCut_SubdetPM.fill(did, timing);
 			_cTimingCut_HBHEPartition.fill(did, timing);
-			_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
+			if (timing>=-12.5 && timing<=12.5)
+			{
+				//	time constrains here are explicit!
+				_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
+				_cTimingCut_depth.fill(did, timing);
+			}
 			_cOccupancyCut_depth.fill(did);
-			_cTimingCut_depth.fill(did, timing);
 			if (eid.isVMEid())
 			{
-				_cTimingCut_FEDVME.fill(eid, timing);
-				_cTimingCut_ElectronicsVME.fill(eid, timing);
+				if (timing>=-12.5 && timing<=12.5)
+				{
+					//	time constraints are explicit!
+					_cTimingCut_FEDVME.fill(eid, timing);
+					_cTimingCut_ElectronicsVME.fill(eid, timing);
+				}
 				_cOccupancyCut_FEDVME.fill(eid);
 				_cOccupancyCut_ElectronicsVME.fill(eid);
 			}
 			else
 			{
-				_cTimingCut_FEDuTCA.fill(eid, timing);
-				_cTimingCut_ElectronicsuTCA.fill(eid, timing);
+				if (timing>=-12.5 && timing<=12.5)
+				{
+					//	time constraints are explicit!
+					_cTimingCut_FEDuTCA.fill(eid, timing);
+					_cTimingCut_ElectronicsuTCA.fill(eid, timing);
+				}
 				_cOccupancyCut_FEDuTCA.fill(eid);
 				_cOccupancyCut_ElectronicsuTCA.fill(eid);
 			}
@@ -519,6 +531,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
 					{
 						eid = HcalElectronicsId(ifc, ifib, is, eid.dccid());
+
 						if (_cOccupancy_FEDVME.getBinContent(eid)<1)
 						{
 							_cMissing1LS_FEDVME.fill(eid);

@@ -118,7 +118,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fN));
 	_cBadQualityvsLS.initialize(_name, "BadQualityvsLS",
-		new quantity::LumiSection(_numLSstart),
+		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fN_m0to10000));
 	_cBadQualityvsBX.initialize(_name, "BadQualityvsBX",
 		new quantity::ValueQuantity(quantity::fBX),
@@ -127,6 +127,16 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		hashfunctions::fdepth,
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cBadQualityTotal_FEDVME.initialize(_name, "BadQualityTotal",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSpigot),
+		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+		new quantity::ValueQuantity(quantity::fN));
+	_cBadQualityTotal_FEDuTCA.initialize(_name, "BadQualityTotal",
+		hashfunctions::fFED,
+		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fN));
 
 	//	Summary
@@ -152,6 +162,8 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 	_cBadQuality_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cBadQuality_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cBadQualityTotal_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+	_cBadQualityTotal_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cBadQuality_depth.book(ib, _emap, _subsystem);
 	_cBadQualityvsLS.book(ib, _subsystem);
 	_cBadQualityvsBX.book(ib, _subsystem);
@@ -168,7 +180,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	{
 		case fEvent:
 			break;
-		case hcaldqm::fLS:
+		case hcaldqm::f1LS:
 			_cEvnMsm_ElectronicsVME.reset();
 			_cBcnMsm_ElectronicsVME.reset();
 			_cEvnMsm_ElectronicsuTCA.reset();
@@ -200,16 +212,20 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	//	extract some info
 	int bx = e.bunchCrossing();
 
-	_cBadQualityvsLS.fill(_currentLS,creport->badQualityDigis());
-	_cBadQualityvsBX.fill(bx, creport->badQualityDigis());
+	
+	int nn = 0;
+	//	loop thru and fill the detIds with bad quality
+	//	NOTE: Calibration Channels are skipped!
+	//	TODO: Include for Online Calibration Channels marked as bad
+	//	a comment below is left on purpose!
+	//_cBadQualityvsBX.fill(bx, creport->badQualityDigis());
 	for (std::vector<DetId>::const_iterator it=creport->bad_quality_begin();
 		it!=creport->bad_quality_end(); ++it)
 	{
-		//	TODO - this should be taken care of...
-		//	if true -> either throw or put somewhere to note!
 		if (!HcalGenericDetId(*it).isHcalDetId())
 			continue;
 
+		nn++;
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(*it));
 		_cBadQuality_depth.fill(HcalDetId(*it));
 		if (eid.isVMEid())
@@ -225,6 +241,8 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			_cBadQuality_FEDuTCA.fill(eid);
 		}
 	}
+	_cBadQualityvsLS.fill(_currentLS,nn);
+	_cBadQualityvsBX.fill(bx, nn);
 
 	for (int fed=FEDNumbering::MINHCALFEDID; 
 		fed<=FEDNumbering::MAXHCALuTCAFEDID; fed++)
@@ -318,6 +336,14 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	}
 }
 
+/* virtual */ void RawTask::beginLuminosityBlock(edm::LuminosityBlock const& lb,
+	edm::EventSetup const& es)
+{
+	DQTask::beginLuminosityBlock(lb, es);
+
+//	_cBadQualityvsLS.extendAxisRange();
+}
+
 /* virtual */ void RawTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
@@ -352,7 +378,10 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					{
 						eid = HcalElectronicsId(ifc, ifib, eid.spigot(),
 							eid.dccid());
-						nbad+=_cBadQuality_FEDVME.getBinContent(eid);
+						int nn =_cBadQuality_FEDVME.getBinContent(eid);
+						nbad+=nn>0?1:0;
+						if (nn>0)
+							_cBadQualityTotal_FEDVME.fill(eid);
 					}
 			}
 		}
@@ -374,7 +403,10 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					{
 						eid = HcalElectronicsId(eid.crateId(), 
 							eid.slot(), ifib, ifc, false);
-						nbad+=_cBadQuality_FEDuTCA.getBinContent(eid);
+						int nn=_cBadQuality_FEDuTCA.getBinContent(eid);
+						nbad+=nn>0?1:0;
+						if (nn>0)
+							_cBadQualityTotal_FEDuTCA.fill(eid);
 					}
 				}
 			}

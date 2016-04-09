@@ -95,10 +95,10 @@ namespace hcaldqm
 		_me->setAxisTitle(_qy->name(), 2);
 		_me->setAxisTitle(_qz->name(), 3);
 
-		TObject *o = _me->getRootObject();
-		_qx->setBits(o);
-		_qy->setBits(o);
-		_qz->setBits(o);
+		TH1 *h = _me->getTH1();
+		_qx->setBits(h);
+		_qy->setBits(h);
+		_qz->setBits(h);
 
 		std::vector<std::string> xlabels = _qx->getLabels();
 		std::vector<std::string> ylabels = _qy->getLabels();

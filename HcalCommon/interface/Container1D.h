@@ -307,6 +307,8 @@ namespace hcaldqm
 			//	print all the elements
 			virtual void print();
 
+			virtual void extendAxisRange(int);
+
 		protected:
 			virtual void customize(MonitorElement*);
 

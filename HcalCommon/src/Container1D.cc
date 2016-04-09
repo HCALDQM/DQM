@@ -1140,14 +1140,26 @@ namespace hcaldqm
 		me->setAxisTitle(_qy->name(), 2);
 
 		//	set bits
-		TObject *o = me->getRootObject();	
-		_qx->setBits(o);
-		_qy->setBits(o);
+		TH1 *h = me->getTH1();	
+		_qx->setBits(h);
+		_qy->setBits(h);
 
 		//	set labels
 		std::vector<std::string> xlabels = _qx->getLabels();
 		for (unsigned int i=0; i<xlabels.size(); i++)
 			me->setBinLabel(i+1, xlabels[i], 1);
+	}
+
+	/* virtual */ void Container1D::extendAxisRange(int l)
+	{
+		if (l<_qx->nbins())
+			return;
+
+		//	inflate all the mes
+		BOOST_FOREACH(MEMap::value_type &pair, _mes)
+		{
+			pair.second->getTH1()->LabelsInflate();
+		}
 	}
 }
 

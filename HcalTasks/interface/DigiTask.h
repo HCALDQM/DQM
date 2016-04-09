@@ -30,6 +30,8 @@ class DigiTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
+		virtual void beginLuminosityBlock(edm::LuminosityBlock const&,
+			edm::EventSetup const&);
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
 
@@ -111,16 +113,19 @@ class DigiTask : public DQTask
 
 		ContainerProf1D _cOccupancyvsLS_Subdet;
 		ContainerProf1D _cOccupancyCutvsLS_Subdet;
+		ContainerProf1D _cOccupancyCutvsBX_Subdet;
 
 		Container2D _cCapIdRots_FEDVME;
 		Container2D _cCapIdRots_FEDuTCA;
-		Container2D _cCapIdRots_depth
+		Container2D _cCapIdRots_depth;
 		Container2D _cCapIdRotsTotal_depth;
 
 		Container2D _cMissing1LS_FEDVME;
 		Container2D _cMissing1LS_FEDuTCA;
 		Container2D _cMissing1LS_depth;
 		Container2D _cMissingTotal_depth;
+		Container2D _cMissingTotal_FEDVME;
+		Container2D _cMissingTotal_FEDuTCA;
 
 		Container1D _cDigiSize_FEDVME;
 		Container1D _cDigiSize_FEDuTCA;

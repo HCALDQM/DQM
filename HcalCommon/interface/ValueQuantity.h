@@ -96,12 +96,17 @@ namespace hcaldqm
 				virtual double min() {return min_value[_type];}
 				virtual double max() {return max_value[_type];}
 
-				virtual void setBits(TObject* o)
+				virtual void setBits(TH1* o)
 				{Quantity::setBits(o);setLS(o);}
-				virtual void setLS(TObject* o)
+				virtual void setLS(TH1* o)
 				{
 					if (_type==fLS)
+					{
+						//	for LS axis - set the bit
+						//	set extendable axes.
 						o->SetBit(BIT(BIT_OFFSET+BIT_AXIS_LS));
+						o->SetCanExtend(TH1::kAllAxes);
+					}
 				}
 
 			protected:
@@ -148,6 +153,8 @@ namespace hcaldqm
 				virtual double max() {return _n+0.5;}
 				virtual int getValue(int l) {return l;}
 				virtual uint32_t getBin(int l) {return getValue(l);}
+
+				virtual void setMax(double x) {_n=x;}
 
 			protected:
 				int _n;

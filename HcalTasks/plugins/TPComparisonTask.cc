@@ -49,18 +49,18 @@ TPComparisonTask::TPComparisonTask(edm::ParameterSet const& ps):
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fEtCorr_256),
 			new quantity::ValueQuantity(quantity::fEtCorr_256),
-			new quantity::ValueQuantity(quantity::fN));
+			new quantity::ValueQuantity(quantity::fN, true));
 		_cFG_TTSubdet[i].initialize(_name, "FG",
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fFG),
 			new quantity::ValueQuantity(quantity::fFG),
-			new quantity::ValueQuantity(quantity::fN));
+			new quantity::ValueQuantity(quantity::fN, true));
 	}
 	_cEtall_TTSubdet.initialize(_name, "Et",
 		hashfunctions::fTTSubdet,
 		new quantity::ValueQuantity(quantity::fEtCorr_256),
 		new quantity::ValueQuantity(quantity::fEtCorr_256),
-		new quantity::ValueQuantity(quantity::fN));
+		new quantity::ValueQuantity(quantity::fN, true));
 	_cMsn_FEDVME.initialize(_name, "Missing",
 		hashfunctions::fFED,
 		new quantity::ElectronicsQuantity(quantity::fSpigot),

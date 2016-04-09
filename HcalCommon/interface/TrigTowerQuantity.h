@@ -74,7 +74,7 @@ namespace hcaldqm
 		};
 		double const min_tid[nTrigTowerQuantityType] = {
 			0.5, 0, -0.5, 0, 0, 0
-i		};
+		};
 		double const max_tid[nTrigTowerQuantityType] = {
 			72.5, 82, 0.5, 2, 4, 8
 		};

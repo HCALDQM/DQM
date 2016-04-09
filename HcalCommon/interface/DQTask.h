@@ -10,13 +10,14 @@
 #include "DQM/HcalCommon/interface/DQModule.h"
 #include "DQM/HcalCommon/interface/ContainerI.h"
 #include "DQM/HcalCommon/interface/ContainerS.h"
+#include "DQM/HcalCommon/interface/ContainerXXX.h"
 
 namespace hcaldqm
 {
 	enum UpdateFreq
 	{
 		fEvent = 0,
-		fLS = 1,
+		f1LS = 1,
 		f10LS = 2,
 		f50LS = 3,
 		f100LS = 4,
@@ -56,6 +57,11 @@ namespace hcaldqm
 
 			//	counters
 			int			_procLSs;
+
+			//	vector of HCAL FEDs registered for the Run
+			std::vector<int> _vriFEDs;
+			//	container of quality masks from conddb
+			ContainerXXX<uint32_t> _xQuality;
 
 			//	Tags and corresponding Tokens
 			edm::InputTag		_tagRaw;

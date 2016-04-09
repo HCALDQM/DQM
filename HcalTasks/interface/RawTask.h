@@ -38,6 +38,8 @@ class RawTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
+		virtual void beginLuminosityBlock(edm::LuminosityBlock const&,
+			edm::EventSetup const&);
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
 
@@ -67,6 +69,8 @@ class RawTask : public DQTask
 		Container2D _cBadQuality_FEDVME;
 		Container2D _cBadQuality_FEDuTCA;
 		Container2D _cBadQuality_depth;
+		Container2D _cBadQualityTotal_FEDVME;
+		Container2D _cBadQualityTotal_FEDuTCA;
 		ContainerSingleProf1D _cBadQualityvsLS;
 		ContainerSingleProf1D _cBadQualityvsBX;
 
