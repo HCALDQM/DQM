@@ -94,18 +94,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ValueQuantity(quantity::fN));
 
-	//	Occupancies
-	_cOccupancy_ElectronicsVME.initialize(_name, "Occupancy",
-		hashfunctions::fElectronics,
-		new quantity::FEDQuantity(vFEDsVME),
-		new quantity::ElectronicsQuantity(quantity::fSpigot),
-		new quantity::ValueQuantity(quantity::fN));
-	_cOccupancy_ElectronicsuTCA.initialize(_name, "Occupancy",
-		hashfunctions::fElectronics,
-		new quantity::FEDQuantity(vFEDsuTCA),
-		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
-		new quantity::ValueQuantity(quantity::fN));
-
 	//	Bad Quality
 	_cBadQuality_FEDVME.initialize(_name, "BadQuality",
 		hashfunctions::fFED,
@@ -149,6 +137,27 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new quantity::FlagQuantity(fnames),
 		new quantity::QualityQuantity());
 
+	//	INITIALIZE HISTOGRAMS to be used in Online Only
+	if (_ptype==fOnline)
+	{
+		_cEvnMsmvsLS_ElectronicsVME.initialize(_name, "EvnMsmvsLS",
+			hashfunctions::fElectronics,
+			new quantity::LumiSection(_maxLS),
+			new quantity::ValueQuantity(quantity::fN));
+		_cEvnMsmvsLS_ElectronicsuTCA.initialize(_name, "EvnMsmvsLS",
+			hashfunctions::fElectronics,
+			new quantity::LumiSection(_maxLS),
+			new quantity::ValueQuantity(quantity::fN));
+		_cBcnMsmvsLS_ElectronicsVME.initialize(_name, "BcnMsmvsLS",
+			hashfunctions::fElectronics,
+			new quantity::LumiSection(_maxLS),
+			new quantity::ValueQuantity(quantity::fN));
+		_cBcnMsmvsLS_ElectronicsuTCA.initialize(_name, "BcnMsmvsLS",
+			hashfunctions::fElectronics,
+			new quantity::LumiSection(_maxLS),
+			new quantity::ValueQuantity(quantity::fN));
+	}
+
 	//	BOOK HISTOGRAMS
 	_cEvnMsm_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cBcnMsm_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
@@ -157,8 +166,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cBcnMsm_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cOrnMsm_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
 
-	_cOccupancy_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
-	_cOccupancy_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
 
 	_cBadQuality_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cBadQuality_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
@@ -169,6 +176,15 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cBadQualityvsBX.book(ib, _subsystem);
 
 	_cSummary.book(ib, _subsystem);
+
+	// BOOK HISTOGRAMS to be used in ONLINE ONLY!
+	if (_ptype==fOnline)
+	{
+		_cEvnMsmvsLS_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
+		_cEvnMsmvsLS_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
+		_cBcnMsmvsLS_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
+		_cBcnMsmvsLS_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	}
 
 	//	initialize hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fD2EHashMap);
@@ -286,13 +302,22 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 				bool qevn = (htr_evn!=evn);
 				bool qbcn = (htr_bcn!=bcn);
 				bool qorn = (htr_orn!=orn);
-				_cOccupancy_ElectronicsVME.fill(eid);
 				if (qevn)
+				{
 					_cEvnMsm_ElectronicsVME.fill(eid);
+
+					if (_ptype==fOnline && is<=constants::SPIGOT_MAX)
+						_cEvnMsmvsLS_ElectronicsVME.fill(eid, 100);
+				}
 				if (qorn)
 					_cOrnMsm_ElectronicsVME.fill(eid);
 				if (qbcn)
+				{
 					_cBcnMsm_ElectronicsVME.fill(eid);
+
+					if (_ptype==fOnline && is<=constants::SPIGOT_MAX)
+						_cBcnMsmvsLS_ElectronicsVME.fill(eid, 100);
+				}
 			}
 		}
 		else	// uTCA
@@ -318,7 +343,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 				HcalUHTRData uhtr(hamc13->AMCPayload(iamc),
 					hamc13->AMCSize(iamc));
 
-				_cOccupancy_ElectronicsuTCA.fill(eid);
 				uint32_t uhtr_evn = uhtr.l1ANumber();
 				uint32_t uhtr_bcn = uhtr.bunchNumber();
 				uint32_t uhtr_orn = uhtr.orbitNumber();
@@ -326,11 +350,21 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 				bool qbcn = (uhtr_bcn!=bcn);
 				bool qorn = (uhtr_orn!=orn);
 				if (qevn)
+				{
 					_cEvnMsm_ElectronicsuTCA.fill(eid);
+
+					if (_ptype==fOnline)
+						_cEvnMsmvsLS_ElectronicsuTCA.fill(eid, 100);
+				}
 				if (qorn)
 					_cOrnMsm_ElectronicsuTCA.fill(eid);
 				if (qbcn)
+				{
 					_cBcnMsm_ElectronicsuTCA.fill(eid);
+
+					if (_ptype==fOnline)
+						_cBcnMsmvsLS_ElectronicsuTCA.fill(eid, 100);
+				}
 			}
 		}
 	}
@@ -348,8 +382,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	edm::EventSetup const& es)
 {
 	/*
-	 *	for each fed set the flags in the summary	
-	 */
+	 
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
@@ -360,6 +393,14 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			_cSummary.setBinContent(eid, flag, fNA);
 		}
 
+		//	second, check if this FED is @cDAQ
+		//	if not, leave status as inapplicable!
+		std::vector<uint32_t> jt = std::find(_vcdaqEids.begin(),
+			_vcdaqEids.end(), *it);
+		if (jt==_vcdaqEids.end())
+			continue;
+
+		//	loop over and set status
 		int nevnmsm = 0;
 		int nbcnmsm = 0;
 		int nbad = 0;
@@ -423,7 +464,8 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fLow):
 			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fGood);
 	}
-	
+	*/	
+
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);
 }

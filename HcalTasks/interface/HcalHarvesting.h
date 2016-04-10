@@ -2,9 +2,27 @@
 #define HcalHarvesting_h
 
 /**
- *	file:		
- *	Author:	
- *	Date:
+ *	file:		HcalHarvesting.h
+ *	Author:		VK
+ *	Date:		..
+ *	Description: 
+ *		This is DQMEDAnalyzer which is a edm::one module. edm::one enforces
+ *		that only 1 run is being processed.
+ *		https://twiki.cern.ch/twiki/bin/view/CMSPublic/FWMultithreadedFrameworkOneModuleInterface - for details.
+ *
+ *		HcalHarvesting is responsible for Status Evaluation and Summary
+ *		Generation. In this step RAW, DIGI, RECO + TP Data Tiers 
+ *		are evaluated and Summary is generated. 
+ *		___________
+ *		Online:
+ *		There is always a Current Summary - Summary for the Current LS 
+ *		being Evaluated. It might and might not include the information 
+ *		from previous LSs, depending on the Quantity.
+ *		___________
+ *		Offline:
+ *		For Offline only Run Summary is being generated. As it is meaningless
+ *		to have current LS information being delivered. Only Total Summary
+ *		makes sense
  */
 
 #include "DQM/HcalCommon/interface/HcalCommonHeaders.h"
@@ -33,6 +51,8 @@ class HcalHarvesting : public DQHarvester
 			edm::EventSetup const&);
 		virtual void _dqmEndJob(DQMStore::IBooker&,
 			DQMStore::IGetter&);
+
+		virtual void _generateCurrentSummary(DQM)
 
 		//	flags to harvest...
 		int _modules[4];

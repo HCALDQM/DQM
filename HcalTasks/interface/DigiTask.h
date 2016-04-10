@@ -2,9 +2,15 @@
 #define DigiTask_h
 
 /**
- *	file:
- *	Author:
+ *	file:			DigiTask.h
+ *	Author:			VK
  *	Description:
+ *		HCAL DIGI Data Tier Processing.
+ *
+ *	Online:
+ *		
+ *	Offline:
+ *		- HF Q2/(Q1+Q2) is not included.
  */
 
 #include "DQM/HcalCommon/interface/DQTask.h"
@@ -75,26 +81,35 @@ class DigiTask : public DQTask
 		HashFilter _filter_uTCA;
 		HashFilter _filter_FEDHF;
 
-		//	Containers
+		/* Containers */
+		//	ADC, fC - Charge - just filling - no summary!
 		Container1D _cADC_SubdetPM;
 		Container1D _cfC_SubdetPM;
 		Container1D _cSumQ_SubdetPM;
 		ContainerProf2D	_cSumQ_depth;
-		ContainerProf1D _cSumQvsLS_FED;
+		ContainerProf1D _cSumQvsLS_SubdetPM;
+		ContainerProf1D _cSumQvsBX_SubdetPM;	// online only!
 
-		//	Shape
-		Container1D _cShapeCut_FEDSlot;
+		//	Shape - just filling - not summary!
+		Container1D _cShapeCut_FED;
 
 		//	Timing
+		//	just filling - no summary!
 		Container1D		_cTimingCut_SubdetPM;
 		ContainerProf2D _cTimingCut_FEDVME;
 		ContainerProf2D	_cTimingCut_FEDuTCA;
 		ContainerProf2D _cTimingCut_ElectronicsVME;
 		ContainerProf2D _cTimingCut_ElectronicsuTCA;
 		ContainerProf1D _cTimingCutvsLS_FED;
+		ContainerProf2D _cTimingCut_depth;
+		ContainerProf1D _cTimingCutvsiphi_SubdetPM;	// online only!
+		ContainerProf1D _cTimingCutvsieta_Subdet;	// online only!
 
-		ContainerProf1D _cQ2Q12CutvsLS_FEDHF;
+		//	Only for Online mode! just filling - no summary!
+		ContainerProf1D _cQ2Q12CutvsLS_FEDHF;	//	online only!
 
+		//	Occupancy w/o a Cut - whatever is sitting in the Digi Collection
+		//	used to determine Missing Digis => used for Summary!
 		Container2D _cOccupancy_FEDVME;
 		Container2D _cOccupancy_FEDuTCA;
 		Container2D _cOccupancy_ElectronicsVME;
@@ -102,7 +117,12 @@ class DigiTask : public DQTask
 		Container2D _cOccupancy_depth;
 		Container2D _cOccupancyNR_FEDVME;
 		Container2D _cOccupancyNR_FEDuTCA;
+		Container1D _cOccupancyvsiphi_SubdetPM; // online only
+		Container1D _cOccupnacyvsieta_Subdet;	// online only
 
+		//	Occupancy w/ a Cut
+		//	used to determine if occupancy is symmetric or not. =>
+		//	used for Summary
 		Container2D _cOccupancyCut_FEDVME;
 		Container2D _cOccupancyCut_FEDuTCA;
 		Container2D _cOccupancyCut_ElectronicsVME;
@@ -110,26 +130,20 @@ class DigiTask : public DQTask
 		Container2D _cOccupancyCut_depth;
 		Container2D _cOccupancyCutNR_FEDVME;
 		Container2D _cOccupancyCutNR_FEDuTCA;
+		Container1D _cOccupancyCutvsiphi_SubdetPM; // online only
+		Container1D _cOccupnacyCutvsieta_Subdet;	// online only
 
+		//	Occupancy w/o and w/ a Cut vs BX and vs LS
 		ContainerProf1D _cOccupancyvsLS_Subdet;
-		ContainerProf1D _cOccupancyCutvsLS_Subdet;
-		ContainerProf1D _cOccupancyCutvsBX_Subdet;
+		ContainerProf1D _cOccupancyCutvsLS_Subdet;	// online only
+		ContainerProf1D _cOccupancyCutvsBX_Subdet;	// online only
 
-		Container2D _cCapIdRots_FEDVME;
-		Container2D _cCapIdRots_FEDuTCA;
-		Container2D _cCapIdRots_depth;
-		Container2D _cCapIdRotsTotal_depth;
-
-		Container2D _cMissing1LS_FEDVME;
-		Container2D _cMissing1LS_FEDuTCA;
-		Container2D _cMissing1LS_depth;
-		Container2D _cMissingTotal_depth;
-		Container2D _cMissingTotal_FEDVME;
-		Container2D _cMissingTotal_FEDuTCA;
-
+		//	#Time Samples for a digi. Used for Summary generation
 		Container1D _cDigiSize_FEDVME;
 		Container1D _cDigiSize_FEDuTCA;
+		ContainerProf1D _cDigiSizevsLS_Subdet;	// online only
 
+		//	Summary Histogram
 		ContainerSingle2D _cSummary;
 };
 

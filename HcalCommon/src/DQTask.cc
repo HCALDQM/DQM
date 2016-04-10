@@ -43,10 +43,9 @@ namespace hcaldqm
 		//	initialize some containers to be used by all modules
 		_xQuality.initialize(hashfunctions::fDChannel);
 
-		std::cout << "Hello" << std::endl;
-
 		//	get the run info FEDs - FEDs registered at cDAQ
 		//	and determine if there are any HCAL FEDs in.
+		//	push them as ElectronicsIds into the vector
 		edm::eventsetup::EventSetupRecordKey recordKey(
 			edm::eventsetup::EventSetupRecordKey::TypeTag::findType(
 			"RunInfoRcd"));
@@ -58,10 +57,16 @@ namespace hcaldqm
 			for (std::vector<int>::const_iterator it=vfeds.begin();
 				it!=vfeds.end(); ++it)
 			{
-				if ((*it>=constants::FED_VME_MIN && *it<=FED_VME_MAX) ||
-					(*it>=constants::FED_uTCA_MIN && 
-					 *it<=FEDNumbering::MAXHCALuTCAFEDID))
-					_vriFEDs.push_back(*it);
+				if (*it>=constants::FED_VME_MIN && *it<=FED_VME_MAX)
+					_vcdaqids.push_back(HcalElectronicsId(
+						constants::FIBERCH_MIN,
+						constants::FIBER_VME_MIN, SPIGOT_MIN,
+						(*it)-FED_VME_MIN).rawId());
+				else if	(*it>=constants::FED_uTCA_MIN && 
+					*it<=FEDNumbering::MAXHCALuTCAFEDID)
+					_vcdaqEids.push_back(HcalElectronicsId(
+						utilities::fed2crate(*it), SLOT_uTCA, FIBER_uTCA_MIN1,
+						FIBERCH_MIN, false).rawId());
 			}
 		}
 

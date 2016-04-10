@@ -2,9 +2,13 @@
 #define RecHitTask_h
 
 /**
- *	file:
- *	Author:
- *	Description:
+ *	module:			RecHitTask.h
+ *	Author:			VK
+ *	Description:	
+ *		HCAL RECO Data Tier Evaluation
+ *
+ *	Online:
+ *	Offline:
  */
 
 #include "DQM/HcalCommon/interface/DQTask.h"
@@ -67,18 +71,20 @@ class RecHitTask : public DQTask
 		HashFilter _filter_FEDsVME;
 		HashFilter _filter_FEDsuTCA;
 
-		//	Energy
+		//	Energy. Just filling. No Summary Generation
 		Container1D _cEnergy_Subdet;
+		ContainerProf1D _cEnergyvsieta_Subdet;	//	online only!
+		ConatienrProf1D _cEnergyvsiphi_SubdetPM;	// online only!
 		ContainerProf2D _cEnergy_depth;
 		ContainerProf2D _cEnergy_FEDVME;
 		ContainerProf2D _cEnergy_FEDuTCA;
-		ContainerProf2D _cEnergy_ElectronicsVME;
-		ContainerProf2D _cEnergy_ElectronicsuTCA;
+		ContainerProf1D _cEnergyvsLS_SubdetPM;	// online only!
+		ContainerProf1D _cEnergyvsBX_SubdetPM;	// online only
 
-		//	Timing vs Energy
+		//	Timing vs Energy. No Summary Generation
 		Container2D _cTimingvsEnergy_SubdetPM;
 
-		//	Timing
+		//	Timing. HBHE Partition is used for TCDS shift monitoring
 		Container1D		_cTimingCut_SubdetPM;
 		Container1D		_cTimingCut_HBHEPartition;
 		ContainerProf2D _cTimingCut_FEDVME;
@@ -87,24 +93,32 @@ class RecHitTask : public DQTask
 		ContainerProf2D _cTimingCut_ElectronicsuTCA;
 		ContainerProf2D _cTimingCut_depth;
 		ContainerProf1D _cTimingCutvsLS_FED;
+		ContainerProf1D _cTimingCutvsieta_Subdet;	//	online only
+		ContainerProf1D _cTimingCutvsiphi_SubdetPM; //	online only
+		ContainerProf1D _cTimingCutvsBX_SubdetPM;	// online only
 
+		//	Occupancy w/o a cut. Used for checking missing channels
 		Container2D _cOccupancy_depth;
 		Container2D _cOccupancy_FEDVME;
 		Container2D _cOccupancy_FEDuTCA;
 		Container2D _cOccupancy_ElectronicsVME;
 		Container2D _cOccupancy_ElectronicsuTCA;
 		ContainerProf1D _cOccupancyvsLS_Subdet;
+		Container1D _cOccupancyvsiphi_SubdetPM;	// online only
+		Container1D _cOccupancyvsieta_Subdet;	//	online only
 
+		//	Occupancy w/ a Cut.
 		Container2D _cOccupancyCut_FEDVME;
 		Container2D _cOccupancyCut_FEDuTCA;
 		Container2D _cOccupancyCut_ElectronicsVME;
 		Container2D _cOccupancyCut_ElectronicsuTCA;
 		ContainerProf1D _cOccupancyCutvsLS_Subdet;
 		Container2D _cOccupancyCut_depth;
+		Container1D _cOccupancyCutvsiphi_SubdetPM;	// online only
+		Container1D _cOccupancyCutvsieta_Subdet;	// online only
+		ContainerProf1D _cOccupancyCutvsBX_SubdetPM;	// online only!
 
-		Container2D _cMissing1LS_FEDVME;
-		Container2D _cMissing1LS_FEDuTCA;
-
+		//	summary - filled at harvesting...
 		ContainerSingle2D _cSummary;
 };
 

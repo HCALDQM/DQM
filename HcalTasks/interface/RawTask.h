@@ -81,11 +81,11 @@ class RawTask : public DQTask
 		Container2D _cEvnMsm_ElectronicsuTCA;
 		Container2D _cBcnMsm_ElectronicsuTCA;
 		Container2D _cOrnMsm_ElectronicsuTCA;
+		ContainerProf1D _cEvnMsmvsLS_ElectronicsVME;	// online only
+		ContainerProf1D _cEvnMsmvsLS_ElectronicsuTCA;	// online only
+		ContainerProf1D _cBcnMsmvsLS_ElectronicsVME;	// online only
+		ContainerProf1D _cBcnMsmvsLS_ElectronicsuTCA;	// online only
 
-		//	Occupancies
-		Container2D _cOccupancy_ElectronicsVME;
-		Container2D _cOccupancy_ElectronicsuTCA;
-	
 		//	Summary
 		ContainerSingle2D _cSummary;
 		Container2D		  _cSummaryvsLS_FED;

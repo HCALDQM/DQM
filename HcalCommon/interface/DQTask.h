@@ -58,10 +58,11 @@ namespace hcaldqm
 			//	counters
 			int			_procLSs;
 
-			//	vector of HCAL FEDs registered for the Run
-			std::vector<int> _vriFEDs;
 			//	container of quality masks from conddb
 			ContainerXXX<uint32_t> _xQuality;
+			//	vector of Electronics raw Ids of HCAL FEDs 
+			//	registered at cDAQ for the Run
+			std::vector<uint32_t> _vcdaqEids;
 
 			//	Tags and corresponding Tokens
 			edm::InputTag		_tagRaw;

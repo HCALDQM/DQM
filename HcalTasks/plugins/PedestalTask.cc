@@ -271,6 +271,18 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 /* virtual */ void PedestalTask::_resetMonitors(UpdateFreq uf)
 {
 	DQTask::_resetMonitors(uf);
+
+	switch(uf)
+	{
+		case hcaldqm::f50LS:
+			//	reset the containers for Sums, SumSqr, #Entries
+			_xPedSum.reset();
+			_xPedSum2.reset();
+			_xPedEntries.reset();
+			break;
+		default:
+			break;
+	}
 }
 
 /* virtual */ void PedestalTask::endRun(edm::Run const& r, 
@@ -387,9 +399,21 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
+		//	set first as inapplicable
 		HcalElectronicsId eid = HcalElectronicsId(*it);
 		for (int flag=fMsn; flag<nPedestalFlag; flag++)
 			_cSummary.setBinContent(eid, flag, fNA);
+
+		//	second, check if this FED is @cDAQ
+		//	if not, leave status as inapplicable
+		//	for global online running
+		if (_ptype!=fLocal)
+		{
+			std::vector<uint32_t> jt=std::find(_vcdaqEids.begin(),
+				_vcdaqEids.end(), *it);
+			if (jt==_vcdaqEids.end())
+				continue;
+		}
 
 		//	set all the flags
 		_xNMsn.get(eid)>0?

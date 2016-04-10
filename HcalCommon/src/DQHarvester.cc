@@ -13,6 +13,7 @@ namespace hcaldqm
 			if (r.runAuxiliary().run()==1)
 				return;
 
+		//	get the Hcal Electronics Map
 		edm::ESHandle<HcalDbService> dbs;
 		es.get<HcalDbRecord>().get(dbs);
 		_emap = dbs->getHcalMapping();
