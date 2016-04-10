@@ -192,6 +192,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 /* virtual */ void RawTask::_resetMonitors(UpdateFreq uf)
 {
+	/*
 	switch(uf)
 	{
 		case fEvent:
@@ -208,7 +209,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		default:
 			break;
 	}
-	
+	*/
 	//	base reset
 	DQTask::_resetMonitors(uf);
 }

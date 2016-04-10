@@ -98,6 +98,14 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		new quantity::TrigTowerQuantity(quantity::fTTieta),
 		new quantity::TrigTowerQuantity(quantity::fTTiphi),
 		new quantity::ValueQuantity(quantity::fEt_256));
+	_cEtCutData_depthlike.initialize(_name, "EtCutData",
+		new quantity::TrigTowerQuantity(quantity::fTTieta),
+		new quantity::TrigTowerQuantity(quantity::fTTiphi),
+		new quantity::ValueQuantity(quantity::fEt_256));
+	_cEtCutEmul_depthlike.initialize(_name, "EtCutEmul",
+		new quantity::TrigTowerQuantity(quantity::fTTieta),
+		new quantity::TrigTowerQuantity(quantity::fTTiphi),
+		new quantity::ValueQuantity(quantity::fEt_256));
 
 	//	Occupancies
 	_cOccupancyData_ElectronicsVME.initialize(_name, "OccupancyData",
@@ -298,7 +306,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			hashfunctions::fTTSubdet,
 			new quantity::LumiSection(_maxLS),
 			new quantity::ValueQuantity(quantity::fN));
-		_cMsnCutDataCutvsLS_TTSubdet.initialize(_name, "MsnCutDatavsLS",
+		_cMsnCutDatavsLS_TTSubdet.initialize(_name, "MsnCutDatavsLS",
 			hashfunctions::fTTSubdet,
 			new quantity::LumiSection(_maxLS),
 			new quantity::ValueQuantity(quantity::fN));
@@ -306,7 +314,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
-		_cMsnCutDataCutvsBX_TTSubdet.initialize(_name, "MsnCutDatavsBX",
+		_cMsnCutDatavsBX_TTSubdet.initialize(_name, "MsnCutDatavsBX",
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
@@ -314,7 +322,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			hashfunctions::fTTSubdet,
 			new quantity::LumiSection(_maxLS),
 			new quantity::ValueQuantity(quantity::fN));
-		_cMsnCutEmulCutvsLS_TTSubdet.initialize(_name, "MsnCutEmulvsLS",
+		_cMsnCutEmulvsLS_TTSubdet.initialize(_name, "MsnCutEmulvsLS",
 			hashfunctions::fTTSubdet,
 			new quantity::LumiSection(_maxLS),
 			new quantity::ValueQuantity(quantity::fN));
@@ -322,7 +330,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
-		_cMsnCutEmulCutvsBX_TTSubdet.initialize(_name, "MsnCutEmulvsBX",
+		_cMsnCutEmulvsBX_TTSubdet.initialize(_name, "MsnCutEmulvsBX",
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
@@ -330,7 +338,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			hashfunctions::fTTSubdet,
 			new quantity::LumiSection(_maxLS),
 			new quantity::ValueQuantity(quantity::fN));
-		_cOccupancyCutDataCutvsLS_TTSubdet.initialize(_name, 
+		_cOccupancyCutDatavsLS_TTSubdet.initialize(_name, 
 			"OccupancyCutDatavsLS",
 			hashfunctions::fTTSubdet,
 			new quantity::LumiSection(_maxLS),
@@ -339,8 +347,26 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
-		_cOccupancyCutDataCutvsBX_TTSubdet.initialize(_name, 
+		_cOccupancyCutDatavsBX_TTSubdet.initialize(_name, 
 			"OccupancyCutDatavsBX",
+			hashfunctions::fTTSubdet,
+			new quantity::ValueQuantity(quantity::fBX),
+			new quantity::ValueQuantity(quantity::fN));
+		_cOccupancyEmulvsLS_TTSubdet.initialize(_name, "OccupancyEmulvsLS",
+			hashfunctions::fTTSubdet,
+			new quantity::LumiSection(_maxLS),
+			new quantity::ValueQuantity(quantity::fN));
+		_cOccupancyCutEmulvsLS_TTSubdet.initialize(_name, 
+			"OccupancyCutEmulvsLS",
+			hashfunctions::fTTSubdet,
+			new quantity::LumiSection(_maxLS),
+			new quantity::ValueQuantity(quantity::fN));
+		_cOccupancyEmulvsBX_TTSubdet.initialize(_name, "OccupancyEmulvsBX",
+			hashfunctions::fTTSubdet,
+			new quantity::ValueQuantity(quantity::fBX),
+			new quantity::ValueQuantity(quantity::fN));
+		_cOccupancyCutEmulvsBX_TTSubdet.initialize(_name, 
+			"OccupancyCutEmulvsBX",
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
@@ -372,6 +398,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_cEtEmul_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cEtData_depthlike.book(ib, _subsystem);
 	_cEtEmul_depthlike.book(ib, _subsystem);
+	_cEtCutData_depthlike.book(ib, _subsystem);
+	_cEtCutEmul_depthlike.book(ib, _subsystem);
 	_cOccupancyData_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cOccupancyEmul_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cOccupancyData_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
@@ -399,11 +427,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_cMsnData_depthlike.book(ib, _subsystem);
 	_cMsnEmul_depthlike.book(ib, _subsystem);
 	_cSummary.book(ib, _subsystem);
-
-	_cOccupancyDatavsBX_TTSubdet.book(ib, _emap, _subsystem);
-	_cOccupancyEmulvsBX_TTSubdet.book(ib, _emap, _subsystem);
-	_cOccupancyCutDatavsBX_TTSubdet.book(ib, _emap, _subsystem);
-	_cOccupancyCutEmulvsBX_TTSubdet.book(ib, _emap, _subsystem);
 
 	//	whatever has to go online only goes here
 	if (_ptype==fOnline)
@@ -443,6 +466,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 
 /* virtual */ void TPTask::_resetMonitors(UpdateFreq uf)
 {
+	/*
 	switch (uf)
 	{
 		case hcaldqm::f1LS:
@@ -462,6 +486,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		default:
 			break;
 	}
+	*/
 
 	DQTask::_resetMonitors(uf);
 }
@@ -671,20 +696,20 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		_cEtMsmvsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1), bx, 
 			numMsmHF);
 
-		_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1,),
+		_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
 			_currentLS, numMsnHBHE);
 		_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1),
 			_currentLS, numMsnHF);
-		_cMsnCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1,),
+		_cMsnCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
 			_currentLS, numMsnCutHBHE);
 		_cMsnCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1),
 			_currentLS, numMsnCutHF);
 
-		_cMsnEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1,),
+		_cMsnEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1),
 			bx, numMsnHBHE);
 		_cMsnEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1),
 			bx, numMsnHF);
-		_cMsnCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1,),
+		_cMsnCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1),
 			bx, numMsnCutHBHE);
 		_cMsnCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1),
 			bx, numMsnCutHF);
@@ -791,20 +816,20 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		_cOccupancyCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1), 
 			_currentLS, numCutHF);
 
-		_cMsnDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1,),
+		_cMsnDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
 			_currentLS, numMsnHBHE);
 		_cMsnDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1),
 			_currentLS, numMsnHF);
-		_cMsnCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1,),
+		_cMsnCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
 			_currentLS, numMsnCutHBHE);
 		_cMsnCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1),
 			_currentLS, numMsnCutHF);
 
-		_cMsnDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1,),
+		_cMsnDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1),
 			bx, numMsnHBHE);
 		_cMsnDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1),
 			bx, numMsnHF);
-		_cMsnCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1,),
+		_cMsnCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1),
 			bx, numMsnCutHBHE);
 		_cMsnCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1),
 			bx, numMsnCutHF);

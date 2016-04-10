@@ -74,10 +74,8 @@ class RecHitTask : public DQTask
 		//	Energy. Just filling. No Summary Generation
 		Container1D _cEnergy_Subdet;
 		ContainerProf1D _cEnergyvsieta_Subdet;	//	online only!
-		ConatienrProf1D _cEnergyvsiphi_SubdetPM;	// online only!
+		ContainerProf1D _cEnergyvsiphi_SubdetPM;	// online only!
 		ContainerProf2D _cEnergy_depth;
-		ContainerProf2D _cEnergy_FEDVME;
-		ContainerProf2D _cEnergy_FEDuTCA;
 		ContainerProf1D _cEnergyvsLS_SubdetPM;	// online only!
 		ContainerProf1D _cEnergyvsBX_SubdetPM;	// online only
 

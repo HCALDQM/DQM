@@ -409,8 +409,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		//	for global online running
 		if (_ptype!=fLocal)
 		{
-			std::vector<uint32_t> jt=std::find(_vcdaqEids.begin(),
-				_vcdaqEids.end(), *it);
+			std::vector<uint32_t>::const_iterator jt=
+				std::find(_vcdaqEids.begin(), _vcdaqEids.end(), (*it));
 			if (jt==_vcdaqEids.end())
 				continue;
 		}

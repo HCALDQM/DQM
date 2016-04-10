@@ -52,8 +52,6 @@ class HcalHarvesting : public DQHarvester
 		virtual void _dqmEndJob(DQMStore::IBooker&,
 			DQMStore::IGetter&);
 
-		virtual void _generateCurrentSummary(DQM)
-
 		//	flags to harvest...
 		int _modules[4];
 		bool _rawHarvesting;

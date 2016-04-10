@@ -118,7 +118,7 @@ class DigiTask : public DQTask
 		Container2D _cOccupancyNR_FEDVME;
 		Container2D _cOccupancyNR_FEDuTCA;
 		Container1D _cOccupancyvsiphi_SubdetPM; // online only
-		Container1D _cOccupnacyvsieta_Subdet;	// online only
+		Container1D _cOccupancyvsieta_Subdet;	// online only
 
 		//	Occupancy w/ a Cut
 		//	used to determine if occupancy is symmetric or not. =>
@@ -131,7 +131,7 @@ class DigiTask : public DQTask
 		Container2D _cOccupancyCutNR_FEDVME;
 		Container2D _cOccupancyCutNR_FEDuTCA;
 		Container1D _cOccupancyCutvsiphi_SubdetPM; // online only
-		Container1D _cOccupnacyCutvsieta_Subdet;	// online only
+		Container1D _cOccupancyCutvsieta_Subdet;	// online only
 
 		//	Occupancy w/o and w/ a Cut vs BX and vs LS
 		ContainerProf1D _cOccupancyvsLS_Subdet;

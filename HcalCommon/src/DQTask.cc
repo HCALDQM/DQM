@@ -58,15 +58,15 @@ namespace hcaldqm
 				it!=vfeds.end(); ++it)
 			{
 				if (*it>=constants::FED_VME_MIN && *it<=FED_VME_MAX)
-					_vcdaqids.push_back(HcalElectronicsId(
+					_vcdaqEids.push_back(HcalElectronicsId(
 						constants::FIBERCH_MIN,
 						constants::FIBER_VME_MIN, SPIGOT_MIN,
 						(*it)-FED_VME_MIN).rawId());
 				else if	(*it>=constants::FED_uTCA_MIN && 
 					*it<=FEDNumbering::MAXHCALuTCAFEDID)
 					_vcdaqEids.push_back(HcalElectronicsId(
-						utilities::fed2crate(*it), SLOT_uTCA, FIBER_uTCA_MIN1,
-						FIBERCH_MIN, false).rawId());
+						utilities::fed2crate(*it), SLOT_uTCA_MIN, 
+						FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
 			}
 		}
 

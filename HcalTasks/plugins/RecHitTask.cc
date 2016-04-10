@@ -15,9 +15,9 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_tokHO = consumes<HORecHitCollection>(_tagHO);
 	_tokHF = consumes<HFRecHitCollection>(_tagHF);
 
-	_cutE_HBHE = ps.getUntrackedParameter<double>("cutE_HBHE", 20);
-	_cutE_HO = ps.getUntrackedParameter<double>("cutE_HO", 20);
-	_cutE_HF = ps.getUntrackedParameter<double>("cutE_HF", 20);
+	_cutE_HBHE = ps.getUntrackedParameter<double>("cutE_HBHE", 5);
+	_cutE_HO = ps.getUntrackedParameter<double>("cutE_HO", 5);
+	_cutE_HF = ps.getUntrackedParameter<double>("cutE_HF", 5);
 }
 
 /* virtual */ void RecHitTask::bookHistograms(DQMStore::IBooker& ib,
@@ -63,14 +63,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fEnergy, true));
-	_cEnergy_FEDVME.initialize(_name, "Energy", hashfunctions::fFED,
-		new quantity::ElectronicsQuantity(quantity::fSpigot),
-		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
-		new quantity::ValueQuantity(quantity::fEnergy));
-	_cEnergy_FEDuTCA.initialize(_name, "Energy", hashfunctions::fFED,
-		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
-		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
-		new quantity::ValueQuantity(quantity::fEnergy));
 
 	//	Timing
 	_cTimingCut_SubdetPM.initialize(_name, "TimingCut", 
@@ -175,16 +167,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fN));
-	_cMissing1LS_FEDVME.initialize(_name, "Missing1LS",
-		hashfunctions::fFED,
-		new quantity::ElectronicsQuantity(quantity::fSpigot),
-		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
-		new quantity::ValueQuantity(quantity::fN));
-	_cMissing1LS_FEDuTCA.initialize(_name, "Missing1LS",
-		hashfunctions::fFED,
-		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
-		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
-		new quantity::ValueQuantity(quantity::fN));
 
 	std::vector<std::string> fnames;
 	fnames.push_back("OcpUniSlot");
@@ -218,12 +200,12 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		_cTimingCutvsieta_Subdet.initialize(_name, "TimingCutvsieta",
 			hashfunctions::fSubdet,
 			new quantity::DetectorQuantity(quantity::fieta),
-			new qunatity::ValueQuantity(quantity::fTiming_ns));
+			new quantity::ValueQuantity(quantity::fTiming_ns));
 		_cTimingCutvsiphi_SubdetPM.initialize(_name, "TimingCutvsiphi",
-			hashfunctions::fSubdet
+			hashfunctions::fSubdetPM,
 			new quantity::DetectorQuantity(quantity::fiphi),
-			new qunatity::ValueQuantity(quantity::fTiming_ns));
-		_cTimingvsBX_SubdetPM.initialize(_name, "TimingCutvsBX",
+			new quantity::ValueQuantity(quantity::fTiming_ns));
+		_cTimingCutvsBX_SubdetPM.initialize(_name, "TimingCutvsBX",
 			hashfunctions::fSubdetPM,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fTiming_ns));
@@ -243,7 +225,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			hashfunctions::fSubdet,
 			new quantity::DetectorQuantity(quantity::fieta),
 			new quantity::ValueQuantity(quantity::fN));
-		_cOccupancyCutvsBX_SubdetPM.initialize(_name, "OccupancyvsBX",
+		_cOccupancyCutvsBX_SubdetPM.initialize(_name, "OccupancyCutvsBX",
 			hashfunctions::fSubdetPM,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
@@ -259,8 +241,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	//	Energy
 	_cEnergy_Subdet.book(ib, _emap, _subsystem);
 	_cEnergy_depth.book(ib, _emap, _subsystem);
-	_cEnergy_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
-	_cEnergy_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 
 	//	Timing
 	_cTimingCut_SubdetPM.book(ib, _emap, _subsystem);
@@ -294,16 +274,16 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	{
 		_cEnergyvsLS_SubdetPM.book(ib, _emap, _subsystem);
 		_cEnergyvsieta_Subdet.book(ib, _emap, _subsystem);
-		_cenergyvsiphi_SubdetPM.book(ib, _emap, _subsystem);
+		_cEnergyvsiphi_SubdetPM.book(ib, _emap, _subsystem);
 		_cEnergyvsBX_SubdetPM.book(ib, _emap, _subsystem);
 		_cTimingCutvsieta_Subdet.book(ib, _emap, _subsystem);
 		_cTimingCutvsiphi_SubdetPM.book(ib, _emap, _subsystem);
 		_cTimingCutvsBX_SubdetPM.book(ib, _emap, _subsystem);
 		_cOccupancyvsiphi_SubdetPM.book(ib, _emap, _subsystem);
-		_cOccupnacyvsieta_Subdet.book(ib, _emap, _subsystem);
+		_cOccupancyvsieta_Subdet.book(ib, _emap, _subsystem);
 		_cOccupancyCutvsiphi_SubdetPM.book(ib, _emap, _subsystem);
 		_cOccupancyCutvsieta_Subdet.book(ib, _emap, _subsystem);
-		_cOccupancyvsBX_SubdetPM.book(ib, _emap, _subsystem);
+		_cOccupancyCutvsBX_SubdetPM.book(ib, _emap, _subsystem);
 	}
 
 	//	initialize hash map
@@ -312,6 +292,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 
 /* virtual */ void RecHitTask::_resetMonitors(UpdateFreq uf)
 {
+	/*
 	switch(uf)
 	{
 		case hcaldqm::f1LS:
@@ -329,6 +310,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		default:
 			break;
 	}
+	*/
 
 	DQTask::_resetMonitors(uf);
 }
@@ -365,7 +347,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		HcalDetId did = it->id();
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
-		_cEnergy_depth.fill(did, energy);
 		_cTimingvsEnergy_SubdetPM.fill(did, energy, timing);
 		_cOccupancy_depth.fill(did);
 		did.subdet()==HcalBarrel?did.ieta()>0?ehbp+=energy:ehbm+=energy:
@@ -374,8 +355,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		//	ONLINE ONLY!
 		if (_ptype==fOnline)
 		{
-			_cEnergyvsLS_SubdetPM.fill(did, _currentLS, energy);
-			_cEnergyvsBX_SubdetPM.fill(did, bx, energy);
 			_cOccupancyvsiphi_SubdetPM.fill(did);
 			_cOccupancyvsieta_Subdet.fill(did);
 		}
@@ -383,13 +362,11 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 
 		if (eid.isVMEid())
 		{
-			_cEnergy_FEDVME.fill(eid, energy);
 			_cOccupancy_FEDVME.fill(eid);
 			_cOccupancy_ElectronicsVME.fill(eid);
 		}
 		else
 		{
-			_cEnergy_FEDuTCA.fill(eid, energy);
 			_cOccupancy_FEDuTCA.fill(eid);
 			_cOccupancy_ElectronicsuTCA.fill(eid);
 		}
@@ -399,16 +376,18 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			//	ONLINE ONLY!
 			if (_ptype==fOnline)
 			{
+				_cEnergyvsLS_SubdetPM.fill(did, _currentLS, energy);
+				_cEnergyvsBX_SubdetPM.fill(did, bx, energy);
 				_cEnergyvsieta_Subdet.fill(did, energy);
 				_cEnergyvsiphi_SubdetPM.fill(did, energy);
 				_cTimingCutvsieta_Subdet.fill(did, timing);
 				_cTimingCutvsiphi_SubdetPM.fill(did, timing);
 				_cTimingCutvsBX_SubdetPM.fill(did, bx, timing);
 				_cOccupancyCutvsiphi_SubdetPM.fill(did);
-				_cOccupnacyCutvsieta_Subdet.fill(did);
+				_cOccupancyCutvsieta_Subdet.fill(did);
 			}
 			//	^^^ONLINE ONLY!
-
+			_cEnergy_depth.fill(did, energy);
 			_cTimingCut_SubdetPM.fill(did, timing);
 			_cTimingCut_HBHEPartition.fill(did, timing);
 			if (timing>=-12.5 && timing<=12.5)
@@ -458,7 +437,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	{
 		_cOccupancyCutvsBX_SubdetPM.fill(HcalDetId(HcalBarrel, 1,1,1),
 			bx, nChsHBCut);
-		_cOccupancyCutvsBX_SubdetPM.fill(HcalDetId(HcalEndcap, 1,1,1,),
+		_cOccupancyCutvsBX_SubdetPM.fill(HcalDetId(HcalEndcap, 1,1,1),
 			bx, nChsHECut);
 	}
 	//	^^^ONLINE ONLY!
@@ -473,7 +452,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		HcalDetId did = it->id();
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
-		_cEnergy_depth.fill(did, energy);
 		_cTimingvsEnergy_SubdetPM.fill(did, energy, timing);
 		_cOccupancy_depth.fill(did);
 		did.ieta()>0?ehop+=energy:ehom+=energy;
@@ -481,8 +459,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		//	IMPORTANT: ONLINE ONLY!
 		if (_ptype==fOnline)
 		{
-			_cEnergyvsLS_SubdetPM.fill(did, _currentLS, energy);
-			_cEnergyvsBX_SubdetPM.fill(did, bx, energy);
 			_cOccupancyvsiphi_SubdetPM.fill(did);
 			_cOccupancyvsieta_Subdet.fill(did);
 		}
@@ -490,13 +466,11 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 
 		if (eid.isVMEid())
 		{
-			_cEnergy_FEDVME.fill(eid, energy);
 			_cOccupancy_FEDVME.fill(eid);
 			_cOccupancy_ElectronicsVME.fill(eid);
 		}
 		else
 		{
-			_cEnergy_FEDuTCA.fill(eid, energy);
 			_cOccupancy_FEDuTCA.fill(eid);
 			_cOccupancy_ElectronicsuTCA.fill(eid);
 		}
@@ -506,16 +480,19 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			//	ONLINE ONLY!
 			if (_ptype==fOnline)
 			{
+				_cEnergyvsLS_SubdetPM.fill(did, _currentLS, energy);
+				_cEnergyvsBX_SubdetPM.fill(did, bx, energy);
 				_cEnergyvsieta_Subdet.fill(did, energy);
 				_cEnergyvsiphi_SubdetPM.fill(did, energy);
 				_cTimingCutvsieta_Subdet.fill(did, timing);
 				_cTimingCutvsiphi_SubdetPM.fill(did, timing);
 				_cTimingCutvsBX_SubdetPM.fill(did, bx, timing);
 				_cOccupancyCutvsiphi_SubdetPM.fill(did);
-				_cOccupnacyCutvsieta_Subdet.fill(did);
+				_cOccupancyCutvsieta_Subdet.fill(did);
 			}
 			//	^^^ONLINE ONLY!
 			
+			_cEnergy_depth.fill(did, energy);
 			_cTimingCut_SubdetPM.fill(did, timing);
 			_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
 			_cOccupancyCut_depth.fill(did);
@@ -560,7 +537,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		HcalDetId did = it->id();
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
-		_cEnergy_depth.fill(did, energy);
 		_cTimingvsEnergy_SubdetPM.fill(did, energy, timing);
 		_cOccupancy_depth.fill(did);
 		did.ieta()>0?ehfp+=energy:ehfm+=energy;
@@ -577,13 +553,11 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 
 		if (eid.isVMEid())
 		{
-			_cEnergy_FEDVME.fill(eid, energy);
 			_cOccupancy_FEDVME.fill(eid);
 			_cOccupancy_ElectronicsVME.fill(eid);
 		}
 		else
 		{
-			_cEnergy_FEDuTCA.fill(eid, energy);
 			_cOccupancy_FEDuTCA.fill(eid);
 			_cOccupancy_ElectronicsuTCA.fill(eid);
 		}
@@ -593,7 +567,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			//	ONLINE ONLY!
 			if (_ptype==fOnline)
 			{
-				//	for HF energy vs LS and BX is after the cut - no ZS...
 				_cEnergyvsLS_SubdetPM.fill(did, _currentLS, energy);
 				_cEnergyvsBX_SubdetPM.fill(did, bx, energy);
 				_cEnergyvsieta_Subdet.fill(did, energy);
@@ -602,9 +575,10 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				_cTimingCutvsiphi_SubdetPM.fill(did, timing);
 				_cTimingCutvsBX_SubdetPM.fill(did, bx, timing);
 				_cOccupancyCutvsiphi_SubdetPM.fill(did);
-				_cOccupnacyCutvsieta_Subdet.fill(did);
+				_cOccupancyCutvsieta_Subdet.fill(did);
 			}
 			//	^^^ONLINE ONLY!
+			_cEnergy_depth.fill(did, energy);
 			_cTimingCut_SubdetPM.fill(did, timing);
 			_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
 			_cOccupancyCut_depth.fill(did);
