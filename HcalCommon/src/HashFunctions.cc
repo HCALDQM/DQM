@@ -99,7 +99,7 @@ namespace hcaldqm
 			for (int i=0; i<constants::SUBDET_NUM; i++)
 				if (constants::SUBDET_NAME[i]==name)
 					return(HcalDetId((HcalSubdetector)(i+1),
-						1,1,1).rawId())
+						1,1,1).rawId());
 
 			return HcalDetId().rawId();
 		}
@@ -258,7 +258,7 @@ namespace hcaldqm
 		uint32_t hash_HFPMiphi(std::string const& name)
 		{
 			int iphi = std::stoi(name.substr(7,name.length()-7),nullptr);
-			int ieta = name[2]=="P"?1:-1;
+			int ieta = name[2]=='P'?1:-1;
 			return HcalDetId(HcalForward,ieta,iphi,1).rawId();
 		}
 
@@ -278,9 +278,9 @@ namespace hcaldqm
 
 		uint32_t hash_HBHEPartition(std::string const& name)
 		{
-			if (name[4]=="a")
+			if (name[4]=='a')
 				return HcalDetId(HcalBarrel,1,5,1).rawId();
-			else if (name[4]=="b")
+			else if (name[4]=='b')
 				return HcalDetId(HcalBarrel,1,29,1).rawId();
 			else 
 				return HcalDetId(HcalBarrel,1,55,1).rawId();
@@ -425,9 +425,10 @@ namespace hcaldqm
 		uint32_t hash_FED(std::string const& name)
 		{
 			int fed = std::stoi(name.substr(3,name.length()-3),nullptr);
-			fed>=FED_uTCA_MIN?
+			if (fed>=constants::FED_uTCA_MIN)
 				return HcalElectronicsId(utilities::fed2crate(fed),
-					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId():
+					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId();
+			else
 				return HcalElectronicsId(FIBERCH_MIN,
 					FIBER_VME_MIN, SPIGOT_MIN, fed-FED_VME_MIN).rawId();
 			
@@ -449,9 +450,10 @@ namespace hcaldqm
 			int pos = name.find("S");
 			int fed = std::stoi(name.substr(3, pos-3), nullptr);
 			int s = std::stoi(name.substr(pos+1, name.length()-pos-1), nullptr);
-			fed>=FED_uTCA_MIN?
+			if (fed>=FED_uTCA_MIN)
 				return HcalElectronicsId(utilities::fed2crate(fed),
-					s, FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId():
+					s, FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId();
+			else
 				return HcalElectronicsId(FIBERCH_MIN,
 					FIBER_VME_MIN, s, fed-FED_VME_MIN).rawId();
 
@@ -473,9 +475,10 @@ namespace hcaldqm
 			int pos = name.find("S");
 			int fed = std::stoi(name.substr(3, pos-3), nullptr);
 			int s = std::stoi(name.substr(pos+1, name.length()-pos-1), nullptr);
-			fed>=FED_uTCA_MIN?
+			if (fed>=FED_uTCA_MIN)
 				return HcalElectronicsId(utilities::fed2crate(fed),
-					s, FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId():
+					s, FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId();
+			else
 				return HcalElectronicsId(FIBERCH_MIN,
 					FIBER_VME_MIN, s, fed-FED_VME_MIN).rawId();
 
@@ -553,11 +556,14 @@ namespace hcaldqm
 
 		uint32_t hash_Electronics(std::string const& name)
 		{
-			name=="VME"?
+			if (name=="VME")
 				return HcalElectronicsId(FIBERCH_MIN,
-					FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId():
+					FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId();
+			else
 				return HcalElectronicsId(CRATE_uTCA_MIN,
 					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId();
+
+			return HcalElectronicsId().rawId();
 		}
 
 		std::string name_EChannel(HcalElectronicsId const& eid)
@@ -660,7 +666,7 @@ namespace hcaldqm
 			return std::string(name);
 		}
 
-		uint32_t hash_TTSubdetPMiphi(std::string const&)
+		uint32_t hash_TTSubdetPMiphi(std::string const& name)
 		{
 			int pos = name.find("iphi");
 			std::string sub = name.substr(0, pos);

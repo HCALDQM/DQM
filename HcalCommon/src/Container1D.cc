@@ -851,8 +851,8 @@ namespace hcaldqm
 	}
 
 	//	load w/ a filter
-	/* virtual */ void Conatainer1D::load(DQMStore::IGetter& ig,
-		HcalElectronicsMap const* emap, filter::HashFilter const&,
+	/* virtual */ void Container1D::load(DQMStore::IGetter& ig,
+		HcalElectronicsMap const* emap, filter::HashFilter const& filter,
 		std::string const& subsystem,
 		std::string const& aux)
 	{

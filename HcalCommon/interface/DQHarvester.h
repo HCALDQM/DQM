@@ -31,6 +31,9 @@ namespace hcaldqm
 			//	empa
 			HcalElectronicsMap const* _emap;
 
+			//	some counters
+			int _totalLS;
+
 			//	all FEDs
 			std::vector<int>		_vFEDs;
 			std::vector<uint32_t>	_vhashFEDs;

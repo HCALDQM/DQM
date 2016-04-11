@@ -58,16 +58,17 @@ namespace hcaldqm
 			virtual uint32_t size();
 			virtual void print();
 
-			virtual CompactMap::const_iterator begin()
-			{return _cmap.begin();}
-			virtual CompactMap::const_iterator end()
-			{return _cmap.end();}
-
 		protected:
 			typedef boost::unordered_map<uint32_t, STDTYPE> CompactMap;
 			CompactMap              _cmap;
 			mapper::HashMapper      _hashmap;
 			Logger                  _logger;
+
+		public:
+			virtual typename CompactMap::const_iterator begin()
+			{return _cmap.begin();}
+			virtual typename CompactMap::const_iterator end()
+			{return _cmap.end();}
 	};
 
 	template<typename STDTYPE>
