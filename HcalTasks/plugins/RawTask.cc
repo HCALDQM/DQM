@@ -116,16 +116,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fN));
-	_cBadQualityTotal_FEDVME.initialize(_name, "BadQualityTotal",
-		hashfunctions::fFED,
-		new quantity::ElectronicsQuantity(quantity::fSpigot),
-		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
-		new quantity::ValueQuantity(quantity::fN));
-	_cBadQualityTotal_FEDuTCA.initialize(_name, "BadQualityTotal",
-		hashfunctions::fFED,
-		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
-		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
-		new quantity::ValueQuantity(quantity::fN));
 
 	//	Summary
 	std::vector<std::string> fnames;
@@ -169,8 +159,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 	_cBadQuality_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cBadQuality_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
-	_cBadQualityTotal_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
-	_cBadQualityTotal_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cBadQuality_depth.book(ib, _emap, _subsystem);
 	_cBadQualityvsLS.book(ib, _subsystem);
 	_cBadQualityvsBX.book(ib, _subsystem);

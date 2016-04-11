@@ -127,6 +127,7 @@ class TPTask : public DQTask
 		Container2D _cFGMsm_ElectronicsVME;
 		Container2D _cFGMsm_ElectronicsuTCA;
 		ContainerSingle2D _cEtMsm_depthlike;
+		ContainerSingle2D _cFGMsm_depthlike;
 		ContainerProf1D _cEtMsmvsLS_TTSubdet;	// online only
 		ContainerProf1D _cEtMsmvsBX_TTSubdet;	// online only
 

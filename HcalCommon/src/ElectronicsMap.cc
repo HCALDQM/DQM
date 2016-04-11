@@ -167,17 +167,17 @@ namespace hcaldqm
 		}
 
 		//	2 funcs below are only for 1->1 mappings
-		uint32_t ElectronicsMap::lookup(DetId const &did)
+		uint32_t ElectronicsMap::lookup(DetId const &id)
 		{
-			uint32_t hash = did.rawId();
-			return _etype==fHcalElectronicsMap? _emap->lookup(did).rawId(): 
+			uint32_t hash = id.rawId();
+			return _etype==fHcalElectronicsMap? _emap->lookup(id).rawId(): 
 				_ids[hash];
 		}
 
-		uint32_t ElectronicsMap::lookup(HcalElectronicsId const &did)
+		uint32_t ElectronicsMap::lookup(HcalElectronicsId const &id)
 		{
-			uint32_t hash = did.rawId();
-			return _etype==fHcalElectronicsMap? _emap->lookup(did).rawId():
+			uint32_t hash = id.rawId();
+			return _etype==fHcalElectronicsMap? _emap->lookup(id).rawId():
 				_ids[hash];
 		}
 

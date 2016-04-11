@@ -15,6 +15,10 @@ namespace hcaldqm
 {
 	using namespace constants;
 
+	typedef boost::unordered_map<uint32_t, double> doubleCompactMap;
+	typedef boost::unordered_map<uint32_t, int> intCompactMap;
+	typedef boost::unordered_map<uint32_t, uint32_t> uintCompactMap;
+
 	template<typename STDTYPE>
 	class ContainerXXX
 	{
@@ -53,6 +57,11 @@ namespace hcaldqm
 			virtual void reset();
 			virtual uint32_t size();
 			virtual void print();
+
+			virtual CompactMap::const_iterator begin()
+			{return _cmap.begin();}
+			virtual CompactMap::const_iterator end()
+			{return _cmap.end();}
 
 		protected:
 			typedef boost::unordered_map<uint32_t, STDTYPE> CompactMap;
