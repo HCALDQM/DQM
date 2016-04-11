@@ -129,7 +129,9 @@ class TPTask : public DQTask
 		ContainerSingle2D _cEtMsm_depthlike;
 		ContainerSingle2D _cFGMsm_depthlike;
 		ContainerProf1D _cEtMsmvsLS_TTSubdet;	// online only
+		ContainerProf1D _cEtMsmRatiovsLS_TTSubdet; // online only
 		ContainerProf1D _cEtMsmvsBX_TTSubdet;	// online only
+		ContainerProf1D _cEtMsmRatiovsBX_TTSubdet; // online only
 
 		//	Missing Data w.r.t. Emulator
 		Container2D _cMsnData_ElectronicsVME;

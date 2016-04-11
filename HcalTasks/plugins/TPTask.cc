@@ -294,6 +294,14 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fRatio_0to2));
+		_cEtMsmRatiovsLS_TTSubdet.initialize(_name, "EtMsmRatiovsLS",
+			hashfunctions::fTTSubdet,
+			new quantity::LumiSection(_maxLS),
+			new quantity::ValueQuantity(quantity::fRatio));
+		_cEtMsmRatiovsBX_TTSubdet.initialize(_name, "EtMsmRatiovsBX",
+			hashfunctions::fTTSubdet,
+			new quantity::ValueQuantity(quantity::fBX),
+			new quantity::ValueQuantity(quantity::fRatio));
 		_cEtMsmvsLS_TTSubdet.initialize(_name, "EtMsmvsLS",
 			hashfunctions::fTTSubdet,
 			new quantity::LumiSection(_maxLS),
@@ -442,6 +450,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		_cEtCorrRatiovsBX_TTSubdet.book(ib, _emap, _subsystem);
 		_cEtMsmvsLS_TTSubdet.book(ib, _emap, _subsystem);
 		_cEtMsmvsBX_TTSubdet.book(ib, _emap, _subsystem);
+		_cEtMsmRatiovsLS_TTSubdet.book(ib, _emap, _subsystem);
+		_cEtMsmRatiovsBX_TTSubdet.book(ib, _emap, _subsystem);
 		_cMsnDatavsLS_TTSubdet.book(ib, _emap, _subsystem);
 		_cMsnCutDatavsLS_TTSubdet.book(ib, _emap, _subsystem);
 		_cMsnDatavsBX_TTSubdet.book(ib, _emap, _subsystem);
@@ -512,6 +522,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 
 	//	some summaries... per event
 	int numHBHE(0), numHF(0), numCutHBHE(0), numCutHF(0);
+	int numCorrHBHE(0), numCorrHF(0);
 	int numMsmHBHE(0), numMsmHF(0);
 	int numMsnHBHE(0), numMsnHF(0), numMsnCutHBHE(0), numMsnCutHF(0);
 
@@ -612,6 +623,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			//	ONLINE ONLY!
 			if (_ptype==fOnline)
 			{		
+				tid.ietaAbs()>=29?numCorrHF++:numCorrHBHE++;
 				_cEtCorrRatiovsLS_TTSubdet.fill(tid, _currentLS, rEt);
 				_cEtCorrRatiovsBX_TTSubdet.fill(tid, bx, rEt);
 			}
@@ -695,6 +707,15 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			numMsmHBHE);
 		_cEtMsmvsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1), bx, 
 			numMsmHF);
+		
+		_cEtMsmRatiovsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1), _currentLS,
+			double(numMsmHBHE)/double(numCorrHBHE));
+		_cEtMsmRatiovsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1), _currentLS, 
+			double(numMsmHF)/double(numCorrHF));
+		_cEtMsmRatiovsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1), bx,
+			double(numMsmHBHE)/double(numCorrHBHE));
+		_cEtMsmRatiovsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1), bx, 
+			double(numMsmHF)/double(numCorrHF));
 
 		_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
 			_currentLS, numMsnHBHE);
