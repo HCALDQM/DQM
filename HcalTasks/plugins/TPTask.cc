@@ -13,6 +13,12 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 
 	_skip1x1 = ps.getUntrackedParameter<bool>("skip1x1", true);
 	_cutEt = ps.getUntrackedParameter<int>("cutEt", 3);
+
+	_vflags.reserve(nTPFlag);
+	_vflags[fEtMsm]=flag::Flag("EtMsm");
+	_vflags[fFGMsm]=flag::Flag("FGMsm");
+	_vflags[fDataMsn]=flag::Flag("DataMsn");
+	_vflags[fEmulMsn]=flag::Flag("EmulMsn");
 }
 
 /* virtual */ void TPTask::bookHistograms(DQMStore::IBooker& ib,
@@ -189,6 +195,10 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ValueQuantity(quantity::fN));
 	_cEtMsm_depthlike.initialize(_name, "EtMsm",
+		new quantity::TrigTowerQuantity(quantity::fTTieta),
+		new quantity::TrigTowerQuantity(quantity::fTTiphi),
+		new quantity::ValueQuantity(quantity::fN));
+	_cFGMsm_depthlike.initialize(_name, "FGMsm",
 		new quantity::TrigTowerQuantity(quantity::fTTieta),
 		new quantity::TrigTowerQuantity(quantity::fTTiphi),
 		new quantity::ValueQuantity(quantity::fN));
@@ -378,22 +388,25 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			hashfunctions::fTTSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
-	}
+		_cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
+			hashfunctions::fFED,
+			new quantity::LumiSection(_maxLS),
+			new quantity::FlagQuantity(_vflags),
+			new quantity::ValueQuantity(quantity::fState));
+		_cSummaryvsLS.initialize(_name, "SummaryvsLS",
+			hashfunctions;:fFED,
+			new quantity::LumiSection(_maxLS),
+			new quantity::FEDQuantity(_vFEDs),
+			new quantity::ValueQuantity(quantity::fState));
 
-	std::vector<std::string> fnames;
-	fnames.push_back("OcpUniSlotD");
-	fnames.push_back("OcpUniSlotE");
-	fnames.push_back("EtMsmUniSlot");
-	fnames.push_back("FGMsmUniSlot");
-	fnames.push_back("MsnUniSlotD");
-	fnames.push_back("MsnUniSlotE");
-	fnames.push_back("EtCorrRatio");
-	fnames.push_back("EtMsmRatio");
-	fnames.push_back("FGMsmNumber");
-	_cSummary.initialize(_name, "Summary",
-		new quantity::FEDQuantity(vFEDs),
-		new quantity::FlagQuantity(fnames),
-		new quantity::QualityQuantity());
+		_xEtMsm.initialize(hashfunctions::fFED);
+		_xFGMsm.initialize(hashfunctions::fFED);
+		_xNumCorr.initialize(hashfunctions::fFED);
+		_xDataMsn.initialize(hashfunctions::fFED);
+		_xDataTotal.initialize(hashfunctions::fFED);
+		_xEmulMsn.initialize(hashfunctions::fFED);
+		_xEmulTotal.initialize(hashfunctions::fFED);
+	}
 
 	//	BOOK HISTOGRAMS
 	_cEtData_TTSubdet.book(ib, _emap, _subsystem);
@@ -432,9 +445,9 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_cEtCorrRatio_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cEtCorrRatio_depthlike.book(ib, _subsystem);
 	_cEtMsm_depthlike.book(ib, _subsystem);
+	_cFGMsm_depthlike.book(ib, _subsystem);
 	_cMsnData_depthlike.book(ib, _subsystem);
 	_cMsnEmul_depthlike.book(ib, _subsystem);
-	_cSummary.book(ib, _subsystem);
 
 	//	whatever has to go online only goes here
 	if (_ptype==fOnline)
@@ -468,6 +481,16 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		_cOccupancyEmulvsLS_TTSubdet.book(ib, _emap, _subsystem);
 		_cOccupancyCutDatavsLS_TTSubdet.book(ib, _emap, _subsystem);
 		_cOccupancyCutEmulvsLS_TTSubdet.book(ib, _emap, _subsystem);
+		_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
+		_cSummaryvsLS.book(ib, _emap, _subsystem);
+
+		_xEtMsm.book(_emap);
+		_xFGMsm.book(_emap);
+		_xNumCorr.book(_emap);
+		_xDataMsn.book(_emap);
+		_xDataTotal.book(_emap);
+		_xEmulMsn.book(_emap);
+		_xEmulTotal.book(_emap);
 	}
 	
 	//	initialize the hash map
@@ -476,28 +499,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 
 /* virtual */ void TPTask::_resetMonitors(UpdateFreq uf)
 {
-	/*
-	switch (uf)
-	{
-		case hcaldqm::f1LS:
-			_cOccupancyData_ElectronicsVME.reset();
-			_cOccupancyEmul_ElectronicsVME.reset();
-			_cOccupancyData_ElectronicsuTCA.reset();
-			_cOccupancyEmul_ElectronicsuTCA.reset();
-			_cEtMsm_ElectronicsuTCA.reset();
-			_cEtMsm_ElectronicsVME.reset();
-			_cFGMsm_ElectronicsuTCA.reset();
-			_cFGMsm_ElectronicsVME.reset();
-			break;
-		case hcaldqm::f10LS:
-			_cEtCorrRatio_ElectronicsVME.reset();
-			_cEtCorrRatio_ElectronicsuTCA.reset();
-			break;
-		default:
-			break;
-	}
-	*/
-
 	DQTask::_resetMonitors(uf);
 }
 
@@ -598,6 +599,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			{
 				_cEtCutDatavsLS_TTSubdet.fill(tid, _currentLS, soiEt_d);
 				_cEtCutDatavsBX_TTSubdet.fill(tid, bx, soiEt_d);
+				_xDataTotal.get(eid)++;
 			}
 			//	^^^ONLINE ONLY!
 
@@ -623,6 +625,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			//	ONLINE ONLY!
 			if (_ptype==fOnline)
 			{		
+				_xNumCorr.get(eid)++;
 				tid.ietaAbs()>=29?numCorrHF++:numCorrHBHE++;
 				_cEtCorrRatiovsLS_TTSubdet.fill(tid, _currentLS, rEt);
 				_cEtCorrRatiovsBX_TTSubdet.fill(tid, bx, rEt);
@@ -652,15 +655,20 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 					_cEtMsm_ElectronicsVME.fill(eid);
 				else
 					_cEtMsm_ElectronicsuTCA.fill(eid);
+				if (_ptype==fOnline)
+					_xEtMsm.get(eid)++;
 			}
 			//	 if SOI FG are not equal
 			//	 fill mismatched
 			if (soiFG_d!=soiFG_e)
 			{
+				_cFGMsm_depthlike.fill(tid);
 				if (eid.isVMEid())
 					_cFGMsm_ElectronicsVME.fill(eid);
 				else
 					_cFGMsm_ElectronicsuTCA.fill(eid);
+				if (_ptype==fOnline)
+					_xFGMsm.get(eid)++;
 			}
 		}
 		else
@@ -675,7 +683,11 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 				_cMsnEmul_ElectronicsuTCA.fill(eid);
 
 			if (soiEt_d>_cutEt)
+			{
 				tid.ietaAbs()>=29?numMsnCutHF++:numMsnCutHBHE++;
+				if (_ptype==fOnline)
+					_xEmulMsn.get(eid)++;
+			}
 		}
 	}
 	
@@ -796,6 +808,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			{
 				_cEtCutEmulvsLS_TTSubdet.fill(tid, _currentLS, soiEt);
 				_cEtCutEmulvsBX_TTSubdet.fill(tid, bx, soiEt);
+				_xEmulTotal.get(eid)++;
 			}
 			//	^^^ONLINE ONLY!
 		}
@@ -812,7 +825,11 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			else
 				_cMsnData_ElectronicsuTCA.fill(eid);
 			if (soiEt>_cutEt)
+			{
 				tid.ietaAbs()>=29?numMsnCutHF++:numMsnCutHBHE++;
+				if (_ptype==fOnline)
+					_xDataMsn.get(eid)++;
+			}
 		}
 	}
 
@@ -858,179 +875,99 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	//	^^^ONLINE ONLY!
 }
 
+/* virtual */ void TPTask::beginLuminosityBlock(edm::LuminosityBlock const& lb,
+	edm::EventSetup const& es)
+{
+	DQTask::beginLuminosityBlock(lb, es);
+
+
+	//	ONLINE ONLY!
+	if (_ptype!=fOnline)
+		return;
+	_cEtCutDatavsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cEtCutEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cEtCorrRatiovsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cEtMsmvsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cEtMsmRatiovsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cMsnDatavsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cMsnCutDatavsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cMsnEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cMsnCutEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cOccupancyDatavsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cOccupancyEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cOccupancyCutDatavsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cOccupancyCutEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
+	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
+	_cSummaryvsLS.extendAxisRange(_currentLS);
+}
+
 /* virtual */ void TPTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
-	/*
+	if (_ptype!=fOnline)
+		return;
+
+	//
+	//	GENERATE STATUS ONLY FOR ONLINE!
+	//
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
-		//	first, set all the flags are inapplicable	
+		flag::Flag fSum("TP");
 		HcalElectronicsId eid = HcalElectronicsId(*it);
-		for (int flag=fOcpUniSlotData; flag<nTPFlag; flag++)
-			_cSummary.setBinContent(eid, flag, fNA);
-		//	for now just skip VME - but there gonna be HO TPs soon
-		if (eid.isVMEid())
-			continue;
-
-		//	second, check if this FED is @cDAQ
-		//	if not, leave status as inapplicable
-		std::vector<uint32_t> jt=std::find(_vcdaqEids.begin(),
-			_vcdaqEids.end(), *it);
-		if (jt==_vcdaqEids.end())
-			continue;
-
-		//	loop over and check the status
-		bool ocpUniSlotData = false;
-		bool ocpUniSlotEmul = false;
-		bool etMsmUniSlot = false;
-		bool fgMsmUniSlot = false;
-		bool etcorrratio = false;
-		bool etmsmnum = false;
-		bool fgmsmnum = false;
-		if (eid.isVMEid())
+		std::vector<uint32_t>::const_iterator cit=std::find(
+			_vcdaqEids.begin(); _vcdaqEids.end(); *it);
+		if (cit!=_vcdaqEids.end() || !isFEDHBHE(eid) || !isFEDHF(eid))
 		{
-			//	VME
-			for (int is=SPIGOT_MIN; is<=SPIGOT_MAX; is++)
-			{
-				//	NOTE: non Trigger Constructor
-				eid = HcalElectronicsId(FIBERCH_MIN,
-					FIBER_VME_MIN, is, eid.dccid());
-				HcalElectronicsId ejd = HcalElectronicsId(FIBERCH_MIN,
-					FIBER_VME_MIN, is==SPIGOT_MAX?SPIGOT_MIN:is+1, eid.dccid());
-
-				//	get Contents
-				int iocpd = _cOccupancyData_ElectronicsVME.getBinContent(eid);
-				int iocpe = _cOccupancyEmul_ElectronicsVME.getBinContent(eid);
-				int jocpd = _cOccupancyData_ElectronicsVME.getBinContent(ejd);
-				int jocpe = _cOccupancyEmul_ElectronicsVME.getBinContent(ejd);
-				int ietmsm = _cEtMsm_ElectronicsVME.getBinContent(eid);
-				int jetmsm = _cEtMsm_ElectronicsVME.getBinContent(ejd);
-				int ifgmsm = _cFGMsm_ElectronicsVME.getBinContent(eid);
-				int jfgmsm = _cFGMsm_ElectronicsVME.getBinContent(ejd);
-				double etcorr = _cEtCorrRatio_ElectronicsVME.getBinContent(eid);
-				int etmsm = _cEtMsm_ElectronicsVME.getBinContent(eid);
-				int fgmsm = _cFGMsm_ElectronicsVME.getBinContent(eid);
-
-				//	check and set if over threshold...
-				//	HARDCODED CUTS
-				double rocpd = iocpd==0 && jocpd==0?1:
-					double(std::min(iocpd, jocpd))/
-					double(std::max(iocpd, jocpd));
-				double rocpe = iocpe==0 && jocpe==0?1:
-					double(std::min(iocpe, jocpe))/
-					double(std::max(iocpe, jocpe));
-				double retmsm = ietmsm==0 && jetmsm==0?1:
-					double(std::min(ietmsm, jetmsm))/
-					double(std::max(ietmsm, jetmsm));
-				double rfgmsm = ifgmsm==0 && jfgmsm==0?1:
-					double(std::min(ifgmsm, jfgmsm))/
-					double(std::max(ifgmsm, jfgmsm));
-
-				//	for slot-uniformity - x5 difference...
-				if (rocpd<0.2)
-					ocpUniSlotData = true;
-				if (rocpe<0.2)
-					ocpUniSlotEmul = true;
-				if (retmsm<0.2)
-					etMsmUniSlot = true;
-				if (rfgmsm<0.2)
-					etMsmUniSlot = true;
-				//	correlation ratio should be > 0.92
-				if (etcorr<0.92)
-					etcorrratio = true;
-				//	if #etmismatches/#occupcies > 0.1 - 10%
-				if (double(etmsm)/double(iocpd)>0.1)
-					etmsmnum = true;
-				if (double(fgmsm)/double(iocpd)>0.1)
-					fgmsmnum = true;
-			}
-		}
-		else 
-		{	
-			//	uTCA
-			for (int is=SLOT_uTCA_MIN; is<=SLOT_uTCA_MAX; is++)
-			{
-				//	NOTE: Non Trigger Constructor
-				eid = HcalElectronicsId(eid.crateId(), is,
-					FIBER_uTCA_MIN1, FIBERCH_MIN, false);
-				HcalElectronicsId ejd = HcalElectronicsId(eid.crateId(), 
-					is==SLOT_uTCA_MAX?SLOT_uTCA_MIN:is+1, 
-					FIBER_uTCA_MIN1, FIBERCH_MIN, false);
-
-				//	get Contents
-				int iocpd = _cOccupancyData_ElectronicsuTCA.getBinContent(eid);
-				int iocpe = _cOccupancyEmul_ElectronicsuTCA.getBinContent(eid);
-				int jocpd = _cOccupancyData_ElectronicsuTCA.getBinContent(ejd);
-				int jocpe = _cOccupancyEmul_ElectronicsuTCA.getBinContent(ejd);
-				int ietmsm = _cEtMsm_ElectronicsuTCA.getBinContent(eid);
-				int jetmsm = _cEtMsm_ElectronicsuTCA.getBinContent(ejd);
-				int ifgmsm = _cFGMsm_ElectronicsuTCA.getBinContent(eid);
-				int jfgmsm = _cFGMsm_ElectronicsuTCA.getBinContent(ejd);
-				double etcorr = _cEtCorrRatio_ElectronicsuTCA.getBinContent(
-					eid);
-				int etmsm = _cEtMsm_ElectronicsuTCA.getBinContent(eid);
-				int fgmsm = _cFGMsm_ElectronicsuTCA.getBinContent(eid);
-
-				//	check and set if over threshold...
-				//	HARDCODED CUTS
-				double rocpd = iocpd==0 && jocpd==0?1:
-					double(std::min(iocpd, jocpd))/
-					double(std::max(iocpd, jocpd));
-				double rocpe = iocpe==0 && jocpe==0?1:
-					double(std::min(iocpe, jocpe))/
-					double(std::max(iocpe, jocpe));
-				double retmsm = ietmsm==0 && jetmsm==0?1:
-					double(std::min(ietmsm, jetmsm))/
-					double(std::max(ietmsm, jetmsm));
-				double rfgmsm = ifgmsm==0 && jfgmsm==0?1:
-					double(std::min(ifgmsm, jfgmsm))/
-					double(std::max(ifgmsm, jfgmsm));
-
-				//	for slot-uniformity - x5 difference...
-				if (rocpd<0.2)
-					ocpUniSlotData = true;
-				if (rocpe<0.2)
-					ocpUniSlotEmul = true;
-				if (retmsm<0.2)
-					etMsmUniSlot = true;
-				if (rfgmsm<0.2)
-					fgMsmUniSlot = true;
-				//	correlation ratio should be > 0.92
-				if (etcorr<0.92 && 
-					_cEtCorrRatio_ElectronicsuTCA.getBinEntries(eid)>0)
-					etcorrratio = true;
-				//	if #etmismatches/#occupcies > 0.1 - 10%
-				if (double(etmsm)/double(iocpd)>0.1)
-					etmsmnum = true;
-				if (double(fgmsm)/double(iocpd)>0.1)
-					fgmsmnum = true;
-			}
+			//	not @cDAQ
+			for (uint32_it iflag=0; iflag<_vflags.size(); iflag++)
+				_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag
+					flag::fNA);
+			_cSummaryvsLS.setBinContent(eid, _currentLS, flag::fNA);
+			continue;
 		}
 
-		ocpUniSlotData?
-			_cSummary.setBinContent(eid, fOcpUniSlotData, fLow):
-			_cSummary.setBinContent(eid, fOcpUniSlotData, fGood);
-		ocpUniSlotEmul?
-			_cSummary.setBinContent(eid, fOcpUniSlotEmul, fLow):
-			_cSummary.setBinContent(eid, fOcpUniSlotEmul, fGood);
-		etMsmUniSlot?
-			_cSummary.setBinContent(eid, fEtMsmUniSlot, fLow):
-			_cSummary.setBinContent(eid, fEtMsmUniSlot, fGood);
-		fgMsmUniSlot?
-			_cSummary.setBinContent(eid, fFGMsmUniSlot, fLow):
-			_cSummary.setBinContent(eid, fFGMsmUniSlot, fGood);
-		etcorrratio?
-			_cSummary.setBinContent(eid, fEtCorrRatio, fLow):
-			_cSummary.setBinContent(eid, fEtCorrRatio, fGood);
-		etmsmnum?
-			_cSummary.setBinContent(eid, fEtMsmNumber, fLow):
-			_cSummary.setBinContent(eid, fEtMsmNumber, fGood);
-		fgmsmnum?
-			_cSummary.setBinContent(eid, fFGMsmNumber, fLow):
-			_cSummary.setBinContent(eid, fFGMsmNumber, fGood);
+		//	FED is @cDAQ
+		double etmsm = _xNumCorr.get(eid)>0?
+			double(_xEtMsm.get(eid))/double(_xNumCorr.get(eid)):0;
+		double fgmsm = _xNumCorr.get(eid)>0?
+			double(_xFGMsm.get(eid))/double(_xNumCorr.get(eid)):0;
+		double dmsm = _xDataTotal.get(eid)>0?
+			double(_xDataMsn.get(eid))/double(_xDataTotal.get(eid)):0;
+		double emsm = _xEmulTotal.get(eid)>0?
+			double(_xEmulMsn.get(eid))/double(_xEmulTotal.get(eid)):0;
+		if (etmsm>=_thresh_EtMsmRate)
+			_vflags[fEtMsm]._state = flag::fBAD;
+		else
+			_vflags[fEtMsm]._state = flag::fGOOD;
+		if (fgmsm>=_thresh_FGMsmRate)
+			_vflags[fFGMsm]._state = flag::fBAD;
+		else
+			_vflags[fFGMsm]._state = flag::fGOOD;
+		if (dmsm>=_thresh_DataMsn)
+			_vflags[fDataMsn]._state = flag::fBAD;
+		else
+			_vflags[fDataMsn]._state = flag:fGOOD;
+		if (emsm>=_thresh_EmulMsn)
+			_vflags[fEmulMsn]._state = flag::fBAD;
+		else
+			_vflags[fEmulMsn]._state = flag:fGOOD;
+
+		int iflag=0;
+		for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
+			it!=_vflags.end(); ++it)
+		{
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag,
+				it->_state);
+			fSum+=(*it);
+		}
+		_cSummaryvsLS.setBinContent(eid, _currentLS, fSum._state);
 	}
-*/
+
+	//	reset...
+	_xEtMsm.reset(); _xFGMsm.reset(); _xNumCorr.reset();
+	_xDataMsn.reset(); _xDataTotal.reset(); _xEmulMsn.reset(); 
+	_xEmulTotal.reset();
 	
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

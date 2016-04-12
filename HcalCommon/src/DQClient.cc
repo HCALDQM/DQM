@@ -1,0 +1,91 @@
+#include "DQM/HcalCommon/interface/DQClient.h"
+
+namespace hcaldqm
+{
+	DQClient::DQClient(std::string const& name, edm::ParameterSet const& ps) :
+		DQModule(ps)
+	{
+		//	- SET THE TASK NAME AS IN PSet
+		//	- SET THE CLIENT NAME AS specified in name
+		_taskname = _name;
+		_name=name;
+	}
+
+	/* virtual */ void DQClient::beginRun(edm::Run const& r,
+		edm::EventSetup const& es)
+	{
+		//	get various FED lists
+		edm::ESHandle<HcalDbService> dbs;
+		es.get<HcalDbRecord>().get(dbs);
+		_emap = dbs->getHcalMapping();
+		_vFEDs = utilities::getFEDList(_emap);
+		for (std::vector<int>::const_iterator it=_vFEDs.begin();
+			it!=_vFEDs.end(); ++it)
+			if (*it>FED_VME_MAX)
+				_vhashFEDs.push_back(HcalElectronicsId(
+					utilities::fed2crate(*it), SLOT_uTCA_MIN, FIBER_uTCA_MIN1,
+					FIBERCH_MIN, false).rawId());
+			else
+				_vhashFEDs.push_back(HcalElectronicsId(FIBERCH_MIN,
+					FIBER_VME_MIN, SPIGOT_MIN, (*it)-FED_VME_MIN).rawId());
+
+		//	get FEDs registered @cDAQ
+		edm::eventsetup::EventSetupRecordKey recordKey(
+			edm::eventsetup::EventSetupRecordKey::TypeTag::findType(
+				"RunInfoRcd"));
+		if (es.find(recordKey))
+		{
+			edm::ESHandle<RunInfo> ri;
+			es.get<RunInfoRcd>().get(ri);
+			std::vector<int> vfeds=ri->m_fed_in;
+			for (std::vector<int>::const_iterator it==vfes.begin();
+				it!=vfeds.end(); ++it)
+			{
+				if (*it>=constants::FED_VME_MIN && *it<=FED_VME_MAX)
+					_vcdaqEids.push_back(HcalElectronicsId(
+						constants::FIBERCH_MIN,
+						constants::FIBER_VME_MIN, SPIGOT_MIN,
+						(*it)-FED_VME_MIN).rawId());
+				else if (*it>=constants::FED_uTCA_MIN &&
+					*it<=FEDNumbering::MAXHCALuTCAFEDID)
+					_vcdaqEids.push_back(HcalElectronicsId(
+						utilities::fed2crate(*it), SLOT_uTCA_MIN,
+						FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+			}
+		}
+
+		//	get the Channel Quality masks
+		_xQuality.initialize(hashfunctions::fDChannel);
+		edm::ESHandle<HcalChannelQuality> hcq;
+		es.get<HcalChannelQualityRcd>().get("withTopo", hcq);
+		const HcalChannelQuality *cq = hcq.product();
+		std::vector<DetId> detids = cq->getAllChannels();
+		for (std::vector<DetId>::const_iterator it=detids.begin();
+			it!=detids.end(); ++it)
+		{
+			if (HcalGenericDetId(*it).genericSubdet()==
+				HcalGenericDetId::HcalGenUnknown)
+				continue;
+
+			if (HcalGenericDetId(*it).isHcalDetId())
+			{
+				HcalDetId did(*it);
+				uint32_t mask=(cq->getValues(did))->getValue();
+				if (mask!=0)
+					_xQuality.push(did, mask);
+			}
+		}
+	}
+
+	/* virtual */ void DQClient::endLuminosityBlock(DQMStore::IBooker&,
+		DQMStore::IGetter&, edm::LuminosityBlock const&,
+		edm::EventSetup const&)
+	{
+		_currentLS=lb.luminosityBlock();
+		_totalLS++;
+	}
+
+	/* virtual */ std::vector<flag::Flag> DQClient::endJob(DQMStore::IBooker&,
+		DQMStore::IGetter&)
+	{}
+}

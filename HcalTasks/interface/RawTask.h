@@ -24,14 +24,6 @@ using namespace hcaldqm;
 using namespace hcaldqm::filter;
 class RawTask : public DQTask
 {
-	enum RawFlags
-	{
-		fEvnMsm = 0,
-		fBcnMsm = 1,
-		fBadQuality = 2,
-		nRawFlags = 3
-	};
-
 	public:
 		RawTask(edm::ParameterSet const&);
 		virtual ~RawTask() {}
@@ -52,6 +44,16 @@ class RawTask : public DQTask
 		edm::EDGetTokenT<FEDRawDataCollection>	_tokFEDs;
 		edm::EDGetTokenT<HcalUnpackerReport> _tokReport;
 
+		//	flag vector
+		std::vector<flag::Flag> _vflags;
+		enum RawFlag
+		{
+			fEvnMsm = 0,
+			fBcnMsm = 1,
+			fBadQ = 2,
+			nRawFlag = 3
+		};
+
 		//	emap
 		HcalElectronicsMap const* _emap;
 		electronicsmap::ElectronicsMap _ehashmap;
@@ -69,8 +71,7 @@ class RawTask : public DQTask
 		Container2D _cBadQuality_FEDVME;
 		Container2D _cBadQuality_FEDuTCA;
 		Container2D _cBadQuality_depth;
-		Container2D _cBadQualityTotal_FEDVME;
-		Container2D _cBadQualityTotal_FEDuTCA;
+		Container2D _cBadQualityLS_depth; // online only
 		ContainerSingleProf1D _cBadQualityvsLS;
 		ContainerSingleProf1D _cBadQualityvsBX;
 
@@ -81,14 +82,10 @@ class RawTask : public DQTask
 		Container2D _cEvnMsm_ElectronicsuTCA;
 		Container2D _cBcnMsm_ElectronicsuTCA;
 		Container2D _cOrnMsm_ElectronicsuTCA;
-		ContainerProf1D _cEvnMsmvsLS_ElectronicsVME;	// online only
-		ContainerProf1D _cEvnMsmvsLS_ElectronicsuTCA;	// online only
-		ContainerProf1D _cBcnMsmvsLS_ElectronicsVME;	// online only
-		ContainerProf1D _cBcnMsmvsLS_ElectronicsuTCA;	// online only
-
-		//	Summary
-		ContainerSingle2D _cSummary;
-		Container2D		  _cSummaryvsLS_FED;
+		ContainerXXX<uint32_t> _xEvnMsmLS, _xBcnMsmLS, _xBadQLS;
+	
+		Container2D	_cSummaryvsLS_FED; // online only
+		ContainerSingle2D	_cSummaryvsLS; // online only
 };
 
 #endif

@@ -31,20 +31,8 @@ class TPTask : public DQTask
 			edm::Run const&, edm::EventSetup const&);
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
-
-		enum TPFlag
-		{
-			fOcpUniSlotData = 0,
-			fOcpUniSlotEmul = 1,
-			fEtMsmUniSlot = 2,
-			fFGMsmUniSlot = 3,
-			fMsnUniSlotData = 4,
-			fMsnUniSlotEmul = 5,
-			fEtCorrRatio = 6,
-			fEtMsmNumber = 7,
-			fFGMsmNumber = 8,
-			nTPFlag = 9
-		};
+		virtual void beginLuminosityBlock(edm::LuminosityBlock const&,
+			edm::EventSetup const&);
 
 	protected:
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
@@ -54,6 +42,17 @@ class TPTask : public DQTask
 		edm::InputTag		_tagEmul;
 		edm::EDGetTokenT<HcalTrigPrimDigiCollection> _tokData;
 		edm::EDGetTokenT<HcalTrigPrimDigiCollection> _tokEmul;
+
+		//	flag vector
+		std::vector<flag::Flag> _vflags;
+		enum TPFlag
+		{
+			fEtMsm=0,
+			fFGMsm=1,
+			fDataMsn=2,
+			fEmulMsn=3,
+			nTPFlag=4
+		};
 
 		//	switches
 		bool _skip1x1;
@@ -161,8 +160,11 @@ class TPTask : public DQTask
 		ContainerProf1D _cOccupancyCutDatavsLS_TTSubdet;	// online only
 		ContainerProf1D _cOccupancyCutEmulvsLS_TTSubdet; // online only
 
-		//	generate summary histogram
-		ContainerSingle2D _cSummary;
+
+		Container2D _cSummaryvsLS_FED; // online only
+		ContainerSingle2D _cSummaryvsLS; // online only
+		ContainerXXX<uint32_t> _xEtMsm, _xFGMsm, _xNumCorr,
+			_xDataMsn, _xDataTotal, _xEmulMsn, _xEmulTotal;
 };
 
 #endif

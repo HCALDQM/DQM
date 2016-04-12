@@ -33,17 +33,10 @@ class RecHitTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
+		virtula void beginLuminosityBlock(edm::LuminosityBlock const&,
+			edm::EventSetup const&);
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
-
-		enum RecoFlag
-		{
-			fOcpUniSlot = 0,
-			fTimeUniSlot = 1,
-			fTCDS = 2,
-			fMsn1LS = 3,
-			nRecoFlag = 4
-		};
 
 	protected:
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
@@ -60,6 +53,15 @@ class RecHitTask : public DQTask
 
 		//	hashes/FED vectors
 		std::vector<uint32_t> _vhashFEDs;
+
+		//	flag vectors
+		std::vector<flag::Flag> _vflags;
+		enum RecoFlag
+		{
+			fUni=0,
+			fTCDS=1,
+			nRecoFlag=2;
+		};
 
 		//	emap
 		HcalElectronicsMap const* _emap;
@@ -110,14 +112,17 @@ class RecHitTask : public DQTask
 		Container2D _cOccupancyCut_FEDuTCA;
 		Container2D _cOccupancyCut_ElectronicsVME;
 		Container2D _cOccupancyCut_ElectronicsuTCA;
-		ContainerProf1D _cOccupancyCutvsLS_Subdet;
+		ContainerProf1D _cOccupancyCutvsLS_Subdet; // online only
 		Container2D _cOccupancyCut_depth;
 		Container1D _cOccupancyCutvsiphi_SubdetPM;	// online only
 		Container1D _cOccupancyCutvsieta_Subdet;	// online only
 		ContainerProf1D _cOccupancyCutvsBX_SubdetPM;	// online only!
+		Container2D _cOccupancyCutvsiphivsLS_SubdetPM; // online only
+		ContainerXXX<uint32_t> _xUniHF, _xUni;
 
-		//	summary - filled at harvesting...
-		ContainerSingle2D _cSummary;
+		std::vector<HcalGenericDetId> _gids; // online only
+		Container2D _cSummaryvsLS_FED; // online only!
+		ContainerSingle2d _cSummaryvsLS;
 };
 
 #endif

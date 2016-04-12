@@ -1,8 +1,8 @@
-#ifndef HcalHarvesting_h
-#define HcalHarvesting_h
+#ifndef DQM_HcalTasks_HcalOnlineHarvesting_h
+#define DQM_HcalTasks_HcalOnlineHarvesting_h
 
 /**
- *	file:		HcalHarvesting.h
+ *	file:		HcalOnlineHarvesting.h
  *	Author:		VK
  *	Date:		..
  *	Description: 
@@ -10,7 +10,7 @@
  *		that only 1 run is being processed.
  *		https://twiki.cern.ch/twiki/bin/view/CMSPublic/FWMultithreadedFrameworkOneModuleInterface - for details.
  *
- *		HcalHarvesting is responsible for Status Evaluation and Summary
+ *		HcalOnlineHarvesting is responsible for Status Evaluation and Summary
  *		Generation. In this step RAW, DIGI, RECO + TP Data Tiers 
  *		are evaluated and Summary is generated. 
  *		___________
@@ -39,11 +39,11 @@
 
 using namespace hcaldqm;
 
-class HcalHarvesting : public DQHarvester
+class HcalOnlineHarvesting : public DQHarvester
 {
 	public:
-		HcalHarvesting(edm::ParameterSet const&);
-		virtual ~HcalHarvesting(){}
+		HcalOnlineHarvesting(edm::ParameterSet const&);
+		virtual ~HcalOnlineHarvesting(){}
 
 	protected:
 		virtual void _dqmEndLuminosityBlock(DQMStore::IBooker&,
@@ -58,9 +58,6 @@ class HcalHarvesting : public DQHarvester
 		bool _digiHarvesting;
 		bool _recoHarvesting;
 		bool _tpHarvesting;
-
-		//	electronicsmap hash
-		electronicsmap::ElectronicsMap _emaphash;
 
 		//	flag names
 		std::vector<std::string> _frawnames;

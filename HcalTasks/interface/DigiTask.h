@@ -41,20 +41,6 @@ class DigiTask : public DQTask
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
 
-		enum DigiFlag
-		{
-			//	UniSlot - for HF FEDs use OccupancyCut, for others use 
-			//	just Occupancy
-			fUniSlot = 0,
-			//	missing for 1LS
-			fMsn1LS = 1,
-			//	caps non rotating
-			fCapIdRot = 2,
-			//	digi size issues - typically is a consequence
-			fDigiSize = 3,
-			nDigiFlag = 4
-		};
-
 	protected:
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
 		virtual void _resetMonitors(UpdateFreq);
@@ -67,6 +53,15 @@ class DigiTask : public DQTask
 		edm::EDGetTokenT<HFDigiCollection>	_tokHF;
 
 		double _cutSumQ_HBHE, _cutSumQ_HO, _cutSumQ_HF;
+
+		//	flag vector
+		std::vector<flag::Flag> _vflags;
+		enum DigiFlag
+		{
+			fUni = 0,
+			fDigiSize = 1,
+			nDigiFlag = 2
+		};
 
 		//	hashes/FED vectors
 		std::vector<uint32_t> _vhashFEDs;
@@ -115,8 +110,6 @@ class DigiTask : public DQTask
 		Container2D _cOccupancy_ElectronicsVME;
 		Container2D _cOccupancy_ElectronicsuTCA;
 		Container2D _cOccupancy_depth;
-		Container2D _cOccupancyNR_FEDVME;
-		Container2D _cOccupancyNR_FEDuTCA;
 		Container1D _cOccupancyvsiphi_SubdetPM; // online only
 		Container1D _cOccupancyvsieta_Subdet;	// online only
 
@@ -128,10 +121,9 @@ class DigiTask : public DQTask
 		Container2D _cOccupancyCut_ElectronicsVME;
 		Container2D _cOccupancyCut_ElectronicsuTCA;
 		Container2D _cOccupancyCut_depth;
-		Container2D _cOccupancyCutNR_FEDVME;
-		Container2D _cOccupancyCutNR_FEDuTCA;
 		Container1D _cOccupancyCutvsiphi_SubdetPM; // online only
 		Container1D _cOccupancyCutvsieta_Subdet;	// online only
+		Container2D _cOccupancyCutvsiphivsLS_SubdetPM; // online only
 
 		//	Occupancy w/o and w/ a Cut vs BX and vs LS
 		ContainerProf1D _cOccupancyvsLS_Subdet;
@@ -139,12 +131,13 @@ class DigiTask : public DQTask
 		ContainerProf1D _cOccupancyCutvsBX_Subdet;	// online only
 
 		//	#Time Samples for a digi. Used for Summary generation
-		Container1D _cDigiSize_FEDVME;
-		Container1D _cDigiSize_FEDuTCA;
-		ContainerProf1D _cDigiSizevsLS_Subdet;	// online only
+		Container1D _cDigiSize_FED;
+		ContainerProf1D _cDigiSizevsLS_FED;	// online only
+		ContainerXXX<uint32_t> _xDigiSize; // online only
+		ContainerXXX<uint32_t> _xUniHF,_xUni; // online only
 
-		//	Summary Histogram
-		ContainerSingle2D _cSummary;
+		std::vector<HcalGenericDetId> _gids; // online only
+		Container2D _cSummaryvsLS_FED; // online only
 };
 
 #endif

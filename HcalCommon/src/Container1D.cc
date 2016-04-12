@@ -1338,7 +1338,13 @@ namespace hcaldqm
 		//	inflate all the mes
 		BOOST_FOREACH(MEMap::value_type &pair, _mes)
 		{
-			pair.second->getTH1()->LabelsInflate();
+			int x=_qx->nbins();
+			while (l>=x)
+			{
+				pair.second->getTH1()->LabelsInflate();
+				x*=2;
+				_qx->setMax(x);
+			}
 		}
 	}
 }

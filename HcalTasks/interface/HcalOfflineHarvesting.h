@@ -29,6 +29,12 @@
 #include "DQM/HcalCommon/interface/ContainerSingleProf2D.h"
 #include "DQM/HcalCommon/interface/ContainerXXX.h"
 #include "DQM/HcalCommon/interface/ElectronicsMap.h"
+#include "DQM/HcalCommon/interface/DQClient.h"
+
+#include "DQM/HcalTasks/interface/RawRunSummary.h"
+#include "DQM/HcalTasks/interface/DigiRunSummary.h"
+#include "DQM/HcalTasks/interface/RecoRunSummary.h"
+#include "DQM/HcalTasks/interface/TPRunSummary.h"
 
 using namespace hcaldqm;
 
@@ -48,24 +54,20 @@ class HcalOfflineHarvesting : public DQHarvester
 		virtual void _dqmEndJob(DQMStore::IBooker&,
 			DQMStore::IGetter&);
 
-		//	Electronics Hash Map
-		electronicsmap::ElectronicsMap _ehashmapD;
-		electronicsmap::ElectronicsMap _ehashmapT;
-		filter::HashFilter _filter_FEDHF;
-			
-		//	flags to harvest...
-		int _modules[4];
-		bool _rawHarvesting;
-		bool _digiHarvesting;
-		bool _recoHarvesting;
-		bool _tpHarvesting;
+		enum Summary
+		{
+			fRaw=0,
+			fDigi=1,
+			fReco=2,
+			fTP=3,
+			nSummary=4
+		};
 
-		//	flag names
-		std::vector<std::string> _frawnames;
-		std::vector<std::string> _fdiginames;
-		std::vector<std::string> _freconames;
-		std::vector<std::string> _ftpnames;
-
+		//	vector of Summary Generators and marks of being present
+		//	by default all false
+		std::vector<DQClient*> _vsumgen;
+		std::vector<bool> _vmarks;
+		
 		//	reportSummaryMap
 		MonitorElement *_reportSummaryMap;
 };

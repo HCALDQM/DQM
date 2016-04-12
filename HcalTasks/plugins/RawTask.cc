@@ -10,6 +10,11 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 	_tokFEDs = consumes<FEDRawDataCollection>(_tagFEDs);
 	_tokReport = consumes<HcalUnpackerReport>(_tagReport);
+
+	_vflags.reserve(nRawFlag);
+	_vflags[fEvnMsm]=flag::Flag("EvnMsm");
+	_vflags[fBcnMsm]=flag::Flag("BcnMsm");
+	_vflags[fBadQ]=flag::Flag("BadQ");
 }
 
 /* virtual */ void RawTask::bookHistograms(DQMStore::IBooker& ib,
@@ -117,35 +122,21 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fN));
 
-	//	Summary
-	std::vector<std::string> fnames;
-	fnames.push_back("EvnMsm");
-	fnames.push_back("BcnMsm");
-	fnames.push_back("BadQuality");
-	_cSummary.initialize(_name, "Summary",
-		new quantity::FEDQuantity(vFEDs),
-		new quantity::FlagQuantity(fnames),
-		new quantity::QualityQuantity());
-
 	//	INITIALIZE HISTOGRAMS to be used in Online Only
 	if (_ptype==fOnline)
 	{
-		_cEvnMsmvsLS_ElectronicsVME.initialize(_name, "EvnMsmvsLS",
-			hashfunctions::fElectronics,
+		_xEvnMsmLS.initialize(hashfunctions::fFED);
+		_xBcnMsmLS.initialize(hashfunctions::fFED);
+		_xBadQLS.initialize(hashfunctions::fFED);
+		_cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
+			hashfunctions::fFED,
 			new quantity::LumiSection(_maxLS),
-			new quantity::ValueQuantity(quantity::fN));
-		_cEvnMsmvsLS_ElectronicsuTCA.initialize(_name, "EvnMsmvsLS",
-			hashfunctions::fElectronics,
+			new quantity::FlagQuantity(_vflags),
+			new quantity::ValueQuantity(quantity::fState));
+		_cSummaryvsLS.initialize(_name, "SummaryvsLS",
 			new quantity::LumiSection(_maxLS),
-			new quantity::ValueQuantity(quantity::fN));
-		_cBcnMsmvsLS_ElectronicsVME.initialize(_name, "BcnMsmvsLS",
-			hashfunctions::fElectronics,
-			new quantity::LumiSection(_maxLS),
-			new quantity::ValueQuantity(quantity::fN));
-		_cBcnMsmvsLS_ElectronicsuTCA.initialize(_name, "BcnMsmvsLS",
-			hashfunctions::fElectronics,
-			new quantity::LumiSection(_maxLS),
-			new quantity::ValueQuantity(quantity::fN));
+			new quantity::FEDQuantity(_vFEDs),
+			new quantity::ValueQuantity(quantity::fState));
 	}
 
 	//	BOOK HISTOGRAMS
@@ -163,15 +154,14 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_cBadQualityvsLS.book(ib, _subsystem);
 	_cBadQualityvsBX.book(ib, _subsystem);
 
-	_cSummary.book(ib, _subsystem);
-
 	// BOOK HISTOGRAMS to be used in ONLINE ONLY!
 	if (_ptype==fOnline)
 	{
-		_cEvnMsmvsLS_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
-		_cEvnMsmvsLS_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
-		_cBcnMsmvsLS_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
-		_cBcnMsmvsLS_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
+		_xEvnMsmLS.book(_emap);
+		_xBcnMsmLS.book(_emap);
+		_xBadQLS.book(_emap);
+		_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
+		_cSummaryvsLS.book(ib, _subsystem);
 	}
 
 	//	initialize hash map
@@ -180,24 +170,6 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 /* virtual */ void RawTask::_resetMonitors(UpdateFreq uf)
 {
-	/*
-	switch(uf)
-	{
-		case fEvent:
-			break;
-		case hcaldqm::f1LS:
-			_cEvnMsm_ElectronicsVME.reset();
-			_cBcnMsm_ElectronicsVME.reset();
-			_cEvnMsm_ElectronicsuTCA.reset();
-			_cBcnMsm_ElectronicsuTCA.reset();
-			_cBadQuality_FEDVME.reset();
-			_cBadQuality_FEDuTCA.reset();
-			_cBadQuality_depth.reset();
-			break;
-		default:
-			break;
-	}
-	*/
 	//	base reset
 	DQTask::_resetMonitors(uf);
 }
@@ -233,6 +205,9 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		nn++;
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(*it));
 		_cBadQuality_depth.fill(HcalDetId(*it));
+		//	ONLINE ONLY!
+		if (_ptype==fOnline)
+			_xBadQLS.get(eid)++;
 		if (eid.isVMEid())
 		{
 			if (_filter_FEDsVME.filter(eid))
@@ -296,7 +271,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					_cEvnMsm_ElectronicsVME.fill(eid);
 
 					if (_ptype==fOnline && is<=constants::SPIGOT_MAX)
-						_cEvnMsmvsLS_ElectronicsVME.fill(eid, 100);
+						_xEvnMsmLS.get(eid)++;
 				}
 				if (qorn)
 					_cOrnMsm_ElectronicsVME.fill(eid);
@@ -305,7 +280,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					_cBcnMsm_ElectronicsVME.fill(eid);
 
 					if (_ptype==fOnline && is<=constants::SPIGOT_MAX)
-						_cBcnMsmvsLS_ElectronicsVME.fill(eid, 100);
+						_xBcnMsmLS.get(eid)++;
 				}
 			}
 		}
@@ -343,7 +318,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					_cEvnMsm_ElectronicsuTCA.fill(eid);
 
 					if (_ptype==fOnline)
-						_cEvnMsmvsLS_ElectronicsuTCA.fill(eid, 100);
+						_xEvnMsmLS.get(eid)++;
 				}
 				if (qorn)
 					_cOrnMsm_ElectronicsuTCA.fill(eid);
@@ -352,7 +327,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					_cBcnMsm_ElectronicsuTCA.fill(eid);
 
 					if (_ptype==fOnline)
-						_cBcnMsmvsLS_ElectronicsuTCA.fill(eid, 100);
+						_xBcnMsmLS.get(eid)++;
 				}
 			}
 		}
@@ -364,96 +339,71 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 {
 	DQTask::beginLuminosityBlock(lb, es);
 
-//	_cBadQualityvsLS.extendAxisRange();
+	_cBadQualityvsLS.extendAxisRange();
+
+	//	ONLINE ONLY!
+	if (_ptype!=fOnline)
+		return;
+	_cSummaryvsLS_FED.extendAxisRange();
+	_cSummaryvsLS.extendAxisRange();
 }
 
 /* virtual */ void RawTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
-	/*
-	 
+	if (_ptype!=fOnline)
+		return;
+
+	//	
+	//	GENERATE STATUS ONLY FOR ONLINE!
+	//
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
-		//	first set all flags as not-applicable
+		flag::Flag fSum("RAW");
+
 		HcalElectronicsId eid = HcalElectronicsId(*it);
-		for (int flag=fEvnMsm; flag<nRawFlags; flag++)
+		std::vector<uint32_t>::const_iterator cit=std::find(
+			_vcdaqEids.begin(), _vcdaqEids.end(), *it);
+		if (cit==_vcdaqEids.end())
 		{
-			_cSummary.setBinContent(eid, flag, fNA);
-		}
-
-		//	second, check if this FED is @cDAQ
-		//	if not, leave status as inapplicable!
-		std::vector<uint32_t> jt = std::find(_vcdaqEids.begin(),
-			_vcdaqEids.end(), *it);
-		if (jt==_vcdaqEids.end())
+			// not @cDAQ
+			for (uint32_t iflag=0; iflag<_vflags.size(); iflag++)
+				_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag
+					flag::fNA);
+			_cSummaryvsLS.setBinContent(eid, _currentLS, flag::fNA);
 			continue;
+		}
 
-		//	loop over and set status
-		int nevnmsm = 0;
-		int nbcnmsm = 0;
-		int nbad = 0;
-		if (eid.isVMEid()) //	VME
+		//	FED is @cDAQ
+		if (_xEvnMsmLS.get(eid)>0)
+			_vflags[fEvnMsm]._state = flag::fBAD;
+		else
+			_vflags[fEvnMsm]._state = flag::fGOOD;
+		if (_xBcnMsmLS.get(eid)>0)
+			_vflags[fBcnMsm]._state = flag::fBAD;
+		else
+			_vflags[fBcnMsm]._state = flag::fGOOD;
+		if (_xBadQLS.get(eid)>0)
+			_vflags[fBadQ]._state = flag::fBAD;
+		else
+			_vflags[fBadQ]._state = flag::fGOOD;
+		int iflag=0;
+		for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
+			it!=_vflags.end(); ++it)
 		{
-			for (int is=constants::SPIGOT_MIN; is<=SPIGOT_MAX; is++)
-			{
-				eid = HcalElectronicsId(constants::FIBERCH_MIN,
-					FIBER_VME_MIN, eid.spigot(), eid.dccid());
-				nevnmsm += _cEvnMsm_ElectronicsVME.getBinContent(eid);
-				nbcnmsm += _cBcnMsm_ElectronicsVME.getBinContent(eid);
-				for (int ifib=constants::FIBER_VME_MIN; 
-						ifib<=constants::FIBER_VME_MAX; ifib++)
-					for (int ifc=constants::FIBERCH_MIN; 
-						ifc<=constants::FIBERCH_MAX; ifc++)
-					{
-						eid = HcalElectronicsId(ifc, ifib, eid.spigot(),
-							eid.dccid());
-						int nn =_cBadQuality_FEDVME.getBinContent(eid);
-						nbad+=nn>0?1:0;
-						if (nn>0)
-							_cBadQualityTotal_FEDVME.fill(eid);
-					}
-			}
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag
+				it->_state);
+			fSum+=(*it);
 		}
-		else	// uTCA only here
-		{
-			for (int is=constants::SLOT_uTCA_MIN; 
-				is<=constants::SLOT_uTCA_MAX; is++)
-			{
-				eid = HcalElectronicsId(eid.crateId(), is,
-					constants::FIBER_uTCA_MIN1, constants::FIBERCH_MIN, false);
-				nevnmsm += _cEvnMsm_ElectronicsuTCA.getBinContent(eid);
-				nbcnmsm += _cBcnMsm_ElectronicsuTCA.getBinContent(eid);
-				for (int ifib=constants::FIBER_uTCA_MIN1;
-					ifib<=constants::FIBER_uTCA_MAX2; ifib++)
-				{
-					if (ifib>FIBER_uTCA_MAX1 && ifib<FIBER_uTCA_MIN2)
-						continue;
-					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
-					{
-						eid = HcalElectronicsId(eid.crateId(), 
-							eid.slot(), ifib, ifc, false);
-						int nn=_cBadQuality_FEDuTCA.getBinContent(eid);
-						nbad+=nn>0?1:0;
-						if (nn>0)
-							_cBadQualityTotal_FEDuTCA.fill(eid);
-					}
-				}
-			}
-		}
-		
-		// set all the quality flags
-		nevnmsm>0?
-			_cSummary.setBinContent(eid, (int)fEvnMsm, (int)fLow):
-			_cSummary.setBinContent(eid, (int)fEvnMsm, (int)fGood);
-		nbcnmsm>0?
-			_cSummary.setBinContent(eid, (int)fBcnMsm, (int)fLow):
-			_cSummary.setBinContent(eid, (int)fBcnMsm, (int)fGood);
-		nbad>0?
-			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fLow):
-			_cSummary.setBinContent(eid, (int)fBadQuality, (int)fGood);
+		_cSummaryvsLS.setBinContent(eid, _currentLS, fSum._state);
 	}
-	*/	
+
+	//	reset...
+	_xEvnMsmLS.reset(); _xBcnMsmLS.reset(); _xBadQLS.reset();
+	for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
+		it!=_vflags.end(); ++it)
+		it->reset();
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

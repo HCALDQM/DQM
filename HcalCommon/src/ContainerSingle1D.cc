@@ -290,6 +290,20 @@ namespace hcaldqm
 	{
 		_me->setBinContent(_qx->getBin(id), x);
 	}
+
+	/* virtual */ void ContainerSingle1D::extendAxisRange(int l)
+	{
+		if (l<_qx->nbins())
+			return;
+
+		int x=_qx->nbins();
+		while(l>=x)
+		{
+			_me->getTH1()->LabelsInflate();
+			x*=2;
+			_qx->setMax(x);
+		}
+	}
 }
 
 

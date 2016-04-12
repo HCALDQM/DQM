@@ -18,6 +18,11 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cutE_HBHE = ps.getUntrackedParameter<double>("cutE_HBHE", 5);
 	_cutE_HO = ps.getUntrackedParameter<double>("cutE_HO", 5);
 	_cutE_HF = ps.getUntrackedParameter<double>("cutE_HF", 5);
+
+	//	order must be the same as in RecoFlag enum
+	_vflags.reserve(nRecoFlag);
+	_vflags[fUni]=flag::Flag("UniSlotHF");
+	_vFlags[fTCDS]=flag::Flag("TCDS");
 }
 
 /* virtual */ void RecHitTask::bookHistograms(DQMStore::IBooker& ib,
@@ -158,25 +163,11 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		new quantity::FEDQuantity(vFEDsuTCA),
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ValueQuantity(quantity::fN));
-	_cOccupancyCutvsLS_Subdet.initialize(_name, "OccupancyCutvsLS",
-		hashfunctions::fSubdet,
-		new quantity::LumiSection(_maxLS),
-		new quantity::ValueQuantity(quantity::fN_to3000));
 	_cOccupancyCut_depth.initialize(_name, "OccupancyCut",
 		hashfunctions::fdepth,
 		new quantity::DetectorQuantity(quantity::fieta),
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fN));
-
-	std::vector<std::string> fnames;
-	fnames.push_back("OcpUniSlot");
-	fnames.push_back("TimeUniSlot");
-	fnames.push_back("TCDS");
-	fnames.push_back("Msn1LS");
-	_cSummary.initialize(_name, "Summary", 
-		new quantity::FEDQuantity(vFEDs),
-		new quantity::FlagQuantity(fnames),
-		new quantity::QualityQuantity());
 
 	//	INITIALIZE HISTOGRAMS to be used only in Online
 	if (_ptype==fOnline)
@@ -229,6 +220,28 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			hashfunctions::fSubdetPM,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
+		_cOccupancyCutvsiphivsLS_SubdetPM.initialize(_name,
+			"OccupancyCutvsiphivsLS", hashfunctions::fSubdetPM,
+			new quantity::LumiSection(_maxLS),
+			new quantity::DetectorQuantity(quantity::fiphi),
+			new quantity::ValueQuantity(quantity::fN));
+		_cOccupancyCutvsLS_Subdet.initialize(_name, "OccupancyCutvsLS",
+			hashfunctions::fSubdet,
+			new quantity::LumiSection(_maxLS),
+			new quantity::ValueQuantity(quantity::fN_to3000));
+
+		_cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
+			hashfunctions::fFED,
+			new quantity::LumiSection(_maxLS),
+			new quantity::FlagQuantity(_vflags),
+			new quantity::ValueQuantity(quantity::fState));
+		_cSummaryvsLS.initialize(_name, "SummaryvsLS",
+			new quantity::LumiSection(_maxLS),
+			new quantity::FEDQuantity(_vFEDs),
+			new quantity::ValueQuantity(quantity::fState));
+
+		_xUniHF.initialize(hashfunctions::fFEDSlot);
+		_xUni.initialize(hashfunctions::fFED);
 	}
 
 	//	BOOK HISTOGRAMS
@@ -265,7 +278,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cOccupancyCut_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cOccupancyCut_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cOccupancyCut_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
-	_cOccupancyCutvsLS_Subdet.book(ib, _emap, _subsystem);
 
 	_cSummary.book(ib, _subsystem);
 
@@ -284,6 +296,25 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		_cOccupancyCutvsiphi_SubdetPM.book(ib, _emap, _subsystem);
 		_cOccupancyCutvsieta_Subdet.book(ib, _emap, _subsystem);
 		_cOccupancyCutvsBX_SubdetPM.book(ib, _emap, _subsystem);
+		_cOccupancyCutvsiphivsLS_SubdetPM.book(ib, _emap, _subsystem);
+		_cOccupancyCutvsLS_Subdet.book(ib, _emap, _subsystem);
+		_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
+		_cSummaryvsLS.book(ib, _subsystem);
+
+		std::vector<uint32_t> vhashFEDHF;
+		vhashFEDHF.push_back(HcalElectronicsId(22, SLOT_uTCA_MIN,
+			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+		vhashFEDHF.push_back(HcalElectronicsId(29, SLOT_uTCA_MIN,
+			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+		vhashFEDHF.push_back(HcalElectronicsId(32, SLOT_uTCA_MIN,
+			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+		HashFilter filter_FEDHF;
+		filter_FEDHF.initialize(filter::fPreserver, hashfunctions::fFED,
+			vhashFEDHF);
+
+		_gids = _emap->allPrecisionId();
+		_xUniHF.book(_emap, filter_FEDHF);
+		_xUni.book(_emap);
 	}
 
 	//	initialize hash map
@@ -385,6 +416,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				_cTimingCutvsBX_SubdetPM.fill(did, bx, timing);
 				_cOccupancyCutvsiphi_SubdetPM.fill(did);
 				_cOccupancyCutvsieta_Subdet.fill(did);
+				_cOccupancyCutvsiphivsLS_SubdetPM.fill(did, _currentLS);
 			}
 			//	^^^ONLINE ONLY!
 			_cEnergy_depth.fill(did, energy);
@@ -427,10 +459,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		nChsHB);
 	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), _currentLS,
 		nChsHE);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), _currentLS,
-		nChsHBCut);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), _currentLS, 
-		nChsHECut);
 
 	//	ONLINE ONLY!
 	if (_ptype==fOnline)
@@ -439,6 +467,10 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			bx, nChsHBCut);
 		_cOccupancyCutvsBX_SubdetPM.fill(HcalDetId(HcalEndcap, 1,1,1),
 			bx, nChsHECut);
+		_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), 
+			_currentLS, nChsHBCut);
+		_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), 
+			_currentLS, nChsHECut);
 	}
 	//	^^^ONLINE ONLY!
 
@@ -489,6 +521,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				_cTimingCutvsBX_SubdetPM.fill(did, bx, timing);
 				_cOccupancyCutvsiphi_SubdetPM.fill(did);
 				_cOccupancyCutvsieta_Subdet.fill(did);
+				_cOccupancyCutvsiphivsLS_SubdetPM.fill(did, _currentLS);
 			}
 			//	^^^ONLINE ONLY!
 			
@@ -517,13 +550,13 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	}
 	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), _currentLS,
 		nChsHO);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), _currentLS,
-		nChsHOCut);
 	//	ONLINE ONLY!
 	if (_ptype==fOnline)
 	{
 		_cOccupancyCutvsBX_SubdetPM.fill(HcalDetId(HcalOuter, 1,1,1),
 			bx, nChsHOCut);
+		_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 4), 
+			_currentLS, nChsHOCut);
 	}
 	//	^^^ONLINE ONLY!
 
@@ -576,6 +609,8 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				_cTimingCutvsBX_SubdetPM.fill(did, bx, timing);
 				_cOccupancyCutvsiphi_SubdetPM.fill(did);
 				_cOccupancyCutvsieta_Subdet.fill(did);
+				_cOccupancyCutvsiphivsLS_SubdetPM.fill(did, _currentLS);
+				_xUniHF.get(eid)++;
 			}
 			//	^^^ONLINE ONLY!
 			_cEnergy_depth.fill(did, energy);
@@ -603,168 +638,106 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	}
 	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), _currentLS,
 		nChsHF);
-	_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), _currentLS,
-		nChsHFCut);
 	//	ONLINE ONLY!
 	if (_ptype==fOnline)
 	{
 		_cOccupancyCutvsBX_SubdetPM.fill(HcalDetId(HcalForward, 1,1,1),
 			bx, nChsHFCut);
+		_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), 
+			_currentLS, nChsHFCut);
 	}
 	//	^^^ONLINE ONLY!
+}
+
+/* virtual */ void RecHitTask::beginLuminosityBlock(edm::LuminosityBlock const&
+	lb, edm::EventSetup const& es)
+{
+	DQTask::beginLuminosityBlock(lb, es);
+
+	_cTimingCutvsLS_FED.extendAxisRange(_currentLS);
+	_cOccupancyvsLS_Subdet.extendAxisRange(_currentLS);
+
+	//	ONLINE ONLY
+	if (_ptype!=fOnline)
+		return;
+	_cEnergyvsLS_SubdetPM.extendAxisRange(_currentLS);
+	_cOccupancyCutvsLS_Subdet.extendAxisRange(_currentLS);
+	_cOccupancyCutvsiphivsLS_SubdetPM.extendAxisRange(_currentLS);
+	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
+	_cSummaryvsLS.extendAxisRange(_currentLS);
 }
 
 /* virtual */ void RecHitTask::endLuminosityBlock(edm::LuminosityBlock const& 
 	lb, edm::EventSetup const& es)
 {
-	/*
+	if (_ptype!=fOnline)
+		return;
+
+	//
+	//	GENERATE STATUS ONLY FOR ONLINE
+	//
+//	for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
+//		it!=gids.end(); ++it)
+//	{}
+
+	for (doubleCompactMap::const_iterator it=_xUniHF.begin();
+		it!=_xUniHF.end(); ++it)
+	{
+		uint32_t hash1 = it->first;
+		HcalElectronicsId eid1(hash1);
+		double x1 = it->second;
+
+		for (doubleCompactMap::const_iterator jt=_xUniHF.begin();
+			jt!=_xUniHF.end(); ++jt)
+		{
+			if (jt==it)
+				continue;
+			uint32_t hash2=jt->first;
+			double x = jt->second;
+			if (x2==0)
+				continue;
+			if (x1/x2<0.2)
+				_xUni.get(eid)++;
+		}
+	}
+
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
-		//	first, set all the flags are inapplicable
+		flag::Flag fSum("RECO");
 		HcalElectronicsId eid = HcalElectronicsId(*it);
-		for (int flag=fOcpUniSlot; flag<nRecoFlag; flag++)
-			_cSummary.setBinContent(eid, flag, fNA);
-		if (eid.crateId()==36)
-			continue;
-
-		//	second, check if this FED is @cDAQ,
-		//	if not, leave status as inapplicable
-		std::vector<uint32_t> jt=std::find(_vcdaqEids.begin(),
-			_vcdaqEids.end(), *it);
-		if (jt==_vcdaqEids.end())
-			continue;
-
-		//	#channels per FED
-		int numChs = eid.isVMEid()? SPIGOT_NUM*FIBER_VME_NUM*FIBERCH_NUM:
-			SLOT_uTCA_NUM*FIBER_uTCA_NUM*FIBERCH_NUM;
-		//	threshold for #channels check
-		double numChsThr = eid.crateId()==22 || eid.crateId()==29 || 
-			eid.crateId()==32 ? 0 : 0.05;
-
-		int nmissing = 0;
-		bool ocpUniSlot = false;
-		bool timeslot = false;
-		if (eid.isVMEid())
+		std::vector<uint32_t>::const_iterator cit=std::find(
+			_vcdaqEids.begin(), _vcdaqEids.end(), *it);
+		if (cit!=_vcdaqEids.end())
 		{
-			for (int is=SPIGOT_MIN; is<=SPIGOT_MAX; is++)
-			{
-				eid = HcalElectronicsId(FIBERCH_MIN, FIBER_VME_MIN, 
-					is, eid.dccid());
-				HcalElectronicsId ejd = HcalElectronicsId(
-					FIBERCH_MIN, FIBER_VME_MIN, 
-					is==SPIGOT_MAX?SPIGOT_MIN:is+1, eid.dccid());
-				int niscut = _cOccupancy_ElectronicsVME.getBinContent(eid);
-				int njscut = _cOccupancy_ElectronicsVME.getBinContent(ejd);
-				double timeis = _cTimingCut_ElectronicsVME.getBinContent(eid);
-				double timejs = _cTimingCut_ElectronicsVME.getBinContent(ejd);
-				for (int ifib=FIBER_VME_MIN; ifib<=FIBER_VME_MAX; ifib++)
-					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
-					{
-						eid = HcalElectronicsId(ifc, ifib, is, eid.dccid());
-
-						if (_cOccupancy_FEDVME.getBinContent(eid)<1)
-						{
-							_cMissing1LS_FEDVME.fill(eid);
-							nmissing++;
-						}
-					}
-				double ratio = niscut==0 && njscut==0?1:
-					double(std::min(niscut, njscut))/double(std::max(niscut, 
-					njscut));
-				double timediff = timeis-timejs;
-				//	at least x5 difference
-				if (ratio<0.2)
-					ocpUniSlot = true;
-				//	3ns if timing difference between spigots>3ns - set it
-				if (std::fabs(timediff)>3.)
-					timeslot = true;
-			}
+			//	not @cDAQ
+			for (uint32_t iflag=0; iflag<_vflags.size(); iflag++)
+				_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
+					flag::fNA);
+			_cSummaryvsLS.setBinContent(eid, _currentLS, flag:fNA);
+			continue;
 		}
+
+		//	FED is @cDAQ
+		if (_xUni.get(eid)>0)
+			_vflags[fUni]._state = fBAD;
 		else
+			_vflags[fUni]._state = fGOOD;
+
+		int iflag=0;
+		for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
+			it!=_vflags.end(); ++it)
 		{
-			//	uTCA
-			for (int is=SLOT_uTCA_MIN; is<=SLOT_uTCA_MAX; is++)
-			{
-				eid = HcalElectronicsId(eid.crateId(), is, 
-					FIBER_uTCA_MIN1, FIBERCH_MIN, false);
-				HcalElectronicsId ejd = HcalElectronicsId(eid.crateId(),
-					is==SLOT_uTCA_MAX?SLOT_uTCA_MIN:is+1, FIBER_uTCA_MIN1,
-					FIBERCH_MIN, false);
-				int niscut = eid.crateId()==22 || eid.crateId()==29 ||
-					eid.crateId()==32?
-					_cOccupancyCut_ElectronicsuTCA.getBinContent(eid):
-					_cOccupancy_ElectronicsuTCA.getBinContent(eid);
-				int njscut = ejd.crateId()==22 || ejd.crateId()==29 ||
-					ejd.crateId()==32?
-					_cOccupancyCut_ElectronicsuTCA.getBinContent(ejd):
-					_cOccupancy_ElectronicsuTCA.getBinContent(ejd);
-				double timeis = _cTimingCut_ElectronicsuTCA.getBinContent(eid);
-				double timejs = _cTimingCut_ElectronicsuTCA.getBinContent(ejd);
-				for (int ifib=FIBER_uTCA_MIN1; ifib<=FIBER_uTCA_MAX2; ifib++)
-				{
-					if (ifib>FIBER_uTCA_MAX1 && ifib<FIBER_uTCA_MIN2)
-						continue;
-					for (int ifc=FIBERCH_MIN; ifc<=FIBERCH_MAX; ifc++)
-					{
-						eid=HcalElectronicsId(eid.crateId(), is, ifib, ifc, 
-							false);
-						if (_cOccupancy_FEDuTCA.getBinContent(eid)<1)
-						{
-							_cMissing1LS_FEDuTCA.fill(eid);
-							nmissing++;
-						}
-					}
-				}
-				double ratio = niscut==0 && njscut==0?1:
-					double(std::min(niscut, njscut))/double(std::max(niscut, 
-					njscut));
-				double timediff = timeis-timejs;
-				//	at least x5 difference
-				if (ratio<0.2)
-					ocpUniSlot = true;
-				//	3ns
-				if (std::fabs(timediff)>3.)
-					timeslot = true;
-			}
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag
+				it->_state);
+			fSum+=(*it);
 		}
-
-		double(nmissing)/double(numChs)>numChsThr?
-			_cSummary.setBinContent(eid, fMsn1LS, fLow):
-			_cSummary.setBinContent(eid, fMsn1LS, fGood);
-		ocpUniSlot?
-			_cSummary.setBinContent(eid, fOcpUniSlot, fLow):
-			_cSummary.setBinContent(eid, fOcpUniSlot, fGood);
-		timeslot?
-			_cSummary.setBinContent(eid, fTimeUniSlot, fLow):
-			_cSummary.setBinContent(eid, fTimeUniSlot, fGood);
+		_cSummaryvsLS.setBinContent(eid, _currentLS, fSum._state);
 	}
-
-	//	Check the TCDS shifts
-	double timingA = _cTimingCut_HBHEPartition.getMean(HcalDetId(
-		HcalBarrel, 1, 3, 1));
-	double timingB = _cTimingCut_HBHEPartition.getMean(HcalDetId(
-		HcalBarrel, 1, 27, 1));
-	double timingC = _cTimingCut_HBHEPartition.getMean(HcalDetId(
-		HcalBarrel, 1, 1, 1));
-	double dAB = fabs(timingA-timingB);
-	double dAC = fabs(timingA-timingC);
-	double dBC = fabs(timingB-timingC);
-	bool qshift = false;
-	if (dAB>=1.5 || dAC>=1.5 || dBC>=1.5)
-		qshift = true;
-	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
-		it!=_vhashFEDs.end(); ++it)
-	{
-		HcalElectronicsId eid = HcalElectronicsId(*it);
-		if (eid.isVMEid() || eid.crateId()==22 || eid.crateId()==29 ||
-			eid.crateId()==32 || eid.crateId()==36)
-			continue;
-		qshift?
-			_cSummary.setBinContent(eid, fTCDS, fLow):
-			_cSummary.setBinContent(eid, fTCDS, fGood);
-	}
-	*/
+	_xUniHF.reset(); _xUni.reset();
+	for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
+		it!=_vflags.end(); ++it)
+		it->reset();
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);
