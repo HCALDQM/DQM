@@ -20,9 +20,9 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cutE_HF = ps.getUntrackedParameter<double>("cutE_HF", 5);
 
 	//	order must be the same as in RecoFlag enum
-	_vflags.reserve(nRecoFlag);
+	_vflags.resize(nRecoFlag);
 	_vflags[fUni]=flag::Flag("UniSlotHF");
-	_vFlags[fTCDS]=flag::Flag("TCDS");
+	_vflags[fTCDS]=flag::Flag("TCDS");
 }
 
 /* virtual */ void RecHitTask::bookHistograms(DQMStore::IBooker& ib,
@@ -237,7 +237,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			new quantity::ValueQuantity(quantity::fState));
 		_cSummaryvsLS.initialize(_name, "SummaryvsLS",
 			new quantity::LumiSection(_maxLS),
-			new quantity::FEDQuantity(_vFEDs),
+			new quantity::FEDQuantity(vFEDs),
 			new quantity::ValueQuantity(quantity::fState));
 
 		_xUniHF.initialize(hashfunctions::fFEDSlot);
@@ -278,8 +278,6 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cOccupancyCut_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cOccupancyCut_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cOccupancyCut_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
-
-	_cSummary.book(ib, _subsystem);
 
 	//	BOOK HISTOGRAMS to be used only in Online
 	if (_ptype==fOnline)
@@ -654,6 +652,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 {
 	DQTask::beginLuminosityBlock(lb, es);
 
+	/*
 	_cTimingCutvsLS_FED.extendAxisRange(_currentLS);
 	_cOccupancyvsLS_Subdet.extendAxisRange(_currentLS);
 
@@ -663,8 +662,9 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cEnergyvsLS_SubdetPM.extendAxisRange(_currentLS);
 	_cOccupancyCutvsLS_Subdet.extendAxisRange(_currentLS);
 	_cOccupancyCutvsiphivsLS_SubdetPM.extendAxisRange(_currentLS);
-	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
-	_cSummaryvsLS.extendAxisRange(_currentLS);
+//	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
+//	_cSummaryvsLS.extendAxisRange(_currentLS);
+//	*/
 }
 
 /* virtual */ void RecHitTask::endLuminosityBlock(edm::LuminosityBlock const& 
@@ -680,24 +680,23 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 //		it!=gids.end(); ++it)
 //	{}
 
-	for (doubleCompactMap::const_iterator it=_xUniHF.begin();
+	for (uintCompactMap::const_iterator it=_xUniHF.begin();
 		it!=_xUniHF.end(); ++it)
 	{
 		uint32_t hash1 = it->first;
 		HcalElectronicsId eid1(hash1);
 		double x1 = it->second;
 
-		for (doubleCompactMap::const_iterator jt=_xUniHF.begin();
+		for (uintCompactMap::const_iterator jt=_xUniHF.begin();
 			jt!=_xUniHF.end(); ++jt)
 		{
 			if (jt==it)
 				continue;
-			uint32_t hash2=jt->first;
-			double x = jt->second;
+			double x2 = jt->second;
 			if (x2==0)
 				continue;
 			if (x1/x2<0.2)
-				_xUni.get(eid)++;
+				_xUni.get(eid1)++;
 		}
 	}
 
@@ -706,38 +705,43 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	{
 		flag::Flag fSum("RECO");
 		HcalElectronicsId eid = HcalElectronicsId(*it);
+
 		std::vector<uint32_t>::const_iterator cit=std::find(
 			_vcdaqEids.begin(), _vcdaqEids.end(), *it);
-		if (cit!=_vcdaqEids.end())
+		if (cit==_vcdaqEids.end())
 		{
 			//	not @cDAQ
 			for (uint32_t iflag=0; iflag<_vflags.size(); iflag++)
-				_cSummaryvsLS_FED.setBinContent(eid, _currentLS,
-					flag::fNA);
-			_cSummaryvsLS.setBinContent(eid, _currentLS, flag:fNA);
+				_cSummaryvsLS_FED.setBinContent(eid, _currentLS, int(iflag),
+					int(flag::fNCDAQ));
+			_cSummaryvsLS.setBinContent(eid, _currentLS, int(flag::fNCDAQ));
 			continue;
 		}
 
 		//	FED is @cDAQ
-		if (_xUni.get(eid)>0)
-			_vflags[fUni]._state = fBAD;
-		else
-			_vflags[fUni]._state = fGOOD;
+		if (utilities::isFEDHF(eid))
+		{
+			if (_xUni.get(eid)>0)
+				_vflags[fUni]._state = flag::fBAD;
+			else
+				_vflags[fUni]._state = flag::fGOOD;
+		}
 
 		int iflag=0;
-		for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
-			it!=_vflags.end(); ++it)
+		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();
+			ft!=_vflags.end(); ++ft)
 		{
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag
-				it->_state);
-			fSum+=(*it);
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, int(iflag),
+				int(ft->_state));
+			fSum+=(*ft);
+			iflag++;
+
+			//	reset after using
+			ft->reset();
 		}
 		_cSummaryvsLS.setBinContent(eid, _currentLS, fSum._state);
 	}
 	_xUniHF.reset(); _xUni.reset();
-	for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
-		it!=_vflags.end(); ++it)
-		it->reset();
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

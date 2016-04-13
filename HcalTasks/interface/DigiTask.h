@@ -58,8 +58,8 @@ class DigiTask : public DQTask
 		std::vector<flag::Flag> _vflags;
 		enum DigiFlag
 		{
-			fUni = 0,
-			fDigiSize = 1,
+			fDigiSize=0,
+			fUni = 1,
 			nDigiFlag = 2
 		};
 
@@ -75,6 +75,7 @@ class DigiTask : public DQTask
 		HashFilter _filter_VME;
 		HashFilter _filter_uTCA;
 		HashFilter _filter_FEDHF;
+		HashFilter _filter_HF;
 
 		/* Containers */
 		//	ADC, fC - Charge - just filling - no summary!
@@ -123,6 +124,7 @@ class DigiTask : public DQTask
 		Container2D _cOccupancyCut_depth;
 		Container1D _cOccupancyCutvsiphi_SubdetPM; // online only
 		Container1D _cOccupancyCutvsieta_Subdet;	// online only
+		Container2D _cOccupancyCutvsSlotvsLS_HFPM; // online only
 		Container2D _cOccupancyCutvsiphivsLS_SubdetPM; // online only
 
 		//	Occupancy w/o and w/ a Cut vs BX and vs LS
@@ -138,6 +140,7 @@ class DigiTask : public DQTask
 
 		std::vector<HcalGenericDetId> _gids; // online only
 		Container2D _cSummaryvsLS_FED; // online only
+		ContainerSingle2D _cSummaryvsLS; // online only
 };
 
 #endif

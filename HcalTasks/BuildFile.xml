@@ -25,7 +25,8 @@
 <use   name="DataFormats/TrackReco"/>
 <use   name="RecoMET/METAlgorithms"/>
 <use   name="CondFormats/RunInfo"/>
+<use   name="DQM/HcalCommon"/>
 
 <export>
-	<lib name="DQMHcalCommon" />
+	<lib name="DQMHcalTasks"/>
 </export>

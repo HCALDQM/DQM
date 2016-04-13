@@ -36,6 +36,12 @@
 #include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf2D.h"
 #include "DQM/HcalCommon/interface/ElectronicsMap.h"
+#include "DQM/HcalCommon/interface/DQClient.h"
+
+#include "DQM/HcalTasks/interface/RawRunSummary.h"
+#include "DQM/HcalTasks/interface/DigiRunSummary.h"
+#include "DQM/HcalTasks/interface/RecoRunSummary.h"
+#include "DQM/HcalTasks/interface/TPRunSummary.h"
 
 using namespace hcaldqm;
 
@@ -44,6 +50,7 @@ class HcalOnlineHarvesting : public DQHarvester
 	public:
 		HcalOnlineHarvesting(edm::ParameterSet const&);
 		virtual ~HcalOnlineHarvesting(){}
+		virtual void beginRun(edm::Run const&, edm::EventSetup const&);
 
 	protected:
 		virtual void _dqmEndLuminosityBlock(DQMStore::IBooker&,
@@ -52,18 +59,24 @@ class HcalOnlineHarvesting : public DQHarvester
 		virtual void _dqmEndJob(DQMStore::IBooker&,
 			DQMStore::IGetter&);
 
-		//	flags to harvest...
-		int _modules[4];
-		bool _rawHarvesting;
-		bool _digiHarvesting;
-		bool _recoHarvesting;
-		bool _tpHarvesting;
+		enum Summary
+		{
+			fRaw=0,
+			fDigi=1,
+			fReco=2,
+			fTP=3,
+			nSummary=4
+		};
 
-		//	flag names
-		std::vector<std::string> _frawnames;
-		std::vector<std::string> _fdiginames;
-		std::vector<std::string> _freconames;
-		std::vector<std::string> _ftpnames;
+		//	flags to harvest...
+		std::vector<bool> _vmarks;
+		std::vector<DQClient*> _vsumgen;
+		std::vector<std::string> _vnames;
+
+		//	summaries
+		std::vector<ContainerSingle2D> _vcSummaryvsLS;
+
+		MonitorElement *_me;
 
 		//	reportSummaryMap
 		MonitorElement *_reportSummaryMap;

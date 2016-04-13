@@ -18,7 +18,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cutSumQ_HO = ps.getUntrackedParameter<double>("cutSumQ_HO", 20);
 	_cutSumQ_HF = ps.getUntrackedParameter<double>("cutSumQ_HF", 20);
 
-	_vflags.reserve(nDigiFlag);
+	_vflags.resize(nDigiFlag);
 	_vflags[fUni]=flag::Flag("UniSlotHF");
 	_vflags[fDigiSize]=flag::Flag("DigiSize");
 }
@@ -117,7 +117,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fTiming_TS200));
 	_cTimingCutvsLS_FED.initialize(_name, "TimingvsLS",
 		hashfunctions::fFED,
-		new quantity::LumiSection(),
+		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fTiming_TS200));
 	_cTimingCut_depth.initialize(_name, "TimingCut",
 		hashfunctions::fdepth,
@@ -195,6 +195,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	//	INITIALIZE HISTOGRAMS that are only for Online
 	if (_ptype==fOnline)
 	{
+		std::vector<uint32_t> vhashHF; 
+		vhashHF.push_back(HcalDetId(HcalForward, 31,1,1).rawId());
+		_filter_HF.initialize(filter::fPreserver, hashfunctions::fSubdet,
+			vhashHF);
+
 		//	Charge sharing
 		_cQ2Q12CutvsLS_FEDHF.initialize(_name, "Q2Q12vsLS",
 			hashfunctions::fFED,
@@ -240,6 +245,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			hashfunctions::fSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN_to3000));
+//		_cOccupancyCutvsSlotvsLS_HFPM.initialize(_name, 
+//			"OccupancyCutvsSlotvsLS", hashfunctions::fSubdetPM,
+//			new quantity::LumiSection(_maxLS),
+//			new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+//			new quantity::ValueQuantity(quantity::fN));
 		_cOccupancyCutvsiphivsLS_SubdetPM.initialize(_name, 
 			"OccupancyCutvsiphivsLS", hashfunctions::fSubdetPM,
 			new quantity::LumiSection(_maxLS),
@@ -252,7 +262,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			new quantity::ValueQuantity(quantity::fState));
 		_cSummaryvsLS.initialize(_name, "SummaryvsLS",
 			new quantity::LumiSection(_maxLS),
-			new quantity::FEDQuantity(_vFEDs),
+			new quantity::FEDQuantity(vFEDs),
 			new quantity::ValueQuantity(quantity::fState));
 
 		_xUniHF.initialize(hashfunctions::fFEDSlot);
@@ -304,7 +314,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	{
 		_cQ2Q12CutvsLS_FEDHF.book(ib, _emap, _filter_FEDHF, _subsystem);
 		_cSumQvsBX_SubdetPM.book(ib, _emap, _subsystem);
-		_cDigiSizevsLS_Subdet.book(ib, _emap, _subsystem);
+		_cDigiSizevsLS_FED.book(ib, _emap, _subsystem);
 		_cTimingCutvsiphi_SubdetPM.book(ib, _emap, _subsystem);
 		_cTimingCutvsieta_Subdet.book(ib, _emap, _subsystem);
 		_cOccupancyCutvsLS_Subdet.book(ib, _emap, _subsystem);
@@ -313,6 +323,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cOccupancyvsieta_Subdet.book(ib, _emap, _subsystem);
 		_cOccupancyCutvsiphi_SubdetPM.book(ib, _emap, _subsystem);
 		_cOccupancyCutvsieta_Subdet.book(ib, _emap, _subsystem);
+//		_cOccupancyCutvsSlotvsLS_HFPM.book(ib, _emap, _filter_HF, _subsystem);
 		_cOccupancyCutvsiphivsLS_SubdetPM.book(ib, _emap, _subsystem);
 		_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
 		_cSummaryvsLS.book(ib, _subsystem);
@@ -391,7 +402,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		if (_ptype==fOnline)
 		{
 			_cDigiSizevsLS_FED.fill(eid, _currentLS, it->size());
-			it->size()!=constants::DIGISIZE(did.subdet()-1)?
+			it->size()!=constants::DIGISIZE[did.subdet()-1]?
 				_xDigiSize.get(eid)++:_xDigiSize.get(eid)+=0;
 			_cOccupancyvsiphi_SubdetPM.fill(did);
 			_cOccupancyvsieta_Subdet.fill(did);
@@ -491,8 +502,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cOccupancy_depth.fill(did);
 		if (_ptype==fOnline)
 		{
-			_cDigiSizevsLS_Subdet.fill(eid, _currentLS, it->size());
-			it->size()!=constants::DIGISIZE(did.subdet()-1)?
+			_cDigiSizevsLS_FED.fill(eid, _currentLS, it->size());
+			it->size()!=constants::DIGISIZE[did.subdet()-1]?
 				_xDigiSize.get(eid)++:_xDigiSize.get(eid)+=0;
 			_cOccupancyvsiphi_SubdetPM.fill(did);
 			_cOccupancyvsieta_Subdet.fill(did);
@@ -586,7 +597,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		if (_ptype==fOnline)
 		{
 			_cDigiSizevsLS_FED.fill(eid, _currentLS, it->size());
-			it->size()!=constants::DIGISIZE(did.subdet()-1)?
+			it->size()!=constants::DIGISIZE[did.subdet()-1]?
 				_xDigiSize.get(eid)++:_xDigiSize.get(eid)+=0;
 			_cOccupancyvsiphi_SubdetPM.fill(did);
 			_cOccupancyvsieta_Subdet.fill(did);
@@ -634,6 +645,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				_cOccupancyCutvsiphi_SubdetPM.fill(did);
 				_cOccupancyCutvsieta_Subdet.fill(did);
 				_cOccupancyCutvsiphivsLS_SubdetPM.fill(did, _currentLS);
+//				_cOccupancyCutvsSlotvsLS_HFPM.fill(did, _currentLS);
 				_xUniHF.get(eid)++;
 			}
 			_cTimingCut_SubdetPM.fill(did, timing);
@@ -678,6 +690,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 {
 	DQTask::beginLuminosityBlock(lb, es);
 
+	/*
 	_cOccupancyvsLS_Subdet.extendAxisRange(_currentLS);
 	_cSumQvsLS_SubdetPM.extendAxisRange(_currentLS);
 	_cTimingCutvsLS_FED.extendAxisRange(_currentLS);
@@ -687,10 +700,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		return;
 	_cQ2Q12CutvsLS_FEDHF.extendAxisRange(_currentLS);
 	_cOccupancyCutvsiphivsLS_SubdetPM.extendAxisRange(_currentLS);
-	_cOccupancyCutsvsLS_Subdet.extendAxisRange(_currentLS);
+	_cOccupancyCutvsLS_Subdet.extendAxisRange(_currentLS);
 	_cDigiSizevsLS_FED.extendAxisRange(_currentLS);
-	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
-	_cSummaryvsLS.extendAxisRange(_currentLS);
+//	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
+//	_cSummaryvsLS.extendAxisRange(_currentLS);
+	*/
 }
 
 /* virtual */ void DigiTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
@@ -706,24 +720,23 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 //		it!=gids.end(); ++it)
 //	{}
 
-	for (doubleCompactMap::const_iterator it=_xUniHF.begin();
+	for (uintCompactMap::const_iterator it=_xUniHF.begin();
 		it!=_xUniHF.end(); ++it)
 	{
 		uint32_t hash1 = it->first;
 		HcalElectronicsId eid1(hash1);
 		double x1 = it->second;
 
-		for (doubleCompactMap::const_iterator jt=_xUniHF.begin();
+		for (uintCompactMap::const_iterator jt=_xUniHF.begin();
 			jt!=_xUniHF.end(); ++jt)
 		{
 			if (jt==it)
 				continue;
-			uint32_t hash2 = jt->first;
 			double x2 = jt->second;
 			if (x2==0)
 				continue;
 			if (x1/x2<0.2)
-				_xUni.get(eid)++;
+				_xUni.get(eid1)++;
 		}
 	}
 
@@ -732,43 +745,52 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	{
 		flag::Flag fSum("DIGI");
 		HcalElectronicsId eid = HcalElectronicsId(*it);
+
 		std::vector<uint32_t>::const_iterator cit=std::find(
 			_vcdaqEids.begin(), _vcdaqEids.end(), *it);
-		if (cit!=_vcdaqEids.end())
+		if (cit==_vcdaqEids.end())
 		{
 			//	not @cDAQ
 			for (uint32_t iflag=0; iflag<_vflags.size(); iflag++)
-				_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag,
-					flag::fNA);
-			_cSummaryvsLS.setBinContent(eid, _currentLS, flag::fNA);
+				_cSummaryvsLS_FED.setBinContent(eid, _currentLS, int(iflag),
+					int(flag::fNCDAQ));
+			_cSummaryvsLS.setBinContent(eid, _currentLS, int(flag::fNCDAQ));
 			continue;
 		}
 
 		//	FED is @cDAQ		
-		if (_xDigiSize.get(eid)>0)
-			_vflags[fDigiSize]._state = flag::fBAD;
-		else
-			_vflags[fDigiSize]._state = flag::fGOOD;
-		if (_xUni.get(eid)>0)
-			_vflags[fUni]._state = flag::fBAD;
-		else
-			_vflags[fUni]._state = flag::fGOOD;
+		if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid) ||
+			utilities::isFEDHO(eid))
+		{
+			if (_xDigiSize.get(eid)>0)
+				_vflags[fDigiSize]._state = flag::fBAD;
+			else
+				_vflags[fDigiSize]._state = flag::fGOOD;
+			if (utilities::isFEDHF(eid))
+			{
+				if (_xUni.get(eid)>0)
+					_vflags[fUni]._state = flag::fBAD;
+				else
+					_vflags[fUni]._state = flag::fGOOD;
+			}
+		}
 
 		int iflag=0;
-		for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
-			it!=_vflags.end(); ++it)
+		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();
+			ft!=_vflags.end(); ++ft)
 		{
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag
-				it->_state);
-			fSum+=(*it);
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag,
+				int(ft->_state));
+			fSum+=(*ft);
+			iflag++;
+
+			//	reset!
+			ft->reset();
 		}
-		_cSummarvsLS.setBinContent(eid, _currentLS, fSum._state);
+		_cSummaryvsLS.setBinContent(eid, _currentLS, fSum._state);
 	}
 
 	_xDigiSize.reset(); _xUniHF.reset(); _xUni.reset();
-	for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
-		it!=_vflags.end(); ++it)
-		it->reset();
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

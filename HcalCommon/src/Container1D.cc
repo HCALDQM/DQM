@@ -29,6 +29,14 @@ namespace hcaldqm
 		_qy = NULL;
 	}
 
+	/* virtual */ /*void Container1D::release()
+	{
+		BOOST_FOREACH(MEMap::value_type &pair, _mes)
+		{
+			pair.second=NULL;
+		}
+	}*/
+
 	/* virtuial */ void Container1D::initialize(std::string const& folder, 
 		hashfunctions::HashType hashtype, Quantity *qx, Quantity *qy/* = ... */,
 		int debug /* =0 */)

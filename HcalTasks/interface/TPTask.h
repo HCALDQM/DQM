@@ -54,9 +54,11 @@ class TPTask : public DQTask
 			nTPFlag=4
 		};
 
-		//	switches
+		//	switches/cuts/etc...
 		bool _skip1x1;
 		int _cutEt;
+		double _thresh_EtMsmRate,_thresh_FGMsmRate,_thresh_DataMsn,
+			_thresh_EmulMsn;
 
 		//	hashes/FEDs vectors
 		std::vector<uint32_t> _vhashFEDs;

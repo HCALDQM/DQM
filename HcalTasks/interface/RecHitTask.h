@@ -33,7 +33,7 @@ class RecHitTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
-		virtula void beginLuminosityBlock(edm::LuminosityBlock const&,
+		virtual void beginLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
@@ -60,7 +60,7 @@ class RecHitTask : public DQTask
 		{
 			fUni=0,
 			fTCDS=1,
-			nRecoFlag=2;
+			nRecoFlag=2
 		};
 
 		//	emap
@@ -122,7 +122,7 @@ class RecHitTask : public DQTask
 
 		std::vector<HcalGenericDetId> _gids; // online only
 		Container2D _cSummaryvsLS_FED; // online only!
-		ContainerSingle2d _cSummaryvsLS;
+		ContainerSingle2D _cSummaryvsLS;
 };
 
 #endif

@@ -19,6 +19,7 @@
 #include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf2D.h"
 #include "DQM/HcalCommon/interface/ElectronicsMap.h"
+#include "DQM/HcalCommon/interface/Flag.h"
 
 using namespace hcaldqm;
 using namespace hcaldqm::filter;

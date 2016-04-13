@@ -13,8 +13,15 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 
 	_skip1x1 = ps.getUntrackedParameter<bool>("skip1x1", true);
 	_cutEt = ps.getUntrackedParameter<int>("cutEt", 3);
+	_thresh_EtMsmRate = ps.getUntrackedParameter<double>("thresh_EtMsmRate",
+		0.1);
+	_thresh_FGMsmRate = ps.getUntrackedParameter<double>("thresh_FGMsmRate",
+		0.1);
+	_thresh_DataMsn = ps.getUntrackedParameter<double>("thresh_DataMsn",
+		0.1);
+	_thresh_EmulMsn = ps.getUntrackedParameter<double>("thresh_EmulMsn");
 
-	_vflags.reserve(nTPFlag);
+	_vflags.resize(nTPFlag);
 	_vflags[fEtMsm]=flag::Flag("EtMsm");
 	_vflags[fFGMsm]=flag::Flag("FGMsm");
 	_vflags[fDataMsn]=flag::Flag("DataMsn");
@@ -49,15 +56,19 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		depth0);
 
 	//	push the rawIds of each fed into the vector
+	//	this vector is used at endlumi for online state generation
 	for (std::vector<int>::const_iterator it=vFEDsVME.begin();
 		it!=vFEDsVME.end(); ++it)
-		_vhashFEDs.push_back(HcalElectronicsId(SLBCH_MIN, SLB_MIN,
-			SPIGOT_MIN, (*it)-FED_VME_MIN, CRATE_VME_MIN,
-			SLOT_VME_MIN1, 0).rawId());
+	{
+		_vhashFEDs.push_back(HcalElectronicsId(FIBERCH_MIN, FIBER_VME_MIN,
+			SPIGOT_MIN, (*it)-FED_VME_MIN).rawId());
+	}
 	for (std::vector<int>::const_iterator it=vFEDsuTCA.begin();
 		it!=vFEDsuTCA.end(); ++it)
+	{
 		_vhashFEDs.push_back(HcalElectronicsId(utilities::fed2crate(*it), 
-			SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, true).rawId());
+			SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+	}
 
 	//	INITIALIZE FIRST
 	//	Et/FG
@@ -394,9 +405,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			new quantity::FlagQuantity(_vflags),
 			new quantity::ValueQuantity(quantity::fState));
 		_cSummaryvsLS.initialize(_name, "SummaryvsLS",
-			hashfunctions;:fFED,
 			new quantity::LumiSection(_maxLS),
-			new quantity::FEDQuantity(_vFEDs),
+			new quantity::FEDQuantity(vFEDs),
 			new quantity::ValueQuantity(quantity::fState));
 
 		_xEtMsm.initialize(hashfunctions::fFED);
@@ -482,7 +492,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		_cOccupancyCutDatavsLS_TTSubdet.book(ib, _emap, _subsystem);
 		_cOccupancyCutEmulvsLS_TTSubdet.book(ib, _emap, _subsystem);
 		_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
-		_cSummaryvsLS.book(ib, _emap, _subsystem);
+		_cSummaryvsLS.book(ib, _subsystem);
 
 		_xEtMsm.book(_emap);
 		_xFGMsm.book(_emap);
@@ -880,7 +890,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 {
 	DQTask::beginLuminosityBlock(lb, es);
 
-
+	/*
 	//	ONLINE ONLY!
 	if (_ptype!=fOnline)
 		return;
@@ -897,8 +907,9 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_cOccupancyEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
 	_cOccupancyCutDatavsLS_TTSubdet.extendAxisRange(_currentLS);
 	_cOccupancyCutEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
-	_cSummaryvsLS.extendAxisRange(_currentLS);
+//	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
+//	_cSummaryvsLS.extendAxisRange(_currentLS);
+//	*/
 }
 
 /* virtual */ void TPTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
@@ -915,53 +926,65 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	{
 		flag::Flag fSum("TP");
 		HcalElectronicsId eid = HcalElectronicsId(*it);
+
 		std::vector<uint32_t>::const_iterator cit=std::find(
-			_vcdaqEids.begin(); _vcdaqEids.end(); *it);
-		if (cit!=_vcdaqEids.end() || !isFEDHBHE(eid) || !isFEDHF(eid))
+			_vcdaqEids.begin(), _vcdaqEids.end(), *it);
+		if (cit==_vcdaqEids.end())
 		{
 			//	not @cDAQ
-			for (uint32_it iflag=0; iflag<_vflags.size(); iflag++)
-				_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag
-					flag::fNA);
-			_cSummaryvsLS.setBinContent(eid, _currentLS, flag::fNA);
+			for (uint32_t iflag=0; iflag<_vflags.size(); iflag++)
+				_cSummaryvsLS_FED.setBinContent(eid, _currentLS, int(iflag),
+					int(flag::fNCDAQ));
+			_cSummaryvsLS.setBinContent(eid, _currentLS, int(flag::fNCDAQ));
 			continue;
 		}
 
-		//	FED is @cDAQ
-		double etmsm = _xNumCorr.get(eid)>0?
-			double(_xEtMsm.get(eid))/double(_xNumCorr.get(eid)):0;
-		double fgmsm = _xNumCorr.get(eid)>0?
-			double(_xFGMsm.get(eid))/double(_xNumCorr.get(eid)):0;
-		double dmsm = _xDataTotal.get(eid)>0?
-			double(_xDataMsn.get(eid))/double(_xDataTotal.get(eid)):0;
-		double emsm = _xEmulTotal.get(eid)>0?
-			double(_xEmulMsn.get(eid))/double(_xEmulTotal.get(eid)):0;
-		if (etmsm>=_thresh_EtMsmRate)
-			_vflags[fEtMsm]._state = flag::fBAD;
-		else
-			_vflags[fEtMsm]._state = flag::fGOOD;
-		if (fgmsm>=_thresh_FGMsmRate)
-			_vflags[fFGMsm]._state = flag::fBAD;
-		else
-			_vflags[fFGMsm]._state = flag::fGOOD;
-		if (dmsm>=_thresh_DataMsn)
-			_vflags[fDataMsn]._state = flag::fBAD;
-		else
-			_vflags[fDataMsn]._state = flag:fGOOD;
-		if (emsm>=_thresh_EmulMsn)
-			_vflags[fEmulMsn]._state = flag::fBAD;
-		else
-			_vflags[fEmulMsn]._state = flag:fGOOD;
+		if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid))
+		{
+			std::cout << eid << std::endl;
+			//	FED is @cDAQ
+			double etmsm = _xNumCorr.get(eid)>0?
+				double(_xEtMsm.get(eid))/double(_xNumCorr.get(eid)):0;
+			double fgmsm = _xNumCorr.get(eid)>0?
+				double(_xFGMsm.get(eid))/double(_xNumCorr.get(eid)):0;
+			double dmsm = _xDataTotal.get(eid)>0?
+				double(_xDataMsn.get(eid))/double(_xDataTotal.get(eid)):0;
+			double emsm = _xEmulTotal.get(eid)>0?
+				double(_xEmulMsn.get(eid))/double(_xEmulTotal.get(eid)):0;
+			if (etmsm>=_thresh_EtMsmRate)
+				_vflags[fEtMsm]._state = flag::fBAD;
+			else
+				_vflags[fEtMsm]._state = flag::fGOOD;
+			if (fgmsm>=_thresh_FGMsmRate)
+				_vflags[fFGMsm]._state = flag::fBAD;
+			else
+				_vflags[fFGMsm]._state = flag::fGOOD;
+			if (dmsm>=_thresh_DataMsn)
+				_vflags[fDataMsn]._state = flag::fBAD;
+			else
+				_vflags[fDataMsn]._state = flag::fGOOD;
+			if (emsm>=_thresh_EmulMsn)
+				_vflags[fEmulMsn]._state = flag::fBAD;
+			else
+				_vflags[fEmulMsn]._state = flag::fGOOD;
+		}
 
 		int iflag=0;
-		for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
-			it!=_vflags.end(); ++it)
+		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();
+			ft!=_vflags.end(); ++ft)
 		{
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag,
-				it->_state);
-			fSum+=(*it);
+			std::cout << eid << std::endl;
+			std::cout << ft->_name << "  " << ft->_state << std::endl;
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, int(iflag),
+				ft->_state);
+			fSum+=(*ft);
+			iflag++;
+
+			//	this is the MUST!
+			//	reset after using this flag
+			ft->reset();
 		}
-		_cSummaryvsLS.setBinContent(eid, _currentLS, fSum._state);
+		_cSummaryvsLS.setBinContent(eid, _currentLS, int(fSum._state));
 	}
 
 	//	reset...

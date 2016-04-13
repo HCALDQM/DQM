@@ -187,6 +187,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fN));
 
+	/*
 	std::vector<std::string> fnames;
 	fnames.push_back("Msn");
 	fnames.push_back("BadMean");
@@ -195,6 +196,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		new quantity::FEDQuantity(vFEDs),
 		new quantity::FlagQuantity(fnames),
 		new quantity::QualityQuantity());
+		*/
 
 	//	book plots
 	_cMean_Subdet.book(ib, _emap, _subsystem);
@@ -229,7 +231,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cNBadMeanvsLS_FED.book(ib, _emap, _subsystem);
 	_cNBadRMSvsLS_FED.book(ib, _emap, _subsystem);
 
-	_cSummary.book(ib, _subsystem);
+//	_cSummary.book(ib, _subsystem);
 	
 	//	book compact containers
 	_xPedSum.book(_emap);
@@ -396,6 +398,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	}
 
 	//	set flags
+	/*
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 		it!=_vhashFEDs.end(); ++it)
 	{
@@ -432,6 +435,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		_cNBadRMSvsLS_FED.fill(eid, _currentLS, _xNBadRMS.get(eid));
 	}
 	_xNMsn.reset(); _xNBadMean.reset(); _xNBadRMS.reset();
+	*/
 }
 
 /* virtual */ void PedestalTask::endLuminosityBlock(edm::LuminosityBlock const&,

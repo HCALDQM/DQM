@@ -3,8 +3,8 @@
 namespace hcaldqm
 {
 	RecoRunSummary::RecoRunSummary(std::string const& name, 
-		edm::ParameterSet const& ps) :
-		DQClient(name, ps)
+		std::string const& taskname, edm::ParameterSet const& ps) :
+		DQClient(name, taskname, ps)
 	{}
 
 	/* virtual */ void RecoRunSummary::beginRun(edm::Run const& r,
@@ -36,6 +36,7 @@ namespace hcaldqm
 			vhashFEDHF);    // preserve only HF FEDs
 		electronicsmap::ElectronicsMap ehashmap;
 		ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
+		bool tcdsshift = false;
 
 		//	INITIALIZE
 		Container2D cOccupancy_depth, cOccupancyCut_depth;
@@ -61,7 +62,10 @@ namespace hcaldqm
 
 		//	BOOK
 		xDead.book(_emap); xUni.book(_emap);
-		xUniHF.book(_emap, _filter_FEDHF);
+		xUniHF.book(_emap, filter_FEDHF);
+
+		std::cout << "Task Name: " << _taskname << " harvesto name: "
+			<< _name << std::endl;
 
 		//	LOAD
 		cOccupancy_depth.load(ig, _emap, _subsystem);
@@ -69,7 +73,7 @@ namespace hcaldqm
 		cTimingCut_HBHEPartition.book(ib, _emap, _subsystem);
 
 		//	iterate over all channels
-		std::vector<HcalGenericDetId> gids = _emap.allPrecisionId();
+		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
 		for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
 			it!=gids.end(); ++it)
 		{
@@ -82,28 +86,27 @@ namespace hcaldqm
 			cOccupancy_depth.getBinContent(did)<1?
 				xDead.get(eid)++:xDead.get(eid)+=0;
 			if (did.subdet()==HcalForward)
-				xUniHF.get(eid)++cOccupancyCut_depth(did);
+				xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
 		}
 
 		//	iphi/slot HF non uniformity
 		for (doubleCompactMap::const_iterator it=xUniHF.begin();
 			it!=xUniHF.end(); ++it)
 		{
-			uint32_t hash = it->first;
+			uint32_t hash1 = it->first;
 			HcalElectronicsId eid1(hash1);
 			double x1 = it->second;
 			for (doubleCompactMap::const_iterator jt=xUniHF.begin();
-				jt!=xUniHF.edn(); ++jt)
+				jt!=xUniHF.end(); ++jt)
 			{
 				if (jt==it)
 					continue;
 
-				uint32_t hash2 = jt->first;
 				double x2 = jt->second;
 				if (x2==0)
 					continue;
 				if (x1/x2<0.2)
-					xUni.get(eid)++;
+					xUni.get(eid1)++;
 			}
 		}
 		//	TCDS shift
@@ -111,7 +114,7 @@ namespace hcaldqm
 			HcalDetId(HcalBarrel,1,5,1));
 		double b = cTimingCut_HBHEPartition.getMean(
 			HcalDetId(HcalBarrel,1,30,1));
-		double x = cTimingCut_HBHEPartition.getMean(
+		double c = cTimingCut_HBHEPartition.getMean(
 			HcalDetId(HcalBarrel,1,55,1));
 		double dab = fabs(a-b);
 		double dac = fabs(a-c);
@@ -135,29 +138,30 @@ namespace hcaldqm
 			if (cit==_vcdaqEids.end())
 			{
 				//	not registered @cDAQ
+				fSum._state = flag::fNCDAQ;
 				sumflags.push_back(fSum);
-				continue
+				continue;
 			}
 
 			//	registered @cDAQ
-			if (isHBHE(eid))
+			if (utilities::isFEDHBHE(eid))
 			{
 				if (tcdsshift)
-					fTCDS._state = state::fBAD;
+					fTCDS._state = flag::fBAD;
 				else
-					fTCDS._state = state::fGOOD;
+					fTCDS._state = flag::fGOOD;
 			}
-			if (isHF(eid))
+			if (utilities::isFEDHF(eid))
 			{
 				if (xUni.get(eid)>0)
-					fUni._state = state::fBAD;
+					fUni._state = flag::fBAD;
 				else
-					fUni._state = state::fGOOD;
+					fUni._state = flag::fGOOD;
 			}
 			if (xDead.get(eid)>0)
-				fDead._state = state::fBAD;
+				fDead._state = flag::fBAD;
 			else
-				fDead._state = state::fGOOD;
+				fDead._state = flag::fGOOD;
 
 			//	combine
 			fSum = fDead+fUni+fTCDS;

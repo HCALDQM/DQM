@@ -2,13 +2,14 @@
 
 namespace hcaldqm
 {
-	DQClient::DQClient(std::string const& name, edm::ParameterSet const& ps) :
-		DQModule(ps)
+	DQClient::DQClient(std::string const& name, std::string const& taskname,
+		edm::ParameterSet const& ps) :
+		DQModule(ps),_taskname(taskname)
 	{
-		//	- SET THE TASK NAME AS IN PSet
-		//	- SET THE CLIENT NAME AS specified in name
-		_taskname = _name;
-		_name=name;
+		//	- SET THE TASK NAME YOU REFER TO
+		//	- SET THE CLIENT'S NAME AS WELL - RUN SUMMARY PLOTS
+		//	WILL BE GENERATED UNDER THAT FOLDER
+		_name = name;
 	}
 
 	/* virtual */ void DQClient::beginRun(edm::Run const& r,
@@ -38,7 +39,7 @@ namespace hcaldqm
 			edm::ESHandle<RunInfo> ri;
 			es.get<RunInfoRcd>().get(ri);
 			std::vector<int> vfeds=ri->m_fed_in;
-			for (std::vector<int>::const_iterator it==vfes.begin();
+			for (std::vector<int>::const_iterator it=vfeds.begin();
 				it!=vfeds.end(); ++it)
 			{
 				if (*it>=constants::FED_VME_MIN && *it<=FED_VME_MAX)
@@ -78,7 +79,7 @@ namespace hcaldqm
 	}
 
 	/* virtual */ void DQClient::endLuminosityBlock(DQMStore::IBooker&,
-		DQMStore::IGetter&, edm::LuminosityBlock const&,
+		DQMStore::IGetter&, edm::LuminosityBlock const& lb,
 		edm::EventSetup const&)
 	{
 		_currentLS=lb.luminosityBlock();
@@ -87,5 +88,7 @@ namespace hcaldqm
 
 	/* virtual */ std::vector<flag::Flag> DQClient::endJob(DQMStore::IBooker&,
 		DQMStore::IGetter&)
-	{}
+	{
+		return std::vector<flag::Flag>();
+	}
 }

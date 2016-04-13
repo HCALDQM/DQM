@@ -110,7 +110,7 @@ namespace hcaldqm
 						//	for LS axis - set the bit
 						//	set extendable axes.
 						o->SetBit(BIT(BIT_OFFSET+BIT_AXIS_LS));
-						o->SetCanExtend(TH1::kAllAxes);
+		//				o->SetCanExtend(TH1::kXaxis);
 					}
 				}
 
@@ -125,6 +125,9 @@ namespace hcaldqm
 				FlagQuantity(std::vector<flag::Flag> const& flags) :
 					_flags(flags) {}
 				virtual ~FlagQuantity() {}
+				
+				virtual FlagQuantity* makeCopy()
+				{return new FlagQuantity(_flags);}
 
 				virtual std::string name() {return "Flag";}
 				virtual int nbins() {return _flags.size();}
@@ -155,13 +158,17 @@ namespace hcaldqm
 					_n(n) 
 				{}
 				virtual ~LumiSection() {}
+				
+				virtual LumiSection* makeCopy()
+				{return new LumiSection(_n);}
 
 				virtual std::string name() {return "LS";}
 				virtual int nbins() {return _n;}
-				virtual double min() {return 0.5;}
-				virtual double max() {return _n+0.5;}
+				virtual double min() {return 1;}
+				virtual double max() {return _n+1;}
 				virtual int getValue(int l) {return l;}
-				virtual uint32_t getBin(int l) {return getValue(l);}
+				virtual uint32_t getBin(int l) 
+				{return getValue(l);}
 				virtual void setMax(double x) {_n=x;}
 
 			protected:

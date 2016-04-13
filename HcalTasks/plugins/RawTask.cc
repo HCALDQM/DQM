@@ -11,7 +11,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	_tokFEDs = consumes<FEDRawDataCollection>(_tagFEDs);
 	_tokReport = consumes<HcalUnpackerReport>(_tagReport);
 
-	_vflags.reserve(nRawFlag);
+	_vflags.resize(nRawFlag);
 	_vflags[fEvnMsm]=flag::Flag("EvnMsm");
 	_vflags[fBcnMsm]=flag::Flag("BcnMsm");
 	_vflags[fBadQ]=flag::Flag("BadQ");
@@ -135,7 +135,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			new quantity::ValueQuantity(quantity::fState));
 		_cSummaryvsLS.initialize(_name, "SummaryvsLS",
 			new quantity::LumiSection(_maxLS),
-			new quantity::FEDQuantity(_vFEDs),
+			new quantity::FEDQuantity(vFEDs),
 			new quantity::ValueQuantity(quantity::fState));
 	}
 
@@ -339,13 +339,14 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 {
 	DQTask::beginLuminosityBlock(lb, es);
 
-	_cBadQualityvsLS.extendAxisRange();
+//	_cBadQualityvsLS.extendAxisRange(_currentLS);
 
 	//	ONLINE ONLY!
 	if (_ptype!=fOnline)
 		return;
-	_cSummaryvsLS_FED.extendAxisRange();
-	_cSummaryvsLS.extendAxisRange();
+//	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
+//	_cSummaryvsLS.extendAxisRange(_currentLS);
+	
 }
 
 /* virtual */ void RawTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
@@ -361,49 +362,59 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		it!=_vhashFEDs.end(); ++it)
 	{
 		flag::Flag fSum("RAW");
-
 		HcalElectronicsId eid = HcalElectronicsId(*it);
+
 		std::vector<uint32_t>::const_iterator cit=std::find(
 			_vcdaqEids.begin(), _vcdaqEids.end(), *it);
 		if (cit==_vcdaqEids.end())
 		{
 			// not @cDAQ
 			for (uint32_t iflag=0; iflag<_vflags.size(); iflag++)
-				_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag
-					flag::fNA);
-			_cSummaryvsLS.setBinContent(eid, _currentLS, flag::fNA);
+				_cSummaryvsLS_FED.setBinContent(eid, _currentLS, int(iflag),
+					int(flag::fNCDAQ));
+			_cSummaryvsLS.setBinContent(eid, _currentLS, int(flag::fNCDAQ));
 			continue;
 		}
 
 		//	FED is @cDAQ
-		if (_xEvnMsmLS.get(eid)>0)
-			_vflags[fEvnMsm]._state = flag::fBAD;
-		else
-			_vflags[fEvnMsm]._state = flag::fGOOD;
-		if (_xBcnMsmLS.get(eid)>0)
-			_vflags[fBcnMsm]._state = flag::fBAD;
-		else
-			_vflags[fBcnMsm]._state = flag::fGOOD;
-		if (_xBadQLS.get(eid)>0)
-			_vflags[fBadQ]._state = flag::fBAD;
-		else
-			_vflags[fBadQ]._state = flag::fGOOD;
-		int iflag=0;
-		for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
-			it!=_vflags.end(); ++it)
+		if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid) ||
+			utilities::isFEDHO(eid))
 		{
-			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, iflag
-				it->_state);
-			fSum+=(*it);
+			if (_xEvnMsmLS.get(eid)>0)
+				_vflags[fEvnMsm]._state = flag::fBAD;
+			else
+				_vflags[fEvnMsm]._state = flag::fGOOD;
+			if (_xBcnMsmLS.get(eid)>0)
+				_vflags[fBcnMsm]._state = flag::fBAD;
+			else
+				_vflags[fBcnMsm]._state = flag::fGOOD;
+			if (_xBadQLS.get(eid)>0)
+				_vflags[fBadQ]._state = flag::fBAD;
+			else
+				_vflags[fBadQ]._state = flag::fGOOD;
+		}
+
+		int iflag=0;
+		//	iterate over all flags:
+		//	- sum them all up in summary flag for this FED
+		//	- reset each flag right after using it
+		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();
+			ft!=_vflags.end(); ++ft)
+		{
+			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, int(iflag),
+				ft->_state);
+			fSum+=(*ft);
+			iflag++;
+
+			//	this is the MUST! We don't keep flags per FED, reset
+			//	each one of them after using
+			ft->reset();
 		}
 		_cSummaryvsLS.setBinContent(eid, _currentLS, fSum._state);
 	}
 
 	//	reset...
 	_xEvnMsmLS.reset(); _xBcnMsmLS.reset(); _xBadQLS.reset();
-	for (std::vector<flag::Flag>::const_iterator it=_vflags.begin();
-		it!=_vflags.end(); ++it)
-		it->reset();
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);

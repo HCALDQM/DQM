@@ -20,6 +20,24 @@ namespace hcaldqm
 		_qy->setAxisType(quantity::fYAxis);
 		_qz->setAxisType(quantity::fZAxis);
 	}
+	
+	ContainerSingle2D::ContainerSingle2D(std::string const& folder,
+		std::string const& qname,
+		Quantity *qx, Quantity *qy, Quantity *qz, int debug/*=0*/):
+		Container(folder, qname), _qx(qx), _qy(qy), _qz(qz)
+	{
+		_qx->setAxisType(quantity::fXAxis);
+		_qy->setAxisType(quantity::fYAxis);
+		_qz->setAxisType(quantity::fZAxis);
+	}
+
+	ContainerSingle2D::ContainerSingle2D(ContainerSingle2D const& c) :
+		Container(c._folder, c._qname)
+	{
+		_qx = c._qx->makeCopy();
+		_qy = c._qy->makeCopy();
+		_qz = c._qz->makeCopy();
+	}
 
 	ContainerSingle2D::~ContainerSingle2D()
 	{
@@ -671,7 +689,7 @@ namespace hcaldqm
 			_me->setBinContent(_qx->getBin(x), _qy->getBin(id), y);
 	}
 
-	/* virtual */ void ContainerSingle2D:extendAxisRange(int l)
+	/* virtual */ void ContainerSingle2D::extendAxisRange(int l)
 	{
 		if (l<_qx->nbins())
 			return;

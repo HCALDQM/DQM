@@ -3,8 +3,8 @@
 namespace hcaldqm
 {
 	TPRunSummary::TPRunSummary(std::string const& name, 
-		edm::ParameterSet const& ps) :
-		DQClient(name, ps)
+		std::string const& taskname, edm::ParameterSet const& ps) :
+		DQClient(name, taskname, ps)
 	{}
 
 	/* virtual */ void TPRunSummary::beginRun(edm::Run const& r,
@@ -32,6 +32,10 @@ namespace hcaldqm
 		ContainerSingle2D cEtMsm_depthlike, cFGMsm_depthlike,
 			cEtCorrRatio_depthlike;
 		ContainerXXX<double> xDeadD, xDeadE, xEtMsm, xFGMsm;
+		xDeadD.initialize(hashfunctions::fFED);
+		xDeadE.initialize(hashfunctions::fFED);
+		xEtMsm.initialize(hashfunctions::fFED);
+		xFGMsm.initialize(hashfunctions::fFED);
 		cOccupancyData_depthlike.initialize(_taskname, "OccupancyData",
 			new quantity::TrigTowerQuantity(quantity::fTTieta),
 			new quantity::TrigTowerQuantity(quantity::fTTiphi),
@@ -48,7 +52,7 @@ namespace hcaldqm
 			new quantity::TrigTowerQuantity(quantity::fTTieta),
 			new quantity::TrigTowerQuantity(quantity::fTTiphi),
 			new quantity::ValueQuantity(quantity::fN));
-		cEtCorrRatio_depthlike.initialize(_name, "EtCorrRatio",
+		cEtCorrRatio_depthlike.initialize(_taskname, "EtCorrRatio",
 			new quantity::TrigTowerQuantity(quantity::fTTieta),
 			new quantity::TrigTowerQuantity(quantity::fTTiphi),
 			new quantity::ValueQuantity(quantity::fRatio_0to2));
@@ -65,14 +69,14 @@ namespace hcaldqm
 		cEtCorrRatio_depthlike.load(ig, _subsystem);
 
 		//	iterate
-		std::vector<HcalTrigTowerDetId> tids = _emap.allTriggerId();
+		std::vector<HcalTrigTowerDetId> tids = _emap->allTriggerId();
 		for (std::vector<HcalTrigTowerDetId>::const_iterator it=tids.begin();
 			it!=tids.end(); ++it)
 		{
 			//	skip 2x3
-			if (tid.version()==0 && ietaAbs()>=29)
-				continue;
 			HcalTrigTowerDetId tid = HcalTrigTowerDetId(*it);
+			if (tid.version()==0 && tid.ietaAbs()>=29)
+				continue;
 			HcalElectronicsId eid=HcalElectronicsId(ehashmap.lookup(*it));
 			cOccupancyData_depthlike.getBinContent(tid)<1?
 				xDeadD.get(eid)++:xDeadD.get(eid)+=0;
@@ -95,33 +99,35 @@ namespace hcaldqm
 			flag::Flag fDeadE("DeadEmul");
 			flag::Flag fEtMsm("EtMsm");
 			flag::Flag fFGMsm("FGMsm");
+			HcalElectronicsId eid(*it);
 
 			std::vector<uint32_t>::const_iterator cit=std::find(
 				_vcdaqEids.begin(), _vcdaqEids.end(), *it);
 			if (cit==_vcdaqEids.end())
 			{
 				//	not @cDAQ
+				fSum._state = flag::fNCDAQ;
 				sumflags.push_back(fSum);
 				continue;
 			}
 
 			//	@cDAQ
 			if (xDeadD.get(eid)>0)
-				fDeadD._state = state::fBAD;
+				fDeadD._state = flag::fBAD;
 			else
-				fDeadD._state = state::fGOOD;
+				fDeadD._state = flag::fGOOD;
 			if (xDeadE.get(eid)>0)
-				fDeadE._state = state::fBAD;
+				fDeadE._state = flag::fBAD;
 			else
-				fDeadE._state = state::fGOOD;
+				fDeadE._state = flag::fGOOD;
 			if (xEtMsm.get(eid)>0)
-				fEtMsm._state = state::fBAD;
+				fEtMsm._state = flag::fBAD;
 			else
-				fEtMsm._state = state::fGOOD;
+				fEtMsm._state = flag::fGOOD;
 			if (xFGMsm.get(eid)>0)
-				fFGMsm._state = state::fBAD;
+				fFGMsm._state = flag::fBAD;
 			else
-				fFGMsm._state = state::fGOOD;
+				fFGMsm._state = flag::fGOOD;
 
 			//	combine
 			fSum = fDeadD+fDeadE+fFGMsm+fEtMsm;

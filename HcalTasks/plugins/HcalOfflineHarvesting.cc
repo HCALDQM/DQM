@@ -3,10 +3,14 @@
 HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 	DQHarvester(ps), _reportSummaryMap(NULL)
 {
-	_vsumgen.push_back(new RawRunSummary("RawRunSummary", ps));
-	_vsumgen.push_back(new DigiRunSummary("DigiRunSummary", ps));
-	_vsumgen.push_back(new RecoRunSummary("RecoRunSummary", ps));
-	_vsumgen.push_back(new TPRunSummary("TPRunSummary", ps));
+	_vsumgen.push_back(new RawRunSummary("RawRunSummary",
+		"RawTask", ps));
+	_vsumgen.push_back(new DigiRunSummary("DigiRunSummary",
+		"DigiTask", ps));
+	_vsumgen.push_back(new RecoRunSummary("RecoRunSummary",
+		"RecHitTask", ps));
+	_vsumgen.push_back(new TPRunSummary("TPRunSummary",
+		"TPTask", ps));
 
 	for (uint32_t i=0; i<_vsumgen.size(); i++)
 		_vmarks.push_back(false);
@@ -44,30 +48,30 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 //
 //	Evaluate and Generate Run Summary
 //
-/* virtual */ void HcalOfflineHarvesting::_dqmEndJob(DQMStore::IBooker&,
-	DQMStore::IGetter&)
+/* virtual */ void HcalOfflineHarvesting::_dqmEndJob(DQMStore::IBooker& ib,
+	DQMStore::IGetter& ig)
 {
 	//	OBTAIN/SET WHICH MODULES ARE PRESENT
 	int num=0; std::map<std::string, uint32_t> datatiers;
 	if (ig.get(_subsystem+"/RawTask/EventsTotal")!=NULL)
 	{
 		_vmarks[fRaw]=true;num++;
-		datatiers.insert(std::pair<std::string, uint32_t>("RAW",num))
+		datatiers.insert(std::pair<std::string, uint32_t>("RAW",num));
 	}
 	if (ig.get(_subsystem+"/DigiTask/EventsTotal")!=NULL)
 	{
 		_vmarks[fDigi]=true;num++;
-		datatiers.insert(std::pair<std::string, uint32_t>("DIGI",num))}
+		datatiers.insert(std::pair<std::string, uint32_t>("DIGI",num));
 	}
 	if (ig.get(_subsystem+"/TPTask/EventsTotal")!=NULL)
 	{
 		_vmarks[fTP]=true;num++;
-		datatiers.insert(std::pair<std::string, uint32_t>("TP",num))}
+		datatiers.insert(std::pair<std::string, uint32_t>("TP",num));
 	}
 	if (ig.get(_subsystem+"/RecHitTask/EventsTotal")!=NULL)
 	{
 		_vmarks[fReco]=true;num++;
-		datatiers.insert(std::pair<std::string, uint32_t>("RECO",num))}
+		datatiers.insert(std::pair<std::string, uint32_t>("RECO",num));
 	}
 
 	//	CREATE THE REPORT SUMMARY MAP
@@ -103,11 +107,11 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 		std::vector<flag::Flag> flags = (*it)->endJob(ib,ig);
 		for (uint32_t ifed=0; ifed<_vFEDs.size(); ifed++)
 		{
-			_reportSummaryMap->SetBinContent(ifed+1, 
+			_reportSummaryMap->setBinContent(ifed+1, 
 				datatiers[flags[ifed]._name], (int)flags[ifed]._state);
 		}
 		ii++;
 	}
 }
 
-DEFINE_FWK_MODULE(HcalHarvesting);
+DEFINE_FWK_MODULE(HcalOfflineHarvesting);

@@ -14,12 +14,14 @@ namespace hcaldqm
 		//
 		enum State
 		{
-			fNA = 0,
-			fGOOD = 1,
-			fPROBLEMATIC = 2,
-			fBAD = 3,
-			fRESERVED = 4,
-			nState = 5
+			fNONE=0,			// No State - can't have... not used....
+			fNCDAQ=1,			// not @cDAQ
+			fNA = 2,			// Not Applicable
+			fGOOD = 3,			// GOOD
+			fPROBLEMATIC = 4,	// problem
+			fBAD = 5,			//	bad
+			fRESERVED = 6,		// reserved
+			nState = 7
 		};
 
 		struct Flag
@@ -65,7 +67,8 @@ namespace hcaldqm
 			//
 			Flag& operator=(Flag const& f)
 			{
-				_state = (State)(std::max(_state, f._state));
+				_name = f._name;
+				_state = f._state;
 				return *this;
 			}
 

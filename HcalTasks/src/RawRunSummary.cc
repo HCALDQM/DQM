@@ -3,8 +3,8 @@
 namespace hcaldqm
 {
 	RawRunSummary::RawRunSummary(std::string const& name, 
-		edm::ParameterSet const& ps) :
-		DQClient(name, ps)
+		std::string const& taskname, edm::ParameterSet const& ps) :
+		DQClient(name, taskname, ps)
 	{}
 
 	/* virtual */ void RawRunSummary::beginRun(edm::Run const& r,
@@ -49,7 +49,7 @@ namespace hcaldqm
 		xBcn.initialize(hashfunctions::fFED);
 		xBadQ.initialize(hashfunctions::fFED);
 		cEvnMsm_ElectronicsVME.initialize(_taskname, "EvnMsm",
-			hashfunctions::fElectronicsVME,
+			hashfunctions::fElectronics,
 			new quantity::FEDQuantity(vFEDsVME),
 			new quantity::ElectronicsQuantity(quantity::fSpigot),
 			new quantity::ValueQuantity(quantity::fN));
@@ -78,11 +78,14 @@ namespace hcaldqm
 		xEvn.book(_emap); xBcn.book(_emap); xBadQ.book(_emap);
 
 		//	LOAD CONTAINERS
-		cEvnMsm_ElectronicsVME.load(ig, _emap, _filter_uTCA, _subsystem);
-		cBcnMsm_ElectronicsVME.load(ig, _emap, _filter_uTCA, _subsystem);
-		cEvnMsm_ElectronicsuTCA.load(ig, _emap, _filter_VME. _subsytem);
-		cBcnMsm_ElectronicsuTCA.load(ig, _emap, _filter_VME. _subsytem);
+		cEvnMsm_ElectronicsVME.load(ig, _emap, filter_uTCA, _subsystem);
+		cBcnMsm_ElectronicsVME.load(ig, _emap, filter_uTCA, _subsystem);
+		cEvnMsm_ElectronicsuTCA.load(ig, _emap, filter_VME, _subsystem);
+		cBcnMsm_ElectronicsuTCA.load(ig, _emap, filter_VME, _subsystem);
 		cBadQuality_depth.load(ig, _emap, _subsystem);
+
+		std::cout << "Task Name: " << _taskname << " harvesto name: "
+			<< _name << std::endl;
 
 		// iterate over all channels	
 		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
@@ -92,7 +95,7 @@ namespace hcaldqm
 			if (!it->isHcalDetId())
 				continue;
 			HcalDetId did = HcalDetId(it->rawId());
-			HcalElectronicsId eid = HcalElectronicsid(ehashmap.lookup(did));
+			HcalElectronicsId eid = HcalElectronicsId(ehashmap.lookup(did));
 
 			xBadQ.get(eid)+=cBadQuality_depth.getBinContent(did);
 			if (eid.isVMEid())
@@ -115,6 +118,7 @@ namespace hcaldqm
 			flag::Flag fSum("RAW");
 			flag::Flag fEvn("EvnMsm");
 			flag::Flag fBcn("BcnMsm");
+			flag::Flag fBadQ("BadQ");
 			HcalElectronicsId eid(*it);
 			
 			//	check if this FED was @cDAQ
@@ -123,23 +127,24 @@ namespace hcaldqm
 			if (cit==_vcdaqEids.end())
 			{
 				//	was not @cDAQ, set the summary flag as NA and go the next
+				fSum._state = flag::fNCDAQ;
 				sumflags.push_back(fSum);
 				continue;
 			}
 
 			//	here only if was registered at cDAQ
-			if (_xEvn.get(eid)>0)
-				fEvn._state = state::fBAD;
+			if (xEvn.get(eid)>0)
+				fEvn._state = flag::fBAD;
 			else
-				fEvn._state = state::fGOOD;
-			if (_xBcn.get(eid)>0)
-				fBcn._state = state::fBAD;
+				fEvn._state = flag::fGOOD;
+			if (xBcn.get(eid)>0)
+				fBcn._state = flag::fBAD;
 			else
-				fBcn._state = state:fGOOD;
-			if (_xBadQ.get(eid)>0)
-				fBadQ._state = state::fBAD;
+				fBcn._state = flag::fGOOD;
+			if (xBadQ.get(eid)>0)
+				fBadQ._state = flag::fBAD;
 			else
-				fBadQ._state = state::fGOOD;
+				fBadQ._state = flag::fGOOD;
 
 			//	combine all the flags into summary flag
 			fSum = fEvn+fBcn+fBadQ;
