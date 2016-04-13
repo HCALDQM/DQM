@@ -34,7 +34,7 @@ if useFileInput:
 	process.load("DQM.Integration.config.fileinputsource_cfi")
 else:
 	process.load('DQM.Integration.config.inputsource_cfi')
-process.load('DQMServices.Components.DQMEnvironment_cfi')
+#process.load('DQMServices.Components.DQMEnvironment_cfi')
 process.load('DQM.Integration.config.environment_cfi')
 
 #-------------------------------------
@@ -49,7 +49,7 @@ process.DQMStore.verbose = 0
 process.DQM.collectorPort = cms.untracked.int32(9190)
 process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
 #process.dqmSaver.path = "/data/hcaldqm/DQMIO/ONLINE_PLAYBACK"
-process.dqmSaver.path = "./upload"
+process.dqmSaver.path = "./"
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import

@@ -34,7 +34,7 @@ if useFileInput:
 	process.load("DQM.Integration.config.fileinputsource_cfi")
 else:
 	process.load('DQM.Integration.config.inputsource_cfi')
-process.load('DQMServices.Components.DQMEnvironment_cfi')
+#process.load('DQMServices.Components.DQMEnvironment_cfi')
 process.load('DQM.Integration.config.environment_cfi')
 
 #-------------------------------------
@@ -48,6 +48,8 @@ process = customise(process)
 process.DQMStore.verbose = 0
 process.DQM.collectorPort = cms.untracked.int32(9190)
 process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
+#process.dqmSaver.path = "/data/hcaldqm/DQMIO/ONLINE_PLAYBACK"
+process.dqmSaver.path = "./"
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
@@ -55,7 +57,6 @@ process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load('FWCore.MessageLogger.MessageLogger_cfi')
 process.load("EventFilter.HcalRawToDigi.HcalRawToDigi_cfi")
-process.load("RecoLocalCalo.Configuration.hcalLocalReco_cff")
 process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
 
 #-------------------------------------
@@ -79,13 +80,7 @@ rawTagUntracked = cms.untracked.InputTag("rawDataCollector")
 if isHeavyIon:
 	rawTag = cms.InputTag("rawDataRepacker")
 	rawTagUntracked = cms.untracked.InputTag("rawDataRepacker")
-process.essourceSev = cms.ESSource(
-		"EmptyESSource",
-		recordName		= cms.string("HcalSeverityLevelComputerRcd"),
-		firstValid		= cms.vuint32(1),
-		iovIsRunNotTime	= cms.bool(True)
-)
-process.hcalRecAlgos.DropChannelStatusBits = cms.vstring('')
+
 process.emulTPDigis = \
 		process.simHcalTriggerPrimitiveDigis.clone()
 process.emulTPDigis.inputLabel = \
@@ -95,27 +90,27 @@ process.emulTPDigis.FrontEndFormatError = \
 process.HcalTPGCoderULUT.LUTGenerationMode = cms.bool(False)
 process.emulTPDigis.FG_threshold = cms.uint32(2)
 process.emulTPDigis.InputTagFEDRaw = rawTag
-process.hbhereco = process.hbheprereco.clone()
 process.hcalDigis.InputLabel = rawTag
 
 #-------------------------------------
-#	Hcal DQM Tasks and Clients import
+#	Hcal DQM Tasks and Harvesters import
 #	New Style
 #-------------------------------------
-process.load("DQM.TestTasks.RecHitTask")
-process.load("DQM.TestTasks.DigiTask")
-process.load('DQM.TestTasks.TPTask')
-process.load('DQM.TestTasks.RawTask')
+process.load("DQM.HcalTasks.DigiTask")
+process.load('DQM.HcalTasks.TPTask')
+process.load('DQM.HcalTasks.RawTask')
+process.load('DQM.HcalTasks.HcalOnlineHarvesting')
 
 #-------------------------------------
 #	To force using uTCA
 #	Will not be here for Online DQM
 #-------------------------------------
 if useMap:
-    process.GlobalTag.toGet.append(cms.PSet(record = cms.string("HcalElectronicsMapRcd"),
-                                            tag = cms.string("HcalElectronicsMap_v7.05_hlt"),
-                                            )
-                                   )
+    process.GlobalTag.toGet.append(cms.PSet(
+		record = cms.string("HcalElectronicsMapRcd"),
+        tag = cms.string("HcalElectronicsMap_v7.05_hlt"),
+        )
+	)
 
 #-------------------------------------
 #	For Debugginb
@@ -132,19 +127,20 @@ process.digiTask.runkeyVal = runType
 process.digiTask.runkeyName = runTypeName
 process.rawTask.runkeyVal = runType
 process.rawTask.runkeyName = runTypeName
-process.recHitTask.runkeyVal = runType
-process.recHitTask.runkeyName = runTypeName
 process.tpTask.runkeyVal = runType
 process.tpTask.runkeyName = runTypeName
 
 #-------------------------------------
 #	Hcal DQM Tasks/Clients Sequences Definition
 #-------------------------------------
-process.tasksSequence = cms.Sequence(
-		process.recHitTask
-		+process.rawTask
+process.tasksPath = cms.Path(
+		process.rawTask
 		+process.digiTask
 		+process.tpTask
+)
+
+process.harvestingPath = cms.Path(
+	process.hcalOnlineHarvesting
 )
 
 #-------------------------------------
@@ -163,30 +159,31 @@ process.tasksSequence = cms.Sequence(
 #-------------------------------------
 #	Paths/Sequences Definitions
 #-------------------------------------
-process.preRecoSequence = cms.Sequence(
+process.preRecoPath = cms.Path(
 		process.hcalDigis
+		*process.emulTPDigis
 )
 
-process.recoSequence = cms.Sequence(
-		process.emulTPDigis
-		+process.hfreco
-		+process.hbhereco
-		+process.horeco
+#process.dqmEndPath = cms.EndPath(
+process.dqmPath = cms.EndPath(
+		process.dqmEnv)
+process.dqmPath1 = cms.EndPath(
+		process.dqmSaver
 )
 
-process.dqmSequence = cms.Sequence(
-		process.dqmEnv
-		*process.dqmSaver
+process.schedule = cms.Schedule(
+	process.preRecoPath,
+	process.tasksPath,
+	process.harvestingPath,
+	process.dqmPath,
+	process.dqmPath1
 )
-
-process.p = cms.Path(
-		process.preRecoSequence
-		*process.recoSequence
-		*process.tasksSequence
-		*process.dqmSequence
-)
-
-#process.schedule = cms.Schedule(process.p)
+#process.p = cms.Path(
+#		process.preRecoSequence
+#		*process.tasksSequence
+#		*process.harvestingSequence
+#		*process.dqmSequence
+#)
 
 #-------------------------------------
 #	Scheduling and Process Customizations
@@ -199,3 +196,7 @@ process.options = cms.untracked.PSet(
 		)
 )
 process.options.wantSummary = cms.untracked.bool(True)
+
+# tracer
+process.Tracer = cms.Service("Tracer")
+process = customise(process)
