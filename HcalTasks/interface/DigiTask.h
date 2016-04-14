@@ -137,10 +137,9 @@ class DigiTask : public DQTask
 		ContainerProf1D _cDigiSizevsLS_FED;	// online only
 		ContainerXXX<uint32_t> _xDigiSize; // online only
 		ContainerXXX<uint32_t> _xUniHF,_xUni; // online only
-		ContaienrXXX<uint32_t> _xNChs; // online only
-		ContaienrXXX<uint32_t> _xNChsNominal; // online only
+		ContainerXXX<uint32_t> _xNChs; // online only
+		ContainerXXX<uint32_t> _xNChsNominal; // online only
 
-		std::vector<HcalGenericDetId> _gids; // online only
 		Container2D _cSummaryvsLS_FED; // online only
 		ContainerSingle2D _cSummaryvsLS; // online only
 };

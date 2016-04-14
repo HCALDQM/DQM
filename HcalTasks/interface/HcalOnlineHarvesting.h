@@ -42,6 +42,7 @@
 #include "DQM/HcalTasks/interface/DigiRunSummary.h"
 #include "DQM/HcalTasks/interface/RecoRunSummary.h"
 #include "DQM/HcalTasks/interface/TPRunSummary.h"
+#include "DQM/HcalTasks/interface/PedestalRunSummary.h"
 
 using namespace hcaldqm;
 

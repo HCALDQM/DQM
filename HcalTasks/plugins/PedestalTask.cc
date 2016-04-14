@@ -23,6 +23,11 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_vflags[fMsn]=flag::Flag("Msn");
 	_vflags[fBadM]=flag::Flag("BadM");
 	_vflags[fBadR]=flag::Flag("BadR");
+
+	_thresh_mean = ps.getUntrackedParameter<double>("thresh_mean",
+		0.25);
+	_thresh_rms = ps.getUntrackedParameter<double>("thresh_mean",
+		0.25);
 }
 
 /* virtual */ void PedestalTask::bookHistograms(DQMStore::IBooker &ib,
@@ -73,7 +78,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_xPedSum2Total.initialize(hashfunctions::fDChannel);
 	_xPedEntriesTotal.initialize(hashfunctions::fDChannel);
 
-	_xPedRefMean1LS.initialize(hashfunctions::fDChannel);
+	_xPedRefMean.initialize(hashfunctions::fDChannel);
 	_xPedRefRMS.initialize(hashfunctions::fDChannel);
 
 	_xNChs.initialize(hashfunctions::fFED);
@@ -297,7 +302,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fN));
 
-	_cSummarvsLS_FED.initialize(_name, "SummaryvsLS",
+	_cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
 		hashfunctions::fFED,
 		new quantity::LumiSection(_maxLS),
 		new quantity::FlagQuantity(_vflags),
@@ -624,7 +629,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		if (fabs(diffm1LS)>_thresh_mean)
 		{
 			_cMeanBad1LS_depth.fill(did);
-			_cNBadMeanvsLS_Subdet.fill(did, _curretnLS);
+			_cNBadMeanvsLS_Subdet.fill(did, _currentLS);
 			if (eid.isVMEid())
 				_cMeanBad1LS_FEDVME.fill(eid);
 			else
@@ -685,8 +690,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		if (utilities::isFEDHBHE(eid) || utilities::isFEDHO(eid) ||
 			utilities::isFEDHF(eid))
 		{
-			double frbadm = _xBadMean1LS.get(eid)/_xNChs.get(eid);
-			double frbadr = _xBadRMS1LS.get(eid)/_xNChs.get(eid);
+			double frbadm = _xNBadMean1LS.get(eid)/_xNChs.get(eid);
+			double frbadr = _xNBadRMS1LS.get(eid)/_xNChs.get(eid);
 
 			if (_xNMsn1LS.get(eid)>0)
 				_vflags[fMsn]._state = flag::fBAD;
@@ -712,7 +717,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			iflag++;
 			ft->reset();
 		}
-		_cSummarvsLS.setBinContent(eid, _currentLS, fSum._state);
+		_cSummaryvsLS.setBinContent(eid, _currentLS, fSum._state);
 	}
 
 	//	reset the pedestal containers instead of writting reset... func

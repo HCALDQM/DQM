@@ -33,14 +33,6 @@ class PedestalTask : public DQTask
 			edm::EventSetup const&);
 		virtual void endRun(edm::Run const&, edm::EventSetup const&);
 
-		enum PedestalFlag
-		{
-			fMsn = 0,
-			fBadMean = 1,
-			fBadRMS = 2,
-			nPedestalFlag = 3
-		};
-
 	protected:
 		//	funcs
 		virtual void _process(edm::Event const&, edm::EventSetup const&);
@@ -74,6 +66,10 @@ class PedestalTask : public DQTask
 		HashFilter _filter_VME;
 		HashFilter _filter_C36;
 
+		//	thresholds
+		double _thresh_mean, _thresh_rms;
+
+		//	hashed ids of FEDs
 		std::vector<uint32_t> _vhashFEDs;
 
 		//	need containers total over the run and per 1LS
@@ -85,7 +81,7 @@ class PedestalTask : public DQTask
 		ContainerXXX<int>	_xPedEntriesTotal;
 		ContainerXXX<int> _xNChs; // number of channels per FED as in emap
 		ContainerXXX<int> _xNMsn1LS; // #missing for 1LS per FED
-		ContainerXXX<int> _xNBadMean1LS;_xNBadRMS1LS;
+		ContainerXXX<int> _xNBadMean1LS,_xNBadRMS1LS;
 
 		//	CondBD Reference
 		ContainerXXX<double> _xPedRefMean;
@@ -142,8 +138,8 @@ class PedestalTask : public DQTask
 		Container2D	_cMissing1LS_FEDVME;
 		Container2D	_cMissing1LS_FEDuTCA;
 		Container2D _cMissingTotal_depth;
-		Container2D _cMissingTotal_FEDVME:
-		Container2D _cMissingTotal_FEDuTCA:
+		Container2D _cMissingTotal_FEDVME;
+		Container2D _cMissingTotal_FEDuTCA;
 
 		//	Mean/RMS Bad Maps
 		Container2D	_cMeanBad1LS_depth;
@@ -161,7 +157,7 @@ class PedestalTask : public DQTask
 		Container2D	_cMeanBadTotal_FEDuTCA;
 		
 		//	Summaries
-		Container2D _cSummaryvsLED_FED;
+		Container2D _cSummaryvsLS_FED;
 		ContainerSingle2D _cSummaryvsLS;
 };
 

@@ -48,11 +48,11 @@ HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 		_vmarks[fRaw]=true;
 	if (ig.get(_subsystem+"/"+_vnames[fDigi]+"/EventsTotal")!=NULL)
 		_vmarks[fDigi]=true;
-	if (ig.get(_subsystem+"/"+vvnames[fTP]+"/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"+_vnames[fTP]+"/EventsTotal")!=NULL)
 		_vmarks[fTP]=true;
-	if (ig.get(_subsystem+"/"_vnames[fReco]+"/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"+_vnames[fReco]+"/EventsTotal")!=NULL)
 		_vmarks[fReco]=true;
-	if (ig.get(_subsystem+"/"+_vnames[fPedestal]"/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"+_vnames[fPedestal]+"/EventsTotal")!=NULL)
 		_vmarks[fPedestal]=true;
 
 	//	CREATE SUMMARY REPORT MAP FED vs LS and LOAD MODULE'S SUMMARIES

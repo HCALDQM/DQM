@@ -341,7 +341,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		// ONLY WAY TO DO THAT AUTOMATICALLY AND W/O HARDCODING 1728
 		// or ANY OTHER VALUES LIKE 2592, 2192
 		_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
-		_gids = _emap->allPrecisionId();
+		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
 		for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
 		it!=gids.end(); ++it)
 		{
@@ -349,7 +349,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				continue;
 			HcalDetId did(it->rawId());
 			HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
-			_NChsNominal.get(eid)++;	// he will know the nominal #channels per FED
+			_xNChsNominal.get(eid)++;	// he will know the nominal #channels per FED
 		}
 	}
 }
@@ -587,8 +587,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		HcalElectronicsId const& eid = it->elecId();
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
-		//	if this channel is not present yet per LS, inc, otherwise keep at0
-		_xNChs.get(eid)==0?_xNChs.get(eid)++:_xNChs.get(eid)+=0;
+		_xNChs.get(eid)++;
 		_cOccupancy_depth.fill(did);
 		if (_ptype==fOnline)
 		{
@@ -761,7 +760,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 					_vflags[fUni]._state = flag::fBAD;
 				else
 					_vflags[fUni]._state = flag::fGOOD;
-				if (_xNChs.get(eid)!=_xNChsNominal.get(eid))
+				if (_xNChs.get(eid)!=(_xNChsNominal.get(eid)*_evsPerLS))
 					_vflags[fNChsHF]._state = flag::fBAD;
 				else
 					_vflags[fNChsHF]._state = flag::fGOOD;
