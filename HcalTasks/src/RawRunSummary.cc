@@ -39,11 +39,16 @@ namespace hcaldqm
 		vFEDsuTCA= utilities::getFEDuTCAList(_emap);
 		electronicsmap::ElectronicsMap ehashmap;
 		ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
+		std::vector<flag::Flag> vflags; vflags.resize(nRawFlag);
+		vflags[fEvnMsm]=flag::Flag("EvnMsm");
+		vflags[fBcnMsm]=flag::Flag("BcnMsm");
+		vflags[fBadQ]=flag::Flag("BadQ");
 
 		//	INITIALIZE CONTAINERS AND VARIABLES
 		Container2D cEvnMsm_ElectronicsVME,cBcnMsm_ElectronicsVME;
 		Container2D cEvnMsm_ElectronicsuTCA,cBcnMsm_ElectronicsuTCA;
 		Container2D cBadQuality_depth;
+		ContainerSingle2D cSummary;
 		ContainerXXX<double> xEvn,xBcn,xBadQ;
 		xEvn.initialize(hashfunctions::fFED);
 		xBcn.initialize(hashfunctions::fFED);
@@ -73,6 +78,10 @@ namespace hcaldqm
 			 new quantity::DetectorQuantity(quantity::fieta),
 			 new quantity::DetectorQuantity(quantity::fiphi),
 			 new quantity::ValueQuantity(quantity::fN));
+		cSummary.initialize(_name, "Summary",
+			new quantity::FEDQuantity(_vFEDs),
+			new quantity::FlagQuantity(vflags),
+			new quantity::ValueQuantity(quantity::fState));
 
 		//	BOOK CONTAINERSXXX
 		xEvn.book(_emap); xBcn.book(_emap); xBadQ.book(_emap);
@@ -83,9 +92,7 @@ namespace hcaldqm
 		cEvnMsm_ElectronicsuTCA.load(ig, _emap, filter_VME, _subsystem);
 		cBcnMsm_ElectronicsuTCA.load(ig, _emap, filter_VME, _subsystem);
 		cBadQuality_depth.load(ig, _emap, _subsystem);
-
-		std::cout << "Task Name: " << _taskname << " harvesto name: "
-			<< _name << std::endl;
+		cSummary.book(ib, _subsystem);
 
 		// iterate over all channels	
 		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
@@ -116,9 +123,6 @@ namespace hcaldqm
 			it!=_vhashFEDs.end(); ++it)
 		{
 			flag::Flag fSum("RAW");
-			flag::Flag fEvn("EvnMsm");
-			flag::Flag fBcn("BcnMsm");
-			flag::Flag fBadQ("BadQ");
 			HcalElectronicsId eid(*it);
 			
 			//	check if this FED was @cDAQ
@@ -127,27 +131,37 @@ namespace hcaldqm
 			if (cit==_vcdaqEids.end())
 			{
 				//	was not @cDAQ, set the summary flag as NA and go the next
-				fSum._state = flag::fNCDAQ;
-				sumflags.push_back(fSum);
+				sumflags.push_back(flag::Flag("RAW", flag::fNCDAQ));
 				continue;
 			}
 
 			//	here only if was registered at cDAQ
-			if (xEvn.get(eid)>0)
-				fEvn._state = flag::fBAD;
-			else
-				fEvn._state = flag::fGOOD;
-			if (xBcn.get(eid)>0)
-				fBcn._state = flag::fBAD;
-			else
-				fBcn._state = flag::fGOOD;
-			if (xBadQ.get(eid)>0)
-				fBadQ._state = flag::fBAD;
-			else
-				fBadQ._state = flag::fGOOD;
+			if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid) ||
+				utilities::isFEDHO(eid))
+			{
+				if (xEvn.get(eid)>0)
+					vflags[fEvnMsm]._state = flag::fBAD;
+				else
+					vflags[fEvnMsm]._state = flag::fGOOD;
+				if (xBcn.get(eid)>0)
+					vflags[fBcnMsm]._state = flag::fBAD;
+				else
+					vflags[fBcnMsm]._state = flag::fGOOD;
+				if (xBadQ.get(eid)>0)
+					vflags[fBadQ]._state = flag::fBAD;
+				else
+					vflags[fBadQ]._state = flag::fGOOD;
+			}
 
 			//	combine all the flags into summary flag
-			fSum = fEvn+fBcn+fBadQ;
+			int iflag=0;
+			for (std::vector<flag::Flag>::iterator ft=vflags.begin();
+				ft!=vflags.end(); ++ft)
+			{
+				cSummary.setBinContent(eid, iflag,ft->_state);
+				fSum+=(*ft);
+				ft->reset();
+			}
 			sumflags.push_back(fSum);
 		}
 	

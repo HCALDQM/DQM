@@ -67,6 +67,7 @@ class HcalOfflineHarvesting : public DQHarvester
 		//	by default all false
 		std::vector<DQClient*> _vsumgen;
 		std::vector<bool> _vmarks;
+		std::vector<std::string> _vnames;
 		
 		//	reportSummaryMap
 		MonitorElement *_reportSummaryMap;

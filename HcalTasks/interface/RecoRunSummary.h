@@ -21,6 +21,17 @@ namespace hcaldqm
 				DQMStore::IBooker&, DQMStore::IGetter&);
 
 		protected:
+			Container2D _cDead_depth;
+			Container2D _cDead_FEDVME;
+			Container2D _cDead_FEDuTCA;
+
+			enum RecoFlag
+			{
+				fTCDS = 0,
+				fDead = 1,
+				fUniSlotHF=2,
+				nRecoFlag=3
+			};
 	};
 }
 

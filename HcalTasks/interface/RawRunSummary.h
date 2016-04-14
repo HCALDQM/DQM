@@ -21,6 +21,13 @@ namespace hcaldqm
 				DQMStore::IBooker&, DQMStore::IGetter&);
 
 		protected:
+			enum RawFlag
+			{
+				fEvnMsm=0,
+				fBcnMsm=1,
+				fBadQ=2,
+				nRawFlag=3
+			};
 	};
 }
 

@@ -3,17 +3,20 @@
 HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 	DQHarvester(ps), _reportSummaryMap(NULL)
 {
-	_vsumgen.push_back(new RawRunSummary("RawRunSummary",
-		"RawTask", ps));
-	_vsumgen.push_back(new DigiRunSummary("DigiRunSummary",
-		"DigiTask", ps));
-	_vsumgen.push_back(new RecoRunSummary("RecoRunSummary",
-		"RecHitTask", ps));
-	_vsumgen.push_back(new TPRunSummary("TPRunSummary",
-		"TPTask", ps));
+	_vsumgen.resize(nSummary);
+	_vmarks.resize(nSummary);
+	_vnames.resize(nSummary);
+	_vnames[fRaw]="RawTask";
+	_vnames[fDigi]="DigiTask";
+	_vnames[fReco]="RecHitTask";
+	_vnames[fTP]="TPTask";
+	for (uint32_t i=0; i<_vmarks.size(); i++)
+		_vmarks[i]=false;
 
-	for (uint32_t i=0; i<_vsumgen.size(); i++)
-		_vmarks.push_back(false);
+	_vsumgen[fRaw]=new RawRunSummary("RawRunSummary", _vnames[fRaw],ps);
+	_vsumgen[fDigi]=new DigiRunSummary("DigiRunSummary", _vnames[fDigi],ps);
+	_vsumgen[fReco]=new RecoRunSummary("RecoRunSummary", _vnames[fReco],ps);
+	_vsumgen[fTP]=new TPRunSummary("TPRunSummary", _vnames[fTP],ps);
 }
 
 /* virtual */ void HcalOfflineHarvesting::beginRun(
@@ -52,46 +55,56 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 	DQMStore::IGetter& ig)
 {
 	//	OBTAIN/SET WHICH MODULES ARE PRESENT
-	int num=0; std::map<std::string, uint32_t> datatiers;
-	if (ig.get(_subsystem+"/RawTask/EventsTotal")!=NULL)
+	int num=0; std::map<std::string, int> datatiers;
+	if (ig.get(_subsystem+"/"+_vnames[fRaw]+"/EventsTotal")!=NULL)
 	{
-		_vmarks[fRaw]=true;num++;
-		datatiers.insert(std::pair<std::string, uint32_t>("RAW",num));
+		datatiers.insert(std::pair<std::string, int>("RAW",num));
+		_vmarks[fRaw]=true;
+		num++;
 	}
-	if (ig.get(_subsystem+"/DigiTask/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"+_vnames[fDigi]+"/EventsTotal")!=NULL)
 	{
-		_vmarks[fDigi]=true;num++;
-		datatiers.insert(std::pair<std::string, uint32_t>("DIGI",num));
+		_vmarks[fDigi]=true;
+		datatiers.insert(std::pair<std::string, int>("DIGI",num));
+		num++;
 	}
-	if (ig.get(_subsystem+"/TPTask/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"+_vnames[fTP]+"/EventsTotal")!=NULL)
 	{
-		_vmarks[fTP]=true;num++;
-		datatiers.insert(std::pair<std::string, uint32_t>("TP",num));
+		_vmarks[fTP]=true;
+		datatiers.insert(std::pair<std::string, int>("TP",num));
+		num++;
 	}
-	if (ig.get(_subsystem+"/RecHitTask/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"+_vnames[fReco]+"/EventsTotal")!=NULL)
 	{
-		_vmarks[fReco]=true;num++;
-		datatiers.insert(std::pair<std::string, uint32_t>("RECO",num));
+		datatiers.insert(std::pair<std::string, int>("RECO",num));
+		_vmarks[fReco]=true;
+		num++;
 	}
-
+	
 	//	CREATE THE REPORT SUMMARY MAP
+	//	num is #modules
+	//	datatiers - std map [DATATIER_NAME] -> [positional value [0,num-1]]
+	//	-> bin wise +1 should be
 	if (!_reportSummaryMap)
 	{
 		ib.setCurrentFolder(_subsystem+"/EventInfo");
 		_reportSummaryMap = ib.book2D("reportSummaryMap", "reportSummaryMap",
 			_vFEDs.size(), 0, _vFEDs.size(), num,0,num);
 		//	x axis labels
-		for (uint32_t i=0; _vFEDs.size(); i++)
+		
+		for (uint32_t i=0; i<_vFEDs.size(); i++)
 		{
 			char name[5];
 			sprintf(name, "%d", _vFEDs[i]);
 			_reportSummaryMap->setBinLabel(i+1, name, 1);
 		}
 		//	y axis lables
-		for (std::map<std::string, uint32_t>::const_iterator
+		for (std::map<std::string, int>::const_iterator
 			it=datatiers.begin(); it!=datatiers.end(); ++it)
 		{
-			_reportSummaryMap->setBinLabel(it->second, it->first, 2);
+			std::string name = it->first;
+			int value = it->second;
+			_reportSummaryMap->setBinLabel(value+1, name, 2);
 		}
 	}
 
@@ -100,15 +113,21 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 	for (std::vector<DQClient*>::const_iterator it=_vsumgen.begin();
 		it!=_vsumgen.end(); ++it)
 	{
+		//	IF MODULE IS NOT PRESENT IN DATA SKIP
 		if (!_vmarks[ii])
 		{ii++;continue;}
 
-		//	do only if have to
+		//	OBTAIN ALL THE FLAGS FOR THIS MODULE
+		//	AND SET THE REPORT STATUS MAP
+		//	NOTE AGAIN: datatiers map [DATATIER]->[value not bin!]+1 therefore
 		std::vector<flag::Flag> flags = (*it)->endJob(ib,ig);
 		for (uint32_t ifed=0; ifed<_vFEDs.size(); ifed++)
 		{
 			_reportSummaryMap->setBinContent(ifed+1, 
-				datatiers[flags[ifed]._name], (int)flags[ifed]._state);
+				datatiers[flags[ifed]._name]+1, (int)flags[ifed]._state);
+			std::cout << "FED=" << _vFEDs[ifed] << std::endl;
+			std::cout << flags[ifed]._name << "  " << flags[ifed]._state
+				<<std::endl;
 		}
 		ii++;
 	}

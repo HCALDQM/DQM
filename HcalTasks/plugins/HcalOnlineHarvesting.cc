@@ -3,9 +3,14 @@
 HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 	DQHarvester(ps), _reportSummaryMap(NULL)
 {
+
+	//	NOTE: I will leave Run Summary Generators in place 
+	//	just not triggering on endJob!
 	_vsumgen.resize(nSummary);
 	_vnames.resize(nSummary);
 	_vmarks.resize(nSummary);
+	for (uint32_t i=0; i<_vmarks.size(); i++)
+		_vmarks[i]=false;
 	_vsumgen[fRaw] = new RawRunSummary("RawRunSummary",
 		"RawTask", ps);
 	_vsumgen[fDigi] = new DigiRunSummary("DigiRunSummary", 
@@ -18,9 +23,6 @@ HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 	_vnames[fDigi] = "DigiTask";
 	_vnames[fReco] = "RecHitTask";
 	_vnames[fTP] = "TPTask";
-
-	for (uint32_t i=0; i<_vsumgen.size(); i++)
-		_vmarks.push_back(false);
 }
 
 /* virtual */ void HcalOnlineHarvesting::beginRun(
@@ -78,18 +80,6 @@ HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 				_vcSummaryvsLS[i].load(ig, _subsystem);
 		}
 	}
-/*	THIS DOES WORK
- *
- *	if (!_me)
-	{
-		ib.setCurrentFolder("Hcal/Folder1");
-		_me = ib.book1D("MonitorElement", "MonitorElement",
-			10, 0, 10);
-		for (int i=0; i<10; i++)
-			_me->Fill(i);
-		std::cout << "11111111111" << std::endl;
-	}
-*/	
 
 	int ifed=0;
 	for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
@@ -100,13 +90,8 @@ HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 		for (uint32_t im=0; im<_vmarks.size(); im++)
 			if (_vmarks[im])
 			{
-				std::cout << "FED="<< _vFEDs[ifed] << std::endl;
-				std::cout << _vnames[im] << std::endl;
-				std::cout << eid << std::endl;
 				int x = _vcSummaryvsLS[im].getBinContent(eid, _currentLS);
-				std::cout << "x=" << x << std::endl;
 				flag::Flag flag("Status", (flag::State)x);
-				std::cout << flag._name << "  " <<  flag._state << std::endl;
 				fSum+=flag;
 			}
 		_reportSummaryMap->setBinContent(_currentLS, ifed+1, int(fSum._state));
@@ -117,20 +102,26 @@ HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 /* virtual */ void HcalOnlineHarvesting::_dqmEndJob(DQMStore::IBooker& ib,
 	DQMStore::IGetter& ig)
 {
-	/*
-	 *	THIS CODE DOESN"T WORK!
-	 */
-	ib.setCurrentFolder("Hcal/Folder1");
-	_me = ib.book1D("MonitorElement", "MonitorElement",
-		10, 0, 10);
-	for (int i=0; i<10; i++)
-		_me->Fill(i);
 		
-	std::cout << "11111111111" << std::endl;
 	//	iterate over Run Summary Clients and generate Run Summary
-//	for (int ii=fRaw; ii<nSummary; ii++)
-//		if (_vmarks[ii])
-//			_vsumgen[ii]->endJob(ib, ig);
+	//	NOTE: As of 14/04/2016 there is no endJob transitioin for 
+	//	Online DQM FileSaver - therefore none of the histograms
+	//	will be booked in this step. as soon as that is fixed
+	//	this should be enabled!
+	//
+	/*for (int ii=fRaw; ii<nSummary; ii++)
+		if (_vmarks[ii])
+		{
+			std::vector<flag::Flag> flags = _vsumgen[ii]->endJob(ib, ig);
+			int ifed=0;
+			for (std::vector<flag::Flag>::const_iterator ft=flags.begin();
+				ft!=flags.end(); ft++)
+			{
+				std::cout << "FED="<< _vFEDs[ifed] << std::endl;
+				std::cout << ft->_name << "  " << ft->_state << std::endl; 
+				ifed++;
+			}
+		}*/
 }
 
 DEFINE_FWK_MODULE(HcalOnlineHarvesting);

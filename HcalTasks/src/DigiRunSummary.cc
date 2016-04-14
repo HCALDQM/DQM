@@ -23,12 +23,6 @@ namespace hcaldqm
 	/* virtual */ std::vector<flag::Flag> DigiRunSummary::endJob(
 		DQMStore::IBooker& ib, DQMStore::IGetter& ig)
 	{
-		ib.setCurrentFolder("Hcal/Folder1");
-		MonitorElement *me = ib.book1D("MonitorElement", "MonitorElement",
-			10, 0, 10);
-		for (int i=0; i<10; i++)
-			me->Fill(i);
-
 		//	FILTERS, some useful vectors, hash maps
 		std::vector<uint32_t> vhashFEDHF; std::vector<uint32_t> vhashVME;
 		std::vector<uint32_t> vhashuTCA;
@@ -170,6 +164,7 @@ namespace hcaldqm
 
 		//	iterate over all FEDs
 		std::vector<flag::Flag> sumflags;
+		int ifed=0;
 		for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 			it!=_vhashFEDs.end(); ++it)
 		{
@@ -181,8 +176,8 @@ namespace hcaldqm
 			if (cit==_vcdaqEids.end())
 			{
 				//	not registered @cDAQ
-				fSum._state = flag::fNCDAQ;
 				sumflags.push_back(flag::Flag("DIGI", flag::fNCDAQ));
+				ifed++;
 				continue;
 			}
 
@@ -220,6 +215,7 @@ namespace hcaldqm
 				ft->reset();
 			}
 			sumflags.push_back(fSum);
+			ifed++;
 		}
 
 		return sumflags;

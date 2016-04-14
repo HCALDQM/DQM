@@ -37,9 +37,25 @@ namespace hcaldqm
 		electronicsmap::ElectronicsMap ehashmap;
 		ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
 		bool tcdsshift = false;
+		filter::HashFilter filter_VME;
+		filter::HashFilter filter_uTCA;
+		std::vector<uint32_t> vhashVME,vhashuTCA;
+		vhashVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
+			constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
+		vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
+			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+		filter_uTCA.initialize(filter::fFilter, hashfunctions::fElectronics,
+			vhashuTCA);
+		filter_VME.initialize(filter::fFilter, hashfunctions::fElectronics,
+			vhashVME);
+		std::vector<flag::Flag> vflags; vflags.resize(nRecoFlag);
+		vflags[fDead]=flag::Flag("Dead");
+		vflags[fUniSlotHF]=flag::Flag("UniSlotHF");
+		vflags[fDigiSize]=flag::Flag("DigiSize");
 
 		//	INITIALIZE
 		Container2D cOccupancy_depth, cOccupancyCut_depth;
+		ContainerSingle2D cSummary;
 		Container1D cTimingCut_HBHEPartition;
 		ContainerXXX<double> xDead, xUniHF, xUni;
 		xDead.initialize(hashfunctions::fFED);
@@ -60,17 +76,38 @@ namespace hcaldqm
 			new quantity::ValueQuantity(quantity::fTiming_ns),
 			new quantity::ValueQuantity(quantity::fN));
 
+		_cDead_depth.initialize(_name, "Dead",
+			hashfunctions::fdepth,
+			new quantity::DetectorQuantity(quantity::fieta),
+			new quantity::DetectorQuantity(quantity::fiphi),
+			new quantity::ValueQuantity(quantity::fN));
+		_cDead_FEDVME.initialize(_name, "Dead",
+			hashfunctions::fFED,
+			new quantity::ElectronicsQuantity(quantity::fSpigot),
+			new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
+			new quantity::ValueQuantity(quantity::fN));
+		_cDead_FEDuTCA.initialize(_name, "Dead",
+			hashfunctions::fFED,
+			new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
+			new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
+			new quantity::ValueQuantity(quantity::fN));
+		cSummary.initialize(_name, "Summary",
+			new quantity::FEDQuantity(_vFEDs),
+			new quantity::FlagQuantity(vflags),
+			new quantity::ValueQuantity(quantity::fState));
+
 		//	BOOK
 		xDead.book(_emap); xUni.book(_emap);
 		xUniHF.book(_emap, filter_FEDHF);
-
-		std::cout << "Task Name: " << _taskname << " harvesto name: "
-			<< _name << std::endl;
 
 		//	LOAD
 		cOccupancy_depth.load(ig, _emap, _subsystem);
 		cOccupancyCut_depth.load(ig, _emap, _subsystem);
 		cTimingCut_HBHEPartition.book(ib, _emap, _subsystem);
+		_cDead_depth.book(ib, _emap, _subsystem);
+		_cDead_FEDVME.book(ib, _emap, filter_uTCA, _subsystem);
+		_cDead_FEDuTCA.book(ib, _emap, filter_VME, _subsystem);
+		cSummary.book(ib, _subsystem);
 
 		//	iterate over all channels
 		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
@@ -83,8 +120,14 @@ namespace hcaldqm
 			HcalDetId did(it->rawId());
 			HcalElectronicsId eid = HcalElectronicsId(ehashmap.lookup(did));
 
-			cOccupancy_depth.getBinContent(did)<1?
-				xDead.get(eid)++:xDead.get(eid)+=0;
+			if (cOccupancy_depth.getBinContent(did)<1)
+			{
+				xDead.get(eid)++;
+				_cDead_depth.fill(did);
+				eid.isVMEid()?_cDead_FEDVME.fill(eid):_cDead_FEDuTCA.fill(eid);
+			}
+			else
+				xDead.get(eid)+=0;
 			if (did.subdet()==HcalForward)
 				xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
 		}
@@ -128,9 +171,6 @@ namespace hcaldqm
 			it!=_vhashFEDs.end(); ++it)
 		{
 			flag::Flag fSum("RECO");
-			flag::Flag fDead("Dead");
-			flag::Flag fUni("HFUniSlot");
-			flag::Flag fTCDS("TCDS");
 			HcalElectronicsId eid(*it);
 
 			std::vector<uint32_t>::const_iterator cit=std::find(
@@ -138,8 +178,7 @@ namespace hcaldqm
 			if (cit==_vcdaqEids.end())
 			{
 				//	not registered @cDAQ
-				fSum._state = flag::fNCDAQ;
-				sumflags.push_back(fSum);
+				sumflags.push_back(flag::Flag("RECO", flag::fNCDAQ));
 				continue;
 			}
 
@@ -147,25 +186,32 @@ namespace hcaldqm
 			if (utilities::isFEDHBHE(eid))
 			{
 				if (tcdsshift)
-					fTCDS._state = flag::fBAD;
+					vflags[fTCDS]._state = flag::fBAD;
 				else
-					fTCDS._state = flag::fGOOD;
+					vflags[fTCDS]._state = flag::fGOOD;
 			}
 			if (utilities::isFEDHF(eid))
 			{
 				if (xUni.get(eid)>0)
-					fUni._state = flag::fBAD;
+					vflags[fUniSlotHF]._state = flag::fBAD;
 				else
-					fUni._state = flag::fGOOD;
+					vflags[fUniSlotHF]._state = flag::fGOOD;
 			}
 			if (xDead.get(eid)>0)
-				fDead._state = flag::fBAD;
+				vflags[fDead]._state = flag::fBAD;
 			else
-				fDead._state = flag::fGOOD;
+				vflags[fDead]._state = flag::fGOOD;
 
 			//	combine
-			fSum = fDead+fUni+fTCDS;
-			sumflags.push_back(fSum);
+			int iflag=0;
+			for (std::vector<flag::Flag>::iterator ft=vflags.begin();
+				ft!=vflags.end(); ++ft)
+			{
+				cSummary.setBinContent(eid, iflag, ft->_state);
+				fSum+=(*ft);
+				ft->reset();
+			}
+				sumflags.push_back(fSum);
 		}
 
 		return sumflags;

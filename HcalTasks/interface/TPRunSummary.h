@@ -21,6 +21,15 @@ namespace hcaldqm
 				DQMStore::IBooker&, DQMStore::IGetter&);
 
 		protected:
+			ContainerSingle2D _cEtMsmFraction_depthlike;
+			ContainerSingle2D _cFGMsmFraction_depthlike;
+
+			enum TPFlag
+			{
+				fEtMsm=0,
+				fFGMsm=1,
+				nTPFlag=2
+			};
 	};
 }
 

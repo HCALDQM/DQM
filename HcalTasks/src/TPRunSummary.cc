@@ -26,11 +26,15 @@ namespace hcaldqm
 		//	hahs maps
 		electronicsmap::ElectronicsMap ehashmap;
 		ehashmap.initialize(_emap, electronicsmap::fT2EHashMap);
+		std::vector<flag::Flag> vflags; vflags.resize(nTPFlag);
+		vflags[fEtMsm]=flag::Flag("EtMsm");
+		vflags[fFGMsm]=flag::Flag("FGMsm");
 
 		//	INITIALIZE
 		ContainerSingle2D cOccupancyData_depthlike, cOccupancyEmul_depthlike;
 		ContainerSingle2D cEtMsm_depthlike, cFGMsm_depthlike,
 			cEtCorrRatio_depthlike;
+		ContainerSingle2D cSummary;
 		ContainerXXX<double> xDeadD, xDeadE, xEtMsm, xFGMsm;
 		xDeadD.initialize(hashfunctions::fFED);
 		xDeadE.initialize(hashfunctions::fFED);
@@ -56,6 +60,18 @@ namespace hcaldqm
 			new quantity::TrigTowerQuantity(quantity::fTTieta),
 			new quantity::TrigTowerQuantity(quantity::fTTiphi),
 			new quantity::ValueQuantity(quantity::fRatio_0to2));
+		_cEtMsmFraction_depthlike.initialize(_taskname, "EtMsmFraction",
+			new quantity::TrigTowerQuantity(quantity::fTTieta),
+			new quantity::TrigTowerQuantity(quantity::fTTiphi),
+			new quantity::ValueQuantity(quantity::fRatio_0to2));
+		_cFGMsmFraction_depthlike.initialize(_taskname, "FGMsmFraction",
+			new quantity::TrigTowerQuantity(quantity::fTTieta),
+			new quantity::TrigTowerQuantity(quantity::fTTiphi),
+			new quantity::ValueQuantity(quantity::fRatio_0to2));
+		cSummary.initialize(_name, "Summary",
+			new quantity::FEDQuantity(_vFEDs),
+			new quantity::FlagQuantity(vflags),
+			new quantity::ValueQuantity(quantity::fState));
 
 		//	BOOK
 		xDeadD.book(_emap); xDeadE.book(_emap); xEtMsm.book(_emap); 
@@ -67,6 +83,9 @@ namespace hcaldqm
 		cEtMsm_depthlike.load(ig, _subsystem);
 		cFGMsm_depthlike.load(ig, _subsystem);
 		cEtCorrRatio_depthlike.load(ig, _subsystem);
+		_cEtMsmFraction_depthlike.book(ib, _subsystem);
+		_cFGMsmFraction_depthlike.book(ib, _subsystem);
+		cSummary.book(ib, _subsystem);
 
 		//	iterate
 		std::vector<HcalTrigTowerDetId> tids = _emap->allTriggerId();
@@ -78,16 +97,15 @@ namespace hcaldqm
 			if (tid.version()==0 && tid.ietaAbs()>=29)
 				continue;
 			HcalElectronicsId eid=HcalElectronicsId(ehashmap.lookup(*it));
-			cOccupancyData_depthlike.getBinContent(tid)<1?
-				xDeadD.get(eid)++:xDeadD.get(eid)+=0;
-			cOccupancyEmul_depthlike.getBinContent(tid)<1?
-				xDeadE.get(eid)++:xDeadE.get(eid)+=0;
 			double etmsmfr = double(cEtMsm_depthlike.getBinContent(tid))/
-				double(cEtCorrRatio_depthlike.getBinEntries(tid));
+				double(cEtCorrRatio_depthlike.getBinEntries(tid));	
 			etmsmfr>=0.1?xEtMsm.get(eid)++:xEtMsm.get(eid)+=0;
 			double fgmsmfr = double(cFGMsm_depthlike.getBinContent(tid))/
 				double(cEtCorrRatio_depthlike.getBinEntries(tid));
 			fgmsmfr>=0.1?xFGMsm.get(eid)++:xFGMsm.get(eid)+=0;
+
+			_cEtMsmFraction_depthlike.setBinContent(tid, etmsmfr);
+			_cFGMsmFraction_depthlike.setBinContent(tid, fgmsmfr);
 		}
 
 		std::vector<flag::Flag> sumflags;
@@ -95,10 +113,6 @@ namespace hcaldqm
 			it!=_vhashFEDs.end(); ++it)
 		{
 			flag::Flag fSum("TP");
-			flag::Flag fDeadD("DeadData");
-			flag::Flag fDeadE("DeadEmul");
-			flag::Flag fEtMsm("EtMsm");
-			flag::Flag fFGMsm("FGMsm");
 			HcalElectronicsId eid(*it);
 
 			std::vector<uint32_t>::const_iterator cit=std::find(
@@ -106,31 +120,32 @@ namespace hcaldqm
 			if (cit==_vcdaqEids.end())
 			{
 				//	not @cDAQ
-				fSum._state = flag::fNCDAQ;
-				sumflags.push_back(fSum);
+				sumflags.push_back(flag::Flag("TP", flag::fNCDAQ));
 				continue;
 			}
 
 			//	@cDAQ
-			if (xDeadD.get(eid)>0)
-				fDeadD._state = flag::fBAD;
-			else
-				fDeadD._state = flag::fGOOD;
-			if (xDeadE.get(eid)>0)
-				fDeadE._state = flag::fBAD;
-			else
-				fDeadE._state = flag::fGOOD;
-			if (xEtMsm.get(eid)>0)
-				fEtMsm._state = flag::fBAD;
-			else
-				fEtMsm._state = flag::fGOOD;
-			if (xFGMsm.get(eid)>0)
-				fFGMsm._state = flag::fBAD;
-			else
-				fFGMsm._state = flag::fGOOD;
+			if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid))
+			{
+				if (xEtMsm.get(eid)>0)
+					vflags[fEtMsm]._state = flag::fBAD;
+				else
+					vflags[fEtMsm]._state = flag::fGOOD;
+				if (xFGMsm.get(eid)>0)
+					vflags[fFGMsm]._state = flag::fBAD;
+				else
+					vflags[fFGMsm]._state = flag::fGOOD;
+			}
 
 			//	combine
-			fSum = fDeadD+fDeadE+fFGMsm+fEtMsm;
+			int iflag=0;
+			for (std::vector<flag::Flag>::iterator ft=vflags.begin();
+				ft!=vflags.end(); ++ft)
+			{
+				cSummary.setBinContent(eid, iflag, ft->_state);
+				fSum+=(*ft);
+				ft->reset();
+			}
 			sumflags.push_back(fSum);
 		}
 

@@ -941,7 +941,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 
 		if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid))
 		{
-			std::cout << eid << std::endl;
 			//	FED is @cDAQ
 			double etmsm = _xNumCorr.get(eid)>0?
 				double(_xEtMsm.get(eid))/double(_xNumCorr.get(eid)):0;
@@ -973,8 +972,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();
 			ft!=_vflags.end(); ++ft)
 		{
-			std::cout << eid << std::endl;
-			std::cout << ft->_name << "  " << ft->_state << std::endl;
 			_cSummaryvsLS_FED.setBinContent(eid, _currentLS, int(iflag),
 				ft->_state);
 			fSum+=(*ft);
