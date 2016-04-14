@@ -90,7 +90,6 @@ namespace hcaldqm
 				if (mask!=0)
 				{
 					_xQuality.push(did, mask);
-					std::cout << did << "  " << mask << std::endl;
 				}
 			}
 			

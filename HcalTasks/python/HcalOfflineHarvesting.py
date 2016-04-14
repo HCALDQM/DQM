@@ -7,7 +7,7 @@ hcalOfflineHarvesting = cms.EDAnalyzer(
 	debug = cms.untracked.int32(0),
 	runkeyVal = cms.untracked.int32(0),
 	runkeyName = cms.untracked.string('pp_run'),
-	ptype = cms.untracked.int32(0),
+	ptype = cms.untracked.int32(1),
 	mtype = cms.untracked.bool(True),
 	subsystem = cms.untracked.string("Hcal"),
 )

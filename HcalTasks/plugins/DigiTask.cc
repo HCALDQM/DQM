@@ -587,10 +587,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		HcalElectronicsId const& eid = it->elecId();
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
-		_xNChs.get(eid)++;
 		_cOccupancy_depth.fill(did);
 		if (_ptype==fOnline)
 		{
+			_xNChs.get(eid)++;
 			_cDigiSizevsLS_FED.fill(eid, _currentLS, it->size());
 			it->size()!=constants::DIGISIZE[did.subdet()-1]?
 				_xDigiSize.get(eid)++:_xDigiSize.get(eid)+=0;
