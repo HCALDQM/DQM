@@ -209,6 +209,7 @@ namespace hcaldqm
 			{
 				cSummary.setBinContent(eid, iflag, ft->_state);
 				fSum+=(*ft);
+				iflag++;
 				ft->reset();
 			}
 				sumflags.push_back(fSum);

@@ -11,18 +11,22 @@ HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 	_vmarks.resize(nSummary);
 	for (uint32_t i=0; i<_vmarks.size(); i++)
 		_vmarks[i]=false;
+	_vnames[fRaw]="RawTask";
+	_vnames[fDigi]="DigiTask";
+	_vnames[fReco]="RecHitTask";
+	_vnames[fTP]="TPTask";
+	_vnames[fPedestal]="PedestalTask";
+
 	_vsumgen[fRaw] = new RawRunSummary("RawRunSummary",
-		"RawTask", ps);
+		_vnames[fRaw], ps);
 	_vsumgen[fDigi] = new DigiRunSummary("DigiRunSummary", 
-		"DigiTask",ps);
+		_vnames[fDigi],ps);
 	_vsumgen[fReco] = new RecoRunSummary("RecoRunSummary",
-		"RecHitTask", ps);
+		_vnames[fReco], ps);
 	_vsumgen[fTP] = new TPRunSummary("TPRunSummary",
-		"TPTask", ps);
-	_vnames[fRaw] = "RawTask";
-	_vnames[fDigi] = "DigiTask";
-	_vnames[fReco] = "RecHitTask";
-	_vnames[fTP] = "TPTask";
+		_vnames[fTP], ps);
+	_vsumgen[fPedestal] = new PedestalRunSummary("PedestalRunSummary",
+		_vnames[fPedestal], ps);
 }
 
 /* virtual */ void HcalOnlineHarvesting::beginRun(
@@ -40,14 +44,16 @@ HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 	edm::EventSetup const&)
 {
 	//	DETERMINE WHICH MODULES ARE PRESENT IN DATA
-	if (ig.get(_subsystem+"/RawTask/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"+_vnames[fRaw]+"/EventsTotal")!=NULL)
 		_vmarks[fRaw]=true;
-	if (ig.get(_subsystem+"/DigiTask/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"+_vnames[fDigi]+"/EventsTotal")!=NULL)
 		_vmarks[fDigi]=true;
-	if (ig.get(_subsystem+"/TPTask/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"+vvnames[fTP]+"/EventsTotal")!=NULL)
 		_vmarks[fTP]=true;
-	if (ig.get(_subsystem+"/RecHitTask/EventsTotal")!=NULL)
+	if (ig.get(_subsystem+"/"_vnames[fReco]+"/EventsTotal")!=NULL)
 		_vmarks[fReco]=true;
+	if (ig.get(_subsystem+"/"+_vnames[fPedestal]"/EventsTotal")!=NULL)
+		_vmarks[fPedestal]=true;
 
 	//	CREATE SUMMARY REPORT MAP FED vs LS and LOAD MODULE'S SUMMARIES
 	//	NOTE: THIS STATEMENTS WILL BE EXECUTED ONLY ONCE!

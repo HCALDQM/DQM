@@ -60,7 +60,8 @@ class DigiTask : public DQTask
 		{
 			fDigiSize=0,
 			fUni = 1,
-			nDigiFlag = 2
+			fNChsHF = 2,
+			nDigiFlag = 3
 		};
 
 		//	hashes/FED vectors
@@ -68,8 +69,7 @@ class DigiTask : public DQTask
 
 		//	emap
 		HcalElectronicsMap const* _emap;
-		electronicsmap::ElectronicsMap _ehashmapuTCA;
-		electronicsmap::ElectronicsMap _ehashmapVME;
+		electronicsmap::ElectronicsMap _ehashmap; // online only
 
 		//	Filters
 		HashFilter _filter_VME;
@@ -137,6 +137,8 @@ class DigiTask : public DQTask
 		ContainerProf1D _cDigiSizevsLS_FED;	// online only
 		ContainerXXX<uint32_t> _xDigiSize; // online only
 		ContainerXXX<uint32_t> _xUniHF,_xUni; // online only
+		ContaienrXXX<uint32_t> _xNChs; // online only
+		ContaienrXXX<uint32_t> _xNChsNominal; // online only
 
 		std::vector<HcalGenericDetId> _gids; // online only
 		Container2D _cSummaryvsLS_FED; // online only

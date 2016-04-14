@@ -65,7 +65,8 @@ class HcalOnlineHarvesting : public DQHarvester
 			fDigi=1,
 			fReco=2,
 			fTP=3,
-			nSummary=4
+			fPedestal=4,
+			nSummary=5
 		};
 
 		//	flags to harvest...

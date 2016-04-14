@@ -21,6 +21,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_vflags.resize(nDigiFlag);
 	_vflags[fUni]=flag::Flag("UniSlotHF");
 	_vflags[fDigiSize]=flag::Flag("DigiSize");
+	_vflags[fNChsHF]=flag::Flag("NChsHF");
 }
 
 /* virtual */ void DigiTask::bookHistograms(DQMStore::IBooker& ib,
@@ -268,6 +269,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_xUniHF.initialize(hashfunctions::fFEDSlot);
 		_xUni.initialize(hashfunctions::fFED);
 		_xDigiSize.initialize(hashfunctions::fFED);
+		_xNChs.initialize(hashfunctions::fFED);
+		_xNChsNominal.initialize(hashfunctions::fFED);
 	}
 
 	//	BOOK HISTOGRAMS
@@ -328,40 +331,31 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
 		_cSummaryvsLS.book(ib, _subsystem);
 
-		_gids = _emap->allPrecisionId();
 		_xUniHF.book(_emap, _filter_FEDHF);
+		_xNChs.book(_emap);
+		_xNChsNominal.book(_emap);
 		_xUni.book(_emap);
 		_xDigiSize.book(_emap);
-	}
 
-	_ehashmapVME.initialize(_emap, electronicsmap::fE2DHashMap,
-		_filter_uTCA);
-	_ehashmapuTCA.initialize(_emap, electronicsmap::fE2DHashMap,
-		_filter_VME);
+		// just PER HF FED RECORD THE #CHANNELS
+		// ONLY WAY TO DO THAT AUTOMATICALLY AND W/O HARDCODING 1728
+		// or ANY OTHER VALUES LIKE 2592, 2192
+		_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
+		_gids = _emap->allPrecisionId();
+		for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
+		it!=gids.end(); ++it)
+		{
+			if (!it->isHcalDetId())
+				continue;
+			HcalDetId did(it->rawId());
+			HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
+			_NChsNominal.get(eid)++;	// he will know the nominal #channels per FED
+		}
+	}
 }
 
 /* virtual */ void DigiTask::_resetMonitors(UpdateFreq uf)
 {
-	/*
-	switch(uf)
-	{
-		case hcaldqm::f1LS:
-			_cDigiSize_FEDVME.reset();
-			_cDigiSize_FEDuTCA.reset();
-			_cOccupancy_FEDVME.reset();
-			_cOccupancy_FEDuTCA.reset();
-			break;
-		case hcaldqm::f10LS:
-			_cOccupancy_ElectronicsVME.reset();
-			_cOccupancy_ElectronicsuTCA.reset();
-			_cOccupancyCut_ElectronicsVME.reset();
-			_cOccupancyCut_ElectronicsuTCA.reset();
-			break;
-		default:
-			break;
-	}
-	*/
-
 	DQTask::_resetMonitors(uf);
 }
 
@@ -593,6 +587,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		HcalElectronicsId const& eid = it->elecId();
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
+		//	if this channel is not present yet per LS, inc, otherwise keep at0
+		_xNChs.get(eid)==0?_xNChs.get(eid)++:_xNChs.get(eid)+=0;
 		_cOccupancy_depth.fill(did);
 		if (_ptype==fOnline)
 		{
@@ -713,13 +709,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	if (_ptype!=fOnline)
 		return;
 
-	//
-	//	GENERATE STATUS ONLINE ONLY!
-	//
-//	for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
-//		it!=gids.end(); ++it)
-//	{}
-
 	for (uintCompactMap::const_iterator it=_xUniHF.begin();
 		it!=_xUniHF.end(); ++it)
 	{
@@ -772,6 +761,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 					_vflags[fUni]._state = flag::fBAD;
 				else
 					_vflags[fUni]._state = flag::fGOOD;
+				if (_xNChs.get(eid)!=_xNChsNominal.get(eid))
+					_vflags[fNChsHF]._state = flag::fBAD;
+				else
+					_vflags[fNChsHF]._state = flag::fGOOD;
 			}
 		}
 
@@ -791,6 +784,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	}
 
 	_xDigiSize.reset(); _xUniHF.reset(); _xUni.reset();
+	_xNChs.reset();
 
 	//	in the end always do the DQTask::endLumi
 	DQTask::endLuminosityBlock(lb, es);
