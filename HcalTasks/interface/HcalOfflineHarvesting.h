@@ -71,6 +71,7 @@ class HcalOfflineHarvesting : public DQHarvester
 		
 		//	reportSummaryMap
 		MonitorElement *_reportSummaryMap;
+		MonitorElement *me;
 };
 
 #endif

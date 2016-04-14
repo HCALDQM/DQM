@@ -145,14 +145,25 @@ namespace hcaldqm
 
 		bool isFEDHF(HcalElectronicsId const& eid)
 		{
+			/*
+			if (eid.isVMEid())
+			{
+				int fed = eid.dccid()+FED_VME_MIN;
+				if (fed>=718 && fed<=723)
+					return true;
+				else
+					return false;
+			}*/
+//			else
+//			{
 			if (eid.isVMEid())
 				return false;
-
 			int fed = crate2fed(eid.crateId());
-			if (fed>=1118 && fed<=1122)
-				return true;
-			else
-				return false;
+				if (fed>=1118 && fed<=1122)
+					return true;
+				else
+					return false;
+//			}
 
 			return false;
 		}

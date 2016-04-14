@@ -46,6 +46,13 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 			(*it)->endLuminosityBlock(ib,ig,lb,es);
 		ii++;
 	}
+
+	if (!me)
+	{
+		ib.setCurrentFolder("Hcal/Folder1");
+		me = ib.book1D("ME", "ME", 10, 0, 10);
+		me->setLumiFlag();
+	}
 }
 
 //

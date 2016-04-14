@@ -23,6 +23,8 @@ namespace hcaldqm
 	/* virtual */ std::vector<flag::Flag> RecoRunSummary::endJob(
 		DQMStore::IBooker& ib, DQMStore::IGetter& ig)
 	{
+
+		std::cout << "1111111111111" << std::endl;
 		// FILTERS, some useful vectors, hash maps
 		std::vector<uint32_t> vhashFEDHF;
 		vhashFEDHF.push_back(HcalElectronicsId(22, SLOT_uTCA_MIN,
@@ -51,7 +53,9 @@ namespace hcaldqm
 		std::vector<flag::Flag> vflags; vflags.resize(nRecoFlag);
 		vflags[fDead]=flag::Flag("Dead");
 		vflags[fUniSlotHF]=flag::Flag("UniSlotHF");
-		vflags[fDigiSize]=flag::Flag("DigiSize");
+		vflags[fTCDS]=flag::Flag("TCDS");
+
+		std::cout << "2222222222222222222" << std::endl;
 
 		//	INITIALIZE
 		Container2D cOccupancy_depth, cOccupancyCut_depth;
@@ -100,6 +104,8 @@ namespace hcaldqm
 		xDead.book(_emap); xUni.book(_emap);
 		xUniHF.book(_emap, filter_FEDHF);
 
+		std::cout << "33333333333333333" << std::endl;
+
 		//	LOAD
 		cOccupancy_depth.load(ig, _emap, _subsystem);
 		cOccupancyCut_depth.load(ig, _emap, _subsystem);
@@ -132,6 +138,8 @@ namespace hcaldqm
 				xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
 		}
 
+		std::cout << "444444444444444444444" << std::endl;
+
 		//	iphi/slot HF non uniformity
 		for (doubleCompactMap::const_iterator it=xUniHF.begin();
 			it!=xUniHF.end(); ++it)
@@ -152,6 +160,9 @@ namespace hcaldqm
 					xUni.get(eid1)++;
 			}
 		}
+
+		std::cout << "5555555555555555555" << std::endl;
+
 		//	TCDS shift
 		double a = cTimingCut_HBHEPartition.getMean(
 			HcalDetId(HcalBarrel,1,5,1));
@@ -167,9 +178,11 @@ namespace hcaldqm
 
 		//	summary flags
 		std::vector<flag::Flag> sumflags;
+		int ifed=0;
 		for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 			it!=_vhashFEDs.end(); ++it)
 		{
+			std::cout << _vFEDs[ifed] << std::endl;
 			flag::Flag fSum("RECO");
 			HcalElectronicsId eid(*it);
 
@@ -179,6 +192,7 @@ namespace hcaldqm
 			{
 				//	not registered @cDAQ
 				sumflags.push_back(flag::Flag("RECO", flag::fNCDAQ));
+				ifed++;
 				continue;
 			}
 
@@ -212,7 +226,8 @@ namespace hcaldqm
 				iflag++;
 				ft->reset();
 			}
-				sumflags.push_back(fSum);
+			sumflags.push_back(fSum);
+			ifed++;
 		}
 
 		return sumflags;
