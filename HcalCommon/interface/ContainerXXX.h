@@ -26,6 +26,7 @@ namespace hcaldqm
 			ContainerXXX() {}
 			ContainerXXX(hashfunctions::HashType ht) : _hashmap(ht)
 			{}
+			ContainerXXX(ContainerXXX const& x);
 			virtual ~ContainerXXX() {_cmap.clear();}
 
 			//	initialize, booking. booking is done from Electronicsmap.
@@ -70,6 +71,15 @@ namespace hcaldqm
 			virtual typename CompactMap::const_iterator end()
 			{return _cmap.end();}
 	};
+
+	template<typename STDTYPE>
+	void ContainerXXX<STDTYPE>::ContainerXXX(ContainerXXX const& x)
+	{
+		BOOST_FOREACH(typename CompactMap::value_type &p, _cmap)
+		{
+			_cmap.insert(std::make_pair(p.first, p.second));
+		}
+	}
 
 	template<typename STDTYPE>
 	void ContainerXXX<STDTYPE>::initialize(hashfunctions::HashType ht,
