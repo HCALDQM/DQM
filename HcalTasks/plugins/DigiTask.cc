@@ -356,7 +356,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	if (_ptype==fOffline)
 	{
 		_cDigiSize_FED.setLumiFlag();
-		_cOccupncy_depth.setLumiFlag();
+		_cOccupancy_depth.setLumiFlag();
 	}
 
 	ib.setCurrentFolder(_subsystem+"/RunInfo");

@@ -73,7 +73,7 @@ namespace hcaldqm
 	};
 
 	template<typename STDTYPE>
-	void ContainerXXX<STDTYPE>::ContainerXXX(ContainerXXX const& x)
+	ContainerXXX<STDTYPE>::ContainerXXX(ContainerXXX const& x)
 	{
 		BOOST_FOREACH(typename CompactMap::value_type &p, _cmap)
 		{

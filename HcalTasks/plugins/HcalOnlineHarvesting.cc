@@ -105,29 +105,11 @@ HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 	}
 }
 
+/*
+ *	NO END JOB PROCESSING FOR ONLINE!
+ */
 /* virtual */ void HcalOnlineHarvesting::_dqmEndJob(DQMStore::IBooker& ib,
 	DQMStore::IGetter& ig)
-{
-		
-	//	iterate over Run Summary Clients and generate Run Summary
-	//	NOTE: As of 14/04/2016 there is no endJob transitioin for 
-	//	Online DQM FileSaver - therefore none of the histograms
-	//	will be booked in this step. as soon as that is fixed
-	//	this should be enabled!
-	//
-	/*for (int ii=fRaw; ii<nSummary; ii++)
-		if (_vmarks[ii])
-		{
-			std::vector<flag::Flag> flags = _vsumgen[ii]->endJob(ib, ig);
-			int ifed=0;
-			for (std::vector<flag::Flag>::const_iterator ft=flags.begin();
-				ft!=flags.end(); ft++)
-			{
-				std::cout << "FED="<< _vFEDs[ifed] << std::endl;
-				std::cout << ft->_name << "  " << ft->_state << std::endl; 
-				ifed++;
-			}
-		}*/
-}
+{}
 
 DEFINE_FWK_MODULE(HcalOnlineHarvesting);

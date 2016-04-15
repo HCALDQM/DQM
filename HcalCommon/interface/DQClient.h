@@ -43,13 +43,12 @@ namespace hcaldqm
 				std::vector<std::vector<flag::Flag> > _vflags;
 				int _LS;
 			};
+			//	task name
+			std::string _taskname;
 
 			//	counters
 			int _totalLS;
 			int _maxProcessedLS;
-
-			//	task name
-			std::string _taskname;
 
 			//	emap
 			HcalElectronicsMap const* _emap;

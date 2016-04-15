@@ -371,6 +371,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cOccupancyvsLS_Subdet.book(ib, _emap, _subsystem);
 	_cNBadMeanvsLS_Subdet.book(ib, _emap, _subsystem);
 	_cNBadRMSvsLS_Subdet.book(ib, _emap, _subsystem);
+	_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
+	_cSummaryvsLS.book(ib, _subsystem);
 
 	//	book compact containers
 	_xPedSum1LS.book(_emap);

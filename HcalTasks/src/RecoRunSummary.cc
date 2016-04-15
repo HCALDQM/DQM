@@ -30,6 +30,9 @@ namespace hcaldqm
 		DQMStore::IBooker& ib, DQMStore::IGetter& ig)
 	{
 
+		if (_ptype!=fOffline)
+			return std::vector<flag::Flag>();
+
 		std::cout << "1111111111111" << std::endl;
 		// FILTERS, some useful vectors, hash maps
 		std::vector<uint32_t> vhashFEDHF;

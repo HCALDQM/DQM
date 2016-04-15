@@ -12,36 +12,39 @@ namespace hcaldqm
 	{
 		DQClient::beginRun(r,es);
 		
+		if (_ptype!=fOffline)
+			return;
+
 		//	INITIALIZE WHAT NEEDS TO BE INITIALIZE ONLY ONCE!
 		_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
-		vhashVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
+		_vhashVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
 			constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
-		vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
+		_vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
 			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
 		_filter_VME.initialize(filter::fFilter, hashfunctions::fElectronics,
-			vhashVME);	// filter out VME 
+			_vhashVME);	// filter out VME 
 		_filter_uTCA.initialize(filter::fFilter, hashfunctions::fElectronics,
-			vhashuTCA); // filter out uTCA
+			_vhashuTCA); // filter out uTCA
 
 		//	INTIALIZE CONTAINERS ACTING AS HOLDERS OF RUN INFORAMTION
 		_cEvnMsm_ElectronicsVME.initialize(_name, "EvnMsm",
 			hashfunctions::fElectronics,
-			new quantity::FEDQuantity(vFEDsVME),
+			new quantity::FEDQuantity(_vFEDsVME),
 			new quantity::ElectronicsQuantity(quantity::fSpigot),
 			new quantity::ValueQuantity(quantity::fN));
 		_cBcnMsm_ElectronicsVME.initialize(_name, "BcnMsm",
 			hashfunctions::fElectronics,
-			new quantity::FEDQuantity(vFEDsVME),
+			new quantity::FEDQuantity(_vFEDsVME),
 			new quantity::ElectronicsQuantity(quantity::fSpigot),
 			new quantity::ValueQuantity(quantity::fN));
 		_cEvnMsm_ElectronicsuTCA.initialize(_name, "EvnMsm",
 			hashfunctions::fElectronics,
-			new quantity::FEDQuantity(vFEDsuTCA),
+			new quantity::FEDQuantity(_vFEDsuTCA),
 			new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 			new quantity::ValueQuantity(quantity::fN));
 		_cBcnMsm_ElectronicsuTCA.initialize(_name, "BcnMsm",
 			hashfunctions::fElectronics,
-			new quantity::FEDQuantity(vFEDsuTCA),
+			new quantity::FEDQuantity(_vFEDsuTCA),
 			new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 			new quantity::ValueQuantity(quantity::fN));
 		_cBadQuality_depth.initialize(_name, "BadQuality",
@@ -71,6 +74,9 @@ namespace hcaldqm
 	{
 		DQClient::endLuminosityBlock(ib, ig, lb, es);
 		
+		if (_ptype!=fOffline)
+			return;
+
 		//	INITIALIZE WHAT YOU NEED
 		LSSummary lssum; // summary for this LS
 		lssum._LS = _currentLS; // set the LS
@@ -81,24 +87,25 @@ namespace hcaldqm
 		//	INITIALIZE LUMI BASED HISTOGRAMS
 		Container2D cEvnMsm_ElectronicsVME,cEvnMsm_ElectronicsuTCA;
 		Container2D cBcnMsm_ElectronicsVME,cBcnMsm_ElectronicsuTCA;
+		Container2D cBadQuality_depth;
 		cEvnMsm_ElectronicsVME.initialize(_taskname, "EvnMsm",
 			hashfunctions::fElectronics,
-			new quantity::FEDQuantity(vFEDsVME),
+			new quantity::FEDQuantity(_vFEDsVME),
 			new quantity::ElectronicsQuantity(quantity::fSpigot),
 			new quantity::ValueQuantity(quantity::fN));
 		cBcnMsm_ElectronicsVME.initialize(_taskname, "BcnMsm",
 			hashfunctions::fElectronics,
-			new quantity::FEDQuantity(vFEDsVME),
+			new quantity::FEDQuantity(_vFEDsVME),
 			new quantity::ElectronicsQuantity(quantity::fSpigot),
 			new quantity::ValueQuantity(quantity::fN));
 		cEvnMsm_ElectronicsuTCA.initialize(_taskname, "EvnMsm",
 			hashfunctions::fElectronics,
-			new quantity::FEDQuantity(vFEDsuTCA),
+			new quantity::FEDQuantity(_vFEDsuTCA),
 			new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 			new quantity::ValueQuantity(quantity::fN));
 		cBcnMsm_ElectronicsuTCA.initialize(_taskname, "BcnMsm",
 			hashfunctions::fElectronics,
-			new quantity::FEDQuantity(vFEDsuTCA),
+			new quantity::FEDQuantity(_vFEDsuTCA),
 			new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 			new quantity::ValueQuantity(quantity::fN));
 		cBadQuality_depth.initialize(_taskname, "BadQuality",
@@ -136,7 +143,7 @@ namespace hcaldqm
 			HcalDetId did = HcalDetId(it->rawId());
 			HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 
-			xBadQ.get(eid)+=cBadQuality_depth.getBinContent(did);
+			_xBadQ.get(eid)+=cBadQuality_depth.getBinContent(did);
 			_cBadQuality_depth.fill(did, cBadQuality_depth.getBinContent(did));
 			if (eid.isVMEid())
 			{
@@ -158,14 +165,15 @@ namespace hcaldqm
 				_cBcnMsm_ElectronicsuTCA.fill(eid, 
 					cBcnMsm_ElectronicsuTCA.getBinContent(eid));
 			}
+		}
 		
 
 		//	GENERATE THE SUMMARY FOR THIS LS AND STORE IT
 		std::vector<flag::Flag> vtmpflags; // tmp summary flags vector
 		vtmpflags.resize(nRawFlag);
-		vtmpflags[nEvnMsm]=flag::Flag("EvnMsm");
-		vtmpflags[nBcnMsm]=flag::Flag("BcnMsm");
-		vtmpflags[nBadQ]=flag::Flag("BadQ");
+		vtmpflags[fEvnMsm]=flag::Flag("EvnMsm");
+		vtmpflags[fBcnMsm]=flag::Flag("BcnMsm");
+		vtmpflags[fBadQ]=flag::Flag("BadQ");
 		for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 			it!=_vhashFEDs.end(); ++it)
 		{
@@ -223,6 +231,9 @@ namespace hcaldqm
 	/* virtual */ std::vector<flag::Flag> RawRunSummary::endJob(
 		DQMStore::IBooker& ib, DQMStore::IGetter& ig)
 	{
+		if (_ptype!=fOffline)
+			return std::vector<flag::Flag>();
+
 		//	PREPARE LS BASED FLAGS to use it for booking
 		std::vector<flag::Flag> vflagsLS;
 		vflagsLS.resize(nRawFlag);
@@ -236,7 +247,7 @@ namespace hcaldqm
 		cSummaryvsLS.initialize(_name, "SummaryvsLS",
 			new quantity::LumiSection(_maxProcessedLS),
 			new quantity::FEDQuantity(_vFEDs),
-			new quantity::ValueQuantity(flag::fState));
+			new quantity::ValueQuantity(quantity::fState));
 		cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
 			hashfunctions::fFED,
 			new quantity::LumiSection(_maxProcessedLS),
@@ -252,7 +263,7 @@ namespace hcaldqm
 		 *				set...
 		 */
 		std::vector<flag::Flag> sumflags; // flag per FED
-		ifed=0;
+		int ifed=0;
 		for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 			it!=_vhashFEDs.end(); ++it)
 		{
@@ -277,7 +288,7 @@ namespace hcaldqm
 					iflag++;
 				}
 				//	FED vs LS
-				cSummaryvsLS.setBinContent(eid, itls->_LS, fSumLS->_state);
+				cSummaryvsLS.setBinContent(eid, itls->_LS, fSumLS._state);
 				fSumRun+=fSumLS;
 			}
 			

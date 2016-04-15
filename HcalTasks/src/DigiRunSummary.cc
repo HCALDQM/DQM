@@ -12,32 +12,35 @@ namespace hcaldqm
 	{
 		DQClient::beginRun(r,es);
 
+		if (_ptype!=fOffline)
+			return;
+
 		//  INITIALIZE WHAT NEEDS TO BE INITIALIZE ONLY ONCE!
 		_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
-		vhashVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
+		_vhashVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
 			 constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
-		vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
+		_vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
 			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
 		_filter_VME.initialize(filter::fFilter, hashfunctions::fElectronics,
-			vhashVME);  // filter out VME 
+			_vhashVME);  // filter out VME 
 		_filter_uTCA.initialize(filter::fFilter, hashfunctions::fElectronics,
-			 vhashuTCA); // filter out uTCA
-		vhashFEDHF.push_back(HcalElectronicsId(22, SLOT_uTCA_MIN,
+			 _vhashuTCA); // filter out uTCA
+		_vhashFEDHF.push_back(HcalElectronicsId(22, SLOT_uTCA_MIN,
 			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
-		vhashFEDHF.push_back(HcalElectronicsId(29, SLOT_uTCA_MIN,
+		_vhashFEDHF.push_back(HcalElectronicsId(29, SLOT_uTCA_MIN,
 			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
-		vhashFEDHF.push_back(HcalElectronicsId(32, SLOT_uTCA_MIN,
+		_vhashFEDHF.push_back(HcalElectronicsId(32, SLOT_uTCA_MIN,
 			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
 		_filter_FEDHF.initialize(filter::fPreserver, hashfunctions::fFED,
-			vhashFEDHF);    // preserve only HF FEDs
+			_vhashFEDHF);    // preserve only HF FEDs
 		
 		_xDead.initialize(hashfunctions::fFED);
 		_xDigiSize.initialize(hashfunctions::fFED);
 		_xUni.initialize(hashfunctions::fFED);
 		_xUniHF.initialize(hashfunctions::fFEDSlot);
 
-		_xDead.book(_emap); xDigiSize.book(_emap); xUniHF.book(_emap);
-		_xUni.book(_emap, filter_FEDHF);
+		_xDead.book(_emap); _xDigiSize.book(_emap); _xUniHF.book(_emap);
+		_xUni.book(_emap, _filter_FEDHF);
 		_xNChs.initialize(hashfunctions::fFED);
 		_xNChsNominal.initialize(hashfunctions::fFED);
 		_xNChs.book(_emap); _xNChsNominal.book(_emap);
@@ -64,12 +67,16 @@ namespace hcaldqm
 	{
 		DQClient::endLuminosityBlock(ib, ig, lb, es);
 
+		if (_ptype!=fOffline)
+			return;
+
 		LSSummary lssum;
 		lssum._LS=_currentLS;
 
 		_xDigiSize.reset(); _xNChs.reset();
 		
 		//	INITIALIZE LUMI BASED HISTOGRAMS
+		Container2D cDigiSize_FED, cOccupancy_depth;
 		cDigiSize_FED.initialize(_taskname, "DigiSize",
 			hashfunctions::fFED,
 			new quantity::ValueQuantity(quantity::fDigiSize),
@@ -85,7 +92,7 @@ namespace hcaldqm
 		cDigiSize_FED.load(ig, _emap, _subsystem);
 		MonitorElement *meNumEvents = ig.get(_subsystem+
 			"/RunInfo/NumberOfEvents");
-		int numEvents = me->getBinContent(1);
+		int numEvents = meNumEvents->getBinContent(1);
 
 		//	book the Numer of Events - set axis extendable
 		if (!_booked)
@@ -108,7 +115,7 @@ namespace hcaldqm
 				continue;
 
 			HcalDetId did = HcalDetId(it->rawId());
-			HcalElectronicsId eid = HcalElectronicsId(ehashmap.lookup(did));
+			HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 
 			cOccupancy_depth.getBinContent(did)>0?_xNChs.get(eid)++:
 				_xNChs.get(eid)+=0;
@@ -122,7 +129,7 @@ namespace hcaldqm
 		}
 
 		//	GENERATE SUMMARY AND STORE IT
-		std::vector<flag::> vtmpflags; 
+		std::vector<flag::Flag> vtmpflags; 
 		vtmpflags.resize(nLSFlags);
 		vtmpflags[fDigiSize]=flag::Flag("DigiSize");
 		vtmpflags[fNChsHF]=flag::Flag("NChsHF");
@@ -151,10 +158,10 @@ namespace hcaldqm
 			if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid) ||
 				utilities::isFEDHO(eid))
 			{
-				if (_xDigiSize(eid)>0)
-					_vtmpflags[fDigiSize]._state = flag::fBAD;
+				if (_xDigiSize.get(eid)>0)
+					vtmpflags[fDigiSize]._state = flag::fBAD;
 				else
-					_vtmpflags[fDigiSize]._state = flag::fGOOD;
+					vtmpflags[fDigiSize]._state = flag::fGOOD;
 				if (utilities::isFEDHF(eid))
 				{
 					if (_xNChs.get(eid)!=_xNChsNominal.get(eid))
@@ -178,6 +185,9 @@ namespace hcaldqm
 	/* virtual */ std::vector<flag::Flag> DigiRunSummary::endJob(
 		DQMStore::IBooker& ib, DQMStore::IGetter& ig)
 	{
+		if (_ptype!=fOffline)
+			return std::vector<flag::Flag>();
+
 		_xDead.reset(); _xUniHF.reset(); _xUni.reset();
 
 		//	PREPARE LS AND RUN BASED FLAGS TO USE IT FOR BOOKING
@@ -198,7 +208,7 @@ namespace hcaldqm
 		cSummaryvsLS.initialize(_name, "SummaryvsLS",
 			new quantity::LumiSection(_maxProcessedLS),
 			new quantity::FEDQuantity(_vFEDs),
-			new quantity::ValueQuantity(flag::fState));
+			new quantity::ValueQuantity(quantity::fState));
 		cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
 			hashfunctions::fFED,
 			new quantity::LumiSection(_maxProcessedLS),
@@ -216,17 +226,17 @@ namespace hcaldqm
 			new quantity::DetectorQuantity(quantity::fiphi),
 			new quantity::ValueQuantity(quantity::fN));
 
-		_cDead_depth.initialize(_name, "Dead",
+		cDead_depth.initialize(_name, "Dead",
 			hashfunctions::fdepth,
 			new quantity::DetectorQuantity(quantity::fieta),
 			new quantity::DetectorQuantity(quantity::fiphi),
 			new quantity::ValueQuantity(quantity::fN));
-		_cDead_FEDVME.initialize(_name, "Dead",
+		cDead_FEDVME.initialize(_name, "Dead",
 			hashfunctions::fFED,
 			new quantity::ElectronicsQuantity(quantity::fSpigot),
 			new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
 			new quantity::ValueQuantity(quantity::fN));
-		_cDead_FEDuTCA.initialize(_name, "Dead",
+		cDead_FEDuTCA.initialize(_name, "Dead",
 			hashfunctions::fFED,
 			new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 			new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
@@ -244,7 +254,7 @@ namespace hcaldqm
 				continue;
 
 			HcalDetId did = HcalDetId(it->rawId());
-			HcalElectronicsId eid = HcalElectronicsId(ehashmap.lookup(did));
+			HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 
 			if (_cOccupancy_depth.getBinContent(did)<1)
 			{
@@ -253,17 +263,17 @@ namespace hcaldqm
 				eid.isVMEid()?cDead_FEDVME.fill(eid):cDead_FEDuTCA.fill(eid);
 			}
 			if (did.subdet()==HcalForward)
-				xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
+				_xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
 		}
 		//	ANALYZE FOR HF SLOT UNIFORMITY
-		for (doubleCompactMap::const_iterator it=xUniHF.begin();
-			it!=xUniHF.end(); ++it)
+		for (uintCompactMap::const_iterator it=_xUniHF.begin();
+			it!=_xUniHF.end(); ++it)
 		{
 			uint32_t hash1 = it->first;
 			HcalElectronicsId eid1(hash1);
 			double x1 = it->second;
 
-			for (doubleCompactMap::const_iterator jt=_xUniHF.begin();
+			for (uintCompactMap::const_iterator jt=_xUniHF.begin();
 				jt!=_xUniHF.end(); ++jt)
 			{
 				if (jt==it)
@@ -289,7 +299,7 @@ namespace hcaldqm
 		for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 			it!=_vhashFEDs.end(); ++it)
 		{
-			flag::Flag fSum("DIGI"); // summary flag for this FED
+			flag::Flag fSumRun("DIGI"); // summary flag for this FED
 			flag::Flag ffDead("Dead");
 			flag::Flag ffUniSlotHF("UniSlotHF");
 			HcalElectronicsId eid(*it);
@@ -298,7 +308,7 @@ namespace hcaldqm
 			for (std::vector<LSSummary>::const_iterator itls=_vflagsLS.begin();
 				itls!=_vflagsLS.end(); ++itls)
 			{
-				iflag=0;
+				int iflag=0;
 				flag::Flag fSumLS("DIGI");
 				for (std::vector<flag::Flag>::const_iterator ft=
 					itls->_vflags[ifed].begin(); ft!=itls->_vflags[ifed].end();
@@ -309,7 +319,7 @@ namespace hcaldqm
 					fSumLS+=(*ft);
 					iflag++;
 				}
-				cSummaryvsLS.setBinContent(eid, itls->_LS, fSumLS->_state);
+				cSummaryvsLS.setBinContent(eid, itls->_LS, fSumLS._state);
 				fSumRun+=fSumLS;
 			}
 
@@ -318,13 +328,13 @@ namespace hcaldqm
 			if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid) ||
 				utilities::isFEDHO(eid))
 			{
-				if (xDead.get(eid)>0)
+				if (_xDead.get(eid)>0)
 					ffDead._state = flag::fBAD;
 				else
 					ffDead._state = flag::fGOOD;
 				if (utilities::isFEDHF(eid))
 				{
-					if (xUni.get(eid)>0)
+					if (_xUni.get(eid)>0)
 						ffUniSlotHF._state = flag::fBAD;
 					else
 						ffUniSlotHF._state = flag::fGOOD;
