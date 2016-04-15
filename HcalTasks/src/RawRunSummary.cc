@@ -273,14 +273,11 @@ namespace hcaldqm
 		{
 			flag::Flag fSumRun("RAW"); // summary flag for this FED
 			HcalElectronicsId eid(*it);
-			std::cout <<"FED="<< _vFEDs[ifed] << std::endl;
 
 			//	ITERATE OVER EACH LS
 			for (std::vector<LSSummary>::const_iterator itls=_vflagsLS.begin();
 				itls!=_vflagsLS.end(); ++itls)
 			{
-				std::cout <<"LS="<< itls->_LS << std::endl;
-
 				//	fill histograms per LS
 				int iflag=0;
 				flag::Flag fSumLS("RAW");
@@ -289,7 +286,6 @@ namespace hcaldqm
 					++ft)
 				{
 					//	Flag vs LS per FEd
-					std::cout << ft->_name << "  " << ft->_state << std::endl;
 					cSummaryvsLS_FED.setBinContent(eid, itls->_LS, int(iflag),
 						ft->_state);
 					fSumLS+=(*ft);

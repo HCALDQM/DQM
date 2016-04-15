@@ -126,17 +126,24 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 		//	OBTAIN ALL THE FLAGS FOR THIS MODULE
 		//	AND SET THE REPORT STATUS MAP
 		//	NOTE AGAIN: datatiers map [DATATIER]->[value not bin!]+1 therefore
-		std::cout << _vnames[ii] << std::endl;
+		if (_debug>0)
+			std::cout << _vnames[ii] << std::endl;
 		std::vector<flag::Flag> flags = (*it)->endJob(ib,ig);
-		std::cout << "********************" << std::endl;
-		std::cout << "SUMMARY" << std::endl;
+		if (_debug>0)
+		{
+			std::cout << "********************" << std::endl;
+			std::cout << "SUMMARY" << std::endl;
+		}
 		for (uint32_t ifed=0; ifed<_vFEDs.size(); ifed++)
 		{
 			_reportSummaryMap->setBinContent(ifed+1, 
 				datatiers[flags[ifed]._name]+1, (int)flags[ifed]._state);
-			std::cout << "FED=" << _vFEDs[ifed] << std::endl;
-			std::cout << flags[ifed]._name << "  " << flags[ifed]._state
+			if (_debug>0)
+			{
+				std::cout << "FED=" << _vFEDs[ifed] << std::endl;
+				std::cout << flags[ifed]._name << "  " << flags[ifed]._state
 				<<std::endl;
+			}
 		}
 		ii++;
 	}

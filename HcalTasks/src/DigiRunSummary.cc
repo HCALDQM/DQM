@@ -312,20 +312,17 @@ namespace hcaldqm
 			flag::Flag ffDead("Dead");
 			flag::Flag ffUniSlotHF("UniSlotHF");
 			HcalElectronicsId eid(*it);
-			std::cout <<"FED="<< _vFEDs[ifed] << std::endl;
 
 			//	ITERATE OVER EACH LS
 			for (std::vector<LSSummary>::const_iterator itls=_vflagsLS.begin();
 				itls!=_vflagsLS.end(); ++itls)
 			{
-				std::cout <<"LS="<< itls->_LS << std::endl;
 				int iflag=0;
 				flag::Flag fSumLS("DIGI");
 				for (std::vector<flag::Flag>::const_iterator ft=
 					itls->_vflags[ifed].begin(); ft!=itls->_vflags[ifed].end();
 					++ft)
 				{
-					std::cout << ft->_name << "  " << ft->_state << std::endl;
 					cSummaryvsLS_FED.setBinContent(eid, itls->_LS, int(iflag),
 						ft->_state);
 					fSumLS+=(*ft);
@@ -352,8 +349,6 @@ namespace hcaldqm
 						ffUniSlotHF._state = flag::fGOOD;
 				}
 			}
-			std::cout << "DIGI RUN FLAGS: " << ffDead._state << "  "
-				<< ffUniSlotHF._state << std::endl;
 			fSumRun+=ffDead+ffUniSlotHF;
 
 			// push the summary flag for this FED for the Whole Run
