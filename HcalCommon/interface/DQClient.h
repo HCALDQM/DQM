@@ -37,8 +37,16 @@ namespace hcaldqm
 				DQMStore::IGetter&);
 
 		protected:
+			struct LSSummary
+			{
+				//	vector of flags per each FED
+				std::vector<std::vector<flag::Flag> > _vflags;
+				int _LS;
+			};
+
 			//	counters
 			int _totalLS;
+			int _maxProcessedLS;
 
 			//	task name
 			std::string _taskname;

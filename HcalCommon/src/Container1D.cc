@@ -1355,6 +1355,14 @@ namespace hcaldqm
 			}
 		}
 	}
+
+	/* virtual */ void Container1D::setLumiFlag()
+	{
+		BOOST_FOREACH(MEMap::value_type &pair, _mes)
+		{
+			pair.second->setLumiFlag();
+		}
+	}
 }
 
 

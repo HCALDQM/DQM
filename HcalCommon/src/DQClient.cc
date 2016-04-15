@@ -4,7 +4,7 @@ namespace hcaldqm
 {
 	DQClient::DQClient(std::string const& name, std::string const& taskname,
 		edm::ParameterSet const& ps) :
-		DQModule(ps),_taskname(taskname)
+		DQModule(ps),_taskname(taskname), _maxProcessedLS(0)
 	{
 		//	- SET THE TASK NAME YOU REFER TO
 		//	- SET THE CLIENT'S NAME AS WELL - RUN SUMMARY PLOTS
@@ -84,6 +84,8 @@ namespace hcaldqm
 	{
 		_currentLS=lb.luminosityBlock();
 		_totalLS++;
+		if (_maxProcessedLS<_currentLS)
+			_maxProcessedLS=_currentLS;
 	}
 
 	/* virtual */ std::vector<flag::Flag> DQClient::endJob(DQMStore::IBooker&,

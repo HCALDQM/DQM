@@ -309,7 +309,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cOccupancyCut_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cOccupancyCut_depth.book(ib, _emap, _subsystem);
 
-
 	_cDigiSize_FED.book(ib, _emap, _subsystem);
 
 	//	BOOK HISTOGRAMS that are only for Online
@@ -343,7 +342,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
 		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
 		for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
-		it!=gids.end(); ++it)
+			it!=gids.end(); ++it)
 		{
 			if (!it->isHcalDetId())
 				continue;
@@ -352,6 +351,18 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			_xNChsNominal.get(eid)++;	// he will know the nominal #channels per FED
 		}
 	}
+
+	//	MARK THESE HISTOGRAMS AS LUMI BASED FOR OFFLINE PROCESSING
+	if (_ptype==fOffline)
+	{
+		_cDigiSize_FED.setLumiFlag();
+		_cOccupncy_depth.setLumiFlag();
+	}
+
+	ib.setCurrentFolder(_subsystem+"/RunInfo");
+	meNumEvents1LS = ib.book1D("NumberOfEvents", "NumberOfEvents",
+		1, 0, 1);
+	meNumEvents1LS->setLumiFlag();
 }
 
 /* virtual */ void DigiTask::_resetMonitors(UpdateFreq uf)
@@ -378,6 +389,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 	//	extract some info per event
 	int bx = e.bunchCrossing();
+	meNumEvents1LS->Fill(0.5); // just increment
 
 	//	HB collection
 	int numChs = 0;

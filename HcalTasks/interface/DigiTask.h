@@ -140,6 +140,9 @@ class DigiTask : public DQTask
 		ContainerXXX<uint32_t> _xNChs; // online only
 		ContainerXXX<uint32_t> _xNChsNominal; // online only
 
+		//	#events counters
+		MonitorElement *meNumEvents1LS; // to transfer the #events to harvesting
+
 		Container2D _cSummaryvsLS_FED; // online only
 		ContainerSingle2D _cSummaryvsLS; // online only
 };

@@ -21,17 +21,31 @@ namespace hcaldqm
 				DQMStore::IBooker&, DQMStore::IGetter&);
 
 		protected:
-			Container2D _cDead_depth;
-			Container2D _cDead_FEDVME;
-			Container2D _cDead_FEDuTCA;
+			std::vector<LSSummary> _vflagsLS;
+
+			electronicsmap::ElectronicsMap _ehashmap;
+
+			std::vector<uint32_t> _vhashVME, _vhashuTCA, _vhashFEDHF;
+			std::vector<int> _vFEDsVME, _vFEDsuTCA;
+			filter::HashFilter _filter_VME, _filter_uTCA, _filter_FEDHF;
+
+			Container2D _cOccupancy_depth;
+			bool _booked;
+			MonitorElement *_meNumEvents; // number of events vs LS
+
+			ContainerXXX<uint32_t> _xDead, _xDigiSize, _xUniHF,
+				_xUni, _xNChs, _xNChsNominal;
 
 			//	flag enum
-			enum DigiFlag
+			enum DigiLSFlag
 			{
-				fDead = 0,
-				fUniSlotHF = 1,
-				fDigiSize = 2,
-				nDigiFlag = 3
+				fDigiSize = 0,
+				fNChsHF=1,
+				nLSFlags=2, // defines the boundayr between lumi based and run
+				//	 based flags
+				fUniHF=3,
+				fDead=4,
+				nDigiFlag = 5
 			};
 	};
 }

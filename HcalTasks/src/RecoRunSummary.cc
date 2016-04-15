@@ -13,6 +13,9 @@ namespace hcaldqm
 		DQClient::beginRun(r,es);
 	}
 
+	/*
+	 *
+	 */
 	/* virtual */ void RecoRunSummary::endLuminosityBlock(DQMStore::IBooker& ib,
 		DQMStore::IGetter& ig, edm::LuminosityBlock const& lb,
 		edm::EventSetup const& es)
@@ -20,6 +23,9 @@ namespace hcaldqm
 		DQClient::endLuminosityBlock(ib, ig, lb, es);
 	}
 
+	/*
+	 *
+	 */
 	/* virtual */ std::vector<flag::Flag> RecoRunSummary::endJob(
 		DQMStore::IBooker& ib, DQMStore::IGetter& ig)
 	{
@@ -51,7 +57,6 @@ namespace hcaldqm
 		filter_VME.initialize(filter::fFilter, hashfunctions::fElectronics,
 			vhashVME);
 		std::vector<flag::Flag> vflags; vflags.resize(nRecoFlag);
-		vflags[fDead]=flag::Flag("Dead");
 		vflags[fUniSlotHF]=flag::Flag("UniSlotHF");
 		vflags[fTCDS]=flag::Flag("TCDS");
 
@@ -61,8 +66,7 @@ namespace hcaldqm
 		Container2D cOccupancy_depth, cOccupancyCut_depth;
 		ContainerSingle2D cSummary;
 		Container1D cTimingCut_HBHEPartition;
-		ContainerXXX<double> xDead, xUniHF, xUni;
-		xDead.initialize(hashfunctions::fFED);
+		ContainerXXX<double> xUniHF, xUni;
 		xUni.initialize(hashfunctions::fFED);
 		xUniHF.initialize(hashfunctions::fFEDSlot);
 		cOccupancy_depth.initialize(_taskname, "Occupancy",
@@ -80,28 +84,12 @@ namespace hcaldqm
 			new quantity::ValueQuantity(quantity::fTiming_ns),
 			new quantity::ValueQuantity(quantity::fN));
 
-		_cDead_depth.initialize(_name, "Dead",
-			hashfunctions::fdepth,
-			new quantity::DetectorQuantity(quantity::fieta),
-			new quantity::DetectorQuantity(quantity::fiphi),
-			new quantity::ValueQuantity(quantity::fN));
-		_cDead_FEDVME.initialize(_name, "Dead",
-			hashfunctions::fFED,
-			new quantity::ElectronicsQuantity(quantity::fSpigot),
-			new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
-			new quantity::ValueQuantity(quantity::fN));
-		_cDead_FEDuTCA.initialize(_name, "Dead",
-			hashfunctions::fFED,
-			new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
-			new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
-			new quantity::ValueQuantity(quantity::fN));
 		cSummary.initialize(_name, "Summary",
 			new quantity::FEDQuantity(_vFEDs),
 			new quantity::FlagQuantity(vflags),
 			new quantity::ValueQuantity(quantity::fState));
 
 		//	BOOK
-		xDead.book(_emap); xUni.book(_emap);
 		xUniHF.book(_emap, filter_FEDHF);
 
 		std::cout << "33333333333333333" << std::endl;
@@ -110,9 +98,6 @@ namespace hcaldqm
 		cOccupancy_depth.load(ig, _emap, _subsystem);
 		cOccupancyCut_depth.load(ig, _emap, _subsystem);
 		cTimingCut_HBHEPartition.book(ib, _emap, _subsystem);
-		_cDead_depth.book(ib, _emap, _subsystem);
-		_cDead_FEDVME.book(ib, _emap, filter_uTCA, _subsystem);
-		_cDead_FEDuTCA.book(ib, _emap, filter_VME, _subsystem);
 		cSummary.book(ib, _subsystem);
 
 		//	iterate over all channels
@@ -126,14 +111,6 @@ namespace hcaldqm
 			HcalDetId did(it->rawId());
 			HcalElectronicsId eid = HcalElectronicsId(ehashmap.lookup(did));
 
-			if (cOccupancy_depth.getBinContent(did)<1)
-			{
-				xDead.get(eid)++;
-				_cDead_depth.fill(did);
-				eid.isVMEid()?_cDead_FEDVME.fill(eid):_cDead_FEDuTCA.fill(eid);
-			}
-			else
-				xDead.get(eid)+=0;
 			if (did.subdet()==HcalForward)
 				xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
 		}
@@ -211,11 +188,7 @@ namespace hcaldqm
 				else
 					vflags[fUniSlotHF]._state = flag::fGOOD;
 			}
-			if (xDead.get(eid)>0)
-				vflags[fDead]._state = flag::fBAD;
-			else
-				vflags[fDead]._state = flag::fGOOD;
-
+			
 			//	combine
 			int iflag=0;
 			for (std::vector<flag::Flag>::iterator ft=vflags.begin();

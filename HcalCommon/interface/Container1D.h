@@ -316,8 +316,11 @@ namespace hcaldqm
 			//	print all the elements
 			virtual void print();
 
+			//	TO BE USED IN THE FUTURE!
 			virtual void extendAxisRange(int);
-			//virtual void release();
+
+			//	set lumi flags for all mes
+			virtual void setLumiFlag();
 
 		protected:
 			virtual void customize(MonitorElement*);

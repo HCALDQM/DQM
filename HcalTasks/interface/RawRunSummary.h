@@ -21,7 +21,27 @@ namespace hcaldqm
 				DQMStore::IBooker&, DQMStore::IGetter&);
 
 		protected:
-			enum RawFlag
+			//	Flag Summary for each LS and Run as a whole
+			std::vector<LSSummary> _vflagsLS; 
+
+			electronicsmap::ElectronicsMap _ehashmap;
+
+			//	some useful vectors - not to reintialize all the time
+			std::vector<uint32_t> _vhashVME, _vhashuTCA;
+			std::vector<int> _vFEDsVME, _vFEDsuTCA;
+			filter::HashFilter _filter_VME, _filter_uTCA;
+
+			//	Containers to store info for the whole run
+			Container2D _cEvnMsm_ElectronicsVME, _cEvnMsm_ElectronicsuTCA;
+			Container2D _cBcnMsm_ElectronicsVME, _cBcnMsm_ElectronicsuTCA;
+			Container2D _cBadQuality_depth;
+
+			bool _booked;
+
+			//	
+			ContainerXXX<uint32_t> _xEvn, _xBcn, _xBadQ;
+
+			enum RawLSFlag
 			{
 				fEvnMsm=0,
 				fBcnMsm=1,

@@ -164,6 +164,16 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		_cSummaryvsLS.book(ib, _subsystem);
 	}
 
+	//	FOR OFFLINE PROCESSING MARK THESE HISTOGRAMS AS LUMI BASED
+	if (_ptype==fOffline)
+	{
+		_cEvnMsm_ElectronicsVME.setLumiFlag();
+		_cBcnMsm_ElectronicsVME.setLumiFlag();
+		_cEvnMsm_ElectronicsuTCA.setLumiFlag();
+		_cBcnMsm_ElectronicsuTCA.setLumiFlag();
+		_cBadQuality_depth.setLumiFlag();
+	}
+
 	//	initialize hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fD2EHashMap);
 }

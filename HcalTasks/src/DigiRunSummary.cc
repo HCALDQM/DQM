@@ -4,77 +4,216 @@ namespace hcaldqm
 {
 	DigiRunSummary::DigiRunSummary(std::string const& name, 
 		std::string const& taskname, edm::ParameterSet const& ps) :
-		DQClient(name, taskname, ps)
+		DQClient(name, taskname, ps), _booked(false)
 	{}
 
 	/* virtual */ void DigiRunSummary::beginRun(edm::Run const& r,
 		edm::EventSetup const& es)
 	{
 		DQClient::beginRun(r,es);
-	}
 
-	/* virtual */ void DigiRunSummary::endLuminosityBlock(DQMStore::IBooker& ib,
-		DQMStore::IGetter& ig, edm::LuminosityBlock const& lb,
-		edm::EventSetup const& es)
-	{
-		DQClient::endLuminosityBlock(ib, ig, lb, es);
-	}
-
-	/* virtual */ std::vector<flag::Flag> DigiRunSummary::endJob(
-		DQMStore::IBooker& ib, DQMStore::IGetter& ig)
-	{
-		//	FILTERS, some useful vectors, hash maps
-		std::vector<uint32_t> vhashFEDHF; std::vector<uint32_t> vhashVME;
-		std::vector<uint32_t> vhashuTCA;
+		//  INITIALIZE WHAT NEEDS TO BE INITIALIZE ONLY ONCE!
+		_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
+		vhashVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
+			 constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
+		vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
+			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
+		_filter_VME.initialize(filter::fFilter, hashfunctions::fElectronics,
+			vhashVME);  // filter out VME 
+		_filter_uTCA.initialize(filter::fFilter, hashfunctions::fElectronics,
+			 vhashuTCA); // filter out uTCA
 		vhashFEDHF.push_back(HcalElectronicsId(22, SLOT_uTCA_MIN,
 			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
 		vhashFEDHF.push_back(HcalElectronicsId(29, SLOT_uTCA_MIN,
 			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
 		vhashFEDHF.push_back(HcalElectronicsId(32, SLOT_uTCA_MIN,
 			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
-		vhashVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN,
-			constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
-		vhashuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
-			FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
-		filter::HashFilter filter_FEDHF;
-		filter_FEDHF.initialize(filter::fPreserver, hashfunctions::fFED,
-			vhashFEDHF);	// preserve only HF FEDs
-		filter::HashFilter filter_VME;
-		filter::HashFilter filter_uTCA;
-		filter_uTCA.initialize(filter::fFilter, hashfunctions::fElectronics,
-			vhashuTCA);
-		filter_VME.initialize(filter::fFilter, hashfunctions::fElectronics,
-			vhashVME);
-		electronicsmap::ElectronicsMap ehashmap;
-		ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
-		std::vector<flag::Flag> vflags; vflags.resize(nDigiFlag);
-		vflags[fDead]=flag::Flag("Dead");
-		vflags[fUniSlotHF]=flag::Flag("UniSlotHF");
-		vflags[fDigiSize]=flag::Flag("DigiSize");
+		_filter_FEDHF.initialize(filter::fPreserver, hashfunctions::fFED,
+			vhashFEDHF);    // preserve only HF FEDs
+		
+		_xDead.initialize(hashfunctions::fFED);
+		_xDigiSize.initialize(hashfunctions::fFED);
+		_xUni.initialize(hashfunctions::fFED);
+		_xUniHF.initialize(hashfunctions::fFEDSlot);
 
-		// INITIALIZE 
-		Container2D cOccupancy_depth;
-		Container1D cDigiSize_FED;
-		Container2D cOccupancyCut_depth;
-		ContainerSingle2D cSummary;
-		ContainerXXX<double> xDead, xDigiSize, xUniHF, xUni; 
-		xDead.initialize(hashfunctions::fFED);
-		xDigiSize.initialize(hashfunctions::fFED);
-		xUni.initialize(hashfunctions::fFED);
-		xUniHF.initialize(hashfunctions::fFEDSlot);
+		_xDead.book(_emap); xDigiSize.book(_emap); xUniHF.book(_emap);
+		_xUni.book(_emap, filter_FEDHF);
+		_xNChs.initialize(hashfunctions::fFED);
+		_xNChsNominal.initialize(hashfunctions::fFED);
+		_xNChs.book(_emap); _xNChsNominal.book(_emap);
+
+		//	GET THE NOMINAL NUMBER OF CHANNELS PER FED
+		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
+		for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
+			it!=gids.end(); ++it)
+		{
+			if (!it->isHcalDetId())
+				continue;
+			HcalDetId did(it->rawId());
+			HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
+			_xNChsNominal.get(eid)++;
+		}
+	}
+
+	/*
+	 *	END LUMI. EVALUATE LUMI BASED FLAGS
+	 */
+	/* virtual */ void DigiRunSummary::endLuminosityBlock(DQMStore::IBooker& ib,
+		DQMStore::IGetter& ig, edm::LuminosityBlock const& lb,
+		edm::EventSetup const& es)
+	{
+		DQClient::endLuminosityBlock(ib, ig, lb, es);
+
+		LSSummary lssum;
+		lssum._LS=_currentLS;
+
+		_xDigiSize.reset(); _xNChs.reset();
+		
+		//	INITIALIZE LUMI BASED HISTOGRAMS
+		cDigiSize_FED.initialize(_taskname, "DigiSize",
+			hashfunctions::fFED,
+			new quantity::ValueQuantity(quantity::fDigiSize),
+			new quantity::ValueQuantity(quantity::fN));
 		cOccupancy_depth.initialize(_taskname, "Occupancy",
 			hashfunctions::fdepth,
 			new quantity::DetectorQuantity(quantity::fieta),
 			new quantity::DetectorQuantity(quantity::fiphi),
 			new quantity::ValueQuantity(quantity::fN));
+
+		//	LOAD LUMI BASED HISTOGRAMS
+		cOccupancy_depth.load(ig, _emap, _subsystem);
+		cDigiSize_FED.load(ig, _emap, _subsystem);
+		MonitorElement *meNumEvents = ig.get(_subsystem+
+			"/RunInfo/NumberOfEvents");
+		int numEvents = me->getBinContent(1);
+
+		//	book the Numer of Events - set axis extendable
+		if (!_booked)
+		{
+			ib.setCurrentFolder(_subsystem+"/"+_taskname);
+			_meNumEvents = ib.book1D("NumberOfEvents", "NumberOfEvents",
+				1000, 1, 1001); // 1000 to start with
+			_meNumEvents->getTH1()->SetCanExtend(TH1::kXaxis);
+
+			_cOccupancy_depth.book(ib, _emap, _subsystem);
+		}
+		_meNumEvents->setBinContent(_currentLS, numEvents);
+
+		//	ANALYZE THIS LS for LS BASED FLAGS
+		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
+		for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
+			it!=gids.end(); ++it)
+		{
+			if (!it->isHcalDetId())
+				continue;
+
+			HcalDetId did = HcalDetId(it->rawId());
+			HcalElectronicsId eid = HcalElectronicsId(ehashmap.lookup(did));
+
+			cOccupancy_depth.getBinContent(did)>0?_xNChs.get(eid)++:
+				_xNChs.get(eid)+=0;
+			_cOccupancy_depth.fill(did, cOccupancy_depth.getBinContent(did));
+			//	digi size
+			cDigiSize_FED.getMean(eid)!=
+				constants::DIGISIZE[did.subdet()-1]?
+				_xDigiSize.get(eid)++:_xDigiSize.get(eid)+=0;
+			cDigiSize_FED.getRMS(eid)!=0?
+				_xDigiSize.get(eid)++:_xDigiSize.get(eid)+=0;
+		}
+
+		//	GENERATE SUMMARY AND STORE IT
+		std::vector<flag::> vtmpflags; 
+		vtmpflags.resize(nLSFlags);
+		vtmpflags[fDigiSize]=flag::Flag("DigiSize");
+		vtmpflags[fNChsHF]=flag::Flag("NChsHF");
+		for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
+			it!=_vhashFEDs.end(); ++it)
+		{
+			HcalElectronicsId eid(*it);
+
+			//	reset all the tmp flags to fNA
+			//	MUST DO IT NOW! AS NCDAQ MIGHT OVERWRITE IT!
+			for (std::vector<flag::Flag>::iterator ft=vtmpflags.begin();
+				ft!=vtmpflags.end(); ++ft)
+				ft->reset();
+			
+			std::vector<uint32_t>::const_iterator cit=std::find(
+				_vcdaqEids.begin(), _vcdaqEids.end(), *it);
+			if (cit==_vcdaqEids.end())
+			{
+				//  was not @cDAQ, set all the flags for this FED as fNCDAQ
+				for (std::vector<flag::Flag>::iterator ft=vtmpflags.begin();
+					ft!=vtmpflags.end(); ++ft)
+					ft->_state = flag::fNCDAQ;
+				continue;
+			}
+
+			if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid) ||
+				utilities::isFEDHO(eid))
+			{
+				if (_xDigiSize(eid)>0)
+					_vtmpflags[fDigiSize]._state = flag::fBAD;
+				else
+					_vtmpflags[fDigiSize]._state = flag::fGOOD;
+				if (utilities::isFEDHF(eid))
+				{
+					if (_xNChs.get(eid)!=_xNChsNominal.get(eid))
+						vtmpflags[fNChsHF]._state = flag::fBAD;
+					else
+						vtmpflags[fNChsHF]._state = flag::fGOOD;
+				}
+			}
+
+			// push all the flags for this FED
+			lssum._vflags.push_back(vtmpflags);
+		}
+
+		//	push all the flags for all FEDs for this LS
+		_vflagsLS.push_back(lssum);
+	}
+
+	/*
+	 *	End Job
+	 */
+	/* virtual */ std::vector<flag::Flag> DigiRunSummary::endJob(
+		DQMStore::IBooker& ib, DQMStore::IGetter& ig)
+	{
+		_xDead.reset(); _xUniHF.reset(); _xUni.reset();
+
+		//	PREPARE LS AND RUN BASED FLAGS TO USE IT FOR BOOKING
+		std::vector<flag::Flag> vflagsPerLS;
+		std::vector<flag::Flag> vflagsPerRun;
+		vflagsPerLS.resize(nLSFlags);
+		vflagsPerRun.resize(nDigiFlag-nLSFlags+1);
+		vflagsPerLS[fDigiSize]=flag::Flag("DigiSize");
+		vflagsPerLS[fNChsHF]=flag::Flag("NChsHF");
+		vflagsPerRun[fDigiSize]=flag::Flag("DigiSize");
+		vflagsPerRun[fNChsHF]=flag::Flag("NChsHF");
+		vflagsPerRun[fUniHF-nLSFlags+1]=flag::Flag("UniSlotHF");
+		vflagsPerRun[fDead-nLSFlags+1]=flag::Flag("Dead");
+
+		//	INITIALIZE SUMMARY CONTAINERS
+		ContainerSingle2D cSummaryvsLS;
+		Container2D cSummaryvsLS_FED;
+		cSummaryvsLS.initialize(_name, "SummaryvsLS",
+			new quantity::LumiSection(_maxProcessedLS),
+			new quantity::FEDQuantity(_vFEDs),
+			new quantity::ValueQuantity(flag::fState));
+		cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
+			hashfunctions::fFED,
+			new quantity::LumiSection(_maxProcessedLS),
+			new quantity::FlagQuantity(vflagsPerLS),
+			new quantity::ValueQuantity(quantity::fState));
+		cSummaryvsLS_FED.book(ib, _emap, _subsystem);
+		cSummaryvsLS.book(ib, _subsystem);
+
+		// INITIALIZE CONTAINERS WE NEED TO LOAD or BOOK
+		Container2D cOccupancyCut_depth;
+		Container2D cDead_depth, cDead_FEDVME, cDead_FEDuTCA;
 		cOccupancyCut_depth.initialize(_taskname, "OccupancyCut",
 			hashfunctions::fdepth,
 			new quantity::DetectorQuantity(quantity::fieta),
 			new quantity::DetectorQuantity(quantity::fiphi),
-			new quantity::ValueQuantity(quantity::fN));
-		cDigiSize_FED.initialize(_taskname, "DigiSize",
-			hashfunctions::fFED,
-			new quantity::ValueQuantity(quantity::fDigiSize),
 			new quantity::ValueQuantity(quantity::fN));
 
 		_cDead_depth.initialize(_name, "Dead",
@@ -92,27 +231,11 @@ namespace hcaldqm
 			new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 			new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 			new quantity::ValueQuantity(quantity::fN));
-		cSummary.initialize(_name, "Summary",
-			new quantity::FEDQuantity(_vFEDs),
-			new quantity::FlagQuantity(vflags),
-			new quantity::ValueQuantity(quantity::fState));
-
-		//	BOOK
-		xDead.book(_emap); xDigiSize.book(_emap); xUniHF.book(_emap);
-		xUni.book(_emap, filter_FEDHF);
 
 		//	LOAD
-		cOccupancy_depth.load(ig, _emap, _subsystem);
 		cOccupancyCut_depth.load(ig, _emap, _subsystem);
-		cDigiSize_FED.load(ig, _emap, _subsystem);
 
-		//	BOOK
-		_cDead_depth.book(ib, _emap, _subsystem);
-		_cDead_FEDVME.book(ib, _emap, filter_uTCA, _subsystem);
-		_cDead_FEDuTCA.book(ib, _emap, filter_VME, _subsystem);
-		cSummary.book(ib, _subsystem);
-
-		//	iterate over all channels
+		//	ANALYZE RUN BASED QUANTITIES
 		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
 		for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
 			it!=gids.end(); ++it)
@@ -123,24 +246,16 @@ namespace hcaldqm
 			HcalDetId did = HcalDetId(it->rawId());
 			HcalElectronicsId eid = HcalElectronicsId(ehashmap.lookup(did));
 
-			if (cOccupancy_depth.getBinContent(did)<1)
+			if (_cOccupancy_depth.getBinContent(did)<1)
 			{
-				xDead.get(eid)++;
-				_cDead_depth.fill(did);
-				eid.isVMEid()?_cDead_FEDVME.fill(eid):_cDead_FEDuTCA.fill(eid);
+				_xDead.get(eid)++;
+				cDead_depth.fill(did);
+				eid.isVMEid()?cDead_FEDVME.fill(eid):cDead_FEDuTCA.fill(eid);
 			}
-			else
-				xDead.get(eid)+=0;
 			if (did.subdet()==HcalForward)
 				xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
-			cDigiSize_FED.getMean(eid)!=
-				constants::DIGISIZE[did.subdet()-1]?
-				xDigiSize.get(eid)++:xDigiSize.get(eid)+=0;
-			cDigiSize_FED.getRMS(eid)!=0?
-				xDigiSize.get(eid)++:xDigiSize.get(eid)+=0;
 		}
-
-		//	iterate over all slots in HF
+		//	ANALYZE FOR HF SLOT UNIFORMITY
 		for (doubleCompactMap::const_iterator it=xUniHF.begin();
 			it!=xUniHF.end(); ++it)
 		{
@@ -148,8 +263,8 @@ namespace hcaldqm
 			HcalElectronicsId eid1(hash1);
 			double x1 = it->second;
 
-			for (doubleCompactMap::const_iterator jt=xUniHF.begin();
-				jt!=xUniHF.end(); ++jt)
+			for (doubleCompactMap::const_iterator jt=_xUniHF.begin();
+				jt!=_xUniHF.end(); ++jt)
 			{
 				if (jt==it)
 					continue;
@@ -158,64 +273,69 @@ namespace hcaldqm
 				if (x2==0)
 					continue;
 				if (x1/x2<0.2)
-					xUni.get(eid1)++;
+					_xUni.get(eid1)++;
 			}
 		}
 
+		/*
+		 *	Iterate over each FED
+		 *		Iterate over each LS Summary
+		 *			Iterate over all flags
+		 *				set...
+		 */
 		//	iterate over all FEDs
 		std::vector<flag::Flag> sumflags;
 		int ifed=0;
 		for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 			it!=_vhashFEDs.end(); ++it)
 		{
-			flag::Flag fSum("DIGI");
+			flag::Flag fSum("DIGI"); // summary flag for this FED
+			flag::Flag ffDead("Dead");
+			flag::Flag ffUniSlotHF("UniSlotHF");
 			HcalElectronicsId eid(*it);
 
-			std::vector<uint32_t>::const_iterator cit=std::find(
-				_vcdaqEids.begin(), _vcdaqEids.end(), *it);
-			if (cit==_vcdaqEids.end())
+			//	ITERATE OVER EACH LS
+			for (std::vector<LSSummary>::const_iterator itls=_vflagsLS.begin();
+				itls!=_vflagsLS.end(); ++itls)
 			{
-				//	not registered @cDAQ
-				sumflags.push_back(flag::Flag("DIGI", flag::fNCDAQ));
-				ifed++;
-				continue;
+				iflag=0;
+				flag::Flag fSumLS("DIGI");
+				for (std::vector<flag::Flag>::const_iterator ft=
+					itls->_vflags[ifed].begin(); ft!=itls->_vflags[ifed].end();
+					++itls)
+				{
+					cSummaryvsLS_FED.setBinContent(eid, itls->_LS, int(iflag),
+						ft->_state);
+					fSumLS+=(*ft);
+					iflag++;
+				}
+				cSummaryvsLS.setBinContent(eid, itls->_LS, fSumLS->_state);
+				fSumRun+=fSumLS;
 			}
 
-			//	registered @cDAQ
+			//	EVALUATE RUN BASED FLAGS
+			//	NOTE, THAT IF THE FED IS NOT @cDAQ fSumRun state will be fNCDAQ
 			if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid) ||
 				utilities::isFEDHO(eid))
 			{
 				if (xDead.get(eid)>0)
-					vflags[fDead]._state = flag::fBAD;
+					ffDead._state = flag::fBAD;
 				else
-					vflags[fDead]._state = flag::fGOOD;
+					ffDead._state = flag::fGOOD;
 				if (utilities::isFEDHF(eid))
 				{
 					if (xUni.get(eid)>0)
-						vflags[fUniSlotHF]._state = flag::fBAD;
+						ffUniSlotHF._state = flag::fBAD;
 					else
-						vflags[fUniSlotHF]._state = flag::fGOOD;
+						ffUniSlotHF._state = flag::fGOOD;
 				}
-				if (xDigiSize.get(eid)>0)
-					vflags[fDigiSize]._state = flag::fBAD;
-				else
-					vflags[fDigiSize]._state = flag::fGOOD;
 			}
+			fSumRun+=ffDead+ffUniSlotHF;
 
-			//	compute the Summary Flag and push it
-			//	also reset all the flags...
-			int iflag=0;
-			for (std::vector<flag::Flag>::iterator ft=vflags.begin();
-				ft!=vflags.end(); ++ft)
-			{
-				cSummary.setBinContent(eid,iflag,ft->_state);
-				fSum+=(*ft);
-				iflag++;
+			// push the summary flag for this FED for the Whole Run
+			sumflags.push_back(fSumRun);
 
-				//	reset
-				ft->reset();
-			}
-			sumflags.push_back(fSum);
+			//	 increment fed
 			ifed++;
 		}
 
