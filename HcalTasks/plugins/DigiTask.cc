@@ -17,6 +17,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cutSumQ_HBHE = ps.getUntrackedParameter<double>("cutSumQ_HBHE", 20);
 	_cutSumQ_HO = ps.getUntrackedParameter<double>("cutSumQ_HO", 20);
 	_cutSumQ_HF = ps.getUntrackedParameter<double>("cutSumQ_HF", 20);
+	_thresh_unihf = ps.getUntrackedParameter<double>("thresh_unihf", 0.2);
 
 	_vflags.resize(nDigiFlag);
 	_vflags[fUni]=flag::Flag("UniSlotHF");
@@ -735,7 +736,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			double x2 = jt->second;
 			if (x2==0)
 				continue;
-			if (x1/x2<0.2)
+			if (x1/x2<_thresh_unihf)
 				_xUni.get(eid1)++;
 		}
 	}

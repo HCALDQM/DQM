@@ -946,10 +946,13 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 				double(_xEtMsm.get(eid))/double(_xNumCorr.get(eid)):0;
 			double fgmsm = _xNumCorr.get(eid)>0?
 				double(_xFGMsm.get(eid))/double(_xNumCorr.get(eid)):0;
-			double dmsm = _xDataTotal.get(eid)>0?
+			/*	
+			 * UNUSED VARS
+			 * double dmsm = _xDataTotal.get(eid)>0?
 				double(_xDataMsn.get(eid))/double(_xDataTotal.get(eid)):0;
 			double emsm = _xEmulTotal.get(eid)>0?
 				double(_xEmulMsn.get(eid))/double(_xEmulTotal.get(eid)):0;
+				*/
 			if (etmsm>=_thresh_EtMsmRate)
 				_vflags[fEtMsm]._state = flag::fBAD;
 			else
@@ -958,6 +961,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 				_vflags[fFGMsm]._state = flag::fBAD;
 			else
 				_vflags[fFGMsm]._state = flag::fGOOD;
+			/*
+			 *	DISABLE THESE FLAGS FOR ONLINE FOR NOW!
 			if (dmsm>=_thresh_DataMsn)
 				_vflags[fDataMsn]._state = flag::fBAD;
 			else
@@ -966,6 +971,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 				_vflags[fEmulMsn]._state = flag::fBAD;
 			else
 				_vflags[fEmulMsn]._state = flag::fGOOD;
+				*/
 		}
 
 		int iflag=0;

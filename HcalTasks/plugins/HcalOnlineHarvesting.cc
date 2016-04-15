@@ -17,15 +17,15 @@ HcalOnlineHarvesting::HcalOnlineHarvesting(edm::ParameterSet const& ps) :
 	_vnames[fTP]="TPTask";
 	_vnames[fPedestal]="PedestalTask";
 
-	_vsumgen[fRaw] = new RawRunSummary("RawRunSummary",
+	_vsumgen[fRaw] = new RawRunSummary("RawRunHarvesting",
 		_vnames[fRaw], ps);
-	_vsumgen[fDigi] = new DigiRunSummary("DigiRunSummary", 
+	_vsumgen[fDigi] = new DigiRunSummary("DigiRunHarvesting", 
 		_vnames[fDigi],ps);
-	_vsumgen[fReco] = new RecoRunSummary("RecoRunSummary",
+	_vsumgen[fReco] = new RecoRunSummary("RecoRunHarvesting",
 		_vnames[fReco], ps);
-	_vsumgen[fTP] = new TPRunSummary("TPRunSummary",
+	_vsumgen[fTP] = new TPRunSummary("TPRunHarvesting",
 		_vnames[fTP], ps);
-	_vsumgen[fPedestal] = new PedestalRunSummary("PedestalRunSummary",
+	_vsumgen[fPedestal] = new PedestalRunSummary("PedestalRunHarvesting",
 		_vnames[fPedestal], ps);
 }
 

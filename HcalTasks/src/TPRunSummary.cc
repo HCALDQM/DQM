@@ -5,7 +5,12 @@ namespace hcaldqm
 	TPRunSummary::TPRunSummary(std::string const& name, 
 		std::string const& taskname, edm::ParameterSet const& ps) :
 		DQClient(name, taskname, ps)
-	{}
+	{
+		_thresh_fgmsm = ps.getUntrackedParameter<double>("thresh_fgmsm",
+			0.1);
+		_thresh_etmsm = ps.getUntrackedParameter<double>("thresh_etmsm",
+			0.1);
+	}
 
 	/* virtual */ void TPRunSummary::beginRun(edm::Run const& r,
 		edm::EventSetup const& es)

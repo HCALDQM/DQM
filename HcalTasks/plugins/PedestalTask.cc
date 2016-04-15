@@ -28,6 +28,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		0.25);
 	_thresh_rms = ps.getUntrackedParameter<double>("thresh_mean",
 		0.25);
+	_thresh_badm = ps.getUntrackedParameter<double>("thresh_badm", 0.1);
+	_thresh_badr = ps.getUntrackedParameter<double>("thresh_badr", 0.1);
 }
 
 /* virtual */ void PedestalTask::bookHistograms(DQMStore::IBooker &ib,
@@ -699,11 +701,11 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 				_vflags[fMsn]._state = flag::fBAD;
 			else
 				_vflags[fMsn]._state = flag::fGOOD;
-			if (frbadm>=0.1)
+			if (frbadm>=_thresh_badm)
 				_vflags[fBadM]._state = flag::fBAD;
 			else
 				_vflags[fBadM]._state = flag::fGOOD;
-			if (frbadr>=0.1)
+			if (frbadr>=_thresh_badr)
 				_vflags[fBadR]._state = flag::fBAD;
 			else
 				_vflags[fBadR]._state = flag::fGOOD;

@@ -18,6 +18,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_cutE_HBHE = ps.getUntrackedParameter<double>("cutE_HBHE", 5);
 	_cutE_HO = ps.getUntrackedParameter<double>("cutE_HO", 5);
 	_cutE_HF = ps.getUntrackedParameter<double>("cutE_HF", 5);
+	_thresh_unihf = ps.getUntrackedParameter<double>("thresh_unihf", 0.2);
 
 	//	order must be the same as in RecoFlag enum
 	_vflags.resize(nRecoFlag);
@@ -695,7 +696,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			double x2 = jt->second;
 			if (x2==0)
 				continue;
-			if (x1/x2<0.2)
+			if (x1/x2<_thresh_unihf)
 				_xUni.get(eid1)++;
 		}
 	}

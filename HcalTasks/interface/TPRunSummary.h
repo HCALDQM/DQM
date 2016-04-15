@@ -24,6 +24,8 @@ namespace hcaldqm
 			ContainerSingle2D _cEtMsmFraction_depthlike;
 			ContainerSingle2D _cFGMsmFraction_depthlike;
 
+			double _thresh_fgmsm, _thresh_etmsm;
+
 			enum TPFlag
 			{
 				fEtMsm=0,

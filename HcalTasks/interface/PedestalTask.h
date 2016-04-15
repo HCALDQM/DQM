@@ -67,7 +67,7 @@ class PedestalTask : public DQTask
 		HashFilter _filter_C36;
 
 		//	thresholds
-		double _thresh_mean, _thresh_rms;
+		double _thresh_mean, _thresh_rms, _thresh_badm, _thresh_badr;
 
 		//	hashed ids of FEDs
 		std::vector<uint32_t> _vhashFEDs;

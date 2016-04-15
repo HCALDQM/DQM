@@ -53,6 +53,7 @@ class DigiTask : public DQTask
 		edm::EDGetTokenT<HFDigiCollection>	_tokHF;
 
 		double _cutSumQ_HBHE, _cutSumQ_HO, _cutSumQ_HF;
+		double _thresh_unihf;
 
 		//	flag vector
 		std::vector<flag::Flag> _vflags;

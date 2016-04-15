@@ -21,6 +21,8 @@ namespace hcaldqm
 				DQMStore::IBooker&, DQMStore::IGetter&);
 
 		protected:
+			double _thresh_unihf, _thresh_tcds;
+
 			enum RecoFlag
 			{
 				fTCDS = 0,

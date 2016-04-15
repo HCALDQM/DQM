@@ -5,7 +5,12 @@ namespace hcaldqm
 	RecoRunSummary::RecoRunSummary(std::string const& name, 
 		std::string const& taskname, edm::ParameterSet const& ps) :
 		DQClient(name, taskname, ps)
-	{}
+	{
+		_thresh_unihf = ps.getUntrackedParameter<double>("thresh_unihf",
+			0.2);
+		_thresh_tcds = ps.getUntrackedParameter<double>("thresh_tcds",
+			1.5);
+	}
 
 	/* virtual */ void RecoRunSummary::beginRun(edm::Run const& r,
 		edm::EventSetup const& es)
@@ -33,7 +38,6 @@ namespace hcaldqm
 		if (_ptype!=fOffline)
 			return std::vector<flag::Flag>();
 
-		std::cout << "1111111111111" << std::endl;
 		// FILTERS, some useful vectors, hash maps
 		std::vector<uint32_t> vhashFEDHF;
 		vhashFEDHF.push_back(HcalElectronicsId(22, SLOT_uTCA_MIN,
@@ -63,7 +67,6 @@ namespace hcaldqm
 		vflags[fUniSlotHF]=flag::Flag("UniSlotHF");
 		vflags[fTCDS]=flag::Flag("TCDS");
 
-		std::cout << "2222222222222222222" << std::endl;
 
 		//	INITIALIZE
 		Container2D cOccupancy_depth, cOccupancyCut_depth;
@@ -95,7 +98,6 @@ namespace hcaldqm
 		//	BOOK
 		xUniHF.book(_emap, filter_FEDHF);
 
-		std::cout << "33333333333333333" << std::endl;
 
 		//	LOAD
 		cOccupancy_depth.load(ig, _emap, _subsystem);
@@ -118,7 +120,6 @@ namespace hcaldqm
 				xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
 		}
 
-		std::cout << "444444444444444444444" << std::endl;
 
 		//	iphi/slot HF non uniformity
 		for (doubleCompactMap::const_iterator it=xUniHF.begin();
@@ -136,12 +137,11 @@ namespace hcaldqm
 				double x2 = jt->second;
 				if (x2==0)
 					continue;
-				if (x1/x2<0.2)
+				if (x1/x2<_thresh_unihf)
 					xUni.get(eid1)++;
 			}
 		}
 
-		std::cout << "5555555555555555555" << std::endl;
 
 		//	TCDS shift
 		double a = cTimingCut_HBHEPartition.getMean(
@@ -153,7 +153,7 @@ namespace hcaldqm
 		double dab = fabs(a-b);
 		double dac = fabs(a-c);
 		double dbc = fabs(b-c);
-		if (dab>=1.5 || dac>=1.5 || dbc>=1.5)
+		if (dab>=_thresh_tcds || dac>=_thresh_tcds || dbc>=_thresh_tcds)
 			tcdsshift = true;
 
 		//	summary flags
@@ -162,7 +162,6 @@ namespace hcaldqm
 		for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
 			it!=_vhashFEDs.end(); ++it)
 		{
-			std::cout << _vFEDs[ifed] << std::endl;
 			flag::Flag fSum("RECO");
 			HcalElectronicsId eid(*it);
 

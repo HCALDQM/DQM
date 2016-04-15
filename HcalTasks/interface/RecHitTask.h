@@ -50,6 +50,7 @@ class RecHitTask : public DQTask
 		edm::EDGetTokenT<HFRecHitCollection>	_tokHF;
 
 		double _cutE_HBHE, _cutE_HO, _cutE_HF;
+		double _thresh_unihf;
 
 		//	hashes/FED vectors
 		std::vector<uint32_t> _vhashFEDs;

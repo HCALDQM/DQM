@@ -23,6 +23,8 @@ namespace hcaldqm
 		protected:
 			std::vector<LSSummary> _vflagsLS;
 
+			double _thresh_unihf;
+
 			electronicsmap::ElectronicsMap _ehashmap;
 
 			std::vector<uint32_t> _vhashVME, _vhashuTCA, _vhashFEDHF;

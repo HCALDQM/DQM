@@ -13,7 +13,7 @@ import os, sys, socket, string
 #-------------------------------------
 import FWCore.ParameterSet.Config as cms
 process			= cms.Process('HCALDQM')
-subsystem		= 'Hcal'
+subsystem		= 'Hcal2'
 cmssw			= os.getenv("CMSSW_VERSION").split("_")
 debugstr		= "### HcalDQM::cfg::DEBUG: "
 warnstr			= "### HcalDQM::cfg::WARN: "
@@ -36,22 +36,17 @@ if useFileInput:
 	process.load("DQM.Integration.config.fileinputsource_cfi")
 else:
 	process.load('DQM.Integration.config.inputsource_cfi')
-process.load('DQMServices.Components.DQMEnvironment_cfi')
 process.load('DQM.Integration.config.environment_cfi')
 
 #-------------------------------------
 #	Central DQM Customization
 #-------------------------------------
 process.dqmEnv.subSystemFolder = subsystem
-# note to have a different filename saved
-process.dqmSaver.tag = "Hcal2"
+process.dqmSaver.tag = "Hcal2" # to have a file saved as DQM_V..._Hcal2...
 referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
 process.DQMStore.verbose = 0
-process.DQM.collectorPort = cms.untracked.int32(9190)
-process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
-process.dqmSaver.path = "/data/hcaldqm/DQMIO/ONLINE_PLAYBACK"
 
 #	Note, runType is obtained after importing DQM-related modules
 #	=> DQM-dependent
@@ -111,6 +106,14 @@ process.emulTPPrim.InputTagFEDRaw = rawTag
 process.emulTPSec.FG_threshold = cms.uint32(2)
 process.emulTPSec.InputTagFEDRaw = rawTag
 process.hbhereco = process.hbheprereco.clone()
+
+#	UPDATES REQUESTED BY STEPH
+process.hbheprereco.puCorrMethod = cms.int32(2) 
+process.hbheprereco.ts4chi2 = cms.double(9999.) 
+process.hbheprereco.timeMin = cms.double(-100.)
+process.hbheprereco.timeMax = cms.double(100.)
+process.hbheprereco.applyTimeConstraint = cms.bool(False) 
+
 #	set the tag for default unpacker
 process.hcalDigis.InputLabel = rawTag
 
@@ -118,11 +121,8 @@ process.hcalDigis.InputLabel = rawTag
 #	Hcal DQM Tasks and Clients import
 #	New Style
 #-------------------------------------
-process.load("DQM.HcalTasks.RawTask")
-process.load("DQM.HcalTasks.DigiTask")
-process.load('DQM.HcalTasks.TPTask')
 process.load('DQM.HcalTasks.RecHitTask')
-process.load('DQM.HcalTasks.HcalHarvesting')
+process.load('DQM.HcalTasks.HcalOnlineHarvesting')
 process.load('DQM.HcalTasks.DigiComparisonTask')
 process.load('DQM.HcalTasks.TPComparisonTask')
 
@@ -166,11 +166,13 @@ process.digiComparisonTask.tagHBHE1 = cms.untracked.InputTag('primDigis')
 process.digiComparisonTask.tagHBHE2 = cms.untracked.InputTag('secDigis')
 process.digiComparisonTask.runkeyVal = runType
 process.digiComparisonTask.runkeyName = runTypeName
+process.digiComparisonTask.subsystem = cms.untracked.string(subsystem)
 
 process.tpComparisonTask.tag1 = cms.untracked.InputTag('primDigis')
 process.tpComparisonTask.tag2 = cms.untracked.InputTag('secDigis')
 process.tpComparisonTask.runkeyVal = runType
 process.tpComparisonTask.runkeyName = runTypeName
+process.tpComparisonTask.subsystem = cms.untracked.string(subsystem)
 
 #-------------------------------------
 #	Settigns for the Primary Modules
@@ -182,50 +184,51 @@ process.recHitTask.tagHF = cms.untracked.InputTag("hfreco")
 process.recHitTask.runkeyVal = runType
 process.recHitTask.runkeyName = runTypeName
 process.recHitTask.tagRaw = rawTagUntracked
+process.recHitTask.subsystem = cms.untracked.string(subsystem)
+
+process.hcalOnlineHarvesting.subsystem = cms.untracked.string(subsystem)
 
 #-------------------------------------
 #	Hcal DQM Tasks/Clients Sequences Definition
 #-------------------------------------
-process.tasksSequence = cms.Sequence(
+process.tasksPath = cms.Path(
 		process.recHitTask
 		+process.digiComparisonTask
 		+process.tpComparisonTask
 )
 
-process.harvestingSequence = cms.Sequence(
-	process.hcalHarvesting
+process.harvestingPath = cms.Path(
+	process.hcalOnlineHarvesting
 )
 
 #-------------------------------------
 #	Paths/Sequences Definitions
 #-------------------------------------
-process.preRecoSequence = cms.Sequence(
+process.preRecoPath = cms.Path(
 		process.primDigis
 		*process.secDigis
 		*process.emulTPPrim
 		*process.emulTPSec
 )
 
-process.recoSequence = cms.Sequence(
+process.recoPath = cms.Path(
 		process.hfreco
 		*process.hbhereco
 		*process.horeco
 )
 
-process.dqmSequence = cms.Sequence(
+process.dqmPath = cms.Path(
 		process.dqmEnv
 		*process.dqmSaver
 )
 
-process.p = cms.Path(
-		process.preRecoSequence
-		*process.recoSequence
-		*process.tasksSequence
-		*process.harvestingSequence
-		*process.dqmSequence
+process.schedule = cms.Schedule(
+		process.preRecoPath,
+		process.recoPath,
+		process.tasksPath,
+		process.harvestingPath,
+		process.dqmPath
 )
-
-#process.schedule = cms.Schedule(process.p)
 
 #-------------------------------------
 #	Scheduling and Process Customizations

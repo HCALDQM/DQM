@@ -19,7 +19,9 @@ pedestalTask = cms.EDAnalyzer(
 	tagRaw = cms.untracked.InputTag('hltHcalCalibrationRaw'),
 
 	thresh_mean = cms.untracked.double(0.25),
-	thresh_rms = cms.untracked.double(0.25)
+	thresh_rms = cms.untracked.double(0.25),
+	thresh_badm = cms.untracked.double(0.1),
+	thresh_badr = cms.untracked.double(0.1)
 )
 
 

@@ -5,7 +5,10 @@ namespace hcaldqm
 	DigiRunSummary::DigiRunSummary(std::string const& name, 
 		std::string const& taskname, edm::ParameterSet const& ps) :
 		DQClient(name, taskname, ps), _booked(false)
-	{}
+	{
+		_thresh_unihf = ps.getUntrackedParameter<double>("thresh_unihf",
+			0.2);
+	}
 
 	/* virtual */ void DigiRunSummary::beginRun(edm::Run const& r,
 		edm::EventSetup const& es)
@@ -291,7 +294,7 @@ namespace hcaldqm
 				double x2 = jt->second;
 				if (x2==0)
 					continue;
-				if (x1/x2<0.2)
+				if (x1/x2<_thresh_unihf)
 					_xUni.get(eid1)++;
 			}
 		}

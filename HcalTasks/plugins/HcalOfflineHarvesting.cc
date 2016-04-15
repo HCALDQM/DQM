@@ -13,10 +13,10 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 	for (uint32_t i=0; i<_vmarks.size(); i++)
 		_vmarks[i]=false;
 
-	_vsumgen[fRaw]=new RawRunSummary("RawRunSummary", _vnames[fRaw],ps);
-	_vsumgen[fDigi]=new DigiRunSummary("DigiRunSummary", _vnames[fDigi],ps);
-	_vsumgen[fReco]=new RecoRunSummary("RecoRunSummary", _vnames[fReco],ps);
-	_vsumgen[fTP]=new TPRunSummary("TPRunSummary", _vnames[fTP],ps);
+	_vsumgen[fRaw]=new RawRunSummary("RawRunHarvesting", _vnames[fRaw],ps);
+	_vsumgen[fDigi]=new DigiRunSummary("DigiRunHarvesting", _vnames[fDigi],ps);
+	_vsumgen[fReco]=new RecoRunSummary("RecoRunHarvesting", _vnames[fReco],ps);
+	_vsumgen[fTP]=new TPRunSummary("TPRunHarvesting", _vnames[fTP],ps);
 }
 
 /* virtual */ void HcalOfflineHarvesting::beginRun(
