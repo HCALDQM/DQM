@@ -231,8 +231,10 @@ namespace hcaldqm
 	/* virtual */ std::vector<flag::Flag> RawRunSummary::endJob(
 		DQMStore::IBooker& ib, DQMStore::IGetter& ig)
 	{
+
 		if (_ptype!=fOffline)
 			return std::vector<flag::Flag>();
+
 
 		//	PREPARE LS BASED FLAGS to use it for booking
 		std::vector<flag::Flag> vflagsLS;
@@ -240,6 +242,7 @@ namespace hcaldqm
 		vflagsLS[fEvnMsm]=flag::Flag("EvnMsm");
 		vflagsLS[fBcnMsm]=flag::Flag("BcnMsm");
 		vflagsLS[fBadQ]=flag::Flag("BadQ");
+
 
 		//	INITIALIZE AND BOOK SUMMARY CONTAINERS
 		ContainerSingle2D cSummaryvsLS; // summary per FED: flag vs LS
@@ -262,6 +265,7 @@ namespace hcaldqm
 		 *			Iterate over all flags
 		 *				set...
 		 */
+
 		std::vector<flag::Flag> sumflags; // flag per FED
 		int ifed=0;
 		for (std::vector<uint32_t>::const_iterator it=_vhashFEDs.begin();
@@ -269,19 +273,23 @@ namespace hcaldqm
 		{
 			flag::Flag fSumRun("RAW"); // summary flag for this FED
 			HcalElectronicsId eid(*it);
+			std::cout <<"FED="<< _vFEDs[ifed] << std::endl;
 
 			//	ITERATE OVER EACH LS
 			for (std::vector<LSSummary>::const_iterator itls=_vflagsLS.begin();
 				itls!=_vflagsLS.end(); ++itls)
 			{
+				std::cout <<"LS="<< itls->_LS << std::endl;
+
 				//	fill histograms per LS
 				int iflag=0;
 				flag::Flag fSumLS("RAW");
 				for (std::vector<flag::Flag>::const_iterator ft=
 					itls->_vflags[ifed].begin(); ft!=itls->_vflags[ifed].end();
-					++itls)
+					++ft)
 				{
 					//	Flag vs LS per FEd
+					std::cout << ft->_name << "  " << ft->_state << std::endl;
 					cSummaryvsLS_FED.setBinContent(eid, itls->_LS, int(iflag),
 						ft->_state);
 					fSumLS+=(*ft);

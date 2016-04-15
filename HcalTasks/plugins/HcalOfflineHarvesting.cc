@@ -70,7 +70,6 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 	{
 		datatiers.insert(std::pair<std::string, int>("RAW",num));
 		num++;
-		std::cout << "2222222222222222222222" << std::endl;
 	}
 	if (_vmarks[fDigi])
 	{
@@ -129,6 +128,8 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 		//	NOTE AGAIN: datatiers map [DATATIER]->[value not bin!]+1 therefore
 		std::cout << _vnames[ii] << std::endl;
 		std::vector<flag::Flag> flags = (*it)->endJob(ib,ig);
+		std::cout << "********************" << std::endl;
+		std::cout << "SUMMARY" << std::endl;
 		for (uint32_t ifed=0; ifed<_vFEDs.size(); ifed++)
 		{
 			_reportSummaryMap->setBinContent(ifed+1, 

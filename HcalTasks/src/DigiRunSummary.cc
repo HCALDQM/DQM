@@ -265,14 +265,12 @@ namespace hcaldqm
 			HcalDetId did = HcalDetId(it->rawId());
 			HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 
-			std::cout << "11111111111" << std::endl;
 			if (_cOccupancy_depth.getBinContent(did)<1)
 			{
 				_xDead.get(eid)++;
 				cDead_depth.fill(did);
 				eid.isVMEid()?cDead_FEDVME.fill(eid):cDead_FEDuTCA.fill(eid);
 			}
-			std::cout << "222222222222" << std::endl;
 			if (did.subdet()==HcalForward)
 				_xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
 		}
@@ -314,17 +312,20 @@ namespace hcaldqm
 			flag::Flag ffDead("Dead");
 			flag::Flag ffUniSlotHF("UniSlotHF");
 			HcalElectronicsId eid(*it);
+			std::cout <<"FED="<< _vFEDs[ifed] << std::endl;
 
 			//	ITERATE OVER EACH LS
 			for (std::vector<LSSummary>::const_iterator itls=_vflagsLS.begin();
 				itls!=_vflagsLS.end(); ++itls)
 			{
+				std::cout <<"LS="<< itls->_LS << std::endl;
 				int iflag=0;
 				flag::Flag fSumLS("DIGI");
 				for (std::vector<flag::Flag>::const_iterator ft=
 					itls->_vflags[ifed].begin(); ft!=itls->_vflags[ifed].end();
-					++itls)
+					++ft)
 				{
+					std::cout << ft->_name << "  " << ft->_state << std::endl;
 					cSummaryvsLS_FED.setBinContent(eid, itls->_LS, int(iflag),
 						ft->_state);
 					fSumLS+=(*ft);
@@ -351,6 +352,8 @@ namespace hcaldqm
 						ffUniSlotHF._state = flag::fGOOD;
 				}
 			}
+			std::cout << "DIGI RUN FLAGS: " << ffDead._state << "  "
+				<< ffUniSlotHF._state << std::endl;
 			fSumRun+=ffDead+ffUniSlotHF;
 
 			// push the summary flag for this FED for the Whole Run
