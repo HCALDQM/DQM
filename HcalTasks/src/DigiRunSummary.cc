@@ -44,6 +44,12 @@ namespace hcaldqm
 		_xNChs.initialize(hashfunctions::fFED);
 		_xNChsNominal.initialize(hashfunctions::fFED);
 		_xNChs.book(_emap); _xNChsNominal.book(_emap);
+		
+		_cOccupancy_depth.initialize(_name, "Occupancy",
+			hashfunctions::fdepth,
+			new quantity::DetectorQuantity(quantity::fieta),
+			new quantity::DetectorQuantity(quantity::fiphi),
+			new quantity::ValueQuantity(quantity::fN));
 
 		//	GET THE NOMINAL NUMBER OF CHANNELS PER FED
 		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
@@ -103,6 +109,7 @@ namespace hcaldqm
 			_meNumEvents->getTH1()->SetCanExtend(TH1::kXaxis);
 
 			_cOccupancy_depth.book(ib, _emap, _subsystem);
+			_booked=true;
 		}
 		_meNumEvents->setBinContent(_currentLS, numEvents);
 
@@ -225,7 +232,6 @@ namespace hcaldqm
 			new quantity::DetectorQuantity(quantity::fieta),
 			new quantity::DetectorQuantity(quantity::fiphi),
 			new quantity::ValueQuantity(quantity::fN));
-
 		cDead_depth.initialize(_name, "Dead",
 			hashfunctions::fdepth,
 			new quantity::DetectorQuantity(quantity::fieta),
@@ -244,6 +250,9 @@ namespace hcaldqm
 
 		//	LOAD
 		cOccupancyCut_depth.load(ig, _emap, _subsystem);
+		cDead_depth.book(ib, _emap, _subsystem);
+		cDead_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
+		cDead_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 
 		//	ANALYZE RUN BASED QUANTITIES
 		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
@@ -256,12 +265,14 @@ namespace hcaldqm
 			HcalDetId did = HcalDetId(it->rawId());
 			HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 
+			std::cout << "11111111111" << std::endl;
 			if (_cOccupancy_depth.getBinContent(did)<1)
 			{
 				_xDead.get(eid)++;
 				cDead_depth.fill(did);
 				eid.isVMEid()?cDead_FEDVME.fill(eid):cDead_FEDuTCA.fill(eid);
 			}
+			std::cout << "222222222222" << std::endl;
 			if (did.subdet()==HcalForward)
 				_xUniHF.get(eid)+=cOccupancyCut_depth.getBinContent(did);
 		}

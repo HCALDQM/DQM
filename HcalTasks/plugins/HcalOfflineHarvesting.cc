@@ -36,7 +36,17 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 	DQMStore::IBooker& ib,
 	DQMStore::IGetter& ig, edm::LuminosityBlock const& lb, 
 	edm::EventSetup const& es)
-{
+{	
+	if (ig.get(_subsystem+"/"+_vnames[fRaw]+"/EventsTotal")!=NULL)
+		_vmarks[fRaw]=true;
+	if (ig.get(_subsystem+"/"+_vnames[fDigi]+"/EventsTotal")!=NULL)
+		_vmarks[fDigi]=true;
+	if (ig.get(_subsystem+"/"+_vnames[fTP]+"/EventsTotal")!=NULL)
+		_vmarks[fTP]=true;
+	if (ig.get(_subsystem+"/"+_vnames[fReco]+"/EventsTotal")!=NULL)
+		_vmarks[fReco]=true;
+
+	//	CALL ALL THE HARVESTERS
 	int ii=0;
 	for (std::vector<DQClient*>::const_iterator it=_vsumgen.begin();
 		it!=_vsumgen.end(); ++it)
@@ -45,13 +55,6 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 		if (_vmarks[ii])
 			(*it)->endLuminosityBlock(ib,ig,lb,es);
 		ii++;
-	}
-
-	if (!me)
-	{
-		ib.setCurrentFolder("Hcal/Folder1");
-		me = ib.book1D("ME", "ME", 10, 0, 10);
-		me->setLumiFlag();
 	}
 }
 
@@ -63,28 +66,25 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 {
 	//	OBTAIN/SET WHICH MODULES ARE PRESENT
 	int num=0; std::map<std::string, int> datatiers;
-	if (ig.get(_subsystem+"/"+_vnames[fRaw]+"/EventsTotal")!=NULL)
+	if (_vmarks[fRaw])
 	{
 		datatiers.insert(std::pair<std::string, int>("RAW",num));
-		_vmarks[fRaw]=true;
 		num++;
+		std::cout << "2222222222222222222222" << std::endl;
 	}
-	if (ig.get(_subsystem+"/"+_vnames[fDigi]+"/EventsTotal")!=NULL)
+	if (_vmarks[fDigi])
 	{
-		_vmarks[fDigi]=true;
 		datatiers.insert(std::pair<std::string, int>("DIGI",num));
 		num++;
 	}
-	if (ig.get(_subsystem+"/"+_vnames[fTP]+"/EventsTotal")!=NULL)
+	if (_vmarks[fTP])
 	{
-		_vmarks[fTP]=true;
 		datatiers.insert(std::pair<std::string, int>("TP",num));
 		num++;
 	}
-	if (ig.get(_subsystem+"/"+_vnames[fReco]+"/EventsTotal")!=NULL)
+	if (_vmarks[fReco])
 	{
 		datatiers.insert(std::pair<std::string, int>("RECO",num));
-		_vmarks[fReco]=true;
 		num++;
 	}
 	
@@ -127,6 +127,7 @@ HcalOfflineHarvesting::HcalOfflineHarvesting(edm::ParameterSet const& ps) :
 		//	OBTAIN ALL THE FLAGS FOR THIS MODULE
 		//	AND SET THE REPORT STATUS MAP
 		//	NOTE AGAIN: datatiers map [DATATIER]->[value not bin!]+1 therefore
+		std::cout << _vnames[ii] << std::endl;
 		std::vector<flag::Flag> flags = (*it)->endJob(ib,ig);
 		for (uint32_t ifed=0; ifed<_vFEDs.size(); ifed++)
 		{
