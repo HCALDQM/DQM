@@ -21,7 +21,7 @@ namespace hcaldqm
 		 *	Some useful functions for QIE10/11 Data Frames
 		 */
 		template<typename FRAME>
-		double aveTS_v10(FRAME const& frame, double ped=0; int i=0; int j=3)
+		double aveTS_v10(FRAME const& frame, double ped=0, int i=0,int j=3)
 		{
 			double sumQ = 0;
 			double sumQT = 0;
@@ -33,6 +33,15 @@ namespace hcaldqm
 			}
 
 			return sumQ>0 ? sumQT/sumQ-1 : GARBAGE_VALUE;
+		}
+
+		template<typename FRAME>
+		double sumQ_v10(FRAME const& frame, double ped, int i=0, int j=3)
+		{
+			double sumQ = 0;
+			for (int ii=i; ii<=j; ii++)
+				sumQ += constants::adc2fC[frame[ii].adc()]-ped;
+			return sumQ;
 		}
 
 		/*

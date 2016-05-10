@@ -30,6 +30,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		0.25);
 	_thresh_badm = ps.getUntrackedParameter<double>("thresh_badm", 0.1);
 	_thresh_badr = ps.getUntrackedParameter<double>("thresh_badr", 0.1);
+	_thresh_missing_high = ps.getUntrackedParameter<double>(
+		"thresh_missing_high", 0.2);
+	_thresh_missing_low = ps.getUntrackedParameter<double>(
+		"thresh_missing_low", 0.05);
 }
 
 /* virtual */ void PedestalTask::bookHistograms(DQMStore::IBooker &ib,
@@ -221,10 +225,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		hashfunctions::fSubdet,
 		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fN));
-	_cOccupancyvsLSTest_Subdet.initialize(_name, "OccupancyvsLSTest", 
+	_cOccupancyEAvsLS_Subdet.initialize(_name, "OccupancyEAvsLS", 
 		hashfunctions::fSubdet,
 		new quantity::LumiSection(_maxLS),
-		new quantity::ValueQuantity(quantity::fN));
+		new quantity::ValueQuantity(quantity::fN_to3000));
 	_cNBadMeanvsLS_Subdet.initialize(_name, "NBadMeanvsLS", 
 		hashfunctions::fSubdet,
 		new quantity::LumiSection(_maxLS),
@@ -380,7 +384,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 
 	_cMissingvsLS_Subdet.book(ib, _emap, _subsystem);
 	_cOccupancyvsLS_Subdet.book(ib, _emap, _subsystem);
-	_cOccupancyvsLSTest_Subdet.book(ib, _emap, _subsystem);
+	_cOccupancyEAvsLS_Subdet.book(ib, _emap, _subsystem);
 	_cNBadMeanvsLS_Subdet.book(ib, _emap, _subsystem);
 	_cNBadRMSvsLS_Subdet.book(ib, _emap, _subsystem);
 	_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
@@ -436,6 +440,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	switch(uf)
 	{
 		case hcaldqm::f50LS:
+			_cADC_SubdetPM.reset();
 			break;
 		default:
 			break;
@@ -492,9 +497,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_cMeanBad1LS_depth.reset();
 	_cRMSBad1LS_depth.reset();
 	
-//	_cMissingTotal_depth.reset();
-//	_cMeanBadTotal_depth.reset();
-//	_cRMSBadTotal_depth.reset();
+	_cMissingTotal_depth.reset();
+	_cMeanBadTotal_depth.reset();
+	_cRMSBadTotal_depth.reset();
 
 	//	Missing or Bad
 	_cMissing1LS_FEDVME.reset();
@@ -529,6 +534,16 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		HcalElectronicsId eid(_ehashmap.lookup(*it));
 		if (_filter_C36.filter(eid))
 			continue;
+
+		//	filter out channels with bad quality
+		if (_xQuality.exists(HcalDetId(*it)))
+		{
+			HcalChannelStatus cs(it->rawId(), _xQuality.get(HcalDetId(*it)));
+			if (
+				cs.isBitSet(HcalChannelStatus::HcalCellMask) ||
+				cs.isBitSet(HcalChannelStatus::HcalCellDead))
+				continue;
+		}
 
 		HcalDetId did = HcalDetId(it->rawId());
 		double sum1LS = _xPedSum1LS.get(did); 
@@ -696,11 +711,15 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		if (utilities::isFEDHBHE(eid) || utilities::isFEDHO(eid) ||
 			utilities::isFEDHF(eid))
 		{
+			double frmissing = double(_xNMsn1LS.get(eid))/
+				double(_xNChs.get(eid));
 			double frbadm = _xNBadMean1LS.get(eid)/_xNChs.get(eid);
 			double frbadr = _xNBadRMS1LS.get(eid)/_xNChs.get(eid);
 
-			if (_xNMsn1LS.get(eid)>0)
+			if (frmissing>=_thresh_missing_high)
 				_vflags[fMsn]._state = flag::fBAD;
+			else if (frmissing>=_thresh_missing_low)
+				_vflags[fMsn]._state = flag::fPROBLEMATIC;
 			else
 				_vflags[fMsn]._state = flag::fGOOD;
 			if (frbadm>=_thresh_badm)
@@ -737,8 +756,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	DQTask::beginLuminosityBlock(lb, es);
 }
 
-/* virtual */ void PedestalTask::endLuminosityBlock(edm::LuminosityBlock const&,
-	edm::EventSetup const&)
+/* virtual */ void PedestalTask::endLuminosityBlock(
+	edm::LuminosityBlock const& lb, edm::EventSetup const& es)
 {
 	if (_ptype==fLocal)
 		return;
@@ -764,6 +783,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		_logger.dqmthrow("Collection HFDigiCollection isn't available"
 			+ _tagHF.label() + " " + _tagHF.instance());
 
+	int nHB(0), nHE(0), nHO(0), nHF(0);
 	for (HBHEDigiCollection::const_iterator it=chbhe->begin();
 		it!=chbhe->end(); ++it)
 	{
@@ -771,10 +791,11 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		HcalDetId did = digi.id();
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
+		did.subdet()==HcalBarrel ? nHB++ : nHE++;
+
 		for (int i=0; i<digiSizeToUse; i++)
 		{
 			_cADC_SubdetPM.fill(did, it->sample(i).adc());
-			_cOccupancyvsLSTest_Subdet.fill(did, _currentLS);
 
 			_xPedSum1LS.get(did)+=it->sample(i).adc();
 			_xPedSum21LS.get(did)+=it->sample(i).adc()*it->sample(i).adc();
@@ -785,6 +806,11 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			_xPedEntriesTotal.get(did)++;
 		}
 	}
+	_cOccupancyEAvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1,1,1), 
+		_currentLS, nHB);
+	_cOccupancyEAvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1,1,1), 
+		_currentLS, nHE);
+
 	for (HODigiCollection::const_iterator it=cho->begin();
 		it!=cho->end(); ++it)
 	{
@@ -792,10 +818,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		HcalDetId did = digi.id();
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
+		nHO++;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
 			_cADC_SubdetPM.fill(did, it->sample(i).adc());
-			_cOccupancyvsLSTest_Subdet.fill(did, _currentLS);
 
 			_xPedSum1LS.get(did)+=it->sample(i).adc();
 			_xPedSum21LS.get(did)+=it->sample(i).adc()*it->sample(i).adc();
@@ -806,6 +832,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			_xPedEntriesTotal.get(did)++;
 		}
 	}
+	_cOccupancyEAvsLS_Subdet.fill(HcalDetId(HcalOuter, 1,1,1), 
+		_currentLS, nHO);
+
 	for (HFDigiCollection::const_iterator it=chf->begin();
 		it!=chf->end(); ++it)
 	{
@@ -813,10 +842,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		HcalDetId did = digi.id();
 		int digiSizeToUse = floor(digi.size()/constants::CAPS_NUM)*
 			constants::CAPS_NUM-1;
+		nHF++;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
 			_cADC_SubdetPM.fill(did, it->sample(i).adc());
-			_cOccupancyvsLSTest_Subdet.fill(did, _currentLS);
 
 			_xPedSum1LS.get(did)+=it->sample(i).adc();
 			_xPedSum21LS.get(did)+=it->sample(i).adc()*it->sample(i).adc();
@@ -827,6 +856,8 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			_xPedEntriesTotal.get(did)++;
 		}
 	}
+	_cOccupancyEAvsLS_Subdet.fill(HcalDetId(HcalForward, 1,1,1), 
+		_currentLS, nHF);
 }
 
 /* virtual */ bool PedestalTask::_isApplicable(edm::Event const& e)

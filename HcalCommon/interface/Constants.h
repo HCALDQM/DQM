@@ -12,9 +12,9 @@ namespace hcaldqm
 		/*
 		 *	Detector Subsystem Status States
 		 */
-		double const GOOD = 0.98;
-		double const PROBLEMATIC = 0.95;
-		double const LOW = 0.75;
+		double const GOOD = 1.0;
+		double const PROBLEMATIC = 0.9;
+		double const BAD = 0.5;
 		double const VERY_LOW = 0.5;
 		double const VERY_LOW_XXX = 0;
 		double const NOT_APPLICABLE = -1;
@@ -215,7 +215,7 @@ namespace hcaldqm
 		int const RAW_EMPTY = 16;
 		int const UTCA_DATAFLAVOR = 0x5;
 
-		double adc2fC[256] = {
+		double const adc2fC[256] = {
 			1.58, 4.73, 7.88, 11.0, 14.2, 17.3, 20.5, 23.6, 
 			26.8, 29.9, 33.1, 36.2, 39.4, 42.5, 45.7, 48.8,
 	  		53.6, 60.1, 66.6, 73.0, 79.5, 86.0, 92.5, 98.9,

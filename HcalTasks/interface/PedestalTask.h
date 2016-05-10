@@ -69,6 +69,7 @@ class PedestalTask : public DQTask
 
 		//	thresholds
 		double _thresh_mean, _thresh_rms, _thresh_badm, _thresh_badr;
+		double _thresh_missing_high, _thresh_missing_low;
 
 		//	hashed ids of FEDs
 		std::vector<uint32_t> _vhashFEDs;
@@ -134,7 +135,8 @@ class PedestalTask : public DQTask
 		Container1D _cNBadMeanvsLS_Subdet;
 		Container1D _cNBadRMSvsLS_Subdet;
 
-		ContainerProf1D _cOccupancyvsLSTest_Subdet;
+		//	averaging per event
+		ContainerProf1D _cOccupancyEAvsLS_Subdet;
 
 		//	map of missing channels
 		Container2D	_cMissing1LS_depth;

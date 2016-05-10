@@ -723,7 +723,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		if (utilities::isFEDHF(eid))
 		{
 			if (_xUni.get(eid)>0)
-				_vflags[fUni]._state = flag::fBAD;
+				_vflags[fUni]._state = flag::fPROBLEMATIC;
 			else
 				_vflags[fUni]._state = flag::fGOOD;
 		}

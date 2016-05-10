@@ -45,6 +45,9 @@ referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
 process.DQMStore.verbose = 0
+process.dqmSaver.path = "/data/hcaldqm/DQMIO/ONLINE_PLAYBACK"
+process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
+process.DQM.collectorPort = cms.untracked.int32(9190)
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
@@ -94,6 +97,7 @@ process.hcalDigis.InputLabel = rawTag
 process.load("DQM.HcalTasks.DigiTask")
 process.load('DQM.HcalTasks.TPTask')
 process.load('DQM.HcalTasks.RawTask')
+process.load('DQM.HcalTasks.QIE10Task')
 process.load('DQM.HcalTasks.HcalOnlineHarvesting')
 
 #-------------------------------------
@@ -106,6 +110,16 @@ if useMap:
         tag = cms.string("HcalElectronicsMap_v7.05_hlt"),
         )
 	)
+#process.es_ascii = cms.ESSource(
+#	'HcalTextCalibrations',
+#	input = cms.VPSet(
+#		cms.PSet(
+#			object = cms.string('ElectronicsMap'),
+#			file = cms.FileInPath('version_G_emap_HBHEuHTR_qie10.txt')
+#		)
+#	)
+#)
+#process.es_prefer = cms.ESPrefer('HcalTextCalibrations', 'es_ascii')
 
 #-------------------------------------
 #	For Debugginb
@@ -124,6 +138,9 @@ process.rawTask.runkeyVal = runType
 process.rawTask.runkeyName = runTypeName
 process.tpTask.runkeyVal = runType
 process.tpTask.runkeyName = runTypeName
+process.qie10Task.runkeyVal = runType
+process.qie10Task.runkeyName = runTypeName
+process.qie10Task.tagQIE10 = cms.untracked.InputTag("hcalDigis")
 
 #-------------------------------------
 #	Hcal DQM Tasks/Clients Sequences Definition
@@ -132,6 +149,7 @@ process.tasksPath = cms.Path(
 		process.rawTask
 		+process.digiTask
 		+process.tpTask
+		+process.qie10Task
 )
 
 process.harvestingPath = cms.Path(

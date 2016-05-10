@@ -5,12 +5,13 @@
  *	file:			QIE10Task.h
  *	Author:			Viktor KHristenko
  *	Description:
- *		TestTask of QIE10 Read out
+ *		Task for QIE10 Read out
  */
 
 #include "DQM/HcalCommon/interface/DQTask.h"
 #include "DQM/HcalCommon/interface/Utilities.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
+#include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf2D.h"
 #include "DQM/HcalCommon/interface/ContainerSingle1D.h"
@@ -24,8 +25,8 @@ using namespace hcaldqm::electronicsmap;
 class QIE10Task : public DQTask
 {
 	public:
-		QIE10TestTask(edm::ParameterSet const&);
-		virtual ~QIE10TestTask(){}
+		QIE10Task(edm::ParameterSet const&);
+		virtual ~QIE10Task(){}
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);

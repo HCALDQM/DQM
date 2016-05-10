@@ -1,5 +1,5 @@
 
-#include "DQM/SpecificTasks/interface/QIE10Task.h"
+#include "DQM/HcalTasks/interface/QIE10Task.h"
 
 using namespace hcaldqm;
 QIE10Task::QIE10Task(edm::ParameterSet const& ps):
@@ -38,11 +38,11 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 	_cShapeCut_EChannel.initialize(_name,
 		"ShapeCut", hashfunctions::fEChannel,
 		new quantity::ValueQuantity(quantity::fTiming_TS),
-		new quantity::ValueQuantity(quantity::fQIE10fC_10000));
+		new quantity::ValueQuantity(quantity::fQIE10fC_300000));
 	_cShapeCut.initialize(_name,
 		"ShapeCut", 
 		new quantity::ValueQuantity(quantity::fTiming_TS),
-		new quantity::ValueQuantity(quantity::fQIE10fC_10000));
+		new quantity::ValueQuantity(quantity::fQIE10fC_300000));
 	_cLETDCvsADC.initialize(_name, "LETDCvsADC",
 		new quantity::ValueQuantity(quantity::fQIE10ADC_256),
 		new quantity::ValueQuantity(quantity::fQIE10TDC_64),
@@ -78,12 +78,12 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
 			new quantity::ValueQuantity(quantity::fN, true));
 		_cLETDC_EChannel[j].initialize(_name,
-			"TDC", hashfunctions::fEChannel,
+			"LETDC", hashfunctions::fEChannel,
 			new quantity::ValueQuantity(quantity::fQIE10TDC_64),
 			new quantity::ValueQuantity(quantity::fN, true));
 	}
 
-	_cShapeCut_EChannel.book(ib, _emap, _filter_C36, subsystem);
+	_cShapeCut_EChannel.book(ib, _emap, _filter_C36, _subsystem);
 	_cShapeCut.book(ib, _subsystem);
 	_cLETDCvsADC.book(ib, _subsystem);
 	_cTETDCvsADC.book(ib, _subsystem);
@@ -124,7 +124,7 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 
 		//	compute the signal, ped subracted
-		double q = utilities::aveTS_v10<QIE10DataFrame>(frame,
+		double q = utilities::sumQ_v10<QIE10DataFrame>(frame,
 			constants::adc2fC[_ped], 0, frame.samples()-1);
 
 		//	iterate thru all TS and fill
@@ -133,21 +133,22 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 			//	shapes are after the cut
 			if (q>_cut)
 			{
-				_cShape_EChannel.fill(eid, j, adc2fC[frame[j].adc()]);	
-				_cShape.fill(eid, j, adc2fC[frame[j].adc()]);
+				_cShapeCut_EChannel.fill(eid, j, 
+					constants::adc2fC[frame[j].adc()]);	
+				_cShapeCut.fill(j, constants::adc2fC[frame[j].adc()]);
 			}
 
 			//	w/o a cut
 			_cLETDCvsADC_EChannel[j].fill(eid, frame[j].adc(), 
 				frame[j].le_tdc());
-			_cLETDCvsADC.fill(eid, frame[j].adc(), frame[j].le_tdc());
+			_cLETDCvsADC.fill(frame[j].adc(), frame[j].le_tdc());
 			_cTETDCvsADC_EChannel[j].fill(eid, frame[j].adc(), 
 				frame[j].te_tdc());
-			_cTETDCvsADC.fill(eid, frame[j].adc(), frame[j].te_tdc());
+			_cTETDCvsADC.fill(frame[j].adc(), frame[j].te_tdc());
 			_cLETDC_EChannel[j].fill(eid, frame[j].le_tdc());
-			_cLETDC.fill(eid, frame[j].le_tdc());
+			_cLETDC.fill(frame[j].le_tdc());
 			_cADC_EChannel[j].fill(eid, frame[j].adc());
-			_cADC.fill(eid, frame[j].adc());
+			_cADC.fill(frame[j].adc());
 		}
 	}
 }
