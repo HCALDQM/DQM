@@ -1,8 +1,8 @@
 
-#include "DQM/SpecificTasks/interface/QIE10TestTask.h"
+#include "DQM/SpecificTasks/interface/QIE10Task.h"
 
 using namespace hcaldqm;
-QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
+QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 	DQTask(ps)
 {
 	
@@ -10,8 +10,12 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 	_tagQIE10 = ps.getUntrackedParameter<edm::InputTag>("tagQIE10",
 		edm::InputTag("hcalDigis"));
 	_tokQIE10 = consumes<QIE10DigiCollection>(_tagQIE10);
+
+	//	cuts
+	_cut = ps.getUntrackedParameter<double>("cut", 50.0);
+	_ped = ps.getUntrackedParameter<int>("ped", 4);
 }
-/* virtual */ void QIE10TestTask::bookHistograms(DQMStore::IBooker &ib,
+/* virtual */ void QIE10Task::bookHistograms(DQMStore::IBooker &ib,
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	if (_ptype==fLocal)
@@ -31,22 +35,44 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 		vhashC36);
 
 	//	INITIALIZE what you need
-	_cShape_EChannel.initialize(_name,
-		"Shape", hashfunctions::fEChannel,
+	_cShapeCut_EChannel.initialize(_name,
+		"ShapeCut", hashfunctions::fEChannel,
 		new quantity::ValueQuantity(quantity::fTiming_TS),
-		new quantity::ValueQuantity(quantity::ffC_10000));
+		new quantity::ValueQuantity(quantity::fQIE10fC_10000));
+	_cShapeCut.initialize(_name,
+		"ShapeCut", 
+		new quantity::ValueQuantity(quantity::fTiming_TS),
+		new quantity::ValueQuantity(quantity::fQIE10fC_10000));
+	_cLETDCvsADC.initialize(_name, "LETDCvsADC",
+		new quantity::ValueQuantity(quantity::fQIE10ADC_256),
+		new quantity::ValueQuantity(quantity::fQIE10TDC_64),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cTETDCvsADC.initialize(_name, "TETDCvsADC",
+		new quantity::ValueQuantity(quantity::fQIE10ADC_256),
+		new quantity::ValueQuantity(quantity::fQIE10TDC_64),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cLETDC.initialize(_name, "LETDC",
+		new quantity::ValueQuantity(quantity::fQIE10TDC_64),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cADC.initialize(_name, "ADC",
+		new quantity::ValueQuantity(quantity::fQIE10ADC_256),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cOccupancy_depth.initialize(_name, hashfunctions::fdepth,
+		new quantity::DetectorQuantity(quantity::fiphi),
+		new quantity::DetectorQuantity(quantity::fieta),
+		new quantity::ValueQuantity(quantity::fN, true));
 	for (unsigned int j=0; j<10; j++)
 	{
 		_cLETDCvsADC_EChannel[j].initialize(_name,
 			"LETDCvsADC", hashfunctions::fEChannel,
 			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
 			new quantity::ValueQuantity(quantity::fQIE10TDC_64),
-			new quantity::ValueQuantity(quantity::fN));
+			new quantity::ValueQuantity(quantity::fN, true));
 		_cTETDCvsADC_EChannel[j].initialize(_name,
 			"TETDCvsADC", hashfunctions::fEChannel,
 			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
 			new quantity::ValueQuantity(quantity::fQIE10TDC_64),
-			new quantity::ValueQuantity(quantity::fN));
+			new quantity::ValueQuantity(quantity::fN, true));
 		_cADC_EChannel[j].initialize(_name,
 			"ADC", hashfunctions::fEChannel,
 			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
@@ -57,7 +83,12 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 			new quantity::ValueQuantity(quantity::fN, true));
 	}
 
-	_cShape_EChannel.book(ib, _emap, _filter_C36);
+	_cShapeCut_EChannel.book(ib, _emap, _filter_C36, subsystem);
+	_cShapeCut.book(ib, _subsystem);
+	_cLETDCvsADC.book(ib, _subsystem);
+	_cTETDCvsADC.book(ib, _subsystem);
+	_cLETDC.book(ib, _subsystem);
+	_cADC.book(ib, _subsystem);
 	for (unsigned int i=0; i<10; i++)
 	{
 		char aux[10];
@@ -69,11 +100,9 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 	}
 
 	_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap, _filter_C36);
-//	_ehashmap.print();
-//	_cADC_EChannel[0].print();
 }
 
-/* virtual */ void QIE10TestTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
+/* virtual */ void QIE10Task::endLuminosityBlock(edm::LuminosityBlock const& lb,
 	edm::EventSetup const& es)
 {
 	
@@ -81,12 +110,12 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 	DQTask::endLuminosityBlock(lb, es);
 }
 
-/* virtual */ void QIE10TestTask::_process(edm::Event const& e, 
+/* virtual */ void QIE10Task::_process(edm::Event const& e, 
 	edm::EventSetup const&)
 {
 	edm::Handle<QIE10DigiCollection> cqie10;
 	if (!e.getByToken(_tokQIE10, cqie10))
-		std::cout << "Collection isn't availalbe" << std::endl;
+		std::cout << "Collection isn't available" << std::endl;
 
 	for (uint32_t i=0; i<cqie10->size(); i++)
 	{
@@ -94,21 +123,37 @@ QIE10TestTask::QIE10TestTask(edm::ParameterSet const& ps):
 		HcalDetId did = frame.detid();
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 
+		//	compute the signal, ped subracted
+		double q = utilities::aveTS_v10<QIE10DataFrame>(frame,
+			constants::adc2fC[_ped], 0, frame.samples()-1);
+
+		//	iterate thru all TS and fill
 		for (int j=0; j<frame.samples(); j++)
 		{
-			_cShape_EChannel.fill(eid, j, adc2fC[frame[j].adc()]);	
+			//	shapes are after the cut
+			if (q>_cut)
+			{
+				_cShape_EChannel.fill(eid, j, adc2fC[frame[j].adc()]);	
+				_cShape.fill(eid, j, adc2fC[frame[j].adc()]);
+			}
+
+			//	w/o a cut
 			_cLETDCvsADC_EChannel[j].fill(eid, frame[j].adc(), 
 				frame[j].le_tdc());
+			_cLETDCvsADC.fill(eid, frame[j].adc(), frame[j].le_tdc());
 			_cTETDCvsADC_EChannel[j].fill(eid, frame[j].adc(), 
 				frame[j].te_tdc());
+			_cTETDCvsADC.fill(eid, frame[j].adc(), frame[j].te_tdc());
 			_cLETDC_EChannel[j].fill(eid, frame[j].le_tdc());
+			_cLETDC.fill(eid, frame[j].le_tdc());
 			_cADC_EChannel[j].fill(eid, frame[j].adc());
+			_cADC.fill(eid, frame[j].adc());
 		}
 	}
 }
 
-/* virtual */ void QIE10TestTask::_resetMonitors(UpdateFreq)
+/* virtual */ void QIE10Task::_resetMonitors(UpdateFreq)
 {
 }
 
-DEFINE_FWK_MODULE(QIE10TestTask);
+DEFINE_FWK_MODULE(QIE10Task);

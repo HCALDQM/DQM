@@ -29,9 +29,10 @@ class PedestalTask : public DQTask
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
+		virtual void beginLuminosityBlock(edm::LuminosityBlock const&,
+			edm::EventSetup const&);
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
-		virtual void endRun(edm::Run const&, edm::EventSetup const&);
 
 	protected:
 		//	funcs
@@ -133,6 +134,8 @@ class PedestalTask : public DQTask
 		Container1D _cNBadMeanvsLS_Subdet;
 		Container1D _cNBadRMSvsLS_Subdet;
 
+		ContainerProf1D _cOccupancyvsLSTest_Subdet;
+
 		//	map of missing channels
 		Container2D	_cMissing1LS_depth;
 		Container2D	_cMissing1LS_FEDVME;
@@ -155,6 +158,8 @@ class PedestalTask : public DQTask
 		Container2D	_cRMSBadTotal_FEDuTCA;
 		Container2D	_cRMSBadTotal_FEDVME;
 		Container2D	_cMeanBadTotal_FEDuTCA;
+
+		Container1D _cADC_SubdetPM;
 		
 		//	Summaries
 		Container2D _cSummaryvsLS_FED;

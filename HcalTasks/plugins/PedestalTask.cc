@@ -89,33 +89,33 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	_xNBadRMS1LS.initialize(hashfunctions::fFED);
 
 	//	Containers
-	_cMean1LS_Subdet.initialize(_name, "Mean",hashfunctions::fSubdet, 
+	_cMean1LS_Subdet.initialize(_name, "Mean1LS",hashfunctions::fSubdet, 
 		new quantity::ValueQuantity(quantity::fADC_15),
 		new quantity::ValueQuantity(quantity::fN, true));
-	_cRMS1LS_Subdet.initialize(_name, "RMS", hashfunctions::fSubdet, 
+	_cRMS1LS_Subdet.initialize(_name, "RMS1LS", hashfunctions::fSubdet, 
 		new quantity::ValueQuantity(quantity::fADC_5),
 		new quantity::ValueQuantity(quantity::fN, true));
-	_cMean1LS_depth.initialize(_name, "Mean", hashfunctions::fdepth, 
+	_cMean1LS_depth.initialize(_name, "Mean1LS", hashfunctions::fdepth, 
 		new quantity::DetectorQuantity(quantity::fieta), 
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fADC_15));
-	_cRMS1LS_depth.initialize(_name, "RMS", hashfunctions::fdepth, 
+	_cRMS1LS_depth.initialize(_name, "RMS1LS", hashfunctions::fdepth, 
 		new quantity::DetectorQuantity(quantity::fieta), 
 		new quantity::DetectorQuantity(quantity::fiphi),
 		new quantity::ValueQuantity(quantity::fADC_5));
-	_cMean1LS_FEDVME.initialize(_name, "Mean", hashfunctions::fFED,
+	_cMean1LS_FEDVME.initialize(_name, "Mean1LS", hashfunctions::fFED,
 		new quantity::ElectronicsQuantity(quantity::fSpigot),
 		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
 		new quantity::ValueQuantity(quantity::fADC_15));
-	_cMean1LS_FEDuTCA.initialize(_name, "Mean", hashfunctions::fFED,
+	_cMean1LS_FEDuTCA.initialize(_name, "Mean1LS", hashfunctions::fFED,
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fADC_15));
-	_cRMS1LS_FEDVME.initialize(_name, "RMS", hashfunctions::fFED,
+	_cRMS1LS_FEDVME.initialize(_name, "RMS1LS", hashfunctions::fFED,
 		new quantity::ElectronicsQuantity(quantity::fSpigot),
 		new quantity::ElectronicsQuantity(quantity::fFiberVMEFiberCh),
 		new quantity::ValueQuantity(quantity::fADC_5));
-	_cRMS1LS_FEDuTCA.initialize(_name, "RMS", hashfunctions::fFED,
+	_cRMS1LS_FEDuTCA.initialize(_name, "RMS1LS", hashfunctions::fFED,
 		new quantity::ElectronicsQuantity(quantity::fSlotuTCA),
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fADC_5));
@@ -221,6 +221,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		hashfunctions::fSubdet,
 		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::fN));
+	_cOccupancyvsLSTest_Subdet.initialize(_name, "OccupancyvsLSTest", 
+		hashfunctions::fSubdet,
+		new quantity::LumiSection(_maxLS),
+		new quantity::ValueQuantity(quantity::fN));
 	_cNBadMeanvsLS_Subdet.initialize(_name, "NBadMeanvsLS", 
 		hashfunctions::fSubdet,
 		new quantity::LumiSection(_maxLS),
@@ -304,6 +308,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		new quantity::ElectronicsQuantity(quantity::fFiberuTCAFiberCh),
 		new quantity::ValueQuantity(quantity::fN));
 
+	_cADC_SubdetPM.initialize(_name, "ADC", hashfunctions::fSubdetPM,
+		new quantity::ValueQuantity(quantity::fADC_128),
+		new quantity::ValueQuantity(quantity::fN, true));
+
 	_cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
 		hashfunctions::fFED,
 		new quantity::LumiSection(_maxLS),
@@ -315,6 +323,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fState));
 
 	//	book plots
+	_cADC_SubdetPM.book(ib, _emap, _subsystem);
 	_cMean1LS_Subdet.book(ib, _emap, _subsystem);
 	_cRMS1LS_Subdet.book(ib, _emap, _subsystem);
 	_cMean1LS_depth.book(ib, _emap, _subsystem);
@@ -371,6 +380,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 
 	_cMissingvsLS_Subdet.book(ib, _emap, _subsystem);
 	_cOccupancyvsLS_Subdet.book(ib, _emap, _subsystem);
+	_cOccupancyvsLSTest_Subdet.book(ib, _emap, _subsystem);
 	_cNBadMeanvsLS_Subdet.book(ib, _emap, _subsystem);
 	_cNBadRMSvsLS_Subdet.book(ib, _emap, _subsystem);
 	_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
@@ -426,19 +436,11 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	switch(uf)
 	{
 		case hcaldqm::f50LS:
-			//	reset the containers for Sums, SumSqr, #Entries
-			_xPedSum1LS.reset();
-			_xPedSum21LS.reset();
-			_xPedEntries1LS.reset();
 			break;
 		default:
 			break;
 	}
 }
-
-/* virtual */ void PedestalTask::endRun(edm::Run const& r, 
-	edm::EventSetup const&)
-{}
 
 /* virtual */ void PedestalTask::_dump()
 {
@@ -729,12 +731,20 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	
 }
 
+/* virtual */ void PedestalTask::beginLuminosityBlock(
+	edm::LuminosityBlock const& lb, edm::EventSetup const& es)
+{
+	DQTask::beginLuminosityBlock(lb, es);
+}
+
 /* virtual */ void PedestalTask::endLuminosityBlock(edm::LuminosityBlock const&,
 	edm::EventSetup const&)
 {
 	if (_ptype==fLocal)
 		return;
 	this->_dump();
+
+	DQTask::endLuminosityBlock(lb, es);
 }
 
 /* virtual */ void PedestalTask::_process(edm::Event const& e,
@@ -763,6 +773,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
+			_cADC_SubdetPM.fill(did, it->sample(i).adc());
+			_cOccupancyvsLSTest_Subdet.fill(did, _currentLS);
+
 			_xPedSum1LS.get(did)+=it->sample(i).adc();
 			_xPedSum21LS.get(did)+=it->sample(i).adc()*it->sample(i).adc();
 			_xPedEntries1LS.get(did)++;
@@ -781,6 +794,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
+			_cADC_SubdetPM.fill(did, it->sample(i).adc());
+			_cOccupancyvsLSTest_Subdet.fill(did, _currentLS);
+
 			_xPedSum1LS.get(did)+=it->sample(i).adc();
 			_xPedSum21LS.get(did)+=it->sample(i).adc()*it->sample(i).adc();
 			_xPedEntries1LS.get(did)++;
@@ -799,6 +815,9 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 			constants::CAPS_NUM-1;
 		for (int i=0; i<digiSizeToUse; i++)
 		{
+			_cADC_SubdetPM.fill(did, it->sample(i).adc());
+			_cOccupancyvsLSTest_Subdet.fill(did, _currentLS);
+
 			_xPedSum1LS.get(did)+=it->sample(i).adc();
 			_xPedSum21LS.get(did)+=it->sample(i).adc()*it->sample(i).adc();
 			_xPedEntries1LS.get(did)++;
