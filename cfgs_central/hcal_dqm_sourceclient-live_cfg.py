@@ -45,9 +45,6 @@ referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
 process.DQMStore.verbose = 0
-process.dqmSaver.path = "/data/hcaldqm/DQMIO/ONLINE_PLAYBACK"
-process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
-process.DQM.collectorPort = cms.untracked.int32(9190)
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
@@ -110,16 +107,6 @@ if useMap:
         tag = cms.string("HcalElectronicsMap_v7.05_hlt"),
         )
 	)
-#process.es_ascii = cms.ESSource(
-#	'HcalTextCalibrations',
-#	input = cms.VPSet(
-#		cms.PSet(
-#			object = cms.string('ElectronicsMap'),
-#			file = cms.FileInPath('version_G_emap_HBHEuHTR_qie10.txt')
-#		)
-#	)
-#)
-#process.es_prefer = cms.ESPrefer('HcalTextCalibrations', 'es_ascii')
 
 #-------------------------------------
 #	For Debugginb
