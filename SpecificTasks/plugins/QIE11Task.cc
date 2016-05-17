@@ -29,7 +29,7 @@ QIE11Task::QIE11Task(edm::ParameterSet const& ps):
 	es.get<HcalDbRecord>().get(dbs);
 	_emap = dbs->getHcalMapping();
 	std::vector<uint32_t> vhashC36;
-	vhashC36.push_back(HcalElectronicsId(36, 3,
+	vhashC36.push_back(HcalElectronicsId(36, 4,
 		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
 	_filter_C36.initialize(filter::fPreserver, hashfunctions::fCrateSlot,
 		vhashC36);
@@ -116,13 +116,15 @@ QIE11Task::QIE11Task(edm::ParameterSet const& ps):
 	for (uint32_t i=0; i<cqie10->size(); i++)
 	{
 		QIE11DataFrame frame = static_cast<QIE11DataFrame>((*cqie10)[i]);
-		HcalDetId did = frame.detid();
-		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
+		DetId did = frame.detid();
+		std::cout << did << std::endl;
+//		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 
 		//	compute the signal, ped subracted
-		double q = utilities::aveTS_v10<QIE11DataFrame>(frame,
-			constants::adc2fC[_ped], 0, frame.samples()-1);
+//		double q = utilities::aveTS_v10<QIE11DataFrame>(frame,
+//			constants::adc2fC[_ped], 0, frame.samples()-1);
 
+		/*
 		//	iterate thru all TS and fill
 		for (int j=0; j<frame.samples(); j++)
 		{
@@ -144,7 +146,9 @@ QIE11Task::QIE11Task(edm::ParameterSet const& ps):
 			_cLETDC.fill(eid, frame[j].le_tdc());
 			_cADC_EChannel[j].fill(eid, frame[j].adc());
 			_cADC.fill(eid, frame[j].adc());
+
 		}
+		*/
 	}
 }
 
