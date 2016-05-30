@@ -11,6 +11,7 @@
 #include "DQM/HcalCommon/interface/DQTask.h"
 #include "DQM/HcalCommon/interface/Utilities.h"
 #include "DQM/HcalCommon/interface/Container2D.h"
+#include "DQM/HcalCommon/interface/ContainerProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf1D.h"
 #include "DQM/HcalCommon/interface/ContainerSingleProf2D.h"
 #include "DQM/HcalCommon/interface/ContainerSingle1D.h"
@@ -24,8 +25,8 @@ using namespace hcaldqm::electronicsmap;
 class QIE11Task : public DQTask
 {
 	public:
-		QIE11TestTask(edm::ParameterSet const&);
-		virtual ~QIE11TestTask(){}
+		QIE11Task(edm::ParameterSet const&);
+		virtual ~QIE11Task(){}
 
 		virtual void bookHistograms(DQMStore::IBooker&,
 			edm::Run const&, edm::EventSetup const&);
@@ -53,9 +54,9 @@ class QIE11Task : public DQTask
 		
 		//	Containers
 		ContainerProf1D	_cShapeCut_EChannel;
-		Container2D	_cTDCvsADC_EChannel;
-		Container1D _cTDC_EChannel;
-		Container1D _cADC_EChannel;
+		Container2D	_cTDCvsADC_EChannel[10];
+		Container1D _cTDC_EChannel[10];
+		Container1D _cADC_EChannel[10];
 		Container2D _cOccupancy_depth;
 
 		//	Containers overall
