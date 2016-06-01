@@ -819,10 +819,14 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			{
 				double fr = double(_xNChs.get(eid))/double(
 					_xNChsNominal.get(eid)*_evsPerLS);
-				if (_xUni.get(eid)>0)
-					_vflags[fUni]._state = flag::fPROBLEMATIC;
-				else
-					_vflags[fUni]._state = flag::fGOOD;
+				if (_runkeyVal==0 || _runkeyVal==4)
+				{
+					//	only for pp or hi
+					if (_xUni.get(eid)>0)
+						_vflags[fUni]._state = flag::fPROBLEMATIC;
+					else
+						_vflags[fUni]._state = flag::fGOOD;
+				}
 				if (fr<0.95)
 					_vflags[fNChsHF]._state = flag::fBAD;
 				else if (fr<1.0)

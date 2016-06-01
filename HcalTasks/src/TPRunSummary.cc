@@ -148,9 +148,9 @@ namespace hcaldqm
 			//	@cDAQ
 			if (utilities::isFEDHBHE(eid) || utilities::isFEDHF(eid))
 			{
-				double etmsmfr = xNumCorr.get(eid)?
+				double etmsmfr = xNumCorr.get(eid)>0?
 					double(xEtMsm.get(eid))/double(xNumCorr.get(eid)):0;
-				double fgmsmfr = xNumCorr.get(eid)?
+				double fgmsmfr = xNumCorr.get(eid)>0?
 					double(xFGMsm.get(eid))/double(xNumCorr.get(eid)):0;
 
 				if (etmsmfr>=_thresh_EtMsmRate_high)
