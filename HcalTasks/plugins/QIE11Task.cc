@@ -1,5 +1,5 @@
 
-#include "DQM/SpecificTasks/interface/QIE11Task.h"
+#include "DQM/HcalTasks/interface/QIE11Task.h"
 
 using namespace hcaldqm;
 QIE11Task::QIE11Task(edm::ParameterSet const& ps):

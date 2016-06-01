@@ -95,6 +95,7 @@ process.load("DQM.HcalTasks.DigiTask")
 process.load('DQM.HcalTasks.TPTask')
 process.load('DQM.HcalTasks.RawTask')
 process.load('DQM.HcalTasks.QIE10Task')
+process.load('DQM.HcalTasks.QIE11Task')
 process.load('DQM.HcalTasks.HcalOnlineHarvesting')
 
 #-------------------------------------
@@ -106,7 +107,7 @@ if useMap:
 		record = cms.string("HcalElectronicsMapRcd"),
         tag = cms.string("HcalElectronicsMap_v7.05_hlt"),
         )
-	)
+    )
 
 #-------------------------------------
 #	For Debugginb
@@ -128,6 +129,9 @@ process.tpTask.runkeyName = runTypeName
 process.qie10Task.runkeyVal = runType
 process.qie10Task.runkeyName = runTypeName
 process.qie10Task.tagQIE10 = cms.untracked.InputTag("hcalDigis")
+process.qie11Task.runkeyVal = runType
+process.qie11Task.runkeyName = runTypeName
+process.qie11Task.tagQIE11 = cms.untracked.InputTag("hcalDigis")
 
 #-------------------------------------
 #	Hcal DQM Tasks/Clients Sequences Definition
@@ -137,6 +141,7 @@ process.tasksPath = cms.Path(
 		+process.digiTask
 		+process.tpTask
 		+process.qie10Task
+                +process.qie11Task
 )
 
 process.harvestingPath = cms.Path(

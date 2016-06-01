@@ -33,6 +33,7 @@ class PedestalTask : public DQTask
 			edm::EventSetup const&);
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);
+		virtual void endRun(edm::Run const&, edm::EventSetup const&);
 
 	protected:
 		//	funcs
