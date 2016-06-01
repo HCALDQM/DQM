@@ -354,7 +354,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 					_cOrnMsm_ElectronicsuTCA.fill(eid);
 
 					if (_ptype==fOnline)
-						_xOrnMsm.LS.get(eid)++;
+						_xOrnMsmLS.get(eid)++;
 				}
 				if (qbcn)
 				{

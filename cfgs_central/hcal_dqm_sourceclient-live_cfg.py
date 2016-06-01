@@ -94,6 +94,7 @@ process.hcalDigis.InputLabel = rawTag
 process.load("DQM.HcalTasks.DigiTask")
 process.load('DQM.HcalTasks.TPTask')
 process.load('DQM.HcalTasks.RawTask')
+process.load('DQM.HcalTasks.NoCQTask')
 process.load('DQM.HcalTasks.QIE10Task')
 process.load('DQM.HcalTasks.QIE11Task')
 process.load('DQM.HcalTasks.HcalOnlineHarvesting')
@@ -122,6 +123,8 @@ oldsubsystem = subsystem
 process.rawTask.tagFEDs = rawTagUntracked
 process.digiTask.runkeyVal = runType
 process.digiTask.runkeyName = runTypeName
+process.nocqTask.runkeyVal = runType
+process.nocqTask.runkeyName = runTypeName
 process.rawTask.runkeyVal = runType
 process.rawTask.runkeyName = runTypeName
 process.tpTask.runkeyVal = runType
@@ -140,8 +143,10 @@ process.tasksPath = cms.Path(
 		process.rawTask
 		+process.digiTask
 		+process.tpTask
+
+		+process.nocqTask
 		+process.qie10Task
-                +process.qie11Task
+		+process.qie11Task
 )
 
 process.harvestingPath = cms.Path(

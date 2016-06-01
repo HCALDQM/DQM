@@ -194,6 +194,10 @@ namespace hcaldqm
 				for (std::vector<flag::Flag>::iterator ft=vtmpflags.begin();
 					ft!=vtmpflags.end(); ++ft)
 					ft->_state = flag::fNCDAQ;
+
+				// push all the flags for this FED
+				// IMPORTANT!!!
+				lssum._vflags.push_back(vtmpflags);
 				continue;
 			}
 
@@ -212,7 +216,7 @@ namespace hcaldqm
 				if (_xBadQ.get(eid)>12)
 					vtmpflags[fBadQ]._state = flag::fBAD;
 				else if (_xBadQ.get(eid)>0)
-					_tmpflags[fBadQ]._state = flag::fPROBLEMATIC;
+					vtmpflags[fBadQ]._state = flag::fPROBLEMATIC;
 				else
 					vtmpflags[fBadQ]._state = flag::fGOOD;
 			}

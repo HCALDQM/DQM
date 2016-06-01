@@ -27,6 +27,10 @@ NoCQTask::NoCQTask(edm::ParameterSet const& ps) :
 {
 	DQTask::bookHistograms(ib, r, es);
 
+	edm::ESHandle<HcalDbService> dbs;
+	es.get<HcalDbRecord>().get(dbs);
+	_emap = dbs->getHcalMapping();
+
 	_cTimingCut_depth.initialize(_name, "TimingCut", 
 		hashfunctions::fdepth,
 		new quantity::DetectorQuantity(quantity::fieta),
@@ -51,6 +55,7 @@ NoCQTask::NoCQTask(edm::ParameterSet const& ps) :
 	_cTimingCut_depth.book(ib, _emap, _subsystem);
 	_cOccupancy_depth.book(ib, _emap, _subsystem);
 	_cOccupancyCut_depth.book(ib, _emap, _subsystem);
+	_cBadQuality_depth.book(ib, _emap, _subsystem);
 }
 
 /* virtual */ void NoCQTask::_resetMonitors(UpdateFreq uf)
@@ -101,7 +106,7 @@ NoCQTask::NoCQTask(edm::ParameterSet const& ps) :
 		{
 			double timing = utilities::aveTS<HBHEDataFrame>(*it, 2.5, 0,
 				it->size()-1);
-			_cOccupancCut_depth.fill(did);
+			_cOccupancyCut_depth.fill(did);
 			_cTimingCut_depth.fill(did, timing);
 		}
 	}
