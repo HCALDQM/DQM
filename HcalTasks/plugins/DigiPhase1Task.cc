@@ -11,7 +11,7 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 		edm::InputTag("hcalDigis"));
 
 	_tokHBHE = consumes<QIE11DigiCollection>(_tagHBHE);
-	_tokHO = consumes<HODigiPhase1Collection>(_tagHO);
+	_tokHO = consumes<HODigiCollection>(_tagHO);
 	_tokHF = consumes<QIE10DigiCollection>(_tagHF);
 
 	_cutSumQ_HBHE = ps.getUntrackedParameter<double>("cutSumQ_HBHE", 20);
@@ -34,7 +34,6 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 	std::vector<int> vFEDsuTCA = utilities::getFEDuTCAList(_emap);
 	std::vector<uint32_t> vVME;
 	std::vector<uint32_t> vuTCA;
-	std::vector<uint32_t> vFEDHF;
 	vVME.push_back(HcalElectronicsId(constants::FIBERCH_MIN, 
 		constants::FIBER_VME_MIN, SPIGOT_MIN, CRATE_VME_MIN).rawId());
 	vuTCA.push_back(HcalElectronicsId(CRATE_uTCA_MIN, SLOT_uTCA_MIN,
@@ -43,16 +42,6 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 		vVME);
 	_filter_uTCA.initialize(filter::fFilter, hashfunctions::fElectronics,
 		vuTCA);
-	vFEDHF.push_back(HcalElectronicsId(22, SLOT_uTCA_MIN,
-		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
-	vFEDHF.push_back(HcalElectronicsId(29, SLOT_uTCA_MIN,
-		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
-	vFEDHF.push_back(HcalElectronicsId(32, SLOT_uTCA_MIN,
-		FIBER_uTCA_MIN1, FIBERCH_MIN, false).rawId());
-
-	//	initialize filters
-	_filter_FEDHF.initialize(filter::fPreserver, hashfunctions::fFED,
-		vFEDHF);
 
 	//	push the rawIds of each fed into the vector...
 	for (std::vector<int>::const_iterator it=vFEDsVME.begin();
@@ -192,16 +181,6 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 	//	INITIALIZE HISTOGRAMS that are only for Online
 	if (_ptype==fOnline)
 	{
-		std::vector<uint32_t> vhashHF; 
-		vhashHF.push_back(HcalDetId(HcalForward, 31,1,1).rawId());
-		_filter_HF.initialize(filter::fPreserver, hashfunctions::fSubdet,
-			vhashHF);
-
-		//	Charge sharing
-		_cQ2Q12CutvsLS_FEDHF.initialize(_name, "Q2Q12vsLS",
-			hashfunctions::fFED,
-			new quantity::LumiSection(_maxLS),
-			new quantity::ValueQuantity(quantity::fRatio_0to2));
 		_cSumQvsBX_SubdetPM.initialize(_name, "SumQvsBX",
 			hashfunctions::fSubdetPM,
 			new quantity::ValueQuantity(quantity::fBX),
@@ -252,17 +231,7 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 			new quantity::LumiSection(_maxLS),
 			new quantity::DetectorQuantity(quantity::fiphi),
 			new quantity::ValueQuantity(quantity::fN));
-		_cSummaryvsLS_FED.initialize(_name, "SummaryvsLS",
-			hashfunctions::fFED,
-			new quantity::LumiSection(_maxLS),
-			new quantity::FlagQuantity(_vflags),
-			new quantity::ValueQuantity(quantity::fState));
-		_cSummaryvsLS.initialize(_name, "SummaryvsLS",
-			new quantity::LumiSection(_maxLS),
-			new quantity::FEDQuantity(vFEDs),
-			new quantity::ValueQuantity(quantity::fState));
 
-		_xUniHF.initialize(hashfunctions::fFEDSlot);
 		_xUni.initialize(hashfunctions::fFED);
 		_xDigiSize.initialize(hashfunctions::fFED);
 		_xNChs.initialize(hashfunctions::fFED);
@@ -311,7 +280,6 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 	_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
 	if (_ptype==fOnline)
 	{
-		_cQ2Q12CutvsLS_FEDHF.book(ib, _emap, _filter_FEDHF, _subsystem);
 		_cSumQvsBX_SubdetPM.book(ib, _emap, _subsystem);
 		_cDigiSizevsLS_FED.book(ib, _emap, _subsystem);
 		_cTimingCutvsiphi_SubdetPM.book(ib, _emap, _subsystem);
@@ -322,12 +290,8 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 		_cOccupancyvsieta_Subdet.book(ib, _emap, _subsystem);
 		_cOccupancyCutvsiphi_SubdetPM.book(ib, _emap, _subsystem);
 		_cOccupancyCutvsieta_Subdet.book(ib, _emap, _subsystem);
-//		_cOccupancyCutvsSlotvsLS_HFPM.book(ib, _emap, _filter_HF, _subsystem);
 		_cOccupancyCutvsiphivsLS_SubdetPM.book(ib, _emap, _subsystem);
-		_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
-		_cSummaryvsLS.book(ib, _subsystem);
 
-		_xUniHF.book(_emap, _filter_FEDHF);
 		_xNChs.book(_emap);
 		_xNChsNominal.book(_emap);
 		_xUni.book(_emap);
@@ -391,7 +355,7 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 	edm::EventSetup const&)
 {
 	edm::Handle<QIE11DigiCollection>     chbhe;
-	edm::Handle<HODigiPhase1Collection>       cho;
+	edm::Handle<HODigiCollection>       cho;
 	edm::Handle<QIE10DigiCollection>       chf;
 
 	if (!e.getByToken(_tokHBHE, chbhe))
@@ -471,14 +435,16 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 		for (int i=0; i<frame.samples(); i++)
 		{
 			_cADC_SubdetPM.fill(did, frame[i].adc());
-			_cfC_SubdetPM.fill(did, frame[i].nominal_fC());
+			_cfC_SubdetPM.fill(did, 
+				constants::adc2fC[frame[i].adc()]);
 			if (sumQ>_cutSumQ_HBHE)
-				_cShapeCut_FED.fill(eid, i, frame[i].nominal_fC());
+				_cShapeCut_FED.fill(eid, i, 
+					constants::adc2fC[frame[i].adc()]);
 		}
 
 		if (sumQ>_cutSumQ_HBHE)
 		{
-			double timing = utilities::aveTS<QIE11DataFrame>(frame, 2.5, 0,
+			double timing = utilities::aveTS_v10<QIE11DataFrame>(frame, 2.5, 0,
 				frame.samples()-1);
 			_cTimingCut_SubdetPM.fill(did, timing);
 			_cTimingCut_depth.fill(did, timing);
@@ -534,7 +500,7 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 	numChsCut = 0;
 
 	//	HO collection
-	for (HODigiPhase1Collection::const_iterator it=cho->begin(); it!=cho->end();
+	for (HODigiCollection::const_iterator it=cho->begin(); it!=cho->end();
 		++it)
 	{
 		double sumQ = utilities::sumQ<HODataFrame>(*it, 8.5, 0, it->size()-1);
@@ -641,7 +607,7 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 		++it)
 	{
 		QIE10DataFrame frame = *it;
-		double sumQ = utilities::sumQ<QIE10DataFrame>(frame, 
+		double sumQ = utilities::sumQ_v10<QIE10DataFrame>(frame, 
 			2.5, 0, frame.samples()-1);
 		HcalDetId const& did = frame.detid();
 		//	filter out channels that are masked out
@@ -687,18 +653,17 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 		for (int i=0; i<frame.samples(); i++)
 		{
 			_cADC_SubdetPM.fill(did, frame[i].adc());
-			_cfC_SubdetPM.fill(did, frame[i].nominal_fC());
+			_cfC_SubdetPM.fill(did, 
+				constants::adc2fC[frame[i].adc()]);
 			if (sumQ>_cutSumQ_HF)
-				_cShapeCut_FED.fill(eid, i, frame[i].nominal_fC());
+				_cShapeCut_FED.fill(eid, i, 
+					constants::adc2fC[frame[i].adc()]);
 		}
 
 		if (sumQ>_cutSumQ_HF)
 		{
-			double timing = utilities::aveTS<QIE10DataFrame>(frame, 2.5, 0,
+			double timing = utilities::aveTS_v10<QIE10DataFrame>(frame, 2.5, 0,
 				frame.samples()-1);
-			double q1 = frame[i].nominal_fC()-2.5;
-			double q2 = frame[2].nominal_fC()-2.5;
-			double q2q12 = q2/(q1+q2);
 			_cSumQ_depth.fill(did, sumQ);
 			_cSumQvsLS_SubdetPM.fill(did, _currentLS, sumQ);
 			if (_ptype==fOnline)
@@ -710,15 +675,11 @@ DigiPhase1Task::DigiPhase1Task(edm::ParameterSet const& ps):
 				_cOccupancyCutvsieta_Subdet.fill(did);
 				_cOccupancyCutvsiphivsLS_SubdetPM.fill(did, _currentLS);
 //				_cOccupancyCutvsSlotvsLS_HFPM.fill(did, _currentLS);
-				_xUniHF.get(eid)++;
 			}
 			_cTimingCut_SubdetPM.fill(did, timing);
 			_cTimingCut_depth.fill(did, timing);
 			_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
 			_cOccupancyCut_depth.fill(did);
-			if (!eid.isVMEid())
-				if (_ptype==fOnline)
-					_cQ2Q12CutvsLS_FEDHF.fill(eid, _currentLS, q2q12);
 			if (eid.isVMEid())
 			{
 				_cTimingCut_FEDVME.fill(eid, timing);
