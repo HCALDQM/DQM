@@ -1,5 +1,5 @@
-#ifndef Utilities_h
-#define Utilities_h
+#ifndef DQM_HcalCommon_Utilities_h
+#define DQM_HcalCommon_Utilities_h
 
 /*
  *	file:			Utilities.h
@@ -142,6 +142,11 @@ namespace hcaldqm
 		uint32_t hash(HcalDetId const&);
 		uint32_t hash(HcalElectronicsId const&);
 		uint32_t hash(HcalTrigTowerDetId const&);
+
+		/*
+		 *	Orbit Gap Related
+		 */	
+		std::string ogtype2string(OrbitGapType type);
 	}
 }
 

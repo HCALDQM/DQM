@@ -181,6 +181,28 @@ namespace hcaldqm
 
 			return false;
 		}
+
+		/*
+		 *	Orbit Gap Related
+		 */
+		std::string ogtype2string(OrbitGapType type)
+		{
+			switch (type)
+			{
+				case tNull : return "Nill";
+				case tPedestal : return "Pedestal";
+				case tHFRaddam : return "HFRaddam";
+				case tHBHEHPD : return "HBHEHPD";
+				case tHO : return "HO";
+				case tHF : return "HF";
+				case tZDC : return "ZDC";
+				case tHEPMega : return "HEPMegatile";
+				case tHEMMega : return "HEMMegatile";
+				case tHBPMega : return "HBPMegatile";
+				case tHBMMega : return "HBMMegatile";
+				default : return "Unknonw";
+			}
+		}
 	}
 }
 

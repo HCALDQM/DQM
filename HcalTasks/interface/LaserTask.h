@@ -32,10 +32,12 @@ class LaserTask : public DQTask
 		virtual void endRun(edm::Run const& r, edm::EventSetup const&)
 		{
 			if (_ptype==fLocal)
+			{
 				if (r.runAuxiliary().run()==1)
 					return;
 				else 
 					this->_dump();
+			}
 		}
 		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
 			edm::EventSetup const&);

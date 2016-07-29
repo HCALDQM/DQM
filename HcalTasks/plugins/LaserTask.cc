@@ -28,8 +28,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		20);
 	_lowHF = ps.getUntrackedParameter<double>("lowHF",
 		20);
-	_eventType = ps.getUntrackedParameter<double>("eventType",
-		)
+	_eventType = ps.getUntrackedParameter<double>("eventType");
 }
 	
 /* virtual */ void LaserTask::bookHistograms(DQMStore::IBooker &ib,
