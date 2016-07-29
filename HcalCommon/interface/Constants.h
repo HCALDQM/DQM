@@ -263,6 +263,45 @@ namespace hcaldqm
 		int const BIT_AXIS_ZLOG = 2;
 		int const BIT_AXIS_LS = 3;
 		int const BIT_AXIS_FLAG = 4;
+
+		/*
+		 *	Orbit Gap Operations enum
+		 */
+		enum OrbitGapType
+		{
+			tUnkown = -1,
+			tNull = 0,
+			tPedestal = 1,
+			tHFRaddam = 2,
+			tHBHEHPD = 3,
+			tHO = 4,
+			tHF = 5,
+			tZDC = 6,
+			tHEPMega = 7,
+			tHEMMega = 8,
+			tHBPMega = 9,
+			tHBMMega = 10,
+			nOrbitGapType = 11
+		};
+
+		std::string ogtype2string(OribtGapType type)
+		{
+			switch (type) 
+			{
+				case tNull : return "Null";
+				case tPedestal : return "Pedestal";
+				case tHFRaddam : return "HFRaddam";
+				case tHBHEHPD : return "HBHEHPD";
+				case tHO : return "HO";
+				case tHF : return "HF";
+				case tZDC : return "ZDC";
+				case tHEPMega : return "HEPMegatile";
+				case tHEMMega : return "HEMMegatile";
+				case tHBPMega : return "HBPMegatile";
+				case tHBMMega : return "HBMMegatile";
+				default : return "Uknown";
+			}
+		}
 	}
 }
 

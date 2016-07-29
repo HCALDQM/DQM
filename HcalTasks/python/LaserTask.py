@@ -16,6 +16,7 @@ laserTask = cms.EDAnalyzer(
 	tagHBHE = cms.untracked.InputTag("hcalDigis"),
 	tagHO = cms.untracked.InputTag("hcalDigis"),
 	tagHF = cms.untracked.InputTag("hcalDigis"),
+        taguMN = cms.untarcked.InputTag("hcalDigis"),
 	tagRaw = cms.untracked.InputTag('hltHcalCalibrationRaw'),
 
 	nevents = cms.untracked.int32(10000)

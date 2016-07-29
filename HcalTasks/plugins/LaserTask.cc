@@ -14,12 +14,12 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		edm::InputTag("hcalDigis"));
 	_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF",
 		edm::InputTag("hcalDigis"));
-	_tagTrigger = ps.getUntrackedParameter<edm::InputTag>("tagTrigger",
-		edm::InputTag("tbunpacker"));
+	_taguMN = ps.getUntrackedParameter<edm::InputTag>("taguMN",
+		edm::InputTag("hcalDigis"));
 	_tokHBHE = consumes<HBHEDigiCollection>(_tagHBHE);
 	_tokHO = consumes<HODigiCollection>(_tagHO);
 	_tokHF = consumes<HFDigiCollection>(_tagHF);
-	_tokTrigger = consumes<HcalTBTriggerData>(_tagTrigger);
+	_tokuMN = consumes<HcalTBTriggerData>(_taguMN);
 
 	//	constants
 	_lowHBHE = ps.getUntrackedParameter<double>("lowHBHE",
@@ -28,6 +28,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		20);
 	_lowHF = ps.getUntrackedParameter<double>("lowHF",
 		20);
+	_eventType = ps.getUntrackedParameter<double>("eventType",
+		)
 }
 	
 /* virtual */ void LaserTask::bookHistograms(DQMStore::IBooker &ib,
@@ -426,22 +428,30 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
 		}
 	}
+}
 
-	if (_ptype==fOnline && _evsTotal>0 &&
-		_evsTotal%constants::CALIBEVENTS_MIN==0)
-		this->_dump();
+/* virtual */ void LaserTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
+	edm::EventSetup const& es)
+{
+	if (_ptype==fLocal)
+		return;
+	this->_dump();
+
+	DQTask::endLuminosityBlock(lb, es);
 }
 
 /* virtual */ bool LaserTask::_isApplicable(edm::Event const& e)
 {
 	if (_ptype!=fOnline)
+		return true;
+	else 
 	{
-		//	local
-		edm::Handle<HcalTBTriggerData> ctrigger;
-		if (!e.getByToken(_tokTrigger, ctrigger))
-			_logger.dqmthrow("Collection HcalTBTriggerData isn't available "
-				+ _tagTrigger.label() + " " + _tagTrigger.instance());
-		return ctrigger->wasLaserTrigger();
+		//	fOnline mode
+		edm::Handle<HcalUMNioDigi> cumn;
+		if (!e.getByToken(_tokuMN, cumn))
+			std::cout << "Collection HcalUMNioDigi is not found" << std::endl;
+		uint8_t eventType = cumn->eventType();
+		if (eventType==_eventType) return true;
 	}
 
 	return false;

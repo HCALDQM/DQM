@@ -34,8 +34,11 @@ class LaserTask : public DQTask
 			if (_ptype==fLocal)
 				if (r.runAuxiliary().run()==1)
 					return;
-			this->_dump();
+				else 
+					this->_dump();
 		}
+		virtual void endLuminosityBlock(edm::LuminosityBlock const&,
+			edm::EventSetup const&);
 
 	protected:
 		//	funcs
@@ -48,11 +51,11 @@ class LaserTask : public DQTask
 		edm::InputTag	_tagHBHE;
 		edm::InputTag	_tagHO;
 		edm::InputTag	_tagHF;
-		edm::InputTag	_tagTrigger;
+		edm::InputTag	_taguMN;
 		edm::EDGetTokenT<HBHEDigiCollection> _tokHBHE;
 		edm::EDGetTokenT<HODigiCollection> _tokHO;
 		edm::EDGetTokenT<HFDigiCollection> _tokHF;
-		edm::EDGetTokenT<HcalTBTriggerData> _tokTrigger;
+		edm::EDGetTokenT<HcalTBTriggerData> _tokuMN;
 
 		//	emap
 		HcalElectronicsMap const* _emap;
@@ -65,6 +68,7 @@ class LaserTask : public DQTask
 		double _lowHBHE;
 		double _lowHO;
 		double _lowHF;
+		uint8_t _eventType;
 
 		//	Compact
 		ContainerXXX<double> _xSignalSum;
