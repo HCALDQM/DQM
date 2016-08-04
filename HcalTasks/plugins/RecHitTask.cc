@@ -24,6 +24,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_vflags.resize(nRecoFlag);
 	_vflags[fUni]=flag::Flag("UniSlotHF");
 	_vflags[fTCDS]=flag::Flag("TCDS");
+	_vflags[fUnkownIds] = flag::Flag("UnknownIds");
 }
 
 /* virtual */ void RecHitTask::bookHistograms(DQMStore::IBooker& ib,
@@ -318,29 +319,25 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 
 	//	initialize hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fD2EHashMap);
+
+	//	book some mes...
+	ib.setCurrentFolder(_subsystem+"/"+_name);
+	meUnknownIds1LS = ib.book1D("UnknownIds", "UnknownIds",
+		1, 0, 1);
+	_unknownIdsPresent = false;
+	meUnknownIds1LS->setLumiFlag();
 }
 
 /* virtual */ void RecHitTask::_resetMonitors(UpdateFreq uf)
 {
-	/*
 	switch(uf)
 	{
 		case hcaldqm::f1LS:
-			_cOccupancy_FEDVME.reset();
-			_cOccupancy_FEDuTCA.reset();
-			break;
-		case hcaldqm::f10LS:
-			_cOccupancyCut_ElectronicsVME.reset();
-			_cOccupancyCut_ElectronicsuTCA.reset();
-			_cOccupancy_ElectronicsVME.reset();
-			_cOccupancy_ElectronicsuTCA.reset();
-			_cTimingCut_ElectronicsVME.reset();
-			_cTimingCut_ElectronicsuTCA.reset();
+			_unknownIdsPresent = false;
 			break;
 		default:
 			break;
 	}
-	*/
 
 	DQTask::_resetMonitors(uf);
 }
@@ -375,6 +372,8 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		double energy = it->energy();
 		double timing = it->time();
 		HcalDetId did = it->id();
+		if (_ehashmap.lookup(did)==0)
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
 		_cTimingvsEnergy_SubdetPM.fill(did, energy, timing);
@@ -425,12 +424,8 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			//	ONLINE 
 			if (_ptype==fOnline)
 			{
-				if (timing>=-12.5 && timing<=12.5)
-				{
-					//	time constrains here are explicit!
-					_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
-					_cTimingCut_depth.fill(did, timing);
-				}
+				_cTimingCutvsLS_FED.fill(eid, _currentLS, timing);
+				_cTimingCut_depth.fill(did, timing);
 			}//	^^^ONLINE
 			else
 			{
@@ -444,12 +439,8 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 				//	ONLINE 
 				if (_ptype==fOnline)
 				{
-					if (timing>=-12.5 && timing<=12.5)
-					{
-						//	time constraints are explicit!
-						_cTimingCut_FEDVME.fill(eid, timing);
-						_cTimingCut_ElectronicsVME.fill(eid, timing);
-					}
+					_cTimingCut_FEDVME.fill(eid, timing);
+					_cTimingCut_ElectronicsVME.fill(eid, timing);
 				} // ^^^ ONLINE
 				else
 				{
@@ -465,12 +456,9 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			{
 				if (_ptype==fOnline)
 				{
-					if (timing>=-12.5 && timing<=12.5)
-					{
-						//	time constraints are explicit!
-						_cTimingCut_FEDuTCA.fill(eid, timing);
-						_cTimingCut_ElectronicsuTCA.fill(eid, timing);
-					}
+					//	time constraints are explicit!
+					_cTimingCut_FEDuTCA.fill(eid, timing);
+					_cTimingCut_ElectronicsuTCA.fill(eid, timing);
 				}
 				else
 				{
@@ -511,6 +499,8 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		double energy = it->energy();
 		double timing = it->time();
 		HcalDetId did = it->id();
+		if (_ehashmap.lookup(did)==0)
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
 		_cTimingvsEnergy_SubdetPM.fill(did, energy, timing);
@@ -597,6 +587,8 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		double energy = it->energy();
 		double timing = it->time();
 		HcalDetId did = it->id();
+		if (_ehashmap.lookup(did)==0)
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
 		_cTimingvsEnergy_SubdetPM.fill(did, energy, timing);
@@ -757,6 +749,11 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			else
 				_vflags[fUni]._state = flag::fGOOD;
 		}
+
+		if (_unknownIdsPresent)
+			_vflags[fUnknownIds] = flag::fBAD;
+		else 
+			_vflags[fUnknownIds] = flag::fGOOD;
 
 		int iflag=0;
 		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();

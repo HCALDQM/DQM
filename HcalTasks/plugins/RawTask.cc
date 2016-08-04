@@ -7,6 +7,10 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		edm::InputTag("rawDataCollector"));
 	_tagReport = ps.getUntrackedParameter<edm::InputTag>("tagReport",
 		edm::InputTag("hcalDigis"));
+	_calibProcessing = ps.getUntrackedParameter<bool>("calibProcessing",
+		false);
+	_thresh_calib_nbadq = ps.getUntrackedParamter<int>("thresh_calib_nbadq",
+		1000);
 
 	_tokFEDs = consumes<FEDRawDataCollection>(_tagFEDs);
 	_tokReport = consumes<HcalUnpackerReport>(_tagReport);
@@ -139,6 +143,11 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			new quantity::LumiSection(_maxLS),
 			new quantity::FEDQuantity(vFEDs),
 			new quantity::ValueQuantity(quantity::fState));
+		//	FED Size vs LS
+		_cDataSizevsLS_FED.initialize(_name, "DataSizevsLS",
+			hashfunctions::fFED,
+			new quantity::LumiSection(_maxLS),
+			new quantity::ValueQuantity(quantity::fDataSize));
 	}
 
 	//	BOOK HISTOGRAMS
@@ -165,6 +174,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		_xBadQLS.book(_emap);
 		_cSummaryvsLS_FED.book(ib, _emap, _subsystem);
 		_cSummaryvsLS.book(ib, _subsystem);
+		_cDataSizevsLS_FED.book(ib, _emap, _subsystem);
 	}
 
 	//	FOR OFFLINE PROCESSING MARK THESE HISTOGRAMS AS LUMI BASED
@@ -202,6 +212,17 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 	//	extract some info
 	int bx = e.bunchCrossing();
 
+	/*
+	 *	For Calibration/Abort Gap Processing
+	 *	check if the #channels taht are bad from the unpacker 
+	 *	is > 5000. If it is skip...
+	 */
+	if (_calibProcessing)
+	{
+		int nbadq = creport->badQualityDigis();
+		if (nbadq>=_thresh_calib_nbadq)
+			return;
+	}
 	
 	int nn = 0;
 	//	loop thru and fill the detIds with bad quality
@@ -271,6 +292,12 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			uint32_t evn = hdcc->getDCCEventNumber();
 			int dccId = hdcc->getSourceId()-constants::FED_VME_MIN;
 
+			/* online only */
+			if (_ptype==fOnline)
+				_cDataSizevsLS_FED.fill(HcalElectronicsId(constants::FIBERCH_MIN,
+					constants::FIBER_VME_MIN, constants::SPIGOT_MIN, 
+					dccId), _currentLS, raw.size());
+
 			//	iterate over spigots
 			HcalHTRData htr;
 			for (int is=0; is<HcalDCCHeader::SPIGOT_COUNT; is++)
@@ -319,6 +346,12 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 				raw.data();
 			if (!hamc13)
 				continue;
+
+			/* online only */
+			if (_ptype==fOnline)
+				_cDataSizevsLS_FED.fill(HcalElectronicsId(utilities::fed2crate(fed),
+					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false),
+					_currentLS, raw.size());
 
 			uint32_t bcn = hamc13->bunchId();
 			uint32_t orn = hamc13->orbitNumber() & 0xFFFF; // LS 16bits only

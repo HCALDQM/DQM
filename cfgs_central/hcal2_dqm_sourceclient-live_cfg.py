@@ -107,13 +107,6 @@ process.emulTPSec.FG_threshold = cms.uint32(2)
 process.emulTPSec.InputTagFEDRaw = rawTag
 process.hbhereco = process.hbheprereco.clone()
 
-#	UPDATES REQUESTED BY STEPH
-process.hbhereco.puCorrMethod = cms.int32(2) 
-process.hbhereco.ts4chi2 = cms.double(9999.) 
-process.hbhereco.timeMin = cms.double(-100.)
-process.hbhereco.timeMax = cms.double(100.)
-process.hbhereco.applyTimeConstraint = cms.bool(False) 
-
 #	set the tag for default unpacker
 process.hcalDigis.InputLabel = rawTag
 

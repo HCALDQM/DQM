@@ -28,7 +28,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		20);
 	_lowHF = ps.getUntrackedParameter<double>("lowHF",
 		20);
-	_eventType = (uint32_t)ps.getUntrackedParameter<uint32_t>("eventType");
+	_laserType = (uint32_t)ps.getUntrackedParameter<uint32_t>("laserType");
 }
 	
 /* virtual */ void LaserTask::bookHistograms(DQMStore::IBooker &ib,
@@ -135,6 +135,14 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		hashfunctions::fSubdetPM,
 		new quantity::LumiSection(_maxLS),
 		new quantity::ValueQuantity(quantity::ffC_3000));
+	_cTimingvsBX_SubdetPM.initialize(_name, "TimingvsBX",
+		hashfunctions::fSubdetPM,
+		new quantity::ValueQuantity(quantity::fBX),
+		new quantity::ValueQuantity(quantity::fTiming_TS200));
+	_cSignalvsBX_SubdetPM.initialize(_name, "SignalvsBX",
+		hashfunctions::fSubdetPM,
+		new quantity::ValueQuantity(quantity::fBX),
+		new quantity::ValueQuantity(quantity::ffC_3000));
 
 	_cSignalMean_depth.initialize(_name, "SignalMean",
 		hashfunctions::fdepth, 
@@ -201,6 +209,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	{	
 		_cTimingvsLS_SubdetPM.book(ib, _emap, _subsystem);
 		_cSignalvsLS_SubdetPM.book(ib, _emap, _subsystem);
+		_cTimingvsBX_SubdetPM.book(ib, _emap, _subsystem);
+		_cSignalvsBX_SubdetPM.book(ib, _emap, _subsystem);
 	}
 
 	_cSignalMean_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
@@ -318,7 +328,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 			+ _tagHF.label() + " " + _tagHF.instance());
 
 //	int currentEvent = e.eventAuxiliary().id().event();
-
+	int bx = e.bunchCrossing();
+	
 	for (HBHEDigiCollection::const_iterator it=chbhe->begin();
 		it!=chbhe->end(); ++it)
 	{
@@ -353,6 +364,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		{
 			_cTimingvsLS_SubdetPM.fill(did, _currentLS, aveTS);
 			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
+			_cTimingvsBX_SubdetPM.fill(did, bx, aveTS);
+			_cSignalvsBX_SubdetPM.fill(did, bx, sumQ);
 		}
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
@@ -389,6 +402,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		{
 			_cTimingvsLS_SubdetPM.fill(did, _currentLS, aveTS);
 			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
+			_cTimingvsBX_SubdetPM.fill(did, bx, aveTS);
+			_cSignalvsBX_SubdetPM.fill(did, bx, sumQ);
 		}
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
@@ -425,6 +440,8 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		{
 			_cTimingvsLS_SubdetPM.fill(did, _currentLS, aveTS);
 			_cSignalvsLS_SubdetPM.fill(did, _currentLS, sumQ);
+			_cTimingvsBX_SubdetPM.fill(did, bx, aveTS);
+			_cSignalvsBX_SubdetPM.fill(did, bx, sumQ);
 		}
 	}
 }
@@ -448,31 +465,19 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		//	fOnline mode
 		edm::Handle<HcalUMNioDigi> cumn;
 		if (!e.getByToken(_tokuMN, cumn))
+		{
 			std::cout << "Collection HcalUMNioDigi is not found" << std::endl;
-/*		
-		std::cout << "------" << std::endl;
-		std::cout << ">>> invalid: " << cumn->invalid() << std::endl;
-		std::cout << ">>> runNumber: " << cumn->runNumber() << std::endl;
-		std::cout << ">>> orbitNumber: " << cumn->orbitNumber() << std::endl;
-		std::cout << ">>> bunchNumber: " << cumn->bunchNumber() << std::endl;
-		std::cout << ">>> eventNumber: " << cumn->eventNumber() << std::endl;
-		std::cout << ">>> eventType: " << cumn->eventType() << std::endl;
-		std::cout << ">>> spillCounter: " << cumn->spillCounter() << std::endl;
-		std::cout << ">>> isSpill: " << cumn->isSpill() << std::endl;
-		std::cout << ">>> numberUserWord: " << cumn->numberUserWords() << std::endl;
-		std::cout << "------" << std::endl;
+			return false;
+		}
+		
+		//	event type check first
+		uint8_t eventType = cumn->eventType();
+		if (eventType!=constants::EVENTTYPE_LASERTYPE)
+			return false;
 
-		std::cout << ">>> eventType Check: " << 
-			(cumn->eventType()>0 ? "YES" : "NO") << std::endl;
-			*/
-		uint32_t eventType = 0; eventType = cumn->valueUserWord(0);
-/*
-		std::cout << "LASER EVENT TYPE = " 
-			<< utilities::ogtype2string((OrbitGapType)eventType) << 
-			" EXPECTED TYPE = " << utilities::ogtype2string((OrbitGapType)_eventType) 
-			<< std::endl;
-			*/
-		if (eventType==_eventType) return true;
+		//	check if this analysis task is of the right laser type
+		uint32_t laserType = cumn->valueUserWord(0);
+		if (laserType==_laserType) return true;
 	}
 
 	return false;

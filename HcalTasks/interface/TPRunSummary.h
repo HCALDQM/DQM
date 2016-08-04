@@ -31,7 +31,7 @@ namespace hcaldqm
 			{
 				fEtMsm=0,
 				fFGMsm=1,
-				nTPFlag=2
+				nTPFlag=3
 			};
 	};
 }

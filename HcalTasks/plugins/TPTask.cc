@@ -30,6 +30,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_vflags[fFGMsm]=flag::Flag("FGMsm");
 	_vflags[fDataMsn]=flag::Flag("DataMsn");
 	_vflags[fEmulMsn]=flag::Flag("EmulMsn");
+	_vflags[fUnknownIds]=flag::Flag("UnknownIds");
 }
 
 /* virtual */ void TPTask::bookHistograms(DQMStore::IBooker& ib,
@@ -509,11 +510,26 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	
 	//	initialize the hash map
 	_ehashmap.initialize(_emap, hcaldqm::electronicsmap::fT2EHashMap);
+
+	//	book the flag for unknown ids and the online guy as well
+	ib.setCurrentFolder(_subsystem+"/"+_name);
+	meUnknownIds1LS = ib.book1D("UnknownIds", "UnknownIds",
+		1, 0, 1);
+	_unknownIdsPresent = false;
+	meUnknownIds1LS->setLumiFlag();
 }
 
 /* virtual */ void TPTask::_resetMonitors(UpdateFreq uf)
 {
 	DQTask::_resetMonitors(uf);
+	switch (uf)
+	{
+		case hcaldqm::f1LS:
+			_unknownIdsPresent = false;
+			break;
+		default : 
+			break;
+	}
 }
 
 /* virtual */ void TPTask::_process(edm::Event const& e,
@@ -550,6 +566,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		it!=cdata->end(); ++it)
 	{
 		HcalTrigTowerDetId tid = it->id();
+		if (_ehashmap.lookup(tid)==0)
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent = true; continue;}
 
 		//
 		//	HF 2x3 TPs Treat theam separately and only for ONLINE!
@@ -572,8 +590,10 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 
 		//	FROM THIS POINT, HBHE + 1x1 HF TPs
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(tid));
-		int soiEt_d = it->SOI_compressedEt();
-		int soiFG_d = it->SOI_fineGrain()?1:0;
+		int soiEt_d = it->t0().compressedEt();
+		bool soiFG_d[constants::NUM_FGBITS];
+		for (uint32_t ibit=0; ibit<constants::NUM_FGBITS; ibit++)
+			soiFG_d[ibit] = it->t0().fineGrain(ibit);
 		tid.ietaAbs()>=29?numHF++:numHBHE++;
 
 		//	 fill w/o a cut
@@ -619,7 +639,9 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		{
 			//	if PRESENT!
 			int soiEt_e = jt->SOI_compressedEt();
-			int soiFG_e = jt->SOI_fineGrain()?1:0;
+			bool soiFG_e[constants::NUM_FGBITS];
+			for (uint32_t ibit=0; ibit<constants::NUM_FGBITS; ibit++)
+				soiFG_e[ibit] = jt->t0().fineGrain(ibit);
 			//	if both are zeroes => set 1
 			double rEt = soiEt_d==0 && soiEt_e==0?1:
 				double(std::min(soiEt_d, soiEt_e))/
@@ -637,7 +659,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 
 			_cEtCorrRatio_depthlike.fill(tid, rEt);
 			_cEtCorr_TTSubdet.fill(tid, soiEt_d, soiEt_e);
-			_cFGCorr_TTSubdet.fill(tid, soiFG_d, soiFG_e);
+			for (uint32_t ibit=0; ibit<constants::NUM_FGBITS; ibit++)
+				_cFGCorr_TTSubdet.fill(tid, soiFG_d[ibit], soiFG_e[ibit]);
 			//	FILL w/o a CUT
 			if (eid.isVMEid())
 			{
@@ -663,16 +686,17 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			}
 			//	 if SOI FG are not equal
 			//	 fill mismatched
-			if (soiFG_d!=soiFG_e)
-			{
-				_cFGMsm_depthlike.fill(tid);
-				if (eid.isVMEid())
-					_cFGMsm_ElectronicsVME.fill(eid);
-				else
-					_cFGMsm_ElectronicsuTCA.fill(eid);
-				if (_ptype==fOnline)
-					_xFGMsm.get(eid)++;
-			}
+			for (uint32_t ibit=0; ibit<constants::NUM_FGBITS; ibit++)
+				if (soiFG_d[ibit]!=soiFG_e[ibit])
+				{
+					_cFGMsm_depthlike.fill(tid);
+					if (eid.isVMEid())
+						_cFGMsm_ElectronicsVME.fill(eid);
+					else
+						_cFGMsm_ElectronicsuTCA.fill(eid);
+					if (_ptype==fOnline)
+						_xFGMsm.get(eid)++;
+				}
 		}
 		else
 		{
@@ -766,6 +790,8 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		it!=cemul->end(); ++it)
 	{
 		HcalTrigTowerDetId tid = it->id();
+		if (_ehashmap.lookup(tid)==0)
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent = true; continue;}
 
 		//	HF 2x3 TPs. Only do it for Online!!!
 		if (tid.version()==0 && tid.ietaAbs()>=29)
@@ -880,27 +906,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	edm::EventSetup const& es)
 {
 	DQTask::beginLuminosityBlock(lb, es);
-
-	/*
-	//	ONLINE ONLY!
-	if (_ptype!=fOnline)
-		return;
-	_cEtCutDatavsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cEtCutEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cEtCorrRatiovsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cEtMsmvsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cEtMsmRatiovsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cMsnDatavsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cMsnCutDatavsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cMsnEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cMsnCutEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cOccupancyDatavsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cOccupancyEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cOccupancyCutDatavsLS_TTSubdet.extendAxisRange(_currentLS);
-	_cOccupancyCutEmulvsLS_TTSubdet.extendAxisRange(_currentLS);
-//	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
-//	_cSummaryvsLS.extendAxisRange(_currentLS);
-//	*/
 }
 
 /* virtual */ void TPTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
@@ -968,6 +973,11 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 				_vflags[fEmulMsn]._state = flag::fGOOD;
 				*/
 		}
+
+		if (_unknownIdsPresent)
+			_vflags[fUnknownIds] = flag::fBAD;
+		else
+			_vflags[fUnknownIds] = flag::fGOOD;
 
 		int iflag=0;
 		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();

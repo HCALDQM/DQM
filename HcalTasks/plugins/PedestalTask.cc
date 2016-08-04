@@ -878,11 +878,17 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 {
 	if (_ptype==fOnline)
 	{
-		//	online-global
-//		int calibType = this->_getCalibType(e);
-//		std::cout << "calibType = " << calibType << std::endl;
-//		return calibType==hc_Pedestal;
-		return true;
+		edm::Handle<HcalUMNioDigi> cumn;
+		if (!e.getByToken(_tokuMN, cumn))
+		{
+			std::cout << "Collection HcalUMNioDigi is not found" << std::endl;
+			return false;
+		}
+
+		//	for online just check the event type not the user Word
+		uint8_t eventType = cumn->eventType();
+		if (eventType == constants::EVENTTYPE_PEDESTAL)
+			return true;
 	}
 	else 
 	{

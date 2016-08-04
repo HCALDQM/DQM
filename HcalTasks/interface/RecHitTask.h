@@ -61,7 +61,8 @@ class RecHitTask : public DQTask
 		{
 			fUni=0,
 			fTCDS=1,
-			nRecoFlag=2
+			fUnknownIds = 2,
+			nRecoFlag=3
 		};
 
 		//	emap
@@ -120,6 +121,10 @@ class RecHitTask : public DQTask
 		ContainerProf1D _cOccupancyCutvsBX_SubdetPM;	// online only!
 		Container2D _cOccupancyCutvsiphivsLS_SubdetPM; // online only
 		ContainerXXX<uint32_t> _xUniHF, _xUni;
+
+		//	tracks the unknown ids
+		MonitorElement *meUnknownIds1LS;
+		bool _unknownIdsPresent;
 
 		std::vector<HcalGenericDetId> _gids; // online only
 		Container2D _cSummaryvsLS_FED; // online only!

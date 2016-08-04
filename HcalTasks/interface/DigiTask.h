@@ -62,7 +62,8 @@ class DigiTask : public DQTask
 			fDigiSize=0,
 			fUni = 1,
 			fNChsHF = 2,
-			nDigiFlag = 3
+			fUnknownIds = 3,
+			nDigiFlag = 4
 		};
 
 		//	hashes/FED vectors
@@ -71,6 +72,7 @@ class DigiTask : public DQTask
 		//	emap
 		HcalElectronicsMap const* _emap;
 		electronicsmap::ElectronicsMap _ehashmap; // online only
+		electronicsmap::ElectronicsMap _dhashmap
 
 		//	Filters
 		HashFilter _filter_VME;
@@ -143,6 +145,8 @@ class DigiTask : public DQTask
 
 		//	#events counters
 		MonitorElement *meNumEvents1LS; // to transfer the #events to harvesting
+		MonitorElement *meUnknownIds1LS;
+		bool _unknownIdsPresent;
 
 		Container2D _cSummaryvsLS_FED; // online only
 		ContainerSingle2D _cSummaryvsLS; // online only

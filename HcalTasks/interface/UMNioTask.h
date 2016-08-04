@@ -59,5 +59,6 @@ class UMNioTask : public DQTask
 
 		//	1D
 		ContainerSingle2D		_cEventType;
+		ContainerSingle2D		_cTotalCharge;
 };
 #endif

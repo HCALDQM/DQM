@@ -60,6 +60,10 @@ class RawTask : public DQTask
 		HcalElectronicsMap const* _emap;
 		electronicsmap::ElectronicsMap _ehashmap;
 
+		//	physics vs calib processing switch
+		bool _calibProcessing;
+		int _thresh_calib_nbadq;
+
 		//	vector of HcalElectronicsId for FEDs
 		std::vector<uint32_t> _vhashFEDs;
 
@@ -76,6 +80,7 @@ class RawTask : public DQTask
 		Container2D _cBadQualityLS_depth; // online only
 		ContainerSingleProf1D _cBadQualityvsLS;
 		ContainerSingleProf1D _cBadQualityvsBX;
+		ContainerProf1D _cDataSizevsLS_FED; // online only
 
 		//	Mismatches
 		Container2D _cEvnMsm_ElectronicsVME;

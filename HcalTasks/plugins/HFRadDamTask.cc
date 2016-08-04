@@ -1,8 +1,8 @@
 	
-#include "DQM/HcalTasks/interface/RadDamTask.h"
+#include "DQM/HcalTasks/interface/HFRadDamTask.h"
 
 using namespace hcaldqm;
-RadDamTask::RadDamTask(edm::ParameterSet const& ps):
+HFRadDamTask::HFRadDamTask(edm::ParameterSet const& ps):
 	DQTask(ps)
 {
 	//	List all the DetIds
@@ -68,9 +68,10 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF", 
 		edm::InputTag("hcalDigis"));
 	_tokHF = consumes<HFDigiCollection>(_tagHF);
+	_laserType = (uint32_t)ps.getUntrackedParameter<uint32_t>("laserType");i
 }
 
-/* virtual */ void RadDamTask::bookHistograms(DQMStore::IBooker& ib,
+/* virtual */ void HFRadDamTask::bookHistograms(DQMStore::IBooker& ib,
 	edm::Run const& r, edm::EventSetup const& es)
 {
 	//	Initialize all the Single Containers
@@ -93,7 +94,7 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	}
 }
 
-/* virtual */ void RadDamTask::_process(edm::Event const &e,
+/* virtual */ void HFRadDamTask::_process(edm::Event const &e,
 	edm::EventSetup const& es)
 {
 	edm::Handle<HFDigiCollection> chf;
@@ -115,13 +116,22 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	}
 }
 
-/* virtual */ bool RadDamTask::_isApplicable(edm::Event const &e)
+/* virtual */ bool HFRadDamTask::_isApplicable(edm::Event const &e)
 {
 	if (_ptype==fOnline)
 	{
-		// globla-online
-		int calibType = this->_getCalibType(e);
-		return (calibType==hc_RADDAM);
+		edm::Handle<HcalUMNioDigi> cumn;
+		if (!e.getByToken(_tokuMN, cumn))
+			std::cout << "Collection HcalUMNioDigi is not found" << std::endl;
+
+		//  event type check first
+		uint8_t eventType = cumn->eventType();
+		if (eventType!=constants::EVENTTYPE_LASERTYPE)
+			return false;
+
+		//  check if this analysis task is of the right laser type
+		uint32_t laserType = cumn->valueUserWord(0);
+		if (laserType==_laserType) return true;
 	}
 	else
 	{
@@ -132,7 +142,7 @@ RadDamTask::RadDamTask(edm::ParameterSet const& ps):
 	return false;
 }
 
-DEFINE_FWK_MODULE(RadDamTask);
+DEFINE_FWK_MODULE(HFRadDamTask);
 
 
 

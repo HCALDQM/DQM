@@ -1,10 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
-raddamTask = cms.EDAnalyzer(
-	"RadDamTask",
+hfRaddamTask = cms.EDAnalyzer(
+	"HFRadDamTask",
 	
 	#	standard parameters
-	name = cms.untracked.string("RadDamTask"),
+	name = cms.untracked.string("HFRadDamTask"),
 	debug = cms.untracked.int32(0),
 	runkeyVal = cms.untracked.int32(0),
 	runkeyName = cms.untracked.string("pp_run"),
@@ -14,7 +14,8 @@ raddamTask = cms.EDAnalyzer(
 
 	#	tags
 	tagHF = cms.untracked.InputTag("hcalDigis"),
-	tagRaw = cms.untracked.InputTag('hltHcalCalibrationRaw')
+	tagRaw = cms.untracked.InputTag('hltHcalCalibrationRaw'),
+        laserType = cms.untracked.uint32(0)
 )
 
 

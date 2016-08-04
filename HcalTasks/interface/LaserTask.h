@@ -70,7 +70,7 @@ class LaserTask : public DQTask
 		double _lowHBHE;
 		double _lowHO;
 		double _lowHF;
-		uint32_t _eventType;
+		uint32_t _laserType;
 
 		//	Compact
 		ContainerXXX<double> _xSignalSum;
@@ -91,6 +91,8 @@ class LaserTask : public DQTask
 		ContainerProf1D _cSignalvsEvent_SubdetPM;
 		ContainerProf1D _cTimingvsLS_SubdetPM;
 		ContainerProf1D _cSignalvsLS_SubdetPM;
+		ContainerProf1D _cTimingvsBX_SubdetPM;
+		ContainerProf1D _cSignalvsBX_SubdetPM;
 
 		//	2D timing/signals
 		ContainerProf2D		_cSignalMean_depth;
@@ -114,10 +116,3 @@ class LaserTask : public DQTask
 };
 
 #endif
-
-
-
-
-
-
-

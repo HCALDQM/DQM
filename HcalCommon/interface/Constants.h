@@ -174,6 +174,9 @@ namespace hcaldqm
 		//	Caps
 		int const CAPS_NUM = 4;
 
+		//	Number of FG Bits
+		int const NUM_FGBITS = 6;
+
 		/*
 		 *	Number of Channels Constants
 		 */
@@ -267,6 +270,8 @@ namespace hcaldqm
 		/*
 		 *	Orbit Gap Operations enum
 		 */
+		int const EVENTTYPE_PEDESTAL = 1;
+		int const EVENTTYPE_LASER = 14;
 		enum OrbitGapType
 		{
 			tUnkown = -1,

@@ -23,6 +23,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_vflags[fUni]=flag::Flag("UniSlotHF");
 	_vflags[fDigiSize]=flag::Flag("DigiSize");
 	_vflags[fNChsHF]=flag::Flag("NChsHF");
+	_vflags[fUnknownIds]=flag::Flag("UnknownIds");
 }
 
 /* virtual */ void DigiTask::bookHistograms(DQMStore::IBooker& ib,
@@ -341,6 +342,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		// ONLY WAY TO DO THAT AUTOMATICALLY AND W/O HARDCODING 1728
 		// or ANY OTHER VALUES LIKE 2592, 2192
 		_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
+		_dhashmap.initialize(_emap, electronicsmap::fE2DHashMap);
 		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
 		for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
 			it!=gids.end(); ++it)
@@ -369,10 +371,18 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		_cOccupancy_depth.setLumiFlag();
 	}
 
+	//	book Number of Events vs LS histogram
 	ib.setCurrentFolder(_subsystem+"/RunInfo");
 	meNumEvents1LS = ib.book1D("NumberOfEvents", "NumberOfEvents",
 		1, 0, 1);
 	meNumEvents1LS->setLumiFlag();
+
+	//	book the flag for unknown ids and the online guy as well
+	ib.setCurrentFolder(_subsystem+"/"+_name);
+	meUnknownIds1LS = ib.book1D("UnknownIds", "UnknownIds",
+		1, 0, 1);
+	_unknownIdsPresent = false;
+	meUnkownIds1LS->setLumiFlag();
 }
 
 /* virtual */ void DigiTask::_resetMonitors(UpdateFreq uf)
@@ -381,6 +391,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 
 	switch(uf)
 	{
+		case hcaldqm::f1LS:
+			_unknownIdsPresent = false;
+			break;
 		case hcaldqm::f50LS:
 			//	^^^ONLINE ONLY!
 			if (_ptype==fOnline)
@@ -423,6 +436,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	{
 		double sumQ = utilities::sumQ<HBHEDataFrame>(*it, 2.5, 0, it->size()-1);
 		HcalDetId const& did = it->id();
+		if (_ehashmap.lookup(did)==0) 
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
 		//	filter out channels that are masked out
 		if (_xQuality.exists(did)) 
 		{
@@ -433,6 +448,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				continue;
 		}
 		HcalElectronicsId const& eid = it->elecId();
+		if (_dhashmap.lookup(eid)==0)
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
 		_cOccupancy_depth.fill(did);
@@ -533,6 +550,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	{
 		double sumQ = utilities::sumQ<HODataFrame>(*it, 8.5, 0, it->size()-1);
 		HcalDetId const& did = it->id();
+		if (_ehashmap.lookup(did)==0) 
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
 		//	filter out channels that are masked out
 		if (_xQuality.exists(did)) 
 		{
@@ -543,6 +562,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				continue;
 		}
 		HcalElectronicsId const& eid = it->elecId();
+		if (_dhashmap.lookup(eid)==0)
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
 		_cOccupancy_depth.fill(did);
@@ -636,6 +657,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	{
 		double sumQ = utilities::sumQ<HFDataFrame>(*it, 2.5, 0, it->size()-1);
 		HcalDetId const& did = it->id();
+		if (_ehashmap.lookup(did)==0) 
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
 		//	filter out channels that are masked out
 		if (_xQuality.exists(did)) 
 		{
@@ -646,6 +669,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				continue;
 		}
 		HcalElectronicsId const& eid = it->elecId();
+		if (_dhashmap.lookup(eid)==0)
+		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
 		_cOccupancy_depth.fill(did);
@@ -745,22 +770,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	edm::LuminosityBlock const& lb, edm::EventSetup const& es)
 {
 	DQTask::beginLuminosityBlock(lb, es);
-
-	/*
-	_cOccupancyvsLS_Subdet.extendAxisRange(_currentLS);
-	_cSumQvsLS_SubdetPM.extendAxisRange(_currentLS);
-	_cTimingCutvsLS_FED.extendAxisRange(_currentLS);
-
-	//	ONLINE ONLY
-	if (_ptype!=fOnline)
-		return;
-	_cQ2Q12CutvsLS_FEDHF.extendAxisRange(_currentLS);
-	_cOccupancyCutvsiphivsLS_SubdetPM.extendAxisRange(_currentLS);
-	_cOccupancyCutvsLS_Subdet.extendAxisRange(_currentLS);
-	_cDigiSizevsLS_FED.extendAxisRange(_currentLS);
-//	_cSummaryvsLS_FED.extendAxisRange(_currentLS);
-//	_cSummaryvsLS.extendAxisRange(_currentLS);
-	*/
 }
 
 /* virtual */ void DigiTask::endLuminosityBlock(edm::LuminosityBlock const& lb,
@@ -835,6 +844,10 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 					_vflags[fNChsHF]._state = flag::fGOOD;
 			}
 		}
+		if (_unknownIdsPresent) 
+			_vflags[fUnknownIds] = flag::fBAD:
+		else
+			_vflags[fUnknownIds] = flag::fGOOD;
 
 		int iflag=0;
 		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();

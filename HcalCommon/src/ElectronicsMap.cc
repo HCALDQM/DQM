@@ -170,15 +170,27 @@ namespace hcaldqm
 		uint32_t ElectronicsMap::lookup(DetId const &id)
 		{
 			uint32_t hash = id.rawId();
-			return _etype==fHcalElectronicsMap? _emap->lookup(id).rawId(): 
-				_ids[hash];
+			if (_etype==fHcalElectronicsMap)
+				return _emap->lookup(id);
+			else 
+			{
+				ElectronicsMap::iterator it = ids.find(hash);
+				return it==ids.end() ? 0 : *it;
+			}
+			return 0;
 		}
 
 		uint32_t ElectronicsMap::lookup(HcalElectronicsId const &id)
 		{
 			uint32_t hash = id.rawId();
-			return _etype==fHcalElectronicsMap? _emap->lookup(id).rawId():
-				_ids[hash];
+			if (_etype==fHcalElectronicsMap)
+				return _emap->lookup(id);
+			else 
+			{
+				ElectronicsMap::iterator it=ids.find(hash);
+				return it==ids.end() ? 0 : *it;
+			}
+			return 0;
 		}
 
 		void ElectronicsMap::print()

@@ -51,7 +51,8 @@ class TPTask : public DQTask
 			fFGMsm=1,
 			fDataMsn=2,
 			fEmulMsn=3,
-			nTPFlag=4
+			fUnknownIds=4,
+			nTPFlag=5
 		};
 
 		//	switches/cuts/etc...
@@ -164,6 +165,9 @@ class TPTask : public DQTask
 		ContainerProf1D _cOccupancyCutDatavsLS_TTSubdet;	// online only
 		ContainerProf1D _cOccupancyCutEmulvsLS_TTSubdet; // online only
 
+		//	track unknown ids
+		MonitorElement *meUnknownIds1LS;
+		bool _unknownIdsPresent;
 
 		Container2D _cSummaryvsLS_FED; // online only
 		ContainerSingle2D _cSummaryvsLS; // online only

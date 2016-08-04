@@ -1,5 +1,5 @@
-#ifndef RadDamTask_h
-#define RadDamTask_h
+#ifndef DQM_HcalTasks_HFRadDamTask_h
+#define DQM_HcalTasks_HFRadDamTask_h
 
 /*
  *	file:			RadDamTask.h
@@ -16,11 +16,11 @@
 #include "DQM/HcalCommon/interface/ContainerSingle1D.h"
 
 using namespace hcaldqm;
-class RadDamTask : public DQTask
+class HFRadDamTask : public DQTask
 {
 	public:
-		RadDamTask(edm::ParameterSet const&);
-		virtual ~RadDamTask()
+		HFRadDamTask(edm::ParameterSet const&);
+		virtual ~HFRadDamTask()
 		{}
 
 		virtual void bookHistograms(DQMStore::IBooker&,
@@ -37,6 +37,7 @@ class RadDamTask : public DQTask
 
 		//	vector of Detector Ids for RadDam
 		std::vector<HcalDetId>	_vDetIds;
+		uint32_t _laserType;
 
 		//	Cuts
 
