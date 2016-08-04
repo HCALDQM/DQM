@@ -3,6 +3,8 @@
 
 #include "DQM/HcalCommon/interface/Quantity.h"
 #include "DQM/HcalCommon/interface/Flag.h"
+#include "boost/unordered_map.hpp"
+#include "boost/foreach.hpp"
 
 namespace hcaldqm
 {
@@ -243,6 +245,64 @@ namespace hcaldqm
 
 			protected:
 				int _nevents;
+		};
+
+		class EventType : public ValueQuantity
+		{
+			public:
+				EventType() {}
+				EventType(std::vector<uint32_t> const& vtypes):
+					ValueQuantity(fN)
+				{this->setup(vtypes);}
+				virtual ~EventType() {}
+
+				virtual void setup(std::vector<uint32_t> const& vtypes)
+				{
+					std::cout << "SIZE = " << vtypes.size() << std::endl;
+					for (uint32_t i=0; i<vtypes.size(); i++)
+						_types.insert(std::make_pair((uint32_t)vtypes[i], i));
+				}
+				virtual int getValue(int v)
+				{
+					return _types[(uint32_t)v];
+				}
+				virtual uint32_t getBin(int v)
+				{
+					return getValue(v)+1;
+				}
+
+				virtual int nbins() {return _types.size();}
+				virtual double min() {return 0;}
+				virtual double max() {return _types.size();}
+				virtual std::string name() {return "Event Type";}
+
+			protected:
+				typedef boost::unordered_map<uint32_t, int> TypeMap;
+				TypeMap _types;
+
+			public:
+				virtual std::vector<std::string> getLabels()
+				{
+					std::vector<std::string> labels(_types.size());
+					std::cout << "SIZE = " << _types.size() << std::endl;
+					BOOST_FOREACH(TypeMap::value_type &v, _types)
+					{
+						labels[v.second] = utilities::ogtype2string((OrbitGapType) 
+							v.first);
+					}
+					return labels;
+				}
+				virtual EventType* makeCopy()
+				{
+					std::vector<uint32_t> vtypes;
+					BOOST_FOREACH(TypeMap::value_type &p, _types)
+					{
+						vtypes.push_back(p.first);
+					}
+
+					std::sort(vtypes.begin(), vtypes.end());
+					return new EventType(vtypes);
+				}
 		};
 	}
 }

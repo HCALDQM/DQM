@@ -57,7 +57,7 @@ class LaserTask : public DQTask
 		edm::EDGetTokenT<HBHEDigiCollection> _tokHBHE;
 		edm::EDGetTokenT<HODigiCollection> _tokHO;
 		edm::EDGetTokenT<HFDigiCollection> _tokHF;
-		edm::EDGetTokenT<HcalTBTriggerData> _tokuMN;
+		edm::EDGetTokenT<HcalUMNioDigi> _tokuMN;
 
 		//	emap
 		HcalElectronicsMap const* _emap;
@@ -70,7 +70,7 @@ class LaserTask : public DQTask
 		double _lowHBHE;
 		double _lowHO;
 		double _lowHF;
-		uint8_t _eventType;
+		uint32_t _eventType;
 
 		//	Compact
 		ContainerXXX<double> _xSignalSum;

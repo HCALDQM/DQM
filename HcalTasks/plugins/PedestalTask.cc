@@ -879,9 +879,10 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	if (_ptype==fOnline)
 	{
 		//	online-global
-		int calibType = this->_getCalibType(e);
-		std::cout << "calibType = " << calibType << std::endl;
-		return calibType==hc_Pedestal;
+//		int calibType = this->_getCalibType(e);
+//		std::cout << "calibType = " << calibType << std::endl;
+//		return calibType==hc_Pedestal;
+		return true;
 	}
 	else 
 	{

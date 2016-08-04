@@ -19,7 +19,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_tokHBHE = consumes<HBHEDigiCollection>(_tagHBHE);
 	_tokHO = consumes<HODigiCollection>(_tagHO);
 	_tokHF = consumes<HFDigiCollection>(_tagHF);
-	_tokuMN = consumes<HcalTBTriggerData>(_taguMN);
+	_tokuMN = consumes<HcalUMNioDigi>(_taguMN);
 
 	//	constants
 	_lowHBHE = ps.getUntrackedParameter<double>("lowHBHE",
@@ -28,7 +28,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		20);
 	_lowHF = ps.getUntrackedParameter<double>("lowHF",
 		20);
-	_eventType = ps.getUntrackedParameter<double>("eventType");
+	_eventType = (uint32_t)ps.getUntrackedParameter<uint32_t>("eventType");
 }
 	
 /* virtual */ void LaserTask::bookHistograms(DQMStore::IBooker &ib,
@@ -449,7 +449,29 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		edm::Handle<HcalUMNioDigi> cumn;
 		if (!e.getByToken(_tokuMN, cumn))
 			std::cout << "Collection HcalUMNioDigi is not found" << std::endl;
-		uint8_t eventType = cumn->eventType();
+/*		
+		std::cout << "------" << std::endl;
+		std::cout << ">>> invalid: " << cumn->invalid() << std::endl;
+		std::cout << ">>> runNumber: " << cumn->runNumber() << std::endl;
+		std::cout << ">>> orbitNumber: " << cumn->orbitNumber() << std::endl;
+		std::cout << ">>> bunchNumber: " << cumn->bunchNumber() << std::endl;
+		std::cout << ">>> eventNumber: " << cumn->eventNumber() << std::endl;
+		std::cout << ">>> eventType: " << cumn->eventType() << std::endl;
+		std::cout << ">>> spillCounter: " << cumn->spillCounter() << std::endl;
+		std::cout << ">>> isSpill: " << cumn->isSpill() << std::endl;
+		std::cout << ">>> numberUserWord: " << cumn->numberUserWords() << std::endl;
+		std::cout << "------" << std::endl;
+
+		std::cout << ">>> eventType Check: " << 
+			(cumn->eventType()>0 ? "YES" : "NO") << std::endl;
+			*/
+		uint32_t eventType = 0; eventType = cumn->valueUserWord(0);
+/*
+		std::cout << "LASER EVENT TYPE = " 
+			<< utilities::ogtype2string((OrbitGapType)eventType) << 
+			" EXPECTED TYPE = " << utilities::ogtype2string((OrbitGapType)_eventType) 
+			<< std::endl;
+			*/
 		if (eventType==_eventType) return true;
 	}
 
@@ -457,5 +479,3 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 }
 
 DEFINE_FWK_MODULE(LaserTask);
-
-

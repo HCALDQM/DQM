@@ -281,7 +281,11 @@ namespace hcaldqm
 			tHEMMega = 8,
 			tHBPMega = 9,
 			tHBMMega = 10,
-			nOrbitGapType = 11
+			tSomething = 11,
+			tCRF = 12,
+			tCalib = 13,
+			tSafe = 14,
+			nOrbitGapType = 15
 		};
 	}
 }

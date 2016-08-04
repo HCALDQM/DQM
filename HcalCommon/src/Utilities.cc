@@ -200,6 +200,9 @@ namespace hcaldqm
 				case tHEMMega : return "HEMMegatile";
 				case tHBPMega : return "HBPMegatile";
 				case tHBMMega : return "HBMMegatile";
+				case tCRF : return "CRF";
+				case tCalib : return "Calib";
+				case tSafe : return "Safe";
 				default : return "Unknonw";
 			}
 		}

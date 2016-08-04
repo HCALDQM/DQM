@@ -151,10 +151,3 @@ namespace hcaldqm
 }
 
 #endif
-
-
-
-
-
-
-
