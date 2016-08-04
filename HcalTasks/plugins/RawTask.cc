@@ -296,7 +296,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			if (_ptype==fOnline)
 				_cDataSizevsLS_FED.fill(HcalElectronicsId(constants::FIBERCH_MIN,
 					constants::FIBER_VME_MIN, constants::SPIGOT_MIN, 
-					dccId), _currentLS, raw.size());
+					dccId), _currentLS, double(raw.size())/1024.);
 
 			//	iterate over spigots
 			HcalHTRData htr;
@@ -351,7 +351,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 			if (_ptype==fOnline)
 				_cDataSizevsLS_FED.fill(HcalElectronicsId(utilities::fed2crate(fed),
 					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false),
-					_currentLS, raw.size());
+					_currentLS, double(raw.size())/1024.);
 
 			uint32_t bcn = hamc13->bunchId();
 			uint32_t orn = hamc13->orbitNumber() & 0xFFFF; // LS 16bits only
