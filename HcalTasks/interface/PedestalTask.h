@@ -47,6 +47,8 @@ class PedestalTask : public DQTask
 		edm::InputTag	_tagHO;
 		edm::InputTag	_tagHF;
 		edm::InputTag	_tagTrigger;
+		edm::InputTag   _taguMN;
+		edm::EDGetTokenT<HcalUMNioDigi> _tokuMN;
 		edm::EDGetTokenT<HBHEDigiCollection> _tokHBHE;
 		edm::EDGetTokenT<HODigiCollection> _tokHO;
 		edm::EDGetTokenT<HFDigiCollection> _tokHF;

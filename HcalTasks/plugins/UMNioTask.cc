@@ -25,6 +25,10 @@ UMNioTask::UMNioTask(edm::ParameterSet const& ps):
 		20);
 	_lowHF = ps.getUntrackedParameter<double>("lowHF",
 		20);
+
+	//	push all the event types to monitor - whole range basically
+	for (uint32_t type=constants::tNull; type<constants::nOrbitGapType; type++)
+		_eventtypes.push_back(type);
 }
 	
 /* virtual */ void UMNioTask::bookHistograms(DQMStore::IBooker &ib,
@@ -61,11 +65,13 @@ UMNioTask::UMNioTask(edm::ParameterSet const& ps):
 
 	uint8_t eventType = cumn->eventType();
 	uint32_t laserType = cumn->valueUserWord(0);
+	std::cout << "EventType=" << (unsigned int)eventType 
+		<< "  LaserType=" << (unsigned int)laserType << std::endl;
 	_cEventType.fill(_currentLS, eventType==constants::EVENTTYPE_PEDESTAL ?
 		(int)eventType : (int)laserType);
 
 	//	Compute the Total Charge in the Detector...
-	dm::Handle<HBHEDigiCollection>     chbhe;
+	edm::Handle<HBHEDigiCollection>     chbhe;
 	edm::Handle<HODigiCollection>       cho;
 	edm::Handle<HFDigiCollection>       chf;
 
@@ -82,19 +88,19 @@ UMNioTask::UMNioTask(edm::ParameterSet const& ps):
 	for (HBHEDigiCollection::const_iterator it=chbhe->begin();
 		it!=chbhe->end(); ++it)
 	{
-		double sumQ = utilities::sumQ<HBHEDataFrame>(*it, 2.5, 0, digi.size()-1);
+		double sumQ = utilities::sumQ<HBHEDataFrame>(*it, 2.5, 0, it->size()-1);
 		_cTotalCharge.fill(it->id(), _currentLS, sumQ);
 	}
 	for (HODigiCollection::const_iterator it=cho->begin();
 		it!=cho->end(); ++it)
 	{
-		double sumQ = utilities::sumQ<HODataFrame>(*it, 8.5, 0, digi.size()-1);
+		double sumQ = utilities::sumQ<HODataFrame>(*it, 8.5, 0, it->size()-1);
 		_cTotalCharge.fill(it->id(), _currentLS, sumQ);
 	}
 	for (HFDigiCollection::const_iterator it=chf->begin();
 		it!=chf->end(); ++it)
 	{
-		double sumQ = utilities::sumQ<HFDataFrame>(*it, 2.5, 0, digi.size()-1);
+		double sumQ = utilities::sumQ<HFDataFrame>(*it, 2.5, 0, it->size()-1);
 		_cTotalCharge.fill(it->id(), _currentLS, sumQ);
 	}
 }

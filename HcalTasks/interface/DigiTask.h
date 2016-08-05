@@ -72,7 +72,7 @@ class DigiTask : public DQTask
 		//	emap
 		HcalElectronicsMap const* _emap;
 		electronicsmap::ElectronicsMap _ehashmap; // online only
-		electronicsmap::ElectronicsMap _dhashmap
+		electronicsmap::ElectronicsMap _dhashmap;
 
 		//	Filters
 		HashFilter _filter_VME;

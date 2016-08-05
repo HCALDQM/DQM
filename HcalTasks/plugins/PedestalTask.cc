@@ -14,10 +14,13 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 		edm::InputTag("hcalDigis"));
 	_tagTrigger = ps.getUntrackedParameter<edm::InputTag>("tagTrigger",
 		edm::InputTag("tbunpacker"));
+	_taguMN = ps.getUntrackedParameter<edm::InputTag>("taguMN",
+		edm::InputTag("hcalDigis"));
 	_tokHBHE = consumes<HBHEDigiCollection>(_tagHBHE);
 	_tokHO = consumes<HODigiCollection>(_tagHO);
 	_tokHF = consumes<HFDigiCollection>(_tagHF);
 	_tokTrigger = consumes<HcalTBTriggerData>(_tagTrigger);
+	_tokuMN = consumes<HcalUMNioDigi>(_taguMN);
 
 	_vflags.resize(nPedestalFlag);
 	_vflags[fMsn]=flag::Flag("Msn");
@@ -904,5 +907,3 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 }
 
 DEFINE_FWK_MODULE(PedestalTask);
-
-

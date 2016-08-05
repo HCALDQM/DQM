@@ -87,10 +87,13 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fEtCorr_256),
 		new quantity::ValueQuantity(quantity::fEtCorr_256),
 		new quantity::ValueQuantity(quantity::fN, true));
-	_cFGCorr_TTSubdet.initialize(_name, "FGCorr", hashfunctions::fTTSubdet,
-		new quantity::ValueQuantity(quantity::fFG),
-		new quantity::ValueQuantity(quantity::fFG),
-		new quantity::ValueQuantity(quantity::fN, true));
+	for (uint8_t iii=0; iii<constants::NUM_FGBITS; iii++)
+	{
+		_cFGCorr_TTSubdet[iii].initialize(_name, "FGCorr", hashfunctions::fTTSubdet,
+			new quantity::ValueQuantity(quantity::fFG),
+			new quantity::ValueQuantity(quantity::fFG),
+			new quantity::ValueQuantity(quantity::fN, true));
+	}
 
 	_cEtData_ElectronicsVME.initialize(_name, "EtData", 
 		hashfunctions::fElectronics,
@@ -424,10 +427,15 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	}
 
 	//	BOOK HISTOGRAMS
+	char aux[20];
+	for (unsigned int iii=0; iii<constants::NUM_FGBITS; iii++)
+	{
+		sprintf(aux, "BIT%d", iii);
+		_cFGCorr_TTSubdet[iii].book(ib, _emap, _subsystem, aux);
+	}
 	_cEtData_TTSubdet.book(ib, _emap, _subsystem);
 	_cEtEmul_TTSubdet.book(ib, _emap, _subsystem);
 	_cEtCorr_TTSubdet.book(ib, _emap, _subsystem);
-	_cFGCorr_TTSubdet.book(ib, _emap, _subsystem);
 	_cEtData_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cEtData_ElectronicsuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cEtEmul_ElectronicsVME.book(ib, _emap, _filter_uTCA, _subsystem);
@@ -567,7 +575,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	{
 		HcalTrigTowerDetId tid = it->id();
 		if (_ehashmap.lookup(tid)==0)
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent = true; continue;}
+		{meUnknownIds1LS->Fill(1); _unknownIdsPresent = true; continue;}
 
 		//
 		//	HF 2x3 TPs Treat theam separately and only for ONLINE!
@@ -660,7 +668,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			_cEtCorrRatio_depthlike.fill(tid, rEt);
 			_cEtCorr_TTSubdet.fill(tid, soiEt_d, soiEt_e);
 			for (uint32_t ibit=0; ibit<constants::NUM_FGBITS; ibit++)
-				_cFGCorr_TTSubdet.fill(tid, soiFG_d[ibit], soiFG_e[ibit]);
+				_cFGCorr_TTSubdet[ibit].fill(tid, soiFG_d[ibit], soiFG_e[ibit]);
 			//	FILL w/o a CUT
 			if (eid.isVMEid())
 			{
@@ -791,7 +799,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	{
 		HcalTrigTowerDetId tid = it->id();
 		if (_ehashmap.lookup(tid)==0)
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent = true; continue;}
+		{meUnknownIds1LS->Fill(1); _unknownIdsPresent = true; continue;}
 
 		//	HF 2x3 TPs. Only do it for Online!!!
 		if (tid.version()==0 && tid.ietaAbs()>=29)
@@ -975,9 +983,9 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		}
 
 		if (_unknownIdsPresent)
-			_vflags[fUnknownIds] = flag::fBAD;
+			_vflags[fUnknownIds]._state = flag::fBAD;
 		else
-			_vflags[fUnknownIds] = flag::fGOOD;
+			_vflags[fUnknownIds]._state = flag::fGOOD;
 
 		int iflag=0;
 		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();

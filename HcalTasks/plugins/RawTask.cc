@@ -9,7 +9,7 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 		edm::InputTag("hcalDigis"));
 	_calibProcessing = ps.getUntrackedParameter<bool>("calibProcessing",
 		false);
-	_thresh_calib_nbadq = ps.getUntrackedParamter<int>("thresh_calib_nbadq",
+	_thresh_calib_nbadq = ps.getUntrackedParameter<int>("thresh_calib_nbadq",
 		1000);
 
 	_tokFEDs = consumes<FEDRawDataCollection>(_tagFEDs);
@@ -294,9 +294,13 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 			/* online only */
 			if (_ptype==fOnline)
-				_cDataSizevsLS_FED.fill(HcalElectronicsId(constants::FIBERCH_MIN,
-					constants::FIBER_VME_MIN, constants::SPIGOT_MIN, 
-					dccId), _currentLS, double(raw.size())/1024.);
+			{
+				HcalElectronicsId eid = HcalElectronicsId(constants::FIBERCH_MIN,
+					constants::FIBER_VME_MIN, constants::SPIGOT_MIN, dccId);
+				if (_filter_FEDsVME.filter(eid))
+					continue;
+				_cDataSizevsLS_FED.fill(eid, _currentLS, double(raw.size())/1024.);
+			}
 
 			//	iterate over spigots
 			HcalHTRData htr;
@@ -349,9 +353,13 @@ RawTask::RawTask(edm::ParameterSet const& ps):
 
 			/* online only */
 			if (_ptype==fOnline)
-				_cDataSizevsLS_FED.fill(HcalElectronicsId(utilities::fed2crate(fed),
-					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false),
-					_currentLS, double(raw.size())/1024.);
+			{
+				HcalElectronicsId eid = HcalElectronicsId(utilities::fed2crate(fed),
+					SLOT_uTCA_MIN, FIBER_uTCA_MIN1, FIBERCH_MIN, false);
+				if (_filter_FEDsuTCA.filter(eid))
+					continue;
+				_cDataSizevsLS_FED.fill(eid, _currentLS, double(raw.size())/1024.);
+			}
 
 			uint32_t bcn = hamc13->bunchId();
 			uint32_t orn = hamc13->orbitNumber() & 0xFFFF; // LS 16bits only

@@ -22,6 +22,9 @@ namespace hcaldqm
 					{
 						HcalGenericDetId did = HcalGenericDetId(
 							_emap->lookup(*it));
+						EMapType::iterator dit = _ids.find(did.rawId());
+						if (dit!=_ids.end())
+							continue;
 //						if (!did.isHcalDetId())
 //							continue;
 
@@ -54,8 +57,7 @@ namespace hcaldqm
 						it=eids.begin(); it!=eids.end(); ++it)
 					{
 						HcalDetId did = HcalDetId(_emap->lookup(*it));
-						uint32_t hash = hashfunctions::hash_EChannel(
-							*it);
+						uint32_t hash = it->rawId();
 						EMapType::iterator eit = _ids.find(hash);
 						if (eit!=_ids.end())
 							continue;
@@ -171,11 +173,11 @@ namespace hcaldqm
 		{
 			uint32_t hash = id.rawId();
 			if (_etype==fHcalElectronicsMap)
-				return _emap->lookup(id);
+				return _emap->lookup(id).rawId();
 			else 
 			{
-				ElectronicsMap::iterator it = ids.find(hash);
-				return it==ids.end() ? 0 : *it;
+				EMapType::iterator it = _ids.find(hash);
+				return it==_ids.end() ? 0 : it->second;
 			}
 			return 0;
 		}
@@ -184,11 +186,11 @@ namespace hcaldqm
 		{
 			uint32_t hash = id.rawId();
 			if (_etype==fHcalElectronicsMap)
-				return _emap->lookup(id);
+				return _emap->lookup(id).rawId();
 			else 
 			{
-				ElectronicsMap::iterator it=ids.find(hash);
-				return it==ids.end() ? 0 : *it;
+				EMapType::iterator it=_ids.find(hash);
+				return it==_ids.end() ? 0 : it->second;
 			}
 			return 0;
 		}

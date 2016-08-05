@@ -49,7 +49,16 @@ class UMNioTask : public DQTask
 
 		//	tags and tokens
 		edm::InputTag	_taguMN;
+		edm::InputTag   _tagHBHE;
+		edm::InputTag   _tagHO;
+		edm::InputTag   _tagHF;
+		edm::EDGetTokenT<HBHEDigiCollection> _tokHBHE;
+		edm::EDGetTokenT<HODigiCollection> _tokHO;
+		edm::EDGetTokenT<HFDigiCollection> _tokHF;
 		edm::EDGetTokenT<HcalUMNioDigi> _tokuMN;
+
+		//	cuts
+		double _lowHBHE, _lowHO, _lowHF;
 
 		//	emap
 		HcalElectronicsMap const* _emap;

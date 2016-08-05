@@ -382,7 +382,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	meUnknownIds1LS = ib.book1D("UnknownIds", "UnknownIds",
 		1, 0, 1);
 	_unknownIdsPresent = false;
-	meUnkownIds1LS->setLumiFlag();
+	meUnknownIds1LS->setLumiFlag();
 }
 
 /* virtual */ void DigiTask::_resetMonitors(UpdateFreq uf)
@@ -437,7 +437,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		double sumQ = utilities::sumQ<HBHEDataFrame>(*it, 2.5, 0, it->size()-1);
 		HcalDetId const& did = it->id();
 		if (_ehashmap.lookup(did)==0) 
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
+		{
+			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
+			std::cout << did << std::endl;
+			continue;
+		}
 		//	filter out channels that are masked out
 		if (_xQuality.exists(did)) 
 		{
@@ -449,7 +453,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		}
 		HcalElectronicsId const& eid = it->elecId();
 		if (_dhashmap.lookup(eid)==0)
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
+		{
+			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
+			std::cout << eid << std::endl;
+			continue;
+		}
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
 		_cOccupancy_depth.fill(did);
@@ -551,7 +559,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		double sumQ = utilities::sumQ<HODataFrame>(*it, 8.5, 0, it->size()-1);
 		HcalDetId const& did = it->id();
 		if (_ehashmap.lookup(did)==0) 
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
+		{
+			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
+			std::cout << did << std::endl;
+			continue;
+		}
 		//	filter out channels that are masked out
 		if (_xQuality.exists(did)) 
 		{
@@ -563,7 +575,12 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		}
 		HcalElectronicsId const& eid = it->elecId();
 		if (_dhashmap.lookup(eid)==0)
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
+		{
+			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
+			std::cout << eid << std::endl;
+			std::cout << did << std::endl;
+			continue;
+		}
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
 		_cOccupancy_depth.fill(did);
@@ -658,7 +675,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		double sumQ = utilities::sumQ<HFDataFrame>(*it, 2.5, 0, it->size()-1);
 		HcalDetId const& did = it->id();
 		if (_ehashmap.lookup(did)==0) 
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
+		{
+			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
+			std::cout << did << std::endl;
+			continue;
+		}
 		//	filter out channels that are masked out
 		if (_xQuality.exists(did)) 
 		{
@@ -670,7 +691,11 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		}
 		HcalElectronicsId const& eid = it->elecId();
 		if (_dhashmap.lookup(eid)==0)
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
+		{
+			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
+			std::cout << eid << std::endl;
+			continue;
+		}
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
 		_cOccupancy_depth.fill(did);
@@ -845,9 +870,9 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 			}
 		}
 		if (_unknownIdsPresent) 
-			_vflags[fUnknownIds] = flag::fBAD:
+			_vflags[fUnknownIds]._state = flag::fBAD;
 		else
-			_vflags[fUnknownIds] = flag::fGOOD;
+			_vflags[fUnknownIds]._state = flag::fGOOD;
 
 		int iflag=0;
 		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();

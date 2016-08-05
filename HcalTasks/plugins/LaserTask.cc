@@ -74,6 +74,11 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fTiming_TS200), 
 		new quantity::ValueQuantity(quantity::fN, true));
 
+	_cADC_SubdetPM.initialize(_name, "ADC",
+		hashfunctions::fSubdetPM,
+		new quantity::ValueQuantity(quantity::fADC_128),
+		new quantity::ValueQuantity(quantity::fN, true));
+
 	_cSignalMean_FEDVME.initialize(_name, "SignalMean",
 		hashfunctions::fFED,
 		new quantity::ElectronicsQuantity(quantity::fSpigot),
@@ -221,6 +226,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 	_cTimingMean_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
 	_cTimingRMS_FEDVME.book(ib, _emap, _filter_uTCA, _subsystem);
 	_cTimingRMS_FEDuTCA.book(ib, _emap, _filter_VME, _subsystem);
+	_cADC_SubdetPM.book(ib, _emap, _subsystem);
 
 	_cShapeCut_FEDSlot.book(ib, _emap, _subsystem);
 	_cMissing_depth.book(ib, _emap,_subsystem);
@@ -350,8 +356,11 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_xEntries.get(did)++;
 
 		for (int i=0; i<digi.size(); i++)
+		{
 			_cShapeCut_FEDSlot.fill(eid, i, 
 				digi.sample(i).nominal_fC()-2.5);
+			_cADC_SubdetPM.fill(did, digi.sample(i).adc());
+		}
 
 		//	select based on local global
 		if (_ptype==fLocal)
@@ -388,8 +397,11 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_xEntries.get(did)++;
 
 		for (int i=0; i<digi.size(); i++)
+		{
 			_cShapeCut_FEDSlot.fill(eid, i, 
 				digi.sample(i).nominal_fC()-8.5);
+			_cADC_SubdetPM.fill(did, digi.sample(i).adc());
+		}
 
 		//	select based on local global
 		if (_ptype==fLocal)
@@ -426,8 +438,11 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		_xEntries.get(did)++;
 
 		for (int i=0; i<digi.size(); i++)
+		{
 			_cShapeCut_FEDSlot.fill(eid, i, 
 				digi.sample(i).nominal_fC()-2.5);
+			_cADC_SubdetPM.fill(did, digi.sample(i).adc());
+		}
 
 		//	select based on local global
 		if (_ptype==fLocal)
@@ -472,7 +487,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		
 		//	event type check first
 		uint8_t eventType = cumn->eventType();
-		if (eventType!=constants::EVENTTYPE_LASERTYPE)
+		if (eventType!=constants::EVENTTYPE_LASER)
 			return false;
 
 		//	check if this analysis task is of the right laser type

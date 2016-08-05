@@ -85,6 +85,8 @@ class LaserTask : public DQTask
 		Container1D		_cTimingMean_Subdet;
 		Container1D		_cTimingRMS_Subdet;
 
+		Container1D _cADC_SubdetPM;
+
 		//	Prof1D
 		ContainerProf1D	_cShapeCut_FEDSlot;
 		ContainerProf1D _cTimingvsEvent_SubdetPM;

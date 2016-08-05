@@ -80,7 +80,7 @@ class TPTask : public DQTask
 		Container1D _cEtEmul_TTSubdet;
 		Container2D	_cEtCorr_TTSubdet;
 		Container2D _cEtCorr2x3_TTSubdet;	//	online only
-		Container2D _cFGCorr_TTSubdet;
+		Container2D _cFGCorr_TTSubdet[constants::NUM_FGBITS];
 		ContainerProf1D _cEtCutDatavsLS_TTSubdet;	// online only!
 		ContainerProf1D _cEtCutEmulvsLS_TTSubdet;	// online only!
 		ContainerProf1D _cEtCutDatavsBX_TTSubdet;	// online only!

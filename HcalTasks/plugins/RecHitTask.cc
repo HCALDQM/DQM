@@ -24,7 +24,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 	_vflags.resize(nRecoFlag);
 	_vflags[fUni]=flag::Flag("UniSlotHF");
 	_vflags[fTCDS]=flag::Flag("TCDS");
-	_vflags[fUnkownIds] = flag::Flag("UnknownIds");
+	_vflags[fUnknownIds] = flag::Flag("UnknownIds");
 }
 
 /* virtual */ void RecHitTask::bookHistograms(DQMStore::IBooker& ib,
@@ -373,7 +373,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		double timing = it->time();
 		HcalDetId did = it->id();
 		if (_ehashmap.lookup(did)==0)
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
+		{meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;continue;}
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
 		_cTimingvsEnergy_SubdetPM.fill(did, energy, timing);
@@ -500,7 +500,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		double timing = it->time();
 		HcalDetId did = it->id();
 		if (_ehashmap.lookup(did)==0)
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
+		{meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;continue;}
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
 		_cTimingvsEnergy_SubdetPM.fill(did, energy, timing);
@@ -588,7 +588,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		double timing = it->time();
 		HcalDetId did = it->id();
 		if (_ehashmap.lookup(did)==0)
-		{meUnknownIds1LS.Fill(1); _unknownIdsPresent=true;continue;}
+		{meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;continue;}
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(did));
 		_cEnergy_Subdet.fill(did, energy);
 		_cTimingvsEnergy_SubdetPM.fill(did, energy, timing);
@@ -751,9 +751,9 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		}
 
 		if (_unknownIdsPresent)
-			_vflags[fUnknownIds] = flag::fBAD;
+			_vflags[fUnknownIds]._state = flag::fBAD;
 		else 
-			_vflags[fUnknownIds] = flag::fGOOD;
+			_vflags[fUnknownIds]._state = flag::fGOOD;
 
 		int iflag=0;
 		for (std::vector<flag::Flag>::iterator ft=_vflags.begin();

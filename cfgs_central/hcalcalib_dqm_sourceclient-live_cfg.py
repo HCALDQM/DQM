@@ -46,6 +46,9 @@ process.dqmSaver.tag = subsystem
 referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
+process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
+process.dqmSaver.path = "/data/hcaldqm/DQMIO/ONLINE_PLAYBACK"
+process.DQM.collectorPort = cms.untracked.int32(9190)
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
@@ -99,7 +102,10 @@ process.hbhereco = process.hbheprereco.clone()
 #-------------------------------------
 process.load("DQM.HcalTasks.PedestalTask")
 process.load('DQM.HcalTasks.RawTask')
+process.load("DQM.HcalTasks.LaserTask")
+process.load("DQM.HcalTasks.UMNioTask")
 process.load('DQM.HcalTasks.HcalOnlineHarvesting')
+process.load("DQM.HcalTasks.HFRaddamTask")
 
 #-------------------------------------
 #	To force using uTCA
@@ -111,7 +117,7 @@ if useMap:
                                             )
                                    )
 
-	#-------------------------------------
+#-------------------------------------
 #	Some Settings before Finishing up
 #-------------------------------------
 process.hcalDigis.InputLabel = rawTag
@@ -122,11 +128,51 @@ process.rawTask.tagFEDs = rawTagUntracked
 process.rawTask.tagReport = cms.untracked.InputTag("hcalDigis")
 
 #-------------------------------------
+#	Prepare all the Laser Tasks
+#-------------------------------------
+process.hbhehpdTask = process.laserTask.clone()
+process.hbhehpdTask.name = cms.untracked.string("HBHEHPDTask")
+process.hbhehpdTask.eventType = cms.untracked.uint32(3)
+
+process.hoTask = process.laserTask.clone()
+process.hoTask.name = cms.untracked.string("HOTask")
+process.hoTask.eventType = cms.untracked.uint32(4)
+
+process.hfTask = process.laserTask.clone()
+process.hfTask.name = cms.untracked.string("HFTask")
+process.hfTask.eventType = cms.untracked.uint32(5)
+
+process.hepmegaTask = process.laserTask.clone()
+process.hepmegaTask.name = cms.untracked.string("HEPMegaTask")
+process.hepmegaTask.eventType = cms.untracked.uint32(7)
+
+process.hemmegaTask = process.laserTask.clone()
+process.hemmegaTask.name = cms.untracked.string("HEMMegaTask")
+process.hemmegaTask.eventType = cms.untracked.uint32(8)
+
+process.hbpmegaTask = process.laserTask.clone()
+process.hbpmegaTask.name = cms.untracked.string("HBPMegaTask")
+process.hbpmegaTask.eventType = cms.untracked.uint32(9)
+
+process.hbmmegaTask = process.laserTask.clone()
+process.hbmmegaTask.name = cms.untracked.string("HBMMegaTask")
+process.hbmmegaTask.eventType = cms.untracked.uint32(10)
+
+#-------------------------------------
 #	Hcal DQM Tasks Sequence Definition
 #-------------------------------------
 process.tasksSequence = cms.Sequence(
 		process.pedestalTask
+		*process.hfRaddamTask
 		*process.rawTask
+		*process.hbhehpdTask
+		*process.hoTask
+		*process.hfTask
+		*process.hepmegaTask
+		*process.hemmegaTask
+		*process.hbpmegaTask
+		*process.hbmmegaTask
+		*process.umnioTask
 )
 
 process.harvestingSequence = cms.Sequence(

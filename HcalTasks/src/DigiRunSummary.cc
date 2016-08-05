@@ -188,7 +188,7 @@ namespace hcaldqm
 				}
 			}
 			if (unknownIdsPresent)
-				vtmpflags[fUnknownIds]._state = flag::fBAD:
+				vtmpflags[fUnknownIds]._state = flag::fBAD;
 			else
 				vtmpflags[fUnknownIds]._state = flag::fGOOD;
 
