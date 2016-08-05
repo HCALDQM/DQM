@@ -591,9 +591,9 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		//	FROM THIS POINT, HBHE + 1x1 HF TPs
 		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(tid));
 		int soiEt_d = it->t0().compressedEt();
-		bool soiFG_d[constants::NUM_FGBITS];
+		int soiFG_d[constants::NUM_FGBITS];
 		for (uint32_t ibit=0; ibit<constants::NUM_FGBITS; ibit++)
-			soiFG_d[ibit] = it->t0().fineGrain(ibit);
+			soiFG_d[ibit] = it->t0().fineGrain(ibit)?1:0;
 		tid.ietaAbs()>=29?numHF++:numHBHE++;
 
 		//	 fill w/o a cut
@@ -639,9 +639,9 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		{
 			//	if PRESENT!
 			int soiEt_e = jt->SOI_compressedEt();
-			bool soiFG_e[constants::NUM_FGBITS];
+			int soiFG_e[constants::NUM_FGBITS];
 			for (uint32_t ibit=0; ibit<constants::NUM_FGBITS; ibit++)
-				soiFG_e[ibit] = jt->t0().fineGrain(ibit);
+				soiFG_e[ibit] = jt->t0().fineGrain(ibit)?1:0;
 			//	if both are zeroes => set 1
 			double rEt = soiEt_d==0 && soiEt_e==0?1:
 				double(std::min(soiEt_d, soiEt_e))/
