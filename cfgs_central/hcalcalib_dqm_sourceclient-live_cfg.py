@@ -46,9 +46,6 @@ process.dqmSaver.tag = subsystem
 referenceFileName = '/dqmdata/dqm/reference/hcal_reference.root'
 process.DQMStore.referenceFileName = referenceFileName
 process = customise(process)
-process.DQM.collectorHost = cms.untracked.string("fu-c2f11-21-03.cms")
-process.dqmSaver.path = "/data/hcaldqm/DQMIO/ONLINE_PLAYBACK"
-process.DQM.collectorPort = cms.untracked.int32(9190)
 
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
