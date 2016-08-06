@@ -426,6 +426,12 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	int bx = e.bunchCrossing();
 	meNumEvents1LS->Fill(0.5); // just increment
 
+	//	To fill histograms outside of the loop, you need to determine if there were
+	//	any valid det ids first
+	uint32_t rawidValid = 0;
+	uint32_t rawidHBValid = 0;
+	uint32_t rawidHEValid = 0;
+
 	//	HB collection
 	int numChs = 0;
 	int numChsCut = 0;
@@ -435,13 +441,22 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		++it)
 	{
 		double sumQ = utilities::sumQ<HBHEDataFrame>(*it, 2.5, 0, it->size()-1);
+
+		//	Explicit check on the DetIds present in the Collection
 		HcalDetId const& did = it->id();
-		if (_ehashmap.lookup(did)==0) 
+		uint32_t rawid = _ehashmap.lookup(did);
+		if (rawid==0) 
 		{
 			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
 			std::cout << did << std::endl;
 			continue;
 		}
+		HcalElectronicsId const& eid(rawid);
+		if (did.subdet()==HcalBarrel)
+			rawidHBValid = did.rawId();
+		else if (did.subdet()==HcalEndcap) 
+			rawidHEValid = did.rawId();
+
 		//	filter out channels that are masked out
 		if (_xQuality.exists(did)) 
 		{
@@ -450,13 +465,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				cs.isBitSet(HcalChannelStatus::HcalCellMask) ||
 				cs.isBitSet(HcalChannelStatus::HcalCellDead))
 				continue;
-		}
-		HcalElectronicsId const& eid = it->elecId();
-		if (_dhashmap.lookup(eid)==0)
-		{
-			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
-			std::cout << eid << std::endl;
-			continue;
 		}
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
@@ -532,38 +540,52 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		}
 		did.subdet()==HcalBarrel?numChs++:numChsHE++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), _currentLS, 
-		numChs);
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), _currentLS,
-		numChsHE);
-	//	ONLINE ONLY!
-	if (_ptype==fOnline)
+
+	if (rawidHBValid!=0 && rawidHEValid!=0)
 	{
-		_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), 
-			_currentLS, numChsCut);
-		_cOccupancyCutvsBX_Subdet.fill(HcalDetId(HcalBarrel, 1, 1, 1), bx,
-			numChsCut);
-		_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), 
-			_currentLS, numChsCutHE);
-		_cOccupancyCutvsBX_Subdet.fill(HcalDetId(HcalEndcap, 1, 1, 1), bx,
-			numChsCutHE);
+		_cOccupancyvsLS_Subdet.fill(HcalDetId(rawidHBValid), _currentLS, 
+			numChs);
+		_cOccupancyvsLS_Subdet.fill(HcalDetId(rawidHEValid), _currentLS,
+			numChsHE);
+		//	ONLINE ONLY!
+		if (_ptype==fOnline)
+		{
+			_cOccupancyCutvsLS_Subdet.fill(HcalDetId(rawidHBValid), 
+				_currentLS, numChsCut);
+			_cOccupancyCutvsBX_Subdet.fill(HcalDetId(rawidHBValid), bx,
+				numChsCut);
+			_cOccupancyCutvsLS_Subdet.fill(HcalDetId(rawidHEValid), 
+				_currentLS, numChsCutHE);
+			_cOccupancyCutvsBX_Subdet.fill(HcalDetId(rawidHEValid), bx,
+				numChsCutHE);
+		}
+		//	^^^ONLINE ONLY!
 	}
-	//	^^^ONLINE ONLY!
 	numChs=0;
 	numChsCut = 0;
+
+	//	reset
+	rawidValid = 0;
 
 	//	HO collection
 	for (HODigiCollection::const_iterator it=cho->begin(); it!=cho->end();
 		++it)
 	{
 		double sumQ = utilities::sumQ<HODataFrame>(*it, 8.5, 0, it->size()-1);
+
+		//	Explicit check on the DetIds present in the Collection
 		HcalDetId const& did = it->id();
-		if (_ehashmap.lookup(did)==0) 
+		uint32_t rawid = _ehashmap.lookup(did);
+		if (rawid==0) 
 		{
 			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
 			std::cout << did << std::endl;
 			continue;
 		}
+		HcalElectronicsId const& eid(rawid);
+		if (did.subdet()==HcalOuter)
+			rawidValid = did.rawId();
+
 		//	filter out channels that are masked out
 		if (_xQuality.exists(did)) 
 		{
@@ -572,14 +594,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				cs.isBitSet(HcalChannelStatus::HcalCellMask) ||
 				cs.isBitSet(HcalChannelStatus::HcalCellDead))
 				continue;
-		}
-		HcalElectronicsId const& eid = it->elecId();
-		if (_dhashmap.lookup(eid)==0)
-		{
-			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
-			std::cout << eid << std::endl;
-			std::cout << did << std::endl;
-			continue;
 		}
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
@@ -656,30 +670,44 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		}
 		numChs++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), _currentLS,
-		numChs);
 
-	if (_ptype==fOnline)
+	if (rawidValid!=0)
 	{
-		_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), 
-			_currentLS, numChsCut);
-		_cOccupancyCutvsBX_Subdet.fill(HcalDetId(HcalOuter, 1, 1, 1), bx,
-			numChsCut);
+		_cOccupancyvsLS_Subdet.fill(HcalDetId(rawidValid), _currentLS,
+			numChs);
+	
+		if (_ptype==fOnline)
+		{
+			_cOccupancyCutvsLS_Subdet.fill(HcalDetId(rawidValid), 
+				_currentLS, numChsCut);
+			_cOccupancyCutvsBX_Subdet.fill(HcalDetId(rawidValid), bx,
+				numChsCut);
+		}
 	}
 	numChs=0; numChsCut=0;
+
+	//	reset
+	rawidValid = 0;
 
 	//	HF collection
 	for (HFDigiCollection::const_iterator it=chf->begin(); it!=chf->end();
 		++it)
 	{
 		double sumQ = utilities::sumQ<HFDataFrame>(*it, 2.5, 0, it->size()-1);
+
+		//	Explicit check on the DetIds present in the Collection
 		HcalDetId const& did = it->id();
-		if (_ehashmap.lookup(did)==0) 
+		uint32_t rawid = _ehashmap.lookup(did);
+		if (rawid==0) 
 		{
 			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
 			std::cout << did << std::endl;
 			continue;
 		}
+		HcalElectronicsId const& eid(rawid);
+		if (did.subdet()==HcalForward)
+			rawidValid = did.rawId();
+
 		//	filter out channels that are masked out
 		if (_xQuality.exists(did)) 
 		{
@@ -688,13 +716,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 				cs.isBitSet(HcalChannelStatus::HcalCellMask) ||
 				cs.isBitSet(HcalChannelStatus::HcalCellDead))
 				continue;
-		}
-		HcalElectronicsId const& eid = it->elecId();
-		if (_dhashmap.lookup(eid)==0)
-		{
-			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
-			std::cout << eid << std::endl;
-			continue;
 		}
 
 		_cSumQ_SubdetPM.fill(did, sumQ);
@@ -779,15 +800,19 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		}
 		numChs++;
 	}
-	_cOccupancyvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), _currentLS, 
-		numChs);
 
-	if (_ptype==fOnline)
+	if (rawidValid!=0)
 	{
-		_cOccupancyCutvsLS_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), 
-			_currentLS, numChsCut);
-		_cOccupancyCutvsBX_Subdet.fill(HcalDetId(HcalForward, 1, 1, 1), bx,
-			numChsCut);
+		_cOccupancyvsLS_Subdet.fill(HcalDetId(rawidValid), _currentLS, 
+			numChs);
+	
+		if (_ptype==fOnline)
+		{
+			_cOccupancyCutvsLS_Subdet.fill(HcalDetId(rawidValid), 
+				_currentLS, numChsCut);
+			_cOccupancyCutvsBX_Subdet.fill(HcalDetId(rawidValid), bx,
+				numChsCut);
+		}
 	}
 }
 

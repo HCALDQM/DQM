@@ -24,6 +24,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_thresh_DataMsn = ps.getUntrackedParameter<double>("thresh_DataMsn",
 		0.1);
 	_thresh_EmulMsn = ps.getUntrackedParameter<double>("thresh_EmulMsn");
+	_vFGBitsReady = ps.getUntrackedParameter<std::vector<bool> >("vFGBitsReady");
 
 	_vflags.resize(nTPFlag);
 	_vflags[fEtMsm]=flag::Flag("EtMsm");
@@ -561,6 +562,10 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	int numMsmHBHE(0), numMsmHF(0);
 	int numMsnHBHE(0), numMsnHF(0), numMsnCutHBHE(0), numMsnCutHF(0);
 
+	//	for explanation see RecHit or Digi Tasks
+	uint32_t rawidHBHEValid = 0;
+	uint32_t rawidHFValid = 0;
+
 	/*
 	 * STEP1: 
 	 * Loop over the data digis and 
@@ -573,9 +578,16 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	for (HcalTrigPrimDigiCollection::const_iterator it=cdata->begin();
 		it!=cdata->end(); ++it)
 	{
+		//	Explicit check on the DetIds present in the Collection
 		HcalTrigTowerDetId tid = it->id();
-		if (_ehashmap.lookup(tid)==0)
+		uint32_t rawid = _ehashmap.lookup(tid);
+		if (rawid==0)
 		{meUnknownIds1LS->Fill(1); _unknownIdsPresent = true; continue;}
+		HcalElectronicsId const& eid(rawid);
+		if (tid.ietaAbs()>=29)
+			rawidHFValid = tid.rawId();
+		else 
+			rawidHBHEValid = tid.rawId();
 
 		//
 		//	HF 2x3 TPs Treat theam separately and only for ONLINE!
@@ -597,7 +609,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		}
 
 		//	FROM THIS POINT, HBHE + 1x1 HF TPs
-		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(tid));
 		int soiEt_d = it->t0().compressedEt();
 		int soiFG_d[constants::NUM_FGBITS];
 		for (uint32_t ibit=0; ibit<constants::NUM_FGBITS; ibit++)
@@ -693,9 +704,10 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 					_xEtMsm.get(eid)++;
 			}
 			//	 if SOI FG are not equal
-			//	 fill mismatched
+			//	 fill mismatched. 
+			//	 Do this comparison only for FG Bits that are commissioned
 			for (uint32_t ibit=0; ibit<constants::NUM_FGBITS; ibit++)
-				if (soiFG_d[ibit]!=soiFG_e[ibit])
+				if (soiFG_d[ibit]!=soiFG_e[ibit] && _vFGBitsReady[ibit])
 				{
 					_cFGMsm_depthlike.fill(tid);
 					if (eid.isVMEid())
@@ -726,65 +738,74 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		}
 	}
 	
-	//	ONLINE ONLY!
-	if (_ptype==fOnline)
+	if (rawidHFValid!=0 && rawidHBHEValid!=0)
 	{
-		_cOccupancyDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1), bx,
-			numHBHE);
-		_cOccupancyDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1), bx,
-			numHF);
-		_cOccupancyCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1), bx,
-			numCutHBHE);
-		_cOccupancyCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1), bx,
-			numCutHF);
-		_cOccupancyDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1), 
-			_currentLS, numHBHE);
-		_cOccupancyDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1), 
-			_currentLS,numHF);
-		_cOccupancyCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			_currentLS, numCutHBHE);
-		_cOccupancyCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1), 
-			_currentLS, numCutHF);
-
-		_cEtMsmvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1), _currentLS,
-			numMsmHBHE);
-		_cEtMsmvsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1), _currentLS, 
-			numMsmHF);
-		_cEtMsmvsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1), bx,
-			numMsmHBHE);
-		_cEtMsmvsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1), bx, 
-			numMsmHF);
-		
-		_cEtMsmRatiovsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1), _currentLS,
-			double(numMsmHBHE)/double(numCorrHBHE));
-		_cEtMsmRatiovsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1), _currentLS, 
-			double(numMsmHF)/double(numCorrHF));
-		_cEtMsmRatiovsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1), bx,
-			double(numMsmHBHE)/double(numCorrHBHE));
-		_cEtMsmRatiovsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1), bx, 
-			double(numMsmHF)/double(numCorrHF));
-
-		_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			_currentLS, numMsnHBHE);
-		_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1),
-			_currentLS, numMsnHF);
-		_cMsnCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			_currentLS, numMsnCutHBHE);
-		_cMsnCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1),
-			_currentLS, numMsnCutHF);
-
-		_cMsnEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			bx, numMsnHBHE);
-		_cMsnEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1),
-			bx, numMsnHF);
-		_cMsnCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			bx, numMsnCutHBHE);
-		_cMsnCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1),
-			bx, numMsnCutHF);
+		//	ONLINE ONLY!
+		if (_ptype==fOnline)
+		{
+			_cOccupancyDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), bx,
+				numHBHE);
+			_cOccupancyDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), bx,
+				numHF);
+			_cOccupancyCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), 
+				bx, numCutHBHE);
+			_cOccupancyCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), bx,
+				numCutHF);
+			_cOccupancyDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), 
+				_currentLS, numHBHE);
+			_cOccupancyDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), 
+				_currentLS,numHF);
+			_cOccupancyCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
+				_currentLS, numCutHBHE);
+			_cOccupancyCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), 
+				_currentLS, numCutHF);
+	
+			_cEtMsmvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), _currentLS,
+				numMsmHBHE);
+			_cEtMsmvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), _currentLS, 
+				numMsmHF);
+			_cEtMsmvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), bx,
+				numMsmHBHE);
+			_cEtMsmvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), bx, 
+				numMsmHF);
+			
+			_cEtMsmRatiovsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), 
+				_currentLS,
+				double(numMsmHBHE)/double(numCorrHBHE));
+			_cEtMsmRatiovsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), 
+				_currentLS, 
+				double(numMsmHF)/double(numCorrHF));
+			_cEtMsmRatiovsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), bx,
+				double(numMsmHBHE)/double(numCorrHBHE));
+			_cEtMsmRatiovsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), bx, 
+				double(numMsmHF)/double(numCorrHF));
+	
+			_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawHBHEValid),
+				_currentLS, numMsnHBHE);
+			_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid),
+				_currentLS, numMsnHF);
+			_cMsnCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
+				_currentLS, numMsnCutHBHE);
+			_cMsnCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid),
+				_currentLS, numMsnCutHF);
+	
+			_cMsnEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
+				bx, numMsnHBHE);
+			_cMsnEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid),
+				bx, numMsnHF);
+			_cMsnCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
+				bx, numMsnCutHBHE);
+			_cMsnCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid),
+				bx, numMsnCutHF);
+		}
 	}
 
 	numHBHE=0; numHF=0; numCutHBHE=0; numCutHF=0;
 	numMsnHBHE=0; numMsnHF=0; numCutHBHE=0; numCutHF=0;
+
+	//	reset 
+	rawidHBHEValid = 0;
+	rawidHFValid = 0;
 
 	/*
 	 *	STEP2:
@@ -797,9 +818,16 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	for (HcalTrigPrimDigiCollection::const_iterator it=cemul->begin();
 		it!=cemul->end(); ++it)
 	{
+		//	Explicit check on the DetIds present in the Collection
 		HcalTrigTowerDetId tid = it->id();
-		if (_ehashmap.lookup(tid)==0)
+		uint32_t rawid = _ehashmap.lookup(did);
+		if (rawid==0)
 		{meUnknownIds1LS->Fill(1); _unknownIdsPresent = true; continue;}
+		HcalElectronicsId const& eid(rawid);
+		if (tid.ietaAbs()>=29)
+			rawidHFValid = tid.rawId();
+		else 
+			rawidHBHEValid = tid.rawId();
 
 		//	HF 2x3 TPs. Only do it for Online!!!
 		if (tid.version()==0 && tid.ietaAbs()>=29)
@@ -809,7 +837,6 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 				_cOccupancyEmul2x3_depthlike.fill(tid);
 			continue;
 		}
-		HcalElectronicsId eid = HcalElectronicsId(_ehashmap.lookup(tid));
 		int soiEt = it->SOI_compressedEt();
 
 		//	FILL/INCREMENT w/o a CUT
@@ -868,46 +895,50 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 		}
 	}
 
-	//	ONLINE ONLY!
-	if (_ptype==fOnline)
+	if (rawidHBHEValid!=0 && rawidHFValid!=0)
 	{
-		_cOccupancyEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1), bx,
-			numHBHE);
-		_cOccupancyEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1), bx,
-			numHF);
-		_cOccupancyCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1), bx,
-			numCutHBHE);
-		_cOccupancyCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1), bx,
-			numCutHF);
-
-		_cOccupancyEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1), 
-			_currentLS, numHBHE);
-		_cOccupancyEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1), 
-			_currentLS,numHF);
-		_cOccupancyCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			_currentLS, numCutHBHE);
-		_cOccupancyCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1), 
-			_currentLS, numCutHF);
-
-		_cMsnDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			_currentLS, numMsnHBHE);
-		_cMsnDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1),
-			_currentLS, numMsnHF);
-		_cMsnCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			_currentLS, numMsnCutHBHE);
-		_cMsnCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(29,1),
-			_currentLS, numMsnCutHF);
-
-		_cMsnDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			bx, numMsnHBHE);
-		_cMsnDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1),
-			bx, numMsnHF);
-		_cMsnCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(1,1),
-			bx, numMsnCutHBHE);
-		_cMsnCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(29,1),
-			bx, numMsnCutHF);
+		//	ONLINE ONLY!
+		if (_ptype==fOnline)
+		{
+			_cOccupancyEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), bx,
+				numHBHE);
+			_cOccupancyEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), bx,
+				numHF);
+			_cOccupancyCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), 
+				bx,
+				numCutHBHE);
+			_cOccupancyCutEmulvsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), bx,
+				numCutHF);
+	
+			_cOccupancyEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid), 
+				_currentLS, numHBHE);
+			_cOccupancyEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), 
+				_currentLS,numHF);
+			_cOccupancyCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
+				_currentLS, numCutHBHE);
+			_cOccupancyCutEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), 
+				_currentLS, numCutHF);
+	
+			_cMsnDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
+				_currentLS, numMsnHBHE);
+			_cMsnDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid),
+				_currentLS, numMsnHF);
+			_cMsnCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
+				_currentLS, numMsnCutHBHE);
+			_cMsnCutDatavsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid),
+				_currentLS, numMsnCutHF);
+	
+			_cMsnDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
+				bx, numMsnHBHE);
+			_cMsnDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid),
+				bx, numMsnHF);
+			_cMsnCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
+				bx, numMsnCutHBHE);
+			_cMsnCutDatavsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid),
+				bx, numMsnCutHF);
+		}
+		//	^^^ONLINE ONLY!
 	}
-	//	^^^ONLINE ONLY!
 }
 
 /* virtual */ void TPTask::beginLuminosityBlock(edm::LuminosityBlock const& lb,

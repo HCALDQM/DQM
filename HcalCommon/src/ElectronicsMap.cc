@@ -56,7 +56,7 @@ namespace hcaldqm
 					for (std::vector<HcalElectronicsId>::const_iterator
 						it=eids.begin(); it!=eids.end(); ++it)
 					{
-						HcalDetId did = HcalDetId(_emap->lookup(*it));
+						HcalGenericDetId did = HcalGenericDetId(_emap->lookup(*it));
 						uint32_t hash = it->rawId();
 						EMapType::iterator eit = _ids.find(hash);
 						if (eit!=_ids.end())
