@@ -65,8 +65,6 @@ UMNioTask::UMNioTask(edm::ParameterSet const& ps):
 
 	uint8_t eventType = cumn->eventType();
 	uint32_t laserType = cumn->valueUserWord(0);
-	std::cout << "EventType=" << (unsigned int)eventType 
-		<< "  LaserType=" << (unsigned int)laserType << std::endl;
 	_cEventType.fill(_currentLS, eventType==constants::EVENTTYPE_PEDESTAL ?
 		(int)eventType : (int)laserType);
 
