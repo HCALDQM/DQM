@@ -24,7 +24,9 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	_thresh_DataMsn = ps.getUntrackedParameter<double>("thresh_DataMsn",
 		0.1);
 	_thresh_EmulMsn = ps.getUntrackedParameter<double>("thresh_EmulMsn");
-	_vFGBitsReady = ps.getUntrackedParameter<std::vector<bool> >("vFGBitsReady");
+	std::vector<int> tmp = ps.getUntrackedParameter<std::vector<int> >("vFGBitsReady");
+	for (uint32_t iii=0; iii<constants::NUM_FGBITS; iii++)
+		_vFGBitsReady.push_back(tmp[iii]);
 
 	_vflags.resize(nTPFlag);
 	_vflags[fEtMsm]=flag::Flag("EtMsm");
@@ -780,7 +782,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 			_cEtMsmRatiovsBX_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid), bx, 
 				double(numMsmHF)/double(numCorrHF));
 	
-			_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawHBHEValid),
+			_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHBHEValid),
 				_currentLS, numMsnHBHE);
 			_cMsnEmulvsLS_TTSubdet.fill(HcalTrigTowerDetId(rawidHFValid),
 				_currentLS, numMsnHF);
@@ -820,7 +822,7 @@ TPTask::TPTask(edm::ParameterSet const& ps):
 	{
 		//	Explicit check on the DetIds present in the Collection
 		HcalTrigTowerDetId tid = it->id();
-		uint32_t rawid = _ehashmap.lookup(did);
+		uint32_t rawid = _ehashmap.lookup(tid);
 		if (rawid==0)
 		{meUnknownIds1LS->Fill(1); _unknownIdsPresent = true; continue;}
 		HcalElectronicsId const& eid(rawid);

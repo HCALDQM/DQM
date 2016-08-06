@@ -61,7 +61,7 @@ class TPTask : public DQTask
 		double _thresh_EtMsmRate_high, _thresh_EtMsmRate_low,
 			_thresh_FGMsmRate_high, _thresh_FGMsmRate_low,
 			_thresh_DataMsn, _thresh_EmulMsn;
-		std::vector<bool> _vFGBitsReady
+		std::vector<bool> _vFGBitsReady;
 
 		//	hashes/FEDs vectors
 		std::vector<uint32_t> _vhashFEDs;

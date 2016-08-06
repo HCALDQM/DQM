@@ -218,7 +218,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 			hashfunctions::fSubdet,
 			new quantity::DetectorQuantity(quantity::fieta),
 			new quantity::ValueQuantity(quantity::fN));
-		_cOccupancyCutvsBX_SubdetPM.initialize(_name, "OccupancyCutvsBX",
+		_cOccupancyCutvsBX_Subdet.initialize(_name, "OccupancyCutvsBX",
 			hashfunctions::fSubdet,
 			new quantity::ValueQuantity(quantity::fBX),
 			new quantity::ValueQuantity(quantity::fN));
@@ -627,7 +627,7 @@ RecHitTask::RecHitTask(edm::ParameterSet const& ps):
 		uint32_t rawid = _ehashmap.lookup(did);
 		if (rawid==0)
 		{meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;continue;}
-		HcalElectronics const& eid(rawid);
+		HcalElectronicsId const& eid(rawid);
 		if (did.subdet()==HcalForward)
 			rawidValid = did.rawId();
 

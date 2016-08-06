@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-fgbits = [True for x in range(5)]
-fgbits.append(False)
+fgbits = [1 for x in range(5)]
+fgbits.append(0)
 
 tpTask = cms.EDAnalyzer(
 	"TPTask",
@@ -31,7 +31,7 @@ tpTask = cms.EDAnalyzer(
 	thresh_FGMsmRate_low = cms.untracked.double(0.1),
 	thresh_DataMsn = cms.untracked.double(0.1),
 	thresh_EmulMsn = cms.untracked.double(0.1),
-        vFGBitsReady = cms.untracked.vbool(fgbits)
+    vFGBitsReady = cms.untracked.vint32(fgbits)
 )
 
 
