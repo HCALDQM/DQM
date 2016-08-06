@@ -314,6 +314,8 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 	_cDigiSize_FED.book(ib, _emap, _subsystem);
 
 	//	BOOK HISTOGRAMS that are only for Online
+	_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
+	_dhashmap.initialize(_emap, electronicsmap::fE2DHashMap);
 	if (_ptype==fOnline)
 	{
 		_cQ2Q12CutvsLS_FEDHF.book(ib, _emap, _filter_FEDHF, _subsystem);
@@ -341,8 +343,6 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		// just PER HF FED RECORD THE #CHANNELS
 		// ONLY WAY TO DO THAT AUTOMATICALLY AND W/O HARDCODING 1728
 		// or ANY OTHER VALUES LIKE 2592, 2192
-		_ehashmap.initialize(_emap, electronicsmap::fD2EHashMap);
-		_dhashmap.initialize(_emap, electronicsmap::fE2DHashMap);
 		std::vector<HcalGenericDetId> gids = _emap->allPrecisionId();
 		for (std::vector<HcalGenericDetId>::const_iterator it=gids.begin();
 			it!=gids.end(); ++it)
@@ -446,11 +446,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		HcalDetId const& did = it->id();
 		uint32_t rawid = _ehashmap.lookup(did);
 		if (rawid==0) 
-		{
-			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
-			std::cout << did << std::endl;
-			continue;
-		}
+		{meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;continue;}
 		HcalElectronicsId const& eid(rawid);
 		if (did.subdet()==HcalBarrel)
 			rawidHBValid = did.rawId();
@@ -577,11 +573,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		HcalDetId const& did = it->id();
 		uint32_t rawid = _ehashmap.lookup(did);
 		if (rawid==0) 
-		{
-			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
-			std::cout << did << std::endl;
-			continue;
-		}
+		{meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;continue;}
 		HcalElectronicsId const& eid(rawid);
 		if (did.subdet()==HcalOuter)
 			rawidValid = did.rawId();
@@ -699,11 +691,7 @@ DigiTask::DigiTask(edm::ParameterSet const& ps):
 		HcalDetId const& did = it->id();
 		uint32_t rawid = _ehashmap.lookup(did);
 		if (rawid==0) 
-		{
-			meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;
-			std::cout << did << std::endl;
-			continue;
-		}
+		{meUnknownIds1LS->Fill(1); _unknownIdsPresent=true;continue;}
 		HcalElectronicsId const& eid(rawid);
 		if (did.subdet()==HcalForward)
 			rawidValid = did.rawId();

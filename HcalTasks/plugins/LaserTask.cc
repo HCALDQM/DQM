@@ -480,10 +480,7 @@ LaserTask::LaserTask(edm::ParameterSet const& ps):
 		//	fOnline mode
 		edm::Handle<HcalUMNioDigi> cumn;
 		if (!e.getByToken(_tokuMN, cumn))
-		{
-			std::cout << "Collection HcalUMNioDigi is not found" << std::endl;
 			return false;
-		}
 		
 		//	event type check first
 		uint8_t eventType = cumn->eventType();

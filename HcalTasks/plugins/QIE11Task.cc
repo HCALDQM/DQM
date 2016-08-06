@@ -100,7 +100,7 @@ QIE11Task::QIE11Task(edm::ParameterSet const& ps):
 {
 	edm::Handle<QIE11DigiCollection> cqie10;
 	if (!e.getByToken(_tokQIE11, cqie10))
-		std::cout << "Collection isn't available" << std::endl;
+		return;
 
 	for (uint32_t i=0; i<cqie10->size(); i++)
 	{

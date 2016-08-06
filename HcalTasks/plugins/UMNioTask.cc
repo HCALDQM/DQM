@@ -61,7 +61,7 @@ UMNioTask::UMNioTask(edm::ParameterSet const& ps):
 {
 	edm::Handle<HcalUMNioDigi> cumn;
 	if (!e.getByToken(_tokuMN, cumn))
-		std::cout << "Collection HcalUMNioDigi is not found" << std::endl;
+		return;
 
 	uint8_t eventType = cumn->eventType();
 	uint32_t laserType = cumn->valueUserWord(0);

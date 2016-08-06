@@ -883,10 +883,7 @@ PedestalTask::PedestalTask(edm::ParameterSet const& ps):
 	{
 		edm::Handle<HcalUMNioDigi> cumn;
 		if (!e.getByToken(_tokuMN, cumn))
-		{
-			std::cout << "Collection HcalUMNioDigi is not found" << std::endl;
 			return false;
-		}
 
 		//	for online just check the event type not the user Word
 		uint8_t eventType = cumn->eventType();
