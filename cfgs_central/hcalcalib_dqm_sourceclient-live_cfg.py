@@ -132,31 +132,31 @@ process.rawTask.tagReport = cms.untracked.InputTag("hcalDigis")
 #-------------------------------------
 process.hbhehpdTask = process.laserTask.clone()
 process.hbhehpdTask.name = cms.untracked.string("HBHEHPDTask")
-process.hbhehpdTask.eventType = cms.untracked.uint32(3)
+process.hbhehpdTask.laserType = cms.untracked.uint32(3)
 
 process.hoTask = process.laserTask.clone()
 process.hoTask.name = cms.untracked.string("HOTask")
-process.hoTask.eventType = cms.untracked.uint32(4)
+process.hoTask.laserType = cms.untracked.uint32(4)
 
 process.hfTask = process.laserTask.clone()
 process.hfTask.name = cms.untracked.string("HFTask")
-process.hfTask.eventType = cms.untracked.uint32(5)
+process.hfTask.laserType = cms.untracked.uint32(5)
 
 process.hepmegaTask = process.laserTask.clone()
 process.hepmegaTask.name = cms.untracked.string("HEPMegaTask")
-process.hepmegaTask.eventType = cms.untracked.uint32(7)
+process.hepmegaTask.laserType = cms.untracked.uint32(7)
 
 process.hemmegaTask = process.laserTask.clone()
 process.hemmegaTask.name = cms.untracked.string("HEMMegaTask")
-process.hemmegaTask.eventType = cms.untracked.uint32(8)
+process.hemmegaTask.laserType = cms.untracked.uint32(8)
 
 process.hbpmegaTask = process.laserTask.clone()
 process.hbpmegaTask.name = cms.untracked.string("HBPMegaTask")
-process.hbpmegaTask.eventType = cms.untracked.uint32(9)
+process.hbpmegaTask.laserType = cms.untracked.uint32(9)
 
 process.hbmmegaTask = process.laserTask.clone()
 process.hbmmegaTask.name = cms.untracked.string("HBMMegaTask")
-process.hbmmegaTask.eventType = cms.untracked.uint32(10)
+process.hbmmegaTask.laserType = cms.untracked.uint32(10)
 
 #-------------------------------------
 #	Hcal DQM Tasks Sequence Definition
