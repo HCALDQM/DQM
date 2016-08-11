@@ -47,6 +47,7 @@ class QIE10Task : public DQTask
 
 		//	filters
 		HashFilter _filter_C36;
+		HashFilter _filter_DA;
 
 		//	Electronics Maps/Hashes
 		HcalElectronicsMap const* _emap;
@@ -59,6 +60,18 @@ class QIE10Task : public DQTask
 		Container1D _cLETDC_EChannel[10];
 		Container1D _cADC_EChannel[10];
 		Container2D _cOccupancy_depth;
+
+		//	Correlation Plots for 8 vs 10
+		Container2D _cADCCorrelation10vs8_DChannel[10];
+		ContainerSingle2D _cADCCorrelation10vs8;
+
+		//	Correaltion plots for 10 vs 10 - 2 PMTs only
+		ContainerSingle2D _cADCCorrelation10vs10_ieta30[10];
+		ContainerSingle2D _cADCCorrelation10vs10_ieta34[10];
+		ContainerSingle2D _cLETDCCorrelation10vs10_ieta30[10];
+		ContainerSingle2D _cLETDCCorrelation10vs10_ieta34[10];
+		ContainerSingle2D _cADCCorrelation10vs10;
+		ContainerSingle2D _cLETDCCorrelation10vs10;
 
 		//	Containers overall
 		ContainerSingleProf1D	_cShapeCut;

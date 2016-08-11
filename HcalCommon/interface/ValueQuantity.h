@@ -57,12 +57,12 @@ namespace hcaldqm
 			nValueQuantityType = 38
 		};
 		std::string const name_value[nValueQuantityType] = {
-			"N", "Events", "Energy", "Timing", "ADC", "ADC", "ADC",
-			"fC", "fC", "fC", "Timing", "Timing", "LS", "Et", "Et",
+			"N", "Events", "Energy", "Timing", "ADC (QIE8)", "ADC (QIE8)", "ADC QIE8()",
+			"fC (QIE8)", "fC (QIE8)", "fC (QIE8)", "Timing", "Timing", "LS", "Et", "Et",
 			"FG", "Ratio", "DigiSize", "Q", "Ratio",
-			"dEtRatio", "SumdEt", "Timing", "ADC", "TDC", "TDC",
+			"dEtRatio", "SumdEt", "Timing", "ADC (QIE10)", "TDC", "TDC",
 			"Q", "Ratio", "N", "Energy", "N", "Et", "ADC", "BX",
-			"Energy", "State", "fC", "FED Data Size (kB)"
+			"Energy", "State", "fC (QIE10)", "FED Data Size (kB)"
 		};
 		double const min_value[nValueQuantityType] = {
 			-0.05, 0, 0, -50, -0.5, -0.5, -0.5, 0, 0, 0, -0.5, 0, 0.5, 0,
