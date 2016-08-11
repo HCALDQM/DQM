@@ -10,7 +10,10 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 	//	tags
 	_tagQIE10 = ps.getUntrackedParameter<edm::InputTag>("tagQIE10",
 		edm::InputTag("hcalDigis"));
+	_tagHF = ps.getUntrackedParameter<edm::InputTag>("tagHF",
+		edm::InputTag("hcalDigis"));
 	_tokQIE10 = consumes<QIE10DigiCollection>(_tagQIE10);
+	_tokHF = consumes<HFDigiCollection>(_tagHF);
 
 	//	cuts
 	_cut = ps.getUntrackedParameter<double>("cut", 50.0);
@@ -80,12 +83,20 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 		new quantity::ValueQuantity(quantity::fQIE10ADC_256),
 		new quantity::ValueQuantity(quantity::fQIE10ADC_256),
 		new quantity::ValueQuantity(quantity::fN, true));
+	_cfCCorrelation10vs8.initialize(_name, "fCorrelation10vs8",
+		new quantity::ValueQuantity(quantity::fQIE8fC_1000_50),
+		new quantity::ValueQuantity(quantity::fQIE10fC_2000),
+		new quantity::ValueQuantity(quantity::fN, true));
+	_cfCCorrelation10vs10.initialize(_name, "fCCorrelation10vs10",
+		new quantity::ValueQuantity(quantity::fQIE10fC_2000),
+		new quantity::ValueQuantity(quantity::fQIE10fC_2000),
+		new quantity::ValueQuantity(quantity::fN, true));
 	_cLETDCCorrelation10vs10.initialize(_name, "LETDCCorrelation",
 		new quantity::ValueQuantity(quantity::fQIE10TDC_64),
 		new quantity::ValueQuantity(quantity::fQIE10TDC_64),
 		new quantity::ValueQuantity(quantity::fN, true));
 
-	int nTS = _ptype==fLocal ? 10 : 4;
+	unsigned int nTS = _ptype==fLocal ? 10 : 4;
 	for (unsigned int j=0; j<nTS; j++)
 	{
 		_cLETDCvsADC_EChannel[j].initialize(_name,
@@ -107,10 +118,15 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 			new quantity::ValueQuantity(quantity::fQIE10TDC_64),
 			new quantity::ValueQuantity(quantity::fN, true));
 
-		_cADCCorrelation10vs8[j].initialize(_name, "ADCCorrelation10vs8",
+		_cADCCorrelation10vs8_DChannel[j].initialize(_name, "ADCCorrelation10vs8",
 			hashfunctions::fDChannel,
 			new quantity::ValueQuantity(quantity::fADC_128),
 			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
+			new quantity::ValueQuantity(quantity::fN, true));
+		_cfCCorrelation10vs8_DChannel[j].initialize(_name, "fCCorrelation10vs8",
+			hashfunctions::fDChannel,
+			new quantity::ValueQuantity(quantity::fQIE8fC_1000_50),
+			new quantity::ValueQuantity(quantity::fQIE10fC_2000),
 			new quantity::ValueQuantity(quantity::fN, true));
 
 		_cADCCorrelation10vs10_ieta30[j].initialize(_name, 
@@ -122,6 +138,16 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 			"ADCCorrelation10vs10_ieta34",
 			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
 			new quantity::ValueQuantity(quantity::fQIE10ADC_256),
+			new quantity::ValueQuantity(quantity::fN, true));
+		_cfCCorrelation10vs10_ieta30[j].initialize(_name, 
+			"fCCorrelation10vs10_ieta30",
+			new quantity::ValueQuantity(quantity::fQIE10fC_2000),
+			new quantity::ValueQuantity(quantity::fQIE10fC_2000),
+			new quantity::ValueQuantity(quantity::fN, true));
+		_cfCCorrelation10vs10_ieta34[j].initialize(_name, 
+			"fCCorrelation10vs10_ieta34",
+			new quantity::ValueQuantity(quantity::fQIE10fC_2000),
+			new quantity::ValueQuantity(quantity::fQIE10fC_2000),
 			new quantity::ValueQuantity(quantity::fN, true));
 		_cLETDCCorrelation10vs10_ieta30[j].initialize(_name, "LETDCCorrelation_ieta30",
 			new quantity::ValueQuantity(quantity::fQIE10TDC_64),
@@ -140,7 +166,9 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 	_cLETDC.book(ib, _subsystem);
 	_cADC.book(ib, _subsystem);
 	_cADCCorrelation10vs8.book(ib, _subsystem);
-	_cADCorrelation10vs10.book(ib, _subsystem);
+	_cADCCorrelation10vs10.book(ib, _subsystem);
+	_cfCCorrelation10vs8.book(ib, _subsystem);
+	_cfCCorrelation10vs10.book(ib, _subsystem);
 	_cLETDCCorrelation10vs10.book(ib, _subsystem);
 	for (unsigned int i=0; i<nTS; i++)
 	{
@@ -154,6 +182,9 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 		_cADCCorrelation10vs8_DChannel[i].book(ib, _emap, _filter_DA, _subsystem, aux);
 		_cADCCorrelation10vs10_ieta30[i].book(ib, _subsystem, aux);
 		_cADCCorrelation10vs10_ieta34[i].book(ib, _subsystem, aux);
+		_cfCCorrelation10vs8_DChannel[i].book(ib, _emap, _filter_DA, _subsystem, aux);
+		_cfCCorrelation10vs10_ieta30[i].book(ib, _subsystem, aux);
+		_cfCCorrelation10vs10_ieta34[i].book(ib, _subsystem, aux);
 		_cLETDCCorrelation10vs10_ieta30[i].book(ib, _subsystem, aux);
 		_cLETDCCorrelation10vs10_ieta34[i].book(ib, _subsystem, aux);
 	}
@@ -173,8 +204,12 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 	edm::EventSetup const&)
 {
 	edm::Handle<QIE10DigiCollection> cqie10;
+	edm::Handle<HFDigiCollection>       chf;
 	if (!e.getByToken(_tokQIE10, cqie10))
 		return;
+	if (!e.getByToken(_tokHF, chf))
+		_logger.dqmthrow("Collection HFDigiCollection isn't available"
+			+ _tagHF.label() + " " + _tagHF.instance());
 
 	std::map<uint32_t, QIE10DataFrame> mqie10;
 	for (uint32_t i=0; i<cqie10->size(); i++)
@@ -246,29 +281,37 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 			QIE10DataFrame frame2_10 = mqie10[did2.rawId()];
 
 			//	fill
-			for (int j=0; j<frame.samples(); j++)
+			for (int j=0; j<frame1_10.samples(); j++)
 			{
 				_cADCCorrelation10vs10.fill(frame2_10[j].adc(),
 					frame1_10[j].adc());
+				_cfCCorrelation10vs10.fill(constants::adc2fC[frame2_10[j].adc()],
+					constants::adc2fC[frame1_10[j].adc()]);
 				_cLETDCCorrelation10vs10.fill(frame2_10[j].le_tdc(),
 					frame1_10[j].le_tdc());
 				
 				if (did2.ieta()==30)
 				{
-					_cADCCorrelation10vs10_ieta30[j].fill(frame2_10[j].adc(),
+					_cADCCorrelation10vs10_ieta30[j].fill(
+						frame2_10[j].adc(),
 						frame1_10[j].adc());
+					_cfCCorrelation10vs10_ieta30[j].fill(
+						constants::adc2fC[frame2_10[j].adc()],
+						constants::adc2fC[frame1_10[j].adc()]);
 					_cLETDCCorrelation10vs10_ieta30[j].fill(frame2_10[j].le_tdc(),
 						frame1_10[j].le_tdc());
 				}
 				else if (did2.ieta()==34)
 				{
-					_cADCCorrelation10vs10_ieta34[j].fill(frame2_10[j].adc(),
+					_cfCCorrelation10vs10_ieta34[j].fill(
+						constants::adc2fC[frame2_10[j].adc()],
+						constants::adc2fC[frame1_10[j].adc()]);
+					_cADCCorrelation10vs10_ieta34[j].fill(
+						frame2_10[j].adc(),
 						frame1_10[j].adc());
 					_cLETDCCorrelation10vs10_ieta34[j].fill(frame2_10[j].le_tdc(),
 						frame1_10[j].le_tdc());
 				}
-				else
-					std::cout << "1111111111111" << std::endl;
 			}
 		}
 		else 
@@ -279,12 +322,17 @@ QIE10Task::QIE10Task(edm::ParameterSet const& ps):
 			HFDataFrame frame2_8 = mqie8[did2.rawId()];
 
 			//	fill
-			for (int j=0; j<frame.samples(); j++)
+			for (int j=0; j<frame1_10.samples(); j++)
 			{
 				_cADCCorrelation10vs8.fill(frame2_8[j].adc(),
 					frame1_10[j].adc());
 				_cADCCorrelation10vs8_DChannel[j].fill(did2,
 					frame2_8[j].adc(), frame1_10[j].adc());
+				_cfCCorrelation10vs8.fill(constants::adc2fC[frame2_8[j].adc()],
+					constants::adc2fC[frame1_10[j].adc()]);
+				_cfCCorrelation10vs8_DChannel[j].fill(did2,
+					constants::adc2fC[frame2_8[j].adc()], 
+					constants::adc2fC[frame1_10[j].adc()]);
 			}
 		}	
 
